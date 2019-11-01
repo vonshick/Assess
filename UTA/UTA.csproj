@@ -65,8 +65,8 @@
     </Compile>
     <Compile Include="Models\DataBase\Alternatives.cs" />
     <Compile Include="Models\DataBase\Criteria.cs" />
-    <Compile Include="Models\VariantTest.cs" />
-    <Compile Include="ViewModels\VariantsTestList.cs" />
+    <Compile Include="Models\RelyCommand.cs" />
+    <Compile Include="ViewModels\VariantsList.cs" />
     <Compile Include="Views\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
       <SubType>Code</SubType>
