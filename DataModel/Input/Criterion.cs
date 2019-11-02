@@ -21,7 +21,5 @@ namespace DataModel.Input
         public int LinearSegments { get; set; }
         public float MinValue { get; set; }
         public float MaxValue { get; set; }
-
-
     }
 }

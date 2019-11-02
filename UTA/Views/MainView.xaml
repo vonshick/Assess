@@ -4,30 +4,57 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UTA"
-        xmlns:ViewModels="clr-namespace:UTA.ViewModels" x:Class="UTA.Views.MainView"
+        xmlns:ViewModels="clr-namespace:UTA.ViewModels"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+        x:Class="UTA.Views.MainView"
         mc:Ignorable="d"
         Title="MainView" Height="450" Width="800">
     <Window.DataContext>
-        <ViewModels:VariantsList/>
+        <ViewModels:MainViewModel/>
     </Window.DataContext>
     <Grid>
-        <ListView HorizontalAlignment="Left" Height="102" Margin="192,204,0,0" VerticalAlignment="Top" Width="342" RenderTransformOrigin="-0.638,-0.062" ItemsSource="{Binding VList}">
+        <ListView HorizontalAlignment="Left" Height="102" Margin="94,91,0,0" VerticalAlignment="Top" Width="342" RenderTransformOrigin="-0.638,-0.062" ItemsSource="{Binding Alternatives.AlternativesList}">
             <!-- <ListView.ItemTemplate> -->
             <!--     <DataTemplate> -->
             <!--         <TextBlock Text="{Binding Name}"/> -->
-            <!--     </DataTemplate> -->
+            <!--     </DataTem+plate> -->
             <!-- </ListView.ItemTemplate> -->
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="First Property" DisplayMemberBinding="{Binding Name}"/>
-                    <GridViewColumn Header="Second Property" DisplayMemberBinding="{Binding Description}"/>
+                    <GridViewColumn Header="Alternative" DisplayMemberBinding="{Binding Name}"/>
+                    <GridViewColumn Header="Description"  DisplayMemberBinding="{Binding Description}"/>
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button Content="Add" Command="{Binding SaveCommand}" HorizontalAlignment="Left" Margin="512,115,0,0" VerticalAlignment="Top" Width="74" RenderTransformOrigin="1.72,0.375"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="192,115,0,0" TextWrapping="Wrap" Text="{Binding InputName}" VerticalAlignment="Top" Width="120"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="338,115,0,0" TextWrapping="Wrap" Text="{Binding InputDescription}" VerticalAlignment="Top" Width="120"/>
-        <Label Content="Name" HorizontalAlignment="Left" Margin="230,89,0,0" VerticalAlignment="Top"/>
-        <Label Content="Description" HorizontalAlignment="Left" Margin="373,89,0,0" VerticalAlignment="Top"/>
+        <Button Content="Add" Command="{Binding Alternatives.AddButtonCommand}" HorizontalAlignment="Left" Margin="450,50,0,0" VerticalAlignment="Top" Width="74" RenderTransformOrigin="1.72,0.375"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="130,50,0,0" TextWrapping="Wrap" Text="{Binding Alternatives.InputName}" VerticalAlignment="Top" Width="120"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="275,50,0,0" TextWrapping="Wrap" Text="{Binding Alternatives.InputDescription}" VerticalAlignment="Top" Width="120"/>
+        <Label Content="Name" HorizontalAlignment="Left" Margin="168,24,0,0" VerticalAlignment="Top"/>
+        <Label Content="Description" HorizontalAlignment="Left" Margin="311,24,0,0" VerticalAlignment="Top"/>
+
+        <ListView HorizontalAlignment="Left" Height="102" Margin="94,294,0,0" VerticalAlignment="Top" Width="342" RenderTransformOrigin="-0.638,-0.062" ItemsSource="{Binding Criteria.CriteriaList}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Criterion" DisplayMemberBinding="{Binding Name}"/>
+                    <GridViewColumn Header="Description" DisplayMemberBinding="{Binding Description}"/>
+                    <GridViewColumn Header="Type" DisplayMemberBinding="{Binding CriterionType}"/>
+                    <GridViewColumn Header="Linear Segments" DisplayMemberBinding="{Binding LinearSegments}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Button Content="Add" Command="{Binding SaveCommand}" HorizontalAlignment="Left" Margin="533,262,0,0" VerticalAlignment="Top" Width="74" RenderTransformOrigin="1.72,0.375"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="26,258,0,0" TextWrapping="Wrap" Text="{Binding Criteria.InputName}" VerticalAlignment="Top" Width="120"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="171,258,0,0" TextWrapping="Wrap" Text="{Binding Criteria.InputDescription}" VerticalAlignment="Top" Width="120"/>
+        <Label Content="Name" HorizontalAlignment="Left" Margin="64,232,0,0" VerticalAlignment="Top"/>
+        <Label Content="Description" HorizontalAlignment="Left" Margin="207,232,0,0" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="418,262,0,0" TextWrapping="Wrap" Text="{Binding Criteria.InputLinearSegments}" VerticalAlignment="Top" Width="91"/>
+        <Label Content="Type" HorizontalAlignment="Left" Margin="340,232,0,0" VerticalAlignment="Top"/>
+        <Label Content="Linear&#xD;&#xA;Segments" HorizontalAlignment="Left" Margin="444,214,0,0" VerticalAlignment="Top" Width="80" Height="47"/>
+        
+        <ComboBox ItemsSource="{Binding CriteriaTypeList}" SelectedItem="{Binding InputCriterionType, Mode=TwoWay}" Name="Type" HorizontalAlignment="Left" Margin="313,259,0,0" VerticalAlignment="Top" Width="82"/>
+
+
+
+
     </Grid>
 </Window>
