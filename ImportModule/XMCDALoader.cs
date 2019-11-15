@@ -14,7 +14,7 @@ namespace ImportModule
         public string XMCDADirectory { get; set; }
 
 
-        private void loadCriteria()
+        private void LoadCriteria()
         {
             XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.Load(Path.Combine(XMCDADirectory, "criteria.xml"));
@@ -32,7 +32,7 @@ namespace ImportModule
             }
         }
 
-        private void loadCriteriaScales()
+        private void LoadCriteriaScales()
         {
             XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.Load(Path.Combine(XMCDADirectory, "criteria_scales.xml"));
@@ -48,22 +48,22 @@ namespace ImportModule
             }
         }
 
-        private void loadCriteriaThresholds()
+        private void LoadCriteriaThresholds()
         {
 
         }
 
-        private void loadAlternatives()
+        private void LoadAlternatives()
         {
 
         }
 
-        private void loadMethodParameteres()
+        private void LoadMethodParameteres()
         {
 
         }
 
-        private void loadPerformanceTable()
+        private void LoadPerformanceTable()
         {
             XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.Load(Path.Combine(XMCDADirectory, "performance_table.xml"));
@@ -71,8 +71,7 @@ namespace ImportModule
             // this file contains only one main block - <criteriaScales>
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
             {
-                Alternative alternative = new Alternative();
-                alternative.CriteriaValues = new Dictionary<string, float>();
+                Alternative alternative = new Alternative {CriteriaValues = new Dictionary<string, float>()};
 
                 foreach (XmlNode performance in xmlNode.ChildNodes)
                 {
@@ -94,23 +93,23 @@ namespace ImportModule
             }
         }
 
-        private void loadWeights()
+        private void LoadWeights()
         {
 
         }
 
-        public void loadXMCDA(string xmcdaDirectory)
+        public void LoadXMCDA(string xmcdaDirectory)
         {
             CriterionList = new List<Criterion>();
             AlternativeList = new List<Alternative>();
             XMCDADirectory = xmcdaDirectory;
-            loadCriteria();
-            loadCriteriaScales();
-            loadCriteriaThresholds();
-            loadAlternatives();
-            loadMethodParameteres();
-            loadPerformanceTable();
-            loadWeights();
+            LoadCriteria();
+            LoadCriteriaScales();
+            LoadCriteriaThresholds();
+            LoadAlternatives();
+            LoadMethodParameteres();
+            LoadPerformanceTable();
+            LoadWeights();
         }
     }
 }

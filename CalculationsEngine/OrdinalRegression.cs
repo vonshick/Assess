@@ -5,7 +5,7 @@ namespace CalculationsEngine
 {
     public class OrdinalRegression
     {
-        public Results calculateResults(Ranking referenceRanking)
+        public Results CalculateResults(Ranking referenceRanking)
         {
             return new Results();
         }

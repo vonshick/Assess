@@ -7,7 +7,7 @@ namespace ImportModule
 {
     class Program
     {
-        static void Main()
+        public static void ProcessData()
         {
             //            DataLoader dataLoader = new DataLoader();
             //            dataLoader.LoadCSV("Lab7_bus.csv");
@@ -36,7 +36,7 @@ namespace ImportModule
             
 
             XMCDALoader xmcdaLoader = new XMCDALoader();
-            xmcdaLoader.loadXMCDA(Path.Combine(Environment.CurrentDirectory, "xmcda"));
+            xmcdaLoader.LoadXMCDA(Path.Combine(Environment.CurrentDirectory, "xmcda"));
 
             Console.WriteLine("Criteria:");
             for (int i = 0; i < xmcdaLoader.CriterionList.Count; i++)
