@@ -1,0 +1,103 @@
+<?xml version="1.0" ?>
+<DATA DataID="Electre 1S 2002: IDSS-426X-LB -- luizab -- 02/11/0411:40:47">
+  <ATTRIBUTES>
+    <ATTRIBUTE AttrID="Attr6">
+      <NAME Value="koszt_budowy" />
+      <DESCRIPTION Value="One of criteria" />
+      <ROLE Value="Condition" />
+      <TYPE Value="Numeric" />
+      <CRITERION Value="Cost" />
+    </ATTRIBUTE>
+    <ATTRIBUTE AttrID="Attr5">
+      <NAME Value="atrakcyjnosc" />
+      <DESCRIPTION Value="One of criteria" />
+      <ROLE Value="Condition" />
+      <TYPE Value="Numeric" />
+      <CRITERION Value="Gain" />
+    </ATTRIBUTE>
+    <ATTRIBUTE AttrID="Attr4">
+      <NAME Value="ekologia" />
+      <DESCRIPTION Value="One of criteria" />
+      <ROLE Value="Condition" />
+      <TYPE Value="Numeric" />
+      <CRITERION Value="Cost" />
+    </ATTRIBUTE>
+    <ATTRIBUTE AttrID="Attr3">
+      <NAME Value="mieszkancy" />
+      <DESCRIPTION Value="One of criteria" />
+      <ROLE Value="Condition" />
+      <TYPE Value="Numeric" />
+      <CRITERION Value="Cost" />
+    </ATTRIBUTE>
+    <ATTRIBUTE AttrID="Attr2">
+      <NAME Value="gminy" />
+      <DESCRIPTION Value="One of criteria" />
+      <ROLE Value="Condition" />
+      <TYPE Value="Numeric" />
+      <CRITERION Value="Cost" />
+    </ATTRIBUTE>
+    <ATTRIBUTE AttrID="Attr1">
+      <NAME Value="Description" />
+      <DESCRIPTION Value="Descriptions of alternatives" />
+      <ROLE Value="Description" />
+      <TYPE Value="String" />
+    </ATTRIBUTE>
+    <ATTRIBUTE AttrID="Attr0">
+      <NAME Value="Name" />
+      <ROLE Value="Name" />
+      <DESCRIPTION Value="Names of alternatives" />
+      <TYPE Value="String" />
+    </ATTRIBUTE>
+  </ATTRIBUTES>
+  <ELECTRE_1S ProjectName="Unnamed Project">
+    <LEVEL_OF_CONCORDANCE Value="0.66" />
+    <CRITERION_DATA AttrID="Attr6" Enabled="true" Weight="20"
+                    InverseMode="false" UseVeto="true">
+      <NUMERIC_TYPE_LIMITS Minimum="Min" Maximum="Max" />
+      <THRESHOLD Name="Q" Alpha="0" Beta="4" />
+      <THRESHOLD Name="P" Alpha="0" Beta="9" />
+      <THRESHOLD Name="V" Alpha="0" Beta="14" />
+    </CRITERION_DATA>
+    <CRITERION_DATA AttrID="Attr5" Enabled="true" Weight="15"
+                    InverseMode="false" UseVeto="true">
+      <NUMERIC_TYPE_LIMITS Minimum="Min" Maximum="Max" />
+      <THRESHOLD Name="Q" Alpha="0" Beta="50" />
+      <THRESHOLD Name="P" Alpha="0" Beta="80" />
+      <THRESHOLD Name="V" Alpha="0" Beta="273" />
+    </CRITERION_DATA>
+    <CRITERION_DATA AttrID="Attr4" Enabled="true" Weight="5"
+                    InverseMode="false" UseVeto="true">
+      <NUMERIC_TYPE_LIMITS Minimum="Min" Maximum="Max" />
+      <THRESHOLD Name="Q" Alpha="0" Beta="15" />
+      <THRESHOLD Name="P" Alpha="0" Beta="50" />
+      <THRESHOLD Name="V" Alpha="0" Beta="141" />
+    </CRITERION_DATA>
+    <CRITERION_DATA AttrID="Attr3" Enabled="true" Weight="9"
+                    InverseMode="false" UseVeto="true">
+      <NUMERIC_TYPE_LIMITS Minimum="Min" Maximum="Max" />
+      <THRESHOLD Name="Q" Alpha="0" Beta="5" />
+      <THRESHOLD Name="P" Alpha="0" Beta="20" />
+      <THRESHOLD Name="V" Alpha="0" Beta="236" />
+    </CRITERION_DATA>
+  </ELECTRE_1S>
+  <OBJECTS>
+    <OBJECT ObjID="obj0">
+      <VALUE AttrID="Attr6" Value="119" />
+      <VALUE AttrID="Attr5" Value="207" />
+      <VALUE AttrID="Attr4" Value="102" />
+      <VALUE AttrID="Attr3" Value="67" />
+      <VALUE AttrID="Attr2" Value="73" />
+      <VALUE AttrID="Attr1" Value="" />
+      <VALUE AttrID="Attr0" Value="Czempin" />
+    </OBJECT>
+    <OBJECT ObjID="obj1">
+      <VALUE AttrID="Attr6" Value="57" />
+      <VALUE AttrID="Attr5" Value="374" />
+      <VALUE AttrID="Attr4" Value="140" />
+      <VALUE AttrID="Attr3" Value="86" />
+      <VALUE AttrID="Attr2" Value="40" />
+      <VALUE AttrID="Attr1" Value="" />
+      <VALUE AttrID="Attr0" Value="Wiry" />
+    </OBJECT>
+  </OBJECTS>
+</DATA>

@@ -1,17 +1,22 @@
-﻿namespace DataModel.Input
+﻿using System.Collections.Generic;
+
+namespace DataModel.Input
 {
     public class Criterion
     {
-        public Criterion(string name, Type criterionType)
+        public Criterion() { }
+        public Criterion(string name, string criterionDirection)
         {
             Name = name;
-            CriterionType = criterionType;
+            CriterionDirection = criterionDirection;
         }
 
-        public enum Type { Gain, Cost };
+//        public enum Type { Gain, Cost };
+        public string ID { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public Type CriterionType { get; set; }
+//        public Type CriterionType { get; set; }
+        public string CriterionDirection { get; set; }
         public int LinearSegments { get; set; }
         public float MinValue { get; set; }
         public float MaxValue { get; set; }

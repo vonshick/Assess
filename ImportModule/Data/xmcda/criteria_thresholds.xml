@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+<xmcda:XMCDA xmlns:xmcda="http://www.decision-deck.org/2016/XMCDA-3.0.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.decision-deck.org/2016/XMCDA-3.0.2 http://www.decision-deck.org/xmcda/_downloads/XMCDA-3.0.2.xsd">
+<criteriaThresholds>
+    <criterionThreshold>
+	<criterionID>c01</criterionID>
+	<thresholds>
+                <threshold mcdaConcept="indifference">
+                    <constant>
+                        <real>500.0</real>
+                    </constant>
+                </threshold>
+                <threshold mcdaConcept="preference">
+                    <constant>
+                        <real>3000.0</real>
+                    </constant>
+                </threshold>
+                <threshold mcdaConcept="sigma">
+                    <constant>
+                        <real>4000.0</real>
+                    </constant>
+                </threshold>
+        </thresholds>
+    </criterionThreshold>
+    <criterionThreshold>
+	<criterionID>c02</criterionID>
+	<thresholds>
+                <threshold mcdaConcept="indifference">
+                    <constant>
+                        <real>0.0</real>
+                    </constant>
+                </threshold>
+                <threshold mcdaConcept="preference">
+                    <constant>
+                        <real>30.0</real>
+                    </constant>
+                </threshold>
+        </thresholds>
+    </criterionThreshold>
+    <criterionThreshold>
+	<criterionID>c03</criterionID>
+ 	<thresholds>
+                <threshold mcdaConcept="indifference">
+                    <constant>
+                        <real>0.0</real>
+                    </constant>
+                </threshold>
+                <threshold mcdaConcept="preference">
+                    <constant>
+                        <real>2.0</real>
+                    </constant>
+                </threshold>
+        </thresholds>
+    </criterionThreshold>
+</criteriaThresholds>
+</xmcda:XMCDA>
