@@ -6,7 +6,7 @@ using DataModel.Input;
 
 namespace ImportModule
 {
-    class XMCDALoader
+    public class XMCDALoader
     {
         public List<Criterion> CriterionList { get; set; }
         public List<Alternative> AlternativeList { get; set; }

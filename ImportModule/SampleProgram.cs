@@ -5,7 +5,7 @@ using DataModel.Input;
 
 namespace ImportModule
 {
-    class Program
+    public class Program
     {
         public static void ProcessData()
         {
