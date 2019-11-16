@@ -171,18 +171,35 @@ namespace ImportModule
                     {
                         Criterion criterion = new Criterion() { Name = attribute.Attributes["AttrID"].Value };
                         bool saveCriterion = true;
-
+                        Dictionary<string, string> enumIdsNamesDictionary = new Dictionary<string, string>();
+                        Dictionary<string, float> enumIdsValuesDictionary = new Dictionary<string, float>();
+                        
                         foreach (XmlNode attributePart in attribute)
                         {
                             var value = attributePart.Attributes["Value"].Value;
 
                             switch (attributePart.Name)
                             {
+                                case "TYPE":
+                                    if(value == "Enum") {
+                                        criterion.IsEnum = true;
+                                        foreach (XmlNode enumName in attributePart) {
+                                            enumIdsNamesDictionary.Add(enumName.Attributes["EnumID"].Value, enumName.Attributes["Value"].Value);
+                                        }
+                                    }
+                                    break;
                                 case "DESCRIPTION":
                                     criterion.Description = value;
                                     break;
                                 case "CRITERION":
-                                    criterion.CriterionDirection = value == "Cost" ? "c" : "g";
+                                    // if value is enum type
+                                    if(value == "Rank"){
+                                        foreach (XmlNode enumValue in attributePart) {
+                                            enumIdsValuesDictionary.Add(enumValue.Attributes["EnumID"].Value, float.Parse(enumValue.Attributes["Value"].Value, CultureInfo.InvariantCulture));
+                                        }
+                                    } else {
+                                        criterion.CriterionDirection = value == "Cost" ? "c" : "g";
+                                    }
                                     break;
                                 case "ROLE":
                                     if (value == "Description")
@@ -195,8 +212,6 @@ namespace ImportModule
                                         saveCriterion = true;
                                     }
                                     break;
-                                case "TYPE":
-                                    break;
                                 default:
                                     Console.WriteLine("Improper XML structure");
                                     return;
@@ -205,6 +220,16 @@ namespace ImportModule
 
                         if (saveCriterion)
                         {
+                            if(criterion.IsEnum) {
+                                criterion.EnumDictionary = new Dictionary<string, float>();
+                                foreach(KeyValuePair<string, string> entry in enumIdsNamesDictionary)
+                                {
+                                    string enumID = entry.Key;
+                                    string enumName = entry.Value;
+                                    float enumValue = enumIdsValuesDictionary[enumID];
+                                    criterion.EnumDictionary.Add(enumName, enumValue);
+                                }   
+                            } 
                             CriterionList.Add(criterion);
                         }
                     }
@@ -228,7 +253,13 @@ namespace ImportModule
                             else
                             {
                                 Criterion criterion = CriterionList.Find(element => element.Name == attributeName);
-                                criteriaValuesDictionary.Add(criterion.Name, float.Parse(value, CultureInfo.InvariantCulture));
+                                if(criterion.IsEnum) {
+                                    float enumValue = criterion.EnumDictionary[value];
+                                    //so far we save only numerical value of enum in attribute
+                                    criteriaValuesDictionary.Add(criterion.Name, enumValue);
+                                } else {
+                                    criteriaValuesDictionary.Add(criterion.Name, float.Parse(value, CultureInfo.InvariantCulture));
+                                }
                             }
                         }
 
