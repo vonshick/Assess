@@ -13,12 +13,18 @@
         <ViewModels:MainViewModel/>
     </Window.DataContext>
     <Grid>
-        <ListView HorizontalAlignment="Left" Height="102" Margin="94,91,0,0" VerticalAlignment="Top" Width="342" RenderTransformOrigin="-0.638,-0.062" ItemsSource="{Binding Alternatives.AlternativesList}">
-            <!-- <ListView.ItemTemplate> -->
-            <!--     <DataTemplate> -->
-            <!--         <TextBlock Text="{Binding Name}"/> -->
-            <!--     </DataTem+plate> -->
-            <!-- </ListView.ItemTemplate> -->
+        <Button Name="ButtonAddAlternative" Click="AddAlternative" Content="Add" HorizontalAlignment="Left" Margin="314,54,0,0" VerticalAlignment="Top" Width="74" RenderTransformOrigin="1.72,0.375"/>
+        <TextBox Name="TextBoxAlternativeName" HorizontalAlignment="Left" Height="23" Margin="26,50,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <TextBox Name="TextBoxAlternativeDescription" HorizontalAlignment="Left" Height="23" Margin="171,50,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <Label Content="Name" HorizontalAlignment="Left" Margin="64,24,0,0" VerticalAlignment="Top"/>
+        <Label Content="Description" HorizontalAlignment="Left" Margin="207,24,0,0" VerticalAlignment="Top"/>
+
+        <Label Content="Alternatives" HorizontalAlignment="Left" Margin="130,72,0,0" VerticalAlignment="Top"/>
+        <Label Content="Ranking" HorizontalAlignment="Left" Margin="580,72,0,0" VerticalAlignment="Top"/>
+        <ListView Name="AlternativesListView" HorizontalAlignment="Left"
+                  Height="102" Margin="26,96,0,0" VerticalAlignment="Top" Width="298" RenderTransformOrigin="-0.638,-0.062"/>
+        <ListView Name="RankingListView" ItemsSource="{Binding Alternatives.AlternativesList}" HorizontalAlignment="Left"
+                  Height="102" Margin="450,96,0,0" VerticalAlignment="Top" Width="309" RenderTransformOrigin="-0.638,-0.062">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Alternative" DisplayMemberBinding="{Binding Name}"/>
@@ -26,35 +32,17 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button Content="Add" Command="{Binding Alternatives.AddButtonCommand}" HorizontalAlignment="Left" Margin="450,50,0,0" VerticalAlignment="Top" Width="74" RenderTransformOrigin="1.72,0.375"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="130,50,0,0" TextWrapping="Wrap" Text="{Binding Alternatives.InputName}" VerticalAlignment="Top" Width="120"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="275,50,0,0" TextWrapping="Wrap" Text="{Binding Alternatives.InputDescription}" VerticalAlignment="Top" Width="120"/>
-        <Label Content="Name" HorizontalAlignment="Left" Margin="168,24,0,0" VerticalAlignment="Top"/>
-        <Label Content="Description" HorizontalAlignment="Left" Margin="311,24,0,0" VerticalAlignment="Top"/>
 
-        <ListView HorizontalAlignment="Left" Height="102" Margin="94,294,0,0" VerticalAlignment="Top" Width="342" RenderTransformOrigin="-0.638,-0.062" ItemsSource="{Binding Criteria.CriteriaList}">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Criterion" DisplayMemberBinding="{Binding Name}"/>
-                    <GridViewColumn Header="Description" DisplayMemberBinding="{Binding Description}"/>
-                    <GridViewColumn Header="Type" DisplayMemberBinding="{Binding CriterionType}"/>
-                    <GridViewColumn Header="Linear Segments" DisplayMemberBinding="{Binding LinearSegments}"/>
-                </GridView>
-            </ListView.View>
-        </ListView>
-        <Button Content="Add" Command="{Binding SaveCommand}" HorizontalAlignment="Left" Margin="533,262,0,0" VerticalAlignment="Top" Width="74" RenderTransformOrigin="1.72,0.375"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="26,258,0,0" TextWrapping="Wrap" Text="{Binding Criteria.InputName}" VerticalAlignment="Top" Width="120"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="171,258,0,0" TextWrapping="Wrap" Text="{Binding Criteria.InputDescription}" VerticalAlignment="Top" Width="120"/>
+        <Button Name="ButtonAddCriterion" Click="AddCriterion" Content="Add" HorizontalAlignment="Left" Margin="533,262,0,0" VerticalAlignment="Top" Width="74" RenderTransformOrigin="1.72,0.375"/>
+        <TextBox Name="TextBoxCriterionName" HorizontalAlignment="Left" Height="23" Margin="26,258,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <TextBox Name="TextBoxCriterionDescription" HorizontalAlignment="Left" Height="23" Margin="171,258,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <ComboBox Name="ComboBoxCriterionType" HorizontalAlignment="Left" Margin="313,259,0,0" VerticalAlignment="Top" Width="82"/>
+        <TextBox Name="TextBoxCriterionLinear" HorizontalAlignment="Left" Height="23" Margin="418,262,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="91"/>
         <Label Content="Name" HorizontalAlignment="Left" Margin="64,232,0,0" VerticalAlignment="Top"/>
         <Label Content="Description" HorizontalAlignment="Left" Margin="207,232,0,0" VerticalAlignment="Top"/>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="418,262,0,0" TextWrapping="Wrap" Text="{Binding Criteria.InputLinearSegments}" VerticalAlignment="Top" Width="91"/>
         <Label Content="Type" HorizontalAlignment="Left" Margin="340,232,0,0" VerticalAlignment="Top"/>
         <Label Content="Linear&#xD;&#xA;Segments" HorizontalAlignment="Left" Margin="444,214,0,0" VerticalAlignment="Top" Width="80" Height="47"/>
-        
-        <ComboBox ItemsSource="{Binding CriteriaTypeList}" SelectedItem="{Binding InputCriterionType, Mode=TwoWay}" Name="Type" HorizontalAlignment="Left" Margin="313,259,0,0" VerticalAlignment="Top" Width="82"/>
-
-
-
-
+        <ListView Name="CriteriaListView" HorizontalAlignment="Left"
+                  Height="102" Margin="94,294,0,0" VerticalAlignment="Top" Width="342" RenderTransformOrigin="-0.638,-0.062"/>
     </Grid>
 </Window>
