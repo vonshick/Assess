@@ -10,8 +10,14 @@ namespace DataModel.Input
             Name = name;
             CriterionDirection = criterionDirection;
         }
+        public Criterion(string name, string description, string criterionDirection, int linearSegments)
+        {
+            Name = name;
+            Description = description;
+            CriterionDirection = criterionDirection;
+            LinearSegments = linearSegments;
+        }
 
-//        public enum Type { Gain, Cost };
         public string ID { get; set; }
         public bool IsEnum {get; set; } = false;
         public Dictionary<string, float> EnumDictionary {get; set; }

@@ -14,18 +14,22 @@ namespace UTA.ViewModels
         {
             Alternatives = new Alternatives();
             Criteria = new Criteria();
-            CriteriaTypeList = Enum.GetNames(typeof(Criterion.Type)).ToList();
         }
 
         public Alternatives Alternatives { get; set; }
 
         public Criteria Criteria { get; set; }
 
-        public List<string> CriteriaTypeList { get; set; }
-
-        public void AddCriterion(string typeString, string criterionName, string description, int inputLinearSegments)
+        public static Dictionary<string, string> CriterionDirectionTypes = new Dictionary<string, string>
         {
-            Criteria.AddCriterion(typeString, criterionName, description, inputLinearSegments);
+            { "g", "Gain" },
+            { "c", "Cost" },
+            { "o", "Ordinal" }
+        };
+
+        public void AddCriterion(string criterionName, string criterionDescription, string criterionDirection, int linearSegments)
+        {
+            Criteria.AddCriterion(criterionName, criterionDescription, criterionDirection, linearSegments);
             GenerateCriteriaTable();
             GenerateAlternativesTable();
         }
@@ -100,7 +104,7 @@ namespace UTA.ViewModels
             table.Columns.Add("Linear Segments");
             foreach (Criterion criterion in Criteria.CriteriaList)
             {
-                table.Rows.Add(criterion.Name, criterion.Description, criterion.CriterionType, criterion.LinearSegments);
+                table.Rows.Add(criterion.Name, criterion.Description, criterion.CriterionDirection, criterion.LinearSegments);
             }
         }
 

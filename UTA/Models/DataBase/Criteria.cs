@@ -12,10 +12,9 @@ namespace UTA.Models.DataBase
             CriteriaList = new ObservableCollection<Criterion>();
         }
 
-        public void AddCriterion(string typeString, string inputName, string inputDescription, int inputLinearSegments)
+        public void AddCriterion(string criterionName, string criterionDescription, string criterionDirection, int linearSegments)
         {
-            Criterion.Type type = (Criterion.Type)System.Enum.Parse(typeof(Criterion.Type), typeString);
-            CriteriaList.Add(new Criterion(inputName, inputDescription, type, inputLinearSegments));
+            CriteriaList.Add(new Criterion(criterionName, criterionDescription, criterionDirection, linearSegments));
         }
     }
 }
