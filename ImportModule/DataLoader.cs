@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Xml;
 using DataModel.Input;
 
@@ -17,7 +18,7 @@ namespace ImportModule
             CriterionList = new List<Criterion>();
             AlternativeList = new List<Alternative>();
 
-            using (var reader = new StreamReader(filePath))
+            using (var reader = new StreamReader(filePath, Encoding.UTF8))
             {
                 string[] criterionDirectionsArray = reader.ReadLine().Split(';');
                 string[] criterionNamesArray = reader.ReadLine().Split(';');
