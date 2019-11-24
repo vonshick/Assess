@@ -14,7 +14,9 @@ namespace UTA.Models.DataBase
 
         public void AddCriterion(string criterionName, string criterionDescription, string criterionDirection, int linearSegments)
         {
-            CriteriaList.Add(new Criterion(criterionName, criterionDescription, criterionDirection, linearSegments));
+            Criterion criterion = new Criterion(criterionName, criterionDescription, criterionDirection, linearSegments);
+            if (CriteriaList.Contains(criterion)) return;
+            CriteriaList.Add(criterion);
         }
     }
 }

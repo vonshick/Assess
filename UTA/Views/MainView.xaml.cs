@@ -18,24 +18,27 @@ namespace UTA.Views
         public MainView()
         {
             InitializeComponent();
-            SetBindings();
             InitComboBoxCriterionType();
+            SetBindings();
             _viewmodel.PropertyChanged += ViewmodelPropertyChanged;
             _viewmodel.GenerateCriteriaTable();
             CriteriaListView.View = GenerateGridView(_viewmodel.CriteriaTable);
             _viewmodel.GenerateAlternativesTable();
+            RankingDataGrid.IsReadOnly = true;
+            ButtonEditAlternatives.Content = "Editing is OFF";
         }
 
         private void InitComboBoxCriterionType()
         {
-            CriterionDirectionTypes = MainViewModel.CriterionDirectionTypes;
+            CriteriaTypeList = _viewmodel.CriteriaTypeList;
+            /*CriterionDirectionTypes = MainViewModel.CriterionDirectionTypes;
             ComboBoxCriterionType.SelectedValuePath = "Key";
             ComboBoxCriterionType.DisplayMemberPath = "Value";
             foreach (KeyValuePair<string, string> criterionDirectionType in CriterionDirectionTypes)
             {
                 ComboBoxCriterionType.Items.Add(criterionDirectionType);
             }
-            ComboBoxCriterionType.SelectedIndex = 0;
+            ComboBoxCriterionType.SelectedIndex = 0;*/
         }
 
         private void SetBindings()
@@ -46,8 +49,11 @@ namespace UTA.Views
             TextBoxCriterionName.SetBinding(TextBox.TextProperty, new Binding("InputCriterionName") { Source = this });
             TextBoxCriterionDescription.SetBinding(TextBox.TextProperty, new Binding("InputCriterionDescription") { Source = this });
             ComboBoxCriterionType.SetBinding(ComboBox.SelectedValueProperty, new Binding("InputCriterionDirection") { Source = this });
+            ComboBoxCriterionType.SetBinding(ComboBox.ItemsSourceProperty, new Binding("CriteriaTypeList") { Source = this });
             TextBoxCriterionLinear.SetBinding(TextBox.TextProperty, new Binding("InputCriterionLinearSegments") { Source = this });
             CriteriaListView.SetBinding(ListView.ItemsSourceProperty, new Binding("CriteriaTable") { Source = _viewmodel });
+            RankingDataGrid.SetBinding(DataGrid.ItemsSourceProperty, new Binding("AlternativesTable") { Source = _viewmodel });
+//            RankingDataGrid.DataContext = CriteriaTable
         }
 
         public string InputAlternativeName { get; set; }
@@ -56,7 +62,8 @@ namespace UTA.Views
         public string InputCriterionName { get; set; }
         public string InputCriterionDirection { get; set; }
         public string InputCriterionLinearSegments { get; set; }
-        public static Dictionary<string, string> CriterionDirectionTypes { get; set; }
+        //        public static Dictionary<string, string> CriterionDirectionTypes { get; set; }
+        public List<string> CriteriaTypeList { get; set; }
 
         public void ViewmodelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -129,6 +136,12 @@ namespace UTA.Views
             }
         }
 
+        private void EditAlternativesSwitch(object sender, RoutedEventArgs e)
+        {
+            RankingDataGrid.IsReadOnly = !RankingDataGrid.IsReadOnly;
+            ButtonEditAlternatives.Content = RankingDataGrid.IsReadOnly ? "Editing is OFF" : "Editing is ON";
+        }
+
         private bool inputNotEmpty(params string[] inputs)
         {
             if (inputs.Length == 0)
@@ -137,7 +150,7 @@ namespace UTA.Views
             }
             foreach (string input in inputs)
             {
-                if (input is null)
+                if (input is null || input.Equals(""))
                 {
                     return false;
                 }

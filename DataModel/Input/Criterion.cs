@@ -18,11 +18,13 @@ namespace DataModel.Input
             LinearSegments = linearSegments;
         }
 
+
         public string ID { get; set; }
         public bool IsEnum {get; set; } = false;
         public Dictionary<string, float> EnumDictionary {get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public enum CriterionDirectionTypes { Gain, Cost, Ordinal };
         public string CriterionDirection { get; set; }
         public int LinearSegments { get; set; }
         public float MinValue { get; set; }

@@ -14,18 +14,20 @@ namespace UTA.ViewModels
         {
             Alternatives = new Alternatives();
             Criteria = new Criteria();
+            CriteriaTypeList = Enum.GetNames(typeof(Criterion.CriterionDirectionTypes)).ToList();
         }
 
         public Alternatives Alternatives { get; set; }
 
         public Criteria Criteria { get; set; }
 
-        public static Dictionary<string, string> CriterionDirectionTypes = new Dictionary<string, string>
-        {
-            { "g", "Gain" },
-            { "c", "Cost" },
-            { "o", "Ordinal" }
-        };
+        public List<string> CriteriaTypeList { get; set; }
+        //        public static Dictionary<string, string> CriterionDirectionTypes = new Dictionary<string, string>
+        //        {
+        //            { "g", "Gain" },
+        //            { "c", "Cost" },
+        //            { "o", "Ordinal" }
+        //        };
 
         public void AddCriterion(string criterionName, string criterionDescription, string criterionDirection, int linearSegments)
         {
