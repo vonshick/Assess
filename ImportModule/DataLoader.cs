@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Diagnostics;
 using System.Xml;
 using DataModel.Input;
 
@@ -13,16 +14,24 @@ namespace ImportModule
         public List<Criterion> CriterionList { get; set; }
         public List<Alternative> AlternativeList { get; set; }
 
+        private int lineNumber; 
+
+        private string[] ReadNewLine(StreamReader reader) {
+            lineNumber++;
+            return(reader.ReadLine().Split(';'));
+        } 
+
         public void LoadCSV(string filePath)
         {
             CriterionList = new List<Criterion>();
             AlternativeList = new List<Alternative>();
+            lineNumber = 1;
 
+            try {
             using (var reader = new StreamReader(filePath, Encoding.UTF8))
             {
-                string[] criterionDirectionsArray = reader.ReadLine().Split(';');
-                string[] criterionNamesArray = reader.ReadLine().Split(';');
-                
+                    string[] criterionDirectionsArray = ReadNewLine(reader);
+                    string[] criterionNamesArray = ReadNewLine(reader);
                 // iterating from 1 because first column is empty
                 for (int i = 1; i < criterionDirectionsArray.Length; i++)
                 {
@@ -31,7 +40,8 @@ namespace ImportModule
 
                 while (!reader.EndOfStream)
                 {
-                    var values = reader.ReadLine().Split(';');
+                    var values = ReadNewLine(reader);
+
                     Alternative alternative = new Alternative {Name = values[0]};
                     Dictionary<string, float> criterionValueDictionary = new Dictionary<string, float>();
 
@@ -43,6 +53,10 @@ namespace ImportModule
                     alternative.CriteriaValues = criterionValueDictionary;
                     AlternativeList.Add(alternative);
                 }
+            }
+            } catch (Exception e) {
+                Trace.WriteLine("The process failed while processing line " + lineNumber.ToString() + " of CSV file");
+                Trace.WriteLine("Error: " + e.ToString());
             }
         }
 
@@ -86,7 +100,17 @@ namespace ImportModule
                                     criterion.Description = value;
                                     break;
                                 case "CRITERION":
+                                    if(value == "Cost" || value == "Gain") {
                                     criterion.CriterionDirection = value == "Cost" ? "c" : "g";
+                                    } else {
+                                        //TODO
+                                        // 'Rank' case 
+                                        // to serve it some way 
+                                        // probably dialog with user will be necessary
+                                        // so far set is as gain
+                                        criterion.CriterionDirection = "c";
+                                    }
+
                                     break;
                                 case "ROLE":
                                     if (value == "Name")
@@ -198,7 +222,9 @@ namespace ImportModule
                                         foreach (XmlNode enumValue in attributePart) {
                                             enumIdsValuesDictionary.Add(enumValue.Attributes["EnumID"].Value, float.Parse(enumValue.Attributes["Value"].Value, CultureInfo.InvariantCulture));
                                         }
+                                        criterion.CriterionDirection = "c";
                                     } else {
+                                        // "Cost" or "Gain"
                                         criterion.CriterionDirection = value == "Cost" ? "c" : "g";
                                     }
                                     break;
