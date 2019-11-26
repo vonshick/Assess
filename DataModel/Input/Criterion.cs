@@ -18,6 +18,24 @@ namespace DataModel.Input
             LinearSegments = linearSegments;
         }
 
+        protected bool Equals(Criterion other)
+        {
+            return Name == other.Name;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Criterion) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (Name != null ? Name.GetHashCode() : 0);
+        }
+
 
         public string ID { get; set; }
         public bool IsEnum {get; set; } = false;
