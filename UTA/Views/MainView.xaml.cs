@@ -5,6 +5,7 @@ using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using UTA.Models;
 using UTA.ViewModels;
 
 namespace UTA.Views
@@ -15,10 +16,10 @@ namespace UTA.Views
     public partial class MainView : Window
     {
         private readonly MainViewModel _viewmodel = new MainViewModel();
+
         public MainView()
         {
             InitializeComponent();
-            InitComboBoxCriterionType();
             SetBindings();
             _viewmodel.PropertyChanged += ViewmodelPropertyChanged;
             _viewmodel.GenerateCriteriaTable();
@@ -28,29 +29,11 @@ namespace UTA.Views
             ButtonEditAlternatives.Content = "Editing is OFF";
         }
 
-        private void InitComboBoxCriterionType()
-        {
-            CriteriaTypeList = _viewmodel.CriteriaTypeList;
-            /*CriterionDirectionTypes = MainViewModel.CriterionDirectionTypes;
-            ComboBoxCriterionType.SelectedValuePath = "Key";
-            ComboBoxCriterionType.DisplayMemberPath = "Value";
-            foreach (KeyValuePair<string, string> criterionDirectionType in CriterionDirectionTypes)
-            {
-                ComboBoxCriterionType.Items.Add(criterionDirectionType);
-            }
-            ComboBoxCriterionType.SelectedIndex = 0;*/
-        }
-
         private void SetBindings()
         {
             TextBoxAlternativeName.SetBinding(TextBox.TextProperty, new Binding("InputAlternativeName") { Source = this });
             TextBoxAlternativeDescription.SetBinding(TextBox.TextProperty, new Binding("InputAlternativeDescription") { Source = this });
             AlternativesListView.SetBinding(ListView.ItemsSourceProperty, new Binding("AlternativesTable") { Source = _viewmodel });
-            TextBoxCriterionName.SetBinding(TextBox.TextProperty, new Binding("InputCriterionName") { Source = this });
-            TextBoxCriterionDescription.SetBinding(TextBox.TextProperty, new Binding("InputCriterionDescription") { Source = this });
-            ComboBoxCriterionType.SetBinding(ComboBox.SelectedValueProperty, new Binding("InputCriterionDirection") { Source = this });
-            ComboBoxCriterionType.SetBinding(ComboBox.ItemsSourceProperty, new Binding("CriteriaTypeList") { Source = this });
-            TextBoxCriterionLinear.SetBinding(TextBox.TextProperty, new Binding("InputCriterionLinearSegments") { Source = this });
             CriteriaListView.SetBinding(ListView.ItemsSourceProperty, new Binding("CriteriaTable") { Source = _viewmodel });
             RankingDataGrid.SetBinding(DataGrid.ItemsSourceProperty, new Binding("AlternativesTable") { Source = _viewmodel });
 //            RankingDataGrid.DataContext = CriteriaTable
@@ -58,12 +41,6 @@ namespace UTA.Views
 
         public string InputAlternativeName { get; set; }
         public string InputAlternativeDescription { get; set; }
-        public string InputCriterionDescription { get; set; }
-        public string InputCriterionName { get; set; }
-        public string InputCriterionDirection { get; set; }
-        public string InputCriterionLinearSegments { get; set; }
-        //        public static Dictionary<string, string> CriterionDirectionTypes { get; set; }
-        public List<string> CriteriaTypeList { get; set; }
 
         public void ViewmodelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -93,36 +70,14 @@ namespace UTA.Views
             return view;
         }
 
-        private void AddCriterion(object sender, RoutedEventArgs e)
+        public void ShowAddCriterionDialog(object sender, RoutedEventArgs routedEventArgs)
         {
-            if (int.TryParse(InputCriterionLinearSegments, out var linearSegments))
-            {
-                if (inputNotEmpty(InputCriterionName, InputCriterionDescription, InputCriterionDirection))
-                {
-                    _viewmodel.AddCriterion(InputCriterionName, InputCriterionDescription, InputCriterionDirection, linearSegments);
-                    TextBoxCriterionName.Clear();
-                    TextBoxCriterionDescription.Clear();
-                    InputCriterionName = "";
-                    InputCriterionDescription = "";
-                }
-                else
-                {
-                    //todo notify user
-                    Console.WriteLine("No field can be empty!");
-                }
-            }
-            else
-            {
-                //todo notify user
-                //limit? short int or less?
-                Console.WriteLine("Linear segments must be int!");
-            }
-
+            _viewmodel.ShowAddCriterionDialog();
         }
 
         private void AddAlternative(object sender, RoutedEventArgs e)
         {
-            if (inputNotEmpty(InputAlternativeName, InputAlternativeDescription))
+            if (DataValidation.StringsNotEmpty(InputAlternativeName, InputAlternativeDescription))
             {
                 _viewmodel.AddAlternative(InputAlternativeName, InputAlternativeDescription);
                 TextBoxAlternativeName.Clear();
@@ -142,21 +97,6 @@ namespace UTA.Views
             ButtonEditAlternatives.Content = RankingDataGrid.IsReadOnly ? "Editing is OFF" : "Editing is ON";
         }
 
-        private bool inputNotEmpty(params string[] inputs)
-        {
-            if (inputs.Length == 0)
-            {
-                return false;
-            }
-            foreach (string input in inputs)
-            {
-                if (input is null || input.Equals(""))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
     }
 
 }

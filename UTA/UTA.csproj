@@ -55,6 +55,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Views\AddCriterionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -66,7 +70,12 @@
     <Compile Include="Models\DataBase\Alternatives.cs" />
     <Compile Include="Models\DataBase\Criteria.cs" />
     <Compile Include="Models\RelyCommand.cs" />
+    <Compile Include="Models\DataValidation.cs" />
+    <Compile Include="ViewModels\AddCriterionViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="Views\AddCriterionView.xaml.cs">
+      <DependentUpon>AddCriterionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
       <SubType>Code</SubType>

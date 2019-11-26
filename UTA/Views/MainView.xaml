@@ -56,51 +56,20 @@
             <DockPanel Grid.Row="1" Grid.Column="0" Background="#FFF0F0F0" />
             <StackPanel Grid.Row="1" Grid.Column="1">
                 <Label Content="Alternatives" />
-                <Label Content="Name" />
+                <Label Content="Name" HorizontalAlignment="Center"/>
                 <TextBox Name="TextBoxAlternativeName" Height="23" Width="120" />
-                <Label Content="Description" />
+                <Label Content="Description" HorizontalAlignment="Center" />
                 <TextBox Name="TextBoxAlternativeDescription" Height="23" Width="120" />
                 <Button Name="ButtonAddAlternative" Click="AddAlternative" Content="Add" Width="74" />
                 <ListView Name="AlternativesListView" Height="102" Width="298" />
-<!-- ======= -->
-<!--         <Label Content="Alternatives" HorizontalAlignment="Left" Margin="130,72,0,0" VerticalAlignment="Top"/> -->
-<!--         <Label Content="Ranking" HorizontalAlignment="Left" Margin="580,68,0,0" VerticalAlignment="Top"/> -->
-<!--         <Button x:Name="ButtonEditAlternatives" Click="EditAlternativesSwitch" HorizontalAlignment="Left" Margin="663,71,0,0" VerticalAlignment="Top" Width="74" RenderTransformOrigin="1.72,0.375"/> -->
-<!--         <ListView Name="AlternativesListView" HorizontalAlignment="Left" -->
-<!--                   Height="102" Margin="26,96,0,0" VerticalAlignment="Top" Width="298" RenderTransformOrigin="-0.638,-0.062"/> -->
-<!--         ~1~ <ListView Name="RankingListView" ItemsSource="{Binding Alternatives.AlternativesList}" HorizontalAlignment="Left" @1@ -->
-<!--         ~1~           Height="102" Margin="450,96,0,0" VerticalAlignment="Top" Width="309" RenderTransformOrigin="-0.638,-0.062"> @1@ -->
-<!--         ~1~     <ListView.View> @1@ -->
-<!--         ~1~         <GridView> @1@ -->
-<!--         ~1~             <GridViewColumn Header="Alternative" DisplayMemberBinding="{Binding Name}"/> @1@ -->
-<!--         ~1~             <GridViewColumn Header="Description"  DisplayMemberBinding="{Binding Description}"/> @1@ -->
-<!--         ~1~         </GridView> @1@ -->
-<!--         ~1~     </ListView.View> @1@ -->
-<!--         ~1~ </ListView> @1@ -->
-<!--         <DataGrid Name="RankingDataGrid" HorizontalAlignment="Left" Height="100" Margin="450,96,0,0" VerticalAlignment="Top" Width="309"/> -->
-<!-- >>>>>>> refacotr + added button to switch on/off alternatives editing in table -->
-
-
-                <Label Content="Name" />
-                <TextBox Name="TextBoxCriterionName" Height="23" Width="120" />
-                <Label Content="Description" />
-                <TextBox Name="TextBoxCriterionDescription" Height="23" Width="120" />
-                <Label Content="Type" />
-                <ComboBox Name="ComboBoxCriterionType" Width="82" />
-                <Label Content="Linear Segments" />
-                <TextBox Name="TextBoxCriterionLinear" Height="23" Width="91" />
-                <Button Name="ButtonAddCriterion" Click="AddCriterion" Content="Add" Width="74" />
-                <ListView Name="CriteriaListView" Height="102" Width="342" />
-
+                <Grid>
+                    <Button x:Name="ButtonEditAlternatives" Click="EditAlternativesSwitch" Content="Edit On/Off" Width="74" Margin="219,0,133,0" />
+                    <Button x:Name="ButtonAddCriterion" Click="ShowAddCriterionDialog" Content="Add" Width="74" Margin="140,0,212,0"/>
+                </Grid>
                 <Label Content="Ranking" />
-                <ListView Name="RankingListView" ItemsSource="{Binding Alternatives.AlternativesList}" Height="102" Width="309">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="Alternative" DisplayMemberBinding="{Binding Name}" />
-                            <GridViewColumn Header="Description" DisplayMemberBinding="{Binding Description}" />
-                        </GridView>
-                    </ListView.View>
-                </ListView>
+                <DataGrid Name="RankingDataGrid" Height="100" VerticalAlignment="Top" Width="309"/>
+                <Label Content="Criteria" />
+                <ListView Name="CriteriaListView" Height="102" Width="342" />
             </StackPanel>
             <DockPanel Grid.Row="1" Grid.Column="2" Background="#FFF0F0F0" />
         </Grid>

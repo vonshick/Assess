@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using DataModel.Input;
 using UTA.Models.DataBase;
+using UTA.Views;
 
 namespace UTA.ViewModels
 {
@@ -14,38 +15,25 @@ namespace UTA.ViewModels
         {
             Alternatives = new Alternatives();
             Criteria = new Criteria();
-            CriteriaTypeList = Enum.GetNames(typeof(Criterion.CriterionDirectionTypes)).ToList();
         }
 
         public Alternatives Alternatives { get; set; }
 
         public Criteria Criteria { get; set; }
 
-        public List<string> CriteriaTypeList { get; set; }
-        //        public static Dictionary<string, string> CriterionDirectionTypes = new Dictionary<string, string>
-        //        {
-        //            { "g", "Gain" },
-        //            { "c", "Cost" },
-        //            { "o", "Ordinal" }
-        //        };
-
-        public void AddCriterion(string criterionName, string criterionDescription, string criterionDirection, int linearSegments)
+        public void ShowAddCriterionDialog()
         {
-            Criteria.AddCriterion(criterionName, criterionDescription, criterionDirection, linearSegments);
-            GenerateCriteriaTable();
-            GenerateAlternativesTable();
+            AddCriterionViewModel addCriterionViewModel = new AddCriterionViewModel() { MainViewModel = this, Criteria = this.Criteria};
+            AddCriterionView addCriterionWindow = new AddCriterionView(addCriterionViewModel);
+            addCriterionWindow.ShowDialog();
+            //            if (!Criteria.AddCriterion(criterionName, criterionDescription, criterionDirection, linearSegments))
+            //                return false;
         }
 
         public void AddAlternative(string name, string description)
         {
             Alternatives.AddAlternative(name, description);
             GenerateAlternativesTable();
-        }
-
-        private bool ValidateInput()
-        {
-            //todo validate input not empty etc.
-            return true;
         }
 
         public void GenerateAlternativesTable()

@@ -12,11 +12,12 @@ namespace UTA.Models.DataBase
             CriteriaList = new ObservableCollection<Criterion>();
         }
 
-        public void AddCriterion(string criterionName, string criterionDescription, string criterionDirection, int linearSegments)
+        public bool AddCriterion(string criterionName, string criterionDescription, string criterionDirection, int linearSegments)
         {
             Criterion criterion = new Criterion(criterionName, criterionDescription, criterionDirection, linearSegments);
-            if (CriteriaList.Contains(criterion)) return;
+            if (CriteriaList.Contains(criterion)) return false;
             CriteriaList.Add(criterion);
+            return true;
         }
     }
 }
