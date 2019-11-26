@@ -23,9 +23,9 @@ namespace UTA.Views
             SetBindings();
             _viewmodel.PropertyChanged += ViewmodelPropertyChanged;
             _viewmodel.GenerateCriteriaTable();
-            CriteriaListView.View = GenerateGridView(_viewmodel.CriteriaTable);
+//            CriteriaDataGrid.View = GenerateGridView(_viewmodel.CriteriaTable);
             _viewmodel.GenerateAlternativesTable();
-            RankingDataGrid.IsReadOnly = true;
+            AlternativesDataGrid.IsReadOnly = true;
             ButtonEditAlternatives.Content = "Editing is OFF";
         }
 
@@ -33,8 +33,8 @@ namespace UTA.Views
         {
             TextBoxAlternativeName.SetBinding(TextBox.TextProperty, new Binding("InputAlternativeName") { Source = this });
             TextBoxAlternativeDescription.SetBinding(TextBox.TextProperty, new Binding("InputAlternativeDescription") { Source = this });
-            AlternativesListView.SetBinding(ListView.ItemsSourceProperty, new Binding("AlternativesTable") { Source = _viewmodel });
-            CriteriaListView.SetBinding(ListView.ItemsSourceProperty, new Binding("CriteriaTable") { Source = _viewmodel });
+            AlternativesDataGrid.SetBinding(DataGrid.ItemsSourceProperty, new Binding("AlternativesTable") { Source = _viewmodel });
+            CriteriaDataGrid.SetBinding(ListView.ItemsSourceProperty, new Binding("CriteriaTable") { Source = _viewmodel });
             RankingDataGrid.SetBinding(DataGrid.ItemsSourceProperty, new Binding("AlternativesTable") { Source = _viewmodel });
 //            RankingDataGrid.DataContext = CriteriaTable
         }
@@ -47,7 +47,7 @@ namespace UTA.Views
             switch (e.PropertyName)
             {
                 case "AlternativesTable":
-                    AlternativesListView.View = GenerateGridView(_viewmodel.AlternativesTable);
+//                    AlternativesDataGrid.View = GenerateGridView(_viewmodel.AlternativesTable);
                     break;
                 case "CriteriaTable":
 //                    CriteriaListView.View = GenerateGridView(_viewmodel.CriteriaTable);
@@ -93,8 +93,8 @@ namespace UTA.Views
 
         private void EditAlternativesSwitch(object sender, RoutedEventArgs e)
         {
-            RankingDataGrid.IsReadOnly = !RankingDataGrid.IsReadOnly;
-            ButtonEditAlternatives.Content = RankingDataGrid.IsReadOnly ? "Editing is OFF" : "Editing is ON";
+            AlternativesDataGrid.IsReadOnly = !AlternativesDataGrid.IsReadOnly;
+            ButtonEditAlternatives.Content = AlternativesDataGrid.IsReadOnly ? "Editing is OFF" : "Editing is ON";
         }
 
     }
