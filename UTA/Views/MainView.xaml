@@ -62,13 +62,11 @@
                 <TextBox Name="TextBoxAlternativeDescription" Height="23" Width="120" />
                 <Button Name="ButtonAddAlternative" Click="AddAlternative" Content="Add" Width="74" />
                 <ListView Name="AlternativesListView" Height="102" Width="298" />
-                <Grid>
-                    <Button x:Name="ButtonEditAlternatives" Click="EditAlternativesSwitch" Content="Edit On/Off" Width="74" Margin="219,0,133,0" />
-                    <Button x:Name="ButtonAddCriterion" Click="ShowAddCriterionDialog" Content="Add" Width="74" Margin="140,0,212,0"/>
-                </Grid>
+                <Button x:Name="ButtonEditAlternatives" Click="EditAlternativesSwitch" Content="Edit On/Off" Width="74"/>
                 <Label Content="Ranking" />
                 <DataGrid Name="RankingDataGrid" Height="100" VerticalAlignment="Top" Width="309"/>
                 <Label Content="Criteria" />
+                <Button x:Name="ButtonAddCriterion" Click="ShowAddCriterionDialog" Content="Add" Width="74"/>
                 <ListView Name="CriteriaListView" Height="102" Width="342" />
             </StackPanel>
             <DockPanel Grid.Row="1" Grid.Column="2" Background="#FFF0F0F0" />
