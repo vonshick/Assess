@@ -8,7 +8,7 @@ namespace CalculationsEngine
 {
     class Solver
     {
-        private readonly List<KeyValuePair<AlternativeEntry, int>> VariantsList;
+        private readonly List<KeyValuePair<Alternative, int>> VariantsList;
         private readonly Ranking ReferenceRanking;
         private List<int> Equals;
         private int CriterionFieldsCount { get; set; }
@@ -20,9 +20,9 @@ namespace CalculationsEngine
             VariantsList = referenceRanking.VariantsList;
             ReferenceRanking = referenceRanking;
             int cfc = CriterionFieldsCount;
-            foreach (var c in referenceRanking.VariantsList[0].Key.ListAlternativeValue)
+            foreach (var c in referenceRanking.VariantsList[0].Key.CriteriaValues.Keys)
             {
-                cfc += c.CriterionObj.LinearSegments;
+                cfc += c.LinearSegments;
             }
             CriterionFieldsCount = cfc;
         }
@@ -95,7 +95,7 @@ namespace CalculationsEngine
 
         public double[,] CreateMatrix()
         {
-            double[,] matrix = new double[VariantsList[0].Key.ListAlternativeValue.Count, CriterionFieldsCount];
+            double[,] matrix = new double[VariantsList[0].Key.CriteriaValues.Count, CriterionFieldsCount];
             double[] row;
             for (int i = 0; i < VariantsList.Count; i++)
             {
@@ -108,14 +108,14 @@ namespace CalculationsEngine
             return matrix;
         }
 
-        public double[] GenerateRow(int width, AlternativeEntry ae)
+        public double[] GenerateRow(int width, Alternative ae)
         {
             double[] row = new double[width], fields;
             int index = 0;
-            for(int i = 0; i < ae.ListAlternativeValue.Count; i++)
+            foreach(KeyValuePair<Criterion, float> entry in ae.CriteriaValues)
             {
-                fields = GenerateCriterionFields(ae.ListAlternativeValue[i]);
-                for(int j = 0; j < fields.Length; j++)
+                fields = GenerateCriterionFields(entry);
+                for (int j = 0; j < fields.Length; j++)
                 {
                     row[index++] = fields[j];
                 }
@@ -123,17 +123,17 @@ namespace CalculationsEngine
             return row;
         }
 
-        public double[] GenerateCriterionFields(AlternativeValue av)
+        public double[] GenerateCriterionFields(KeyValuePair<Criterion, float> av)
         {
-            int linearSegments = av.CriterionObj.LinearSegments;
-            double segmentValue = (av.CriterionObj.MaxValue - av.CriterionObj.MinValue) / linearSegments, lowerBound, upperBound;
+            int linearSegments = av.Key.LinearSegments;
+            double segmentValue = (av.Key.MaxValue - av.Key.MinValue) / linearSegments, lowerBound, upperBound;
             double[] fields = new double[linearSegments];
-            if (av.CriterionObj.CriterionDirection == "???asc") //TODO
+            if (av.Key.CriterionDirection == "???asc") //TODO
             {
-                lowerBound = av.CriterionObj.MinValue;
+                lowerBound = av.Key.MinValue;
                 for (int s = 0; s < linearSegments; s++)
                 {
-                    upperBound = av.CriterionObj.MinValue + (s + 1) * segmentValue;
+                    upperBound = av.Key.MinValue + (s + 1) * segmentValue;
                     if(av.Value < upperBound)
                     {
                         if(av.Value <= lowerBound)
@@ -164,17 +164,17 @@ namespace CalculationsEngine
             return fields;
         }
 
-        public int WidthOfSimplexMatrix(AlternativeEntry alternativeEntry)
+        public int WidthOfSimplexMatrix(Alternative alternative)
         {
             int cfc = CriterionFieldsCount;
-            cfc += (alternativeEntry.ListAlternativeValue.Count - 1) * 2 + 4;
+            cfc += (alternative.CriteriaValues.Count - 1) * 2 + 4;
             cfc += HeightOfSimplexMatrix();
             return cfc;
         }
 
         public int HeightOfSimplexMatrix()
         {
-            int hom = VariantsList.Count, minRank = int.MaxValue, maxRank = int.MinValue;
+            int hom = VariantsList.Count;
             for(int i = 0; i < VariantsList.Count - 1; i++)
             {
                 if (VariantsList[i].Value == VariantsList[i+1].Value) Equals.Add(i);
