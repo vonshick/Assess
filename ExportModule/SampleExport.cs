@@ -10,7 +10,7 @@ namespace ExportModule
         {
             string xmcdaOutputDirectory = Path.Combine(Environment.CurrentDirectory, "xmcda_output");
             XMCDAExporter xmcdaExporter = new XMCDAExporter(xmcdaOutputDirectory, criterionList, alternativeList);
-            xmcdaExporter.saveCriterions();
+            xmcdaExporter.saveSession();
         }
     }
 }

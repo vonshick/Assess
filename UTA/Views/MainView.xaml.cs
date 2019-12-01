@@ -22,11 +22,9 @@ namespace UTA.Views
             // DataLoader csvLoader = SampleImport.ProcessSampleData(true, false, false, false); // csv
             // DataLoader utxLoader = SampleImport.ProcessSampleData(false, true, false, false); // utx
             // DataLoader xmlLoader = SampleImport.ProcessSampleData(false, false, true, false); // xml
-            
-
-            //TODO vonshick REMOVE IT AFTER TESTING
-            // XMCDALoader xmcdaLoader = SampleImport.ProcessXMCDA(); // xmcda            
-            // SampleExport.exportXMCDA(xmcdaLoader.CriterionList, xmcdaLoader.AlternativeList);
+//            TODO vonshick REMOVE IT AFTER TESTING
+//             XMCDALoader xmcdaLoader = SampleImport.ProcessXMCDA(); // xmcda            
+//             SampleExport.exportXMCDA(xmcdaLoader.CriterionList, xmcdaLoader.AlternativeList);
 
             InitializeComponent();
             SetBindings();
