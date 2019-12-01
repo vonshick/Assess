@@ -43,11 +43,11 @@ namespace ImportModule
                     var values = ReadNewLine(reader);
 
                     Alternative alternative = new Alternative {Name = values[0]};
-                    Dictionary<string, float> criterionValueDictionary = new Dictionary<string, float>();
+                    Dictionary<Criterion, float> criterionValueDictionary = new Dictionary<Criterion, float>();
 
                     for (int i = 1; i < values.Length; i++)
                     {
-                        criterionValueDictionary.Add(criterionNamesArray[i], float.Parse(values[i], CultureInfo.InvariantCulture));
+                        criterionValueDictionary.Add(CriterionList[i], float.Parse(values[i], CultureInfo.InvariantCulture));
                     }
 
                     alternative.CriteriaValues = criterionValueDictionary;
