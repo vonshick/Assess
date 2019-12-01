@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using UTA.ViewModels;
+// using ImportModule; // TODO vonshick REMOVE IT AFTER TESTING
 
 namespace UTA.Views
 {
@@ -17,6 +18,12 @@ namespace UTA.Views
         private readonly MainViewModel _viewmodel = new MainViewModel();
         public MainView()
         {
+            //TODO vonshick REMOVE IT AFTER TESTING
+            // SampleProgram.ProcessSampleData(true, false, false, false); // csv
+            // SampleProgram.ProcessSampleData(false, true, false, false); // utx
+            // SampleProgram.ProcessSampleData(false, false, true, false); // xml
+            // SampleProgram.ProcessSampleData(false, false, false, true); // xmcda
+            
             InitializeComponent();
             SetBindings();
             InitComboBoxCriterionType();

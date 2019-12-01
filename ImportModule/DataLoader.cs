@@ -13,8 +13,14 @@ namespace ImportModule
     {
         public List<Criterion> CriterionList { get; set; }
         public List<Alternative> AlternativeList { get; set; }
-
         private int lineNumber; 
+
+        public DataLoader()
+        {
+            CriterionList = new List<Criterion>();
+            AlternativeList = new List<Alternative>();
+            lineNumber = 1;
+        }
 
         private string[] ReadNewLine(StreamReader reader) {
             lineNumber++;
@@ -23,37 +29,31 @@ namespace ImportModule
 
         public void LoadCSV(string filePath)
         {
-            CriterionList = new List<Criterion>();
-            AlternativeList = new List<Alternative>();
-            lineNumber = 1;
-
             try {
-            using (var reader = new StreamReader(filePath, Encoding.UTF8))
-            {
+                using (var reader = new StreamReader(filePath, Encoding.UTF8))
+                {
                     string[] criterionDirectionsArray = ReadNewLine(reader);
                     string[] criterionNamesArray = ReadNewLine(reader);
-                // iterating from 1 because first column is empty
-                for (int i = 1; i < criterionDirectionsArray.Length; i++)
-                {
-                    CriterionList.Add(new Criterion(criterionNamesArray[i], criterionDirectionsArray[i]));
-                }
-
-                while (!reader.EndOfStream)
-                {
-                    var values = ReadNewLine(reader);
-
-                    Alternative alternative = new Alternative {Name = values[0]};
-                    Dictionary<Criterion, float> criterionValueDictionary = new Dictionary<Criterion, float>();
-
-                    for (int i = 1; i < values.Length; i++)
+                    // iterating from 1 because first column is empty
+                    for (int i = 1; i < criterionDirectionsArray.Length; i++)
                     {
-                        criterionValueDictionary.Add(CriterionList[i], float.Parse(values[i], CultureInfo.InvariantCulture));
+                        CriterionList.Add(new Criterion(criterionNamesArray[i], criterionDirectionsArray[i]));
                     }
 
-                    alternative.CriteriaValues = criterionValueDictionary;
-                    AlternativeList.Add(alternative);
+                    while (!reader.EndOfStream)
+                    {
+                        var values = ReadNewLine(reader);
+
+                        Alternative alternative = new Alternative {Name = values[0], CriteriaValues = new Dictionary<Criterion, float>()};
+
+                        for (int i = 0; i < CriterionList.Count; i++)
+                        {
+                            alternative.CriteriaValues.Add(CriterionList[i], float.Parse(values[i + 1], CultureInfo.InvariantCulture));
+                        }
+
+                        AlternativeList.Add(alternative);
+                    }
                 }
-            }
             } catch (Exception e) {
                 Trace.WriteLine("The process failed while processing line " + lineNumber.ToString() + " of CSV file");
                 Trace.WriteLine("Error: " + e.ToString());
@@ -62,9 +62,6 @@ namespace ImportModule
 
         public void LoadXML(string filePath)
         {
-            CriterionList = new List<Criterion>();
-            AlternativeList = new List<Alternative>();
-
             //load XML
             XmlDocument xmlDoc = new XmlDocument();
             xmlDoc.Load(filePath);
@@ -149,7 +146,7 @@ namespace ImportModule
                     {
 
                         Alternative alternative = new Alternative();
-                        Dictionary<string, float> criteriaValuesDictionary = new Dictionary<string, float>();
+                        Dictionary<Criterion, float> criteriaValuesDictionary = new Dictionary<Criterion, float>();
 
                         foreach (XmlNode instancePart in instance)
                         {
@@ -165,7 +162,7 @@ namespace ImportModule
                             } else
                             {
                                 Criterion criterion = CriterionList.Find(element => element.ID == attributeID);
-                                criteriaValuesDictionary.Add(criterion.Name, float.Parse(value, CultureInfo.InvariantCulture));
+                                criteriaValuesDictionary.Add(criterion, float.Parse(value, CultureInfo.InvariantCulture));
                             }
                         }
 
@@ -178,9 +175,6 @@ namespace ImportModule
 
         public void LoadUTX(string filePath)
         {
-            CriterionList = new List<Criterion>();
-            AlternativeList = new List<Alternative>();
-
             //load XML
             XmlDocument xmlDoc = new XmlDocument();
             xmlDoc.Load(@filePath);
@@ -266,7 +260,7 @@ namespace ImportModule
                     foreach (XmlNode instance in xmlNode)
                     {
                         Alternative alternative = new Alternative() {Name = instance.Attributes["ObjID"].Value};
-                        Dictionary<string, float> criteriaValuesDictionary = new Dictionary<string, float>();
+                        Dictionary<Criterion, float> criteriaValuesDictionary = new Dictionary<Criterion, float>();
 
                         foreach (XmlNode instancePart in instance)
                         {
@@ -283,9 +277,9 @@ namespace ImportModule
                                 if(criterion.IsEnum) {
                                     float enumValue = criterion.EnumDictionary[value];
                                     //so far we save only numerical value of enum in attribute
-                                    criteriaValuesDictionary.Add(criterion.Name, enumValue);
+                                    criteriaValuesDictionary.Add(criterion, enumValue);
                                 } else {
-                                    criteriaValuesDictionary.Add(criterion.Name, float.Parse(value, CultureInfo.InvariantCulture));
+                                    criteriaValuesDictionary.Add(criterion, float.Parse(value, CultureInfo.InvariantCulture));
                                 }
                             }
                         }
@@ -301,12 +295,14 @@ namespace ImportModule
         {
             for (int i = 0; i < CriterionList.Count; i++)
             {
-                float min = 0, max = 0;
-                string criterionName = CriterionList[i].Name;
+                // 1 / 0 equals infinity
+                // it is forbidden to divide by 0 as constant
+                // but it is allowed to divide by variable equal to it
+                float zero = 0, min = 1 / zero, max = - 1 / zero;
 
                 for (int j = 0; j < AlternativeList.Count; j++)
                 {
-                    float value = AlternativeList[j].CriteriaValues[criterionName];
+                    float value = AlternativeList[j].CriteriaValues[CriterionList[i]];
 
                     if (value < min)
                     {
@@ -317,6 +313,7 @@ namespace ImportModule
                         max = value;
                     }
                 }
+                
                 CriterionList[i].MaxValue = max;
                 CriterionList[i].MinValue = min;
             }
