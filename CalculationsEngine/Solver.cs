@@ -2,7 +2,6 @@
 using DataModel.Results;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CalculationsEngine
 {
@@ -10,30 +9,65 @@ namespace CalculationsEngine
     {
         private readonly List<KeyValuePair<Alternative, int>> VariantsList;
         private readonly Ranking ReferenceRanking;
-        private List<int> Equals;
+        private new List<int> Equals;
         private int CriterionFieldsCount { get; set; }
         private double[,] Matrix { get; set; }
+        private int NumberOfIteration { get; set; }
+        private double[] Solution;
 
 
         public Solver(Ranking referenceRanking)
         {
             VariantsList = referenceRanking.VariantsList;
-            ReferenceRanking = referenceRanking;
             int cfc = CriterionFieldsCount;
             foreach (var c in referenceRanking.VariantsList[0].Key.CriteriaValues.Keys)
             {
                 cfc += c.LinearSegments;
             }
             CriterionFieldsCount = cfc;
+            Equals = new List<int>();
+            for (int i = 0; i < referenceRanking.VariantsList.Count - 1; i++)
+            {
+                if (referenceRanking.VariantsList[i].Value == referenceRanking.VariantsList[i + 1].Value)
+                {
+                    Equals.Add(i);
+                }
+            }
+            Equals.Add(referenceRanking.VariantsList.Count - 1);
         }
 
         public void Calculate()
         {
-            int height, width;
+            int height, width, heightOfPrimaryMatrix = VariantsList[0].Key.CriteriaValues.Count;
             height = HeightOfSimplexMatrix();
             width = WidthOfSimplexMatrix(VariantsList[0].Key);
             Matrix = CreateSimplexMatrix(height, width);
 
+            Simplex solution = new Simplex(Matrix, VariantsList.Count); //widthOfPrimary = width - height, widthOfSlack = height
+            Solution = solution.Drive(NumberOfIteration);
+            MakePartialUtilityFunction(Solution);
+
+        }
+
+        private List<PartialUtilityFunction> MakePartialUtilityFunction(double[] doubles)
+        {
+            float[] floatArray = Array.ConvertAll(doubles, x => (float)x);
+            List<PartialUtilityFunction> partialUtilityList = new List<PartialUtilityFunction>();
+            int linearSegments, count = 0;
+            Dictionary<float, float> dict;
+            foreach (KeyValuePair<Criterion, float> entry in VariantsList[0].Key.CriteriaValues)
+            {
+                dict = new Dictionary<float, float>();
+                linearSegments = entry.Key.LinearSegments;
+                dict.Add(0, 0);
+                for (int i = 1; i < linearSegments + 1; i++)
+                {
+                    dict.Add(i, floatArray[count++]);
+                }
+                partialUtilityList.Add(new PartialUtilityFunction(entry.Key, dict));
+            }
+
+            return partialUtilityList;
         }
 
         public double[,] CreateSimplexMatrix(int height, int width)
@@ -65,27 +99,43 @@ namespace CalculationsEngine
                     simplexMatrix[r, c] = ((c != r + widthWithoutSlack) ? 0 : ((r < VariantsList.Count) ? -1 : 1));
                 }
             }
-            //solution col
-            for (int r = 0; r < simplexMatrix.GetLength(0) - 1; r++)
+            simplexMatrix = AddPAnsCol(simplexMatrix, widthWithoutSlack);
+            return simplexMatrix;
+        }
+
+        public double[,] AddPAnsCol(double[,] sM, int widthWithoutSlack)
+        {
+            int height = sM.GetLength(0), width = sM.GetLength(1) + 2;
+            double[,] simplexMatrix = new double[height, width];
+            for (var r = 0; r < height; r++)
             {
-                simplexMatrix[r, simplexMatrix.GetLength(1) - 1] = 0.05;
+                for (var c = 0; c < sM.GetLength(1); c++)
+                {
+                    simplexMatrix[r, c] = sM[r, c];
+                }
+                simplexMatrix[r, sM.GetLength(1)] = (r == height - 1) ? 1 : 0;
+            }
+            for (int r = 0; r < height; r++)
+            {
+                simplexMatrix[r, sM.GetLength(1) + 1] = 0.05;
             }
             //Copy equals
-            int i = 0;
+            int i = 0, col;
             for (int r = VariantsList.Count; r < height; r++)
             {
                 for (int c = 0; c < widthWithoutSlack; c++)
                 {
                     simplexMatrix[r, c] = simplexMatrix[Equals[i], c];
+                    col = sM.GetLength(1) + 1;
                     if (r != height - 1)
                     {
-                        simplexMatrix[r, simplexMatrix.GetLength(1) - 1] = 0;
-                        simplexMatrix[Equals[i], simplexMatrix.GetLength(1) - 1] = 0;
+                        simplexMatrix[r, col] = 0;
+                        simplexMatrix[Equals[i], col] = 0;
                     }
                     else
                     {
-                        simplexMatrix[r, simplexMatrix.GetLength(1) - 1] = 1;
-                        simplexMatrix[Equals[i], simplexMatrix.GetLength(1) - 1] = 1;
+                        simplexMatrix[r, col] = 1;
+                        simplexMatrix[Equals[i], col] = 1;
                     }
                 }
                 i++;
@@ -111,13 +161,13 @@ namespace CalculationsEngine
         public double[] GenerateRow(int width, Alternative ae)
         {
             double[] row = new double[width], fields;
-            int index = 0;
-            foreach(KeyValuePair<Criterion, float> entry in ae.CriteriaValues)
+            var index = 0;
+            foreach (KeyValuePair<Criterion, float> entry in ae.CriteriaValues)
             {
                 fields = GenerateCriterionFields(entry);
-                for (int j = 0; j < fields.Length; j++)
+                for (var j = 0; j < fields.Length; j++)
                 {
-                    row[index++] = fields[j];
+                    row[index++] = j;
                 }
             }
             return row;
@@ -125,27 +175,27 @@ namespace CalculationsEngine
 
         public double[] GenerateCriterionFields(KeyValuePair<Criterion, float> av)
         {
-            int linearSegments = av.Key.LinearSegments;
+            var linearSegments = av.Key.LinearSegments;
             double segmentValue = (av.Key.MaxValue - av.Key.MinValue) / linearSegments, lowerBound, upperBound;
             double[] fields = new double[linearSegments];
-            if (av.Key.CriterionDirection == "???asc") //TODO
+            if (av.Key.CriterionDirection == "g")
             {
                 lowerBound = av.Key.MinValue;
-                for (int s = 0; s < linearSegments; s++)
+                for (var s = 0; s < linearSegments; s++)
                 {
                     upperBound = av.Key.MinValue + (s + 1) * segmentValue;
-                    if(av.Value < upperBound)
+                    if (av.Value < upperBound)
                     {
-                        if(av.Value <= lowerBound)
+                        if (av.Value <= lowerBound)
                         {
                             fields[s] = 0;
                         }
                         else
                         {
                             fields[s] = (av.Value - lowerBound) / (upperBound - lowerBound);
-                            if ( s > 0)
+                            if (s > 0)
                             {
-                                fields[s - 1] = 1 - fields[s];
+                                fields[s - 1] = 1;
                             }
                         }
                     }
@@ -159,14 +209,39 @@ namespace CalculationsEngine
             }
             else
             {
+                lowerBound = av.Key.MaxValue;
+                for (var s = 0; s < linearSegments; s++)
+                {
+                    upperBound = av.Key.MaxValue - (s + 1) * segmentValue;
+                    if (av.Value > upperBound)
+                    {
+                        if (av.Value >= lowerBound)
+                        {
+                            fields[s] = 0;
+                        }
+                        else
+                        {
+                            fields[s] = (lowerBound - av.Value) / (lowerBound - upperBound);
+                            if (s > 0)
+                            {
+                                fields[s - 1] = 1;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        fields[s] = 1;
+                    }
 
+                    lowerBound = upperBound;
+                }
             }
             return fields;
         }
 
         public int WidthOfSimplexMatrix(Alternative alternative)
         {
-            int cfc = CriterionFieldsCount;
+            var cfc = CriterionFieldsCount;
             cfc += (alternative.CriteriaValues.Count - 1) * 2 + 4;
             cfc += HeightOfSimplexMatrix();
             return cfc;
@@ -174,10 +249,10 @@ namespace CalculationsEngine
 
         public int HeightOfSimplexMatrix()
         {
-            int hom = VariantsList.Count;
-            for(int i = 0; i < VariantsList.Count - 1; i++)
+            var hom = VariantsList.Count;
+            for (var i = 0; i < VariantsList.Count - 1; i++)
             {
-                if (VariantsList[i].Value == VariantsList[i+1].Value) Equals.Add(i);
+                if (VariantsList[i].Value == VariantsList[i + 1].Value) Equals.Add(i);
             }
             Equals.Add(VariantsList.Count - 1);
             hom += Equals.Count;
