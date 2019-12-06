@@ -7,11 +7,11 @@ namespace UTA.Models.DataBase
 {
     public class Alternatives
     {
-        public ObservableCollection<Alternative> AlternativesList { get; set; }
+        public ObservableCollection<Alternative> AlternativesCollection { get; set; }
 
         public Alternatives()
         {
-            AlternativesList = new ObservableCollection<Alternative>();
+            AlternativesCollection = new ObservableCollection<Alternative>();
         }
 
         private bool ValidateInput()
@@ -20,9 +20,11 @@ namespace UTA.Models.DataBase
             return true;
         }
 
-        public void AddAlternative(string Name, string Description)
+        public Alternative AddAlternative(string Name, string Description)
         {
-            AlternativesList.Add(new Alternative(Name, Description));
+            Alternative alternative = new Alternative(Name, Description);
+            AlternativesCollection.Add(alternative);
+            return alternative;
         }
     }
 }

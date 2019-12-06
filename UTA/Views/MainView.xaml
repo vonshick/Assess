@@ -7,9 +7,9 @@
     x:Class="UTA.Views.MainView"
     mc:Ignorable="d"
     Title="UTA" WindowState="Maximized" MinWidth="900" MinHeight="700" Left="12" Top="12">
-    <Window.DataContext>
-        <viewModels:MainViewModel />
-    </Window.DataContext>
+    <!-- <Window.DataContext> -->
+    <!--     <viewModels:MainViewModel /> -->
+    <!-- </Window.DataContext> -->
     <StackPanel>
         <Menu>
             <MenuItem Header="File">
@@ -61,10 +61,25 @@
                 <Label Content="Description" HorizontalAlignment="Center" />
                 <TextBox Name="TextBoxAlternativeDescription" Height="23" Width="120" />
                 <Button Name="ButtonAddAlternative" Click="AddAlternative" Content="Add" Width="74" />
-                <DataGrid Name="AlternativesDataGrid" IsReadOnly="True" Height="102" Margin="60,0,58,0" />
+                <ListView Name="AlternativesListView" Height="102" Margin="60,0,58,0" />
+
+
+                <!-- <DataGrid Name="EditAlternativesDataGrid" IsReadOnly="True" Height="102" Margin="60,0,58,0" /> -->
+                <DataGrid Name="EditAlternativesDataGrid" IsReadOnly="True" ItemsSource="{Binding}" AutoGenerateColumns="False" Height="102" Margin="60,0,58,0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Binding="{Binding Name, Mode=TwoWay}" Header="Name"/>
+                        <DataGridTextColumn Binding="{Binding Description, Mode=TwoWay}" Header="Description"/>
+
+                    </DataGrid.Columns>
+                </DataGrid>
                 <Button x:Name="ButtonEditAlternatives" Click="EditAlternativesSwitch" Content="Edit On/Off" Width="74"/>
                 <Label Content="Ranking" />
-                <DataGrid Name="RankingDataGrid" IsReadOnly="False" Height="100" VerticalAlignment="Top" Width="309"/>
+                <Grid>
+                    <!-- <DataGrid Name="RankingDataGrid" IsReadOnly="True" Height="100" VerticalAlignment="Top" Margin="10,0,233.6,0"/> -->
+                    <!-- <DataGrid Name="RankingDataGrid2" IsReadOnly="True" Height="100" VerticalAlignment="Top" Margin="219,0,9.6,0"/> -->
+                    <ListView Name="RankingListView" Height="100" VerticalAlignment="Top" Margin="10,0,233.6,0"/>
+                    <ListView Name="RankingListView2" Height="100" VerticalAlignment="Top" Margin="219,0,9.6,0"/>
+                </Grid>
                 <Label Content="Criteria" />
                 <Button x:Name="ButtonAddCriterion" Click="ShowAddCriterionDialog" Content="Add" Width="74"/>
                 <DataGrid Name="CriteriaDataGrid" IsReadOnly="True" Height="102" Width="342"/>

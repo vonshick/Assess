@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
@@ -30,10 +31,11 @@ namespace UTA.ViewModels
             //                return false;
         }
 
-        public void AddAlternative(string name, string description)
+        public Alternative AddAlternative(string name, string description)
         {
-            Alternatives.AddAlternative(name, description);
+            Alternative alternative = Alternatives.AddAlternative(name, description);
             GenerateAlternativesTable();
+            return alternative;
         }
 
         public void GenerateAlternativesTable()
@@ -48,7 +50,7 @@ namespace UTA.ViewModels
         {
             table.Columns.Add("Alternative");
             table.Columns.Add("Description");
-            foreach (Criterion criterion in Criteria.CriteriaList)
+            foreach (Criterion criterion in Criteria.CriteriaCollection)
             {
 
                 //todo verify column does not already exist
@@ -59,7 +61,7 @@ namespace UTA.ViewModels
 
         private void ReloadRowsAlternatives(DataTable table)
         {
-            foreach (Alternative alternative in Alternatives.AlternativesList)
+            foreach (Alternative alternative in Alternatives.AlternativesCollection)
             {
                 table.Rows.Add(alternative.Name, alternative.Description);
             }
@@ -92,7 +94,7 @@ namespace UTA.ViewModels
             table.Columns.Add("Description");
             table.Columns.Add("Type");
             table.Columns.Add("Linear Segments");
-            foreach (Criterion criterion in Criteria.CriteriaList)
+            foreach (Criterion criterion in Criteria.CriteriaCollection)
             {
                 table.Rows.Add(criterion.Name, criterion.Description, criterion.CriterionDirection, criterion.LinearSegments);
             }
@@ -101,7 +103,7 @@ namespace UTA.ViewModels
         private DataTable _criteriaTable;
         public DataTable CriteriaTable
         {
-            get { return _criteriaTable; }
+            get => _criteriaTable;
             set
             {
                 if (_criteriaTable != value)
