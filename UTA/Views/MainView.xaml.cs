@@ -8,7 +8,7 @@ using System.Windows.Data;
 using UTA.Models;
 using UTA.ViewModels;
 // using ImportModule; // TODO vonshick REMOVE IT AFTER TESTING
-
+// using ExportModule; // TODO vonshick REMOVE IT AFTER TESTING
 namespace UTA.Views
 {
     /// <summary>
@@ -21,11 +21,13 @@ namespace UTA.Views
         public MainView()
         {
             //TODO vonshick REMOVE IT AFTER TESTING
-            // SampleProgram.ProcessSampleData(true, false, false, false); // csv
-            // SampleProgram.ProcessSampleData(false, true, false, false); // utx
-            // SampleProgram.ProcessSampleData(false, false, true, false); // xml
-            // SampleProgram.ProcessSampleData(false, false, false, true); // xmcda
-            
+            // DataLoader csvLoader = SampleImport.ProcessSampleData(true, false, false); // csv
+            // DataLoader utxLoader = SampleImport.ProcessSampleData(false, true, false); // utx
+            // DataLoader xmlLoader = SampleImport.ProcessSampleData(false, false, true); // xml
+//            TODO vonshick REMOVE IT AFTER TESTING
+//             XMCDALoader xmcdaLoader = SampleImport.ProcessXMCDA(); // xmcda            
+//             SampleExport.exportXMCDA(xmcdaLoader.CriterionList, xmcdaLoader.AlternativeList);
+
             InitializeComponent();
             SetBindings();
             _viewmodel.PropertyChanged += ViewmodelPropertyChanged;

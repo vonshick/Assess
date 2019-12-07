@@ -13,26 +13,49 @@ namespace ImportModule
     {
         public List<Criterion> CriterionList { get; set; }
         public List<Alternative> AlternativeList { get; set; }
-        private int lineNumber; 
+        private int lineNumber;
+        private char separator;
 
         public DataLoader()
         {
             CriterionList = new List<Criterion>();
             AlternativeList = new List<Alternative>();
-            lineNumber = 1;
+            lineNumber = 0;
         }
 
         private string[] ReadNewLine(StreamReader reader) {
             lineNumber++;
-            return(reader.ReadLine().Split(';'));
-        } 
+            return(reader.ReadLine().Split(separator));
+        }
+
+        // In case when values are not separated by comma but by semicolon
+        private void setSeparator(string firstLine)
+        {
+            if(firstLine.Contains(";") && !firstLine.Contains(",")) 
+            {
+                separator = ';';
+            }
+            else if(firstLine.Contains(",") && !firstLine.Contains(";")) 
+            {
+                separator = ',';
+            } else {
+                Trace.WriteLine("File format is not valid! Values have to be separated by ';' or ','.");
+                return;
+            }
+        }
 
         public void LoadCSV(string filePath)
         {
             try {
                 using (var reader = new StreamReader(filePath, Encoding.UTF8))
                 {
-                    string[] criterionDirectionsArray = ReadNewLine(reader);
+
+                    lineNumber++;
+                    string firstLine = reader.ReadLine();
+                    setSeparator(firstLine);
+
+                    string[] criterionDirectionsArray = firstLine.Split(separator);
+
                     string[] criterionNamesArray = ReadNewLine(reader);
                     // iterating from 1 because first column is empty
                     for (int i = 1; i < criterionDirectionsArray.Length; i++)
@@ -298,7 +321,7 @@ namespace ImportModule
                 // 1 / 0 equals infinity
                 // it is forbidden to divide by 0 as constant
                 // but it is allowed to divide by variable equal to it
-                float zero = 0, min = 1 / zero, max = - 1 / zero;
+                float min = float.PositiveInfinity, max = float.NegativeInfinity;
 
                 for (int j = 0; j < AlternativeList.Count; j++)
                 {
