@@ -10,9 +10,42 @@ namespace ImportModule
     {
         public List<Criterion> CriterionList { get; set; }
         public List<Alternative> AlternativeList { get; set; }
-
         public string XMCDADirectory { get; set; }
 
+        public XMCDALoader(string xmcdaDirectory) 
+        {
+            CriterionList = new List<Criterion>();
+            AlternativeList = new List<Alternative>();
+            XMCDADirectory = xmcdaDirectory;
+        }
+
+        public void setMinAndMaxCriterionValues()
+        {
+            for (int i = 0; i < CriterionList.Count; i++)
+            {
+                // 1 / 0 equals infinity
+                // it is forbidden to divide by 0 as constant
+                // but it is allowed to divide by variable equal to it
+                float zero = 0, min = 1 / zero, max = - 1 / zero;
+
+                for (int j = 0; j < AlternativeList.Count; j++)
+                {
+                    float value = AlternativeList[j].CriteriaValues[CriterionList[i]];
+
+                    if (value < min)
+                    {
+                        min = value;
+                    }
+                    if (value > max)
+                    {
+                        max = value;
+                    }
+                }
+                
+                CriterionList[i].MaxValue = max;
+                CriterionList[i].MinValue = min;
+            }
+        }
 
         private void LoadCriteria()
         {
@@ -71,7 +104,7 @@ namespace ImportModule
             // this file contains only one main block - <criteriaScales>
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
             {
-                Alternative alternative = new Alternative {CriteriaValues = new Dictionary<string, float>()};
+                Alternative alternative = new Alternative {CriteriaValues = new Dictionary<Criterion, float>()};
 
                 foreach (XmlNode performance in xmlNode.ChildNodes)
                 {
@@ -83,9 +116,9 @@ namespace ImportModule
                     else
                     {
                         string criterionID = performance.ChildNodes[0].InnerText;
-                        string criterionName = CriterionList.Find(criterion => criterion.ID == criterionID).Name;
+                        Criterion matchingCriterion = CriterionList.Find(criterion => criterion.ID == criterionID);
                         float value = float.Parse(performance.ChildNodes[1].FirstChild.InnerText, CultureInfo.InvariantCulture);
-                        alternative.CriteriaValues.Add(criterionName, value);
+                        alternative.CriteriaValues.Add(matchingCriterion, value);
                     }
                 }
                 
@@ -98,11 +131,8 @@ namespace ImportModule
 
         }
 
-        public void LoadXMCDA(string xmcdaDirectory)
+        public void LoadXMCDA()
         {
-            CriterionList = new List<Criterion>();
-            AlternativeList = new List<Alternative>();
-            XMCDADirectory = xmcdaDirectory;
             LoadCriteria();
             LoadCriteriaScales();
             LoadCriteriaThresholds();

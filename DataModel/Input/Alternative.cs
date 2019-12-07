@@ -17,7 +17,7 @@ namespace DataModel.Input
         public string Name { get; set; }
         public string Description { get; set; }
         /// <summary> pairs: (criterion name, value) </summary>
-        public Dictionary<string, float> CriteriaValues { get; set; }
+        public Dictionary<Criterion, float> CriteriaValues { get; set; }
 
     }
 }
