@@ -26,7 +26,7 @@ namespace ImportModule
                 // 1 / 0 equals infinity
                 // it is forbidden to divide by 0 as constant
                 // but it is allowed to divide by variable equal to it
-                float zero = 0, min = 1 / zero, max = - 1 / zero;
+                float min = float.PositiveInfinity, max = float.NegativeInfinity;
 
                 for (int j = 0; j < AlternativeList.Count; j++)
                 {
