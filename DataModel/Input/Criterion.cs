@@ -36,7 +36,6 @@ namespace DataModel.Input
             return (Name != null ? Name.GetHashCode() : 0);
         }
 
-
         public string ID { get; set; }
         public bool IsEnum {get; set; } = false;
         public Dictionary<string, float> EnumDictionary {get; set; }

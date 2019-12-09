@@ -53,7 +53,7 @@ namespace UTA.ViewModels
             foreach (Criterion criterion in Criteria.CriteriaCollection)
             {
 
-                //todo verify column does not already exist
+                //todo verify column does not already exist (ie. first two always exist)
 
                 table.Columns.Add(criterion.Name);
             }
@@ -63,7 +63,18 @@ namespace UTA.ViewModels
         {
             foreach (Alternative alternative in Alternatives.AlternativesCollection)
             {
-                table.Rows.Add(alternative.Name, alternative.Description);
+                List<string> rowData = new List<string>();
+                rowData.Add(alternative.Name);
+                rowData.Add(alternative.Description);
+                if (alternative.CriteriaValuesList != null)
+                {
+                    foreach (CriterionValue criterionValue in alternative.CriteriaValuesList)
+                    {
+                        rowData.Add(criterionValue.Value.ToString());
+                    }
+                }
+
+                table.Rows.Add(rowData.ToArray());
             }
         }
 
@@ -123,5 +134,9 @@ namespace UTA.ViewModels
             }
         }
 
+        public void GenerateAlternativesTable(object sender, PropertyChangedEventArgs e)
+        {
+            GenerateAlternativesTable();
+        }
     }
 }

@@ -69,7 +69,6 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Binding="{Binding Name, Mode=TwoWay}" Header="Name"/>
                         <DataGridTextColumn Binding="{Binding Description, Mode=TwoWay}" Header="Description"/>
-
                     </DataGrid.Columns>
                 </DataGrid>
                 <Button x:Name="ButtonEditAlternatives" Click="EditAlternativesSwitch" Content="Edit On/Off" Width="74"/>

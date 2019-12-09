@@ -20,5 +20,7 @@ namespace UTA.Models.DataBase
             CriteriaCollection.Add(criterion);
             return true;
         }
+
+        //todo handle name changes: change column bindings and headers, CriteriaValues in alternatives, etc
     }
 }
