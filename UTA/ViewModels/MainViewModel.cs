@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Windows.Controls;
 using DataModel.Input;
 using UTA.Models.DataBase;
 using UTA.Views;
@@ -14,8 +15,8 @@ namespace UTA.ViewModels
     {
         public MainViewModel()
         {
-            Alternatives = new Alternatives();
             Criteria = new Criteria();
+            Alternatives = new Alternatives(Criteria);
         }
 
         public Alternatives Alternatives { get; set; }
@@ -33,8 +34,7 @@ namespace UTA.ViewModels
 
         public Alternative AddAlternative(string name, string description)
         {
-            Alternative alternative = Alternatives.AddAlternative(name, description);
-            GenerateAlternativesTable();
+            Alternative alternative = Alternatives.AddAlternative(name, description, GenerateAlternativesTable);
             return alternative;
         }
 
@@ -137,6 +137,13 @@ namespace UTA.ViewModels
         public void GenerateAlternativesTable(object sender, PropertyChangedEventArgs e)
         {
             GenerateAlternativesTable();
+        }
+
+        public void AddAlternativeFromDataGrid(object sender, AddingNewItemEventArgs e)
+        {
+            Alternative alternative = new Alternative("initName", "initDesc", Criteria.CriteriaCollection, GenerateAlternativesTable);
+            e.NewItem = alternative;
+//            GenerateAlternativesTable();
         }
     }
 }

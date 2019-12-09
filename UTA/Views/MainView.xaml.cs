@@ -48,7 +48,8 @@ namespace UTA.Views
 
 //            EditAlternativesDataGrid.SetBinding(DataGrid.ItemsSourceProperty, new Binding("AlternativesTable") { Source = _viewmodel });
             EditAlternativesDataGrid.ItemsSource = _viewmodel.Alternatives.AlternativesCollection;
-//            EditAlternativesDataGrid.CellEditEnding += RowEditEnding;
+            //            EditAlternativesDataGrid.CellEditEnding += RowEditEnding;
+            EditAlternativesDataGrid.AddingNewItem += _viewmodel.AddAlternativeFromDataGrid;
 
             AlternativesListView.SetBinding(ListView.ItemsSourceProperty, new Binding("AlternativesTable") { Source = _viewmodel });
             CriteriaDataGrid.SetBinding(ListView.ItemsSourceProperty, new Binding("CriteriaTable") { Source = _viewmodel });
@@ -88,6 +89,7 @@ namespace UTA.Views
             {
                 alternative.PropertyChanged += AlternativePropertyChanged;
             }
+            _viewmodel.GenerateAlternativesTable();
         }
 
         public void AlternativePropertyChanged(object sender, PropertyChangedEventArgs e)

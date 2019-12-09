@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -13,12 +14,30 @@ namespace DataModel.Input
             CriteriaValuesList = new List<CriterionValue>();
         }
 
-        public Alternative(string name, string description)
+        public Alternative(ObservableCollection<Criterion> criteriaCollection, PropertyChangedEventHandler criterionValuePropertyChangedEventHandler)
+        {
+            CriteriaValues = new Dictionary<string, float>();
+            CriteriaValuesList = new List<CriterionValue>();
+            InitCriteriaValues(criteriaCollection, criterionValuePropertyChangedEventHandler);
+        }
+
+        public void InitCriteriaValues(ObservableCollection<Criterion> criteriaCollection, PropertyChangedEventHandler criterionValuePropertyChangedEventHandler)
+        {
+            foreach (Criterion criterion in criteriaCollection)
+            {
+                CriterionValue criterionValue = new CriterionValue(criterion.Name, "2.0");
+                criterionValue.PropertyChanged += criterionValuePropertyChangedEventHandler;
+                AddCriterionValue(criterionValue);
+            }
+        }
+
+        public Alternative(string name, string description, ObservableCollection<Criterion> criteriaCollection, PropertyChangedEventHandler criterionValuePropertyChangedEventHandler)
         {
             Name = name;
             Description = description;
             CriteriaValues = new Dictionary<string, float>();
             CriteriaValuesList = new List<CriterionValue>();
+            InitCriteriaValues(criteriaCollection, criterionValuePropertyChangedEventHandler);
         }
 
         private string _name;
@@ -85,6 +104,7 @@ namespace DataModel.Input
         }
 
 
+        //TODO remove, CriteriaValuesList used now instead
         /// <summary> pairs: (criterion name, value) </summary>
         public Dictionary<string, float> CriteriaValues
         {

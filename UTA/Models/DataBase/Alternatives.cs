@@ -9,21 +9,22 @@ namespace UTA.Models.DataBase
     public class Alternatives
     {
         public ObservableCollection<Alternative> AlternativesCollection { get; set; }
+        public Criteria Criteria { get; set; }
 
         public Alternatives()
         {
             AlternativesCollection = new ObservableCollection<Alternative>();
         }
 
-        private bool ValidateInput()
+        public Alternatives(Criteria criteria)
         {
-            //todo validate input not empty etc.
-            return true;
+            Criteria = criteria;
+            AlternativesCollection = new ObservableCollection<Alternative>();
         }
 
-        public Alternative AddAlternative(string Name, string Description)
+        public Alternative AddAlternative(string name, string description, PropertyChangedEventHandler criterionValuePropertyChangedEventHandler)
         {
-            Alternative alternative = new Alternative(Name, Description);
+            Alternative alternative = new Alternative(name, description, Criteria.CriteriaCollection, criterionValuePropertyChangedEventHandler);
             AlternativesCollection.Add(alternative);
             return alternative;
         }
