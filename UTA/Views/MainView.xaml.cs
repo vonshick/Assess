@@ -32,12 +32,9 @@ namespace UTA.Views
             InitializeComponent();
             SetBindings();
             _viewmodel.PropertyChanged += ViewmodelPropertyChanged;
-            _viewmodel.Alternatives.AlternativesCollection.CollectionChanged += AlternativesCollectionChanged;
             _viewmodel.Criteria.CriteriaCollection.CollectionChanged += UpdateAlternativesDataGridColumns;
             _viewmodel.GenerateCriteriaTable();
-//            CriteriaDataGrid.View = GenerateGridView(_viewmodel.CriteriaTable);
             _viewmodel.GenerateAlternativesTable();
-//            AlternativesDataGrid.IsReadOnly = true;
             ButtonEditAlternatives.Content = "Editing is OFF";
         }
 
@@ -46,17 +43,15 @@ namespace UTA.Views
             TextBoxAlternativeName.SetBinding(TextBox.TextProperty, new Binding("InputAlternativeName") { Source = this });
             TextBoxAlternativeDescription.SetBinding(TextBox.TextProperty, new Binding("InputAlternativeDescription") { Source = this });
 
-//            EditAlternativesDataGrid.SetBinding(DataGrid.ItemsSourceProperty, new Binding("AlternativesTable") { Source = _viewmodel });
             EditAlternativesDataGrid.ItemsSource = _viewmodel.Alternatives.AlternativesCollection;
             //            EditAlternativesDataGrid.CellEditEnding += RowEditEnding;
             EditAlternativesDataGrid.AddingNewItem += _viewmodel.AddAlternativeFromDataGrid;
 
             AlternativesListView.SetBinding(ListView.ItemsSourceProperty, new Binding("AlternativesTable") { Source = _viewmodel });
-            CriteriaDataGrid.SetBinding(ListView.ItemsSourceProperty, new Binding("CriteriaTable") { Source = _viewmodel });
+            CriteriaListView.SetBinding(ListView.ItemsSourceProperty, new Binding("CriteriaTable") { Source = _viewmodel });
             
             RankingListView.SetBinding(ListView.ItemsSourceProperty, new Binding("AlternativesTable") { Source = _viewmodel });
             RankingListView2.SetBinding(ListView.ItemsSourceProperty, new Binding("AlternativesTable") { Source = _viewmodel });
-            //            RankingDataGrid.DataContext = CriteriaTable
         }
 
         public string InputAlternativeName { get; set; }
@@ -79,22 +74,9 @@ namespace UTA.Views
         private void RenderListViews()
         {
             AlternativesListView.View = GenerateGridView(_viewmodel.AlternativesTable);
+            CriteriaListView.View = GenerateGridView(_viewmodel.CriteriaTable);
             RankingListView.View = GenerateGridView(_viewmodel.AlternativesTable);
             RankingListView2.View = GenerateGridView(_viewmodel.AlternativesTable);
-        }
-
-        private void AlternativesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            foreach (Alternative alternative in e.NewItems)
-            {
-                alternative.PropertyChanged += AlternativePropertyChanged;
-            }
-            _viewmodel.GenerateAlternativesTable();
-        }
-
-        public void AlternativePropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            _viewmodel.GenerateAlternativesTable();
         }
 
         private GridView GenerateGridView(DataTable table)
@@ -120,8 +102,7 @@ namespace UTA.Views
         {
             if (DataValidation.StringsNotEmpty(InputAlternativeName, InputAlternativeDescription))
             {
-                Alternative alternative = _viewmodel.AddAlternative(InputAlternativeName, InputAlternativeDescription);
-                alternative.PropertyChanged += AlternativePropertyChanged;
+                _viewmodel.AddAlternative(InputAlternativeName, InputAlternativeDescription);
                 TextBoxAlternativeName.Clear();
                 TextBoxAlternativeDescription.Clear();
                 InputAlternativeName = "";
@@ -158,7 +139,6 @@ namespace UTA.Views
 
         private void AddAlternativesDataGridColumn(Criterion criterion, int startingIndex)
         {
-            //todo order of criteria and critValues must be the same
             DataGridTextColumn textColumn = new DataGridTextColumn {Header = criterion.Name, Binding = new Binding() { Mode = BindingMode.TwoWay, Path = new PropertyPath("CriteriaValuesList[" + startingIndex + "].Value") } };
             EditAlternativesDataGrid.Columns.Add(textColumn);
         }

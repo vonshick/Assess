@@ -56,19 +56,7 @@ namespace DataModel.Input
             CriteriaValuesList.Add(criterionValue);
             Console.WriteLine("Added to alternative " + Name + " value (" + criterionValue.Name + "," + criterionValue.Value + ")");
         }
-
-        public void UpdateCriterionValueValue(string name, string value)
-        {
-            CriterionValue criterionValue = CriteriaValuesList.Find(c => c.Name == name);
-            criterionValue.Name = name;
-            criterionValue.Value = value;
-            Console.WriteLine("Updated alternative " + Name + ": "+ criterionValue.Name + " set to value: " + value);
-
-            //todo create handler
-            OnPropertyChanged("CriteriaValuesList");
-        }
-
-
+        
         //todo call it in case of change of any criteria name
         public void UpdateCriterionValueName(string oldName, string newName)
         {

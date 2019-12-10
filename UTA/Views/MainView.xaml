@@ -81,7 +81,7 @@
                 </Grid>
                 <Label Content="Criteria" />
                 <Button x:Name="ButtonAddCriterion" Click="ShowAddCriterionDialog" Content="Add" Width="74"/>
-                <DataGrid Name="CriteriaDataGrid" IsReadOnly="True" Height="102" Width="342"/>
+                <ListView Name="CriteriaListView" Height="102" Width="342"/>
             </StackPanel>
             <DockPanel Grid.Row="1" Grid.Column="2" Background="#FFF0F0F0" />
         </Grid>

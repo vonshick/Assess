@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace UTA.ViewModels
         {
             Criteria = new Criteria();
             Alternatives = new Alternatives(Criteria);
+            Alternatives.AlternativesCollection.CollectionChanged += AlternativesCollectionChanged;
         }
 
         public Alternatives Alternatives { get; set; }
@@ -32,21 +34,21 @@ namespace UTA.ViewModels
             //                return false;
         }
 
-        public Alternative AddAlternative(string name, string description)
+        public void AddAlternative(string name, string description)
         {
             Alternative alternative = Alternatives.AddAlternative(name, description, GenerateAlternativesTable);
-            return alternative;
+            alternative.PropertyChanged += GenerateAlternativesTable;
         }
 
         public void GenerateAlternativesTable()
         {
             DataTable table = new DataTable();
-            ReloadColumnsAlternatives(table);
-            ReloadRowsAlternatives(table);
+            GenerateColumnsAlternativesTable(table);
+            GenerateRowsAlternativesTable(table);
             AlternativesTable = table;
         }
 
-        private void ReloadColumnsAlternatives(DataTable table)
+        private void GenerateColumnsAlternativesTable(DataTable table)
         {
             table.Columns.Add("Alternative");
             table.Columns.Add("Description");
@@ -59,7 +61,7 @@ namespace UTA.ViewModels
             }
         }
 
-        private void ReloadRowsAlternatives(DataTable table)
+        private void GenerateRowsAlternativesTable(DataTable table)
         {
             foreach (Alternative alternative in Alternatives.AlternativesCollection)
             {
@@ -73,7 +75,6 @@ namespace UTA.ViewModels
                         rowData.Add(criterionValue.Value.ToString());
                     }
                 }
-
                 table.Rows.Add(rowData.ToArray());
             }
         }
@@ -95,11 +96,11 @@ namespace UTA.ViewModels
         public void GenerateCriteriaTable()
         {
             DataTable table = new DataTable();
-            ReloadRowsCriteria(table);
+            GenerateRowsCriteriaTable(table);
             CriteriaTable = table;
         }
 
-        private void ReloadRowsCriteria(DataTable table)
+        private void GenerateRowsCriteriaTable(DataTable table)
         {
             table.Columns.Add("Criterion");
             table.Columns.Add("Description");
@@ -145,5 +146,16 @@ namespace UTA.ViewModels
             e.NewItem = alternative;
 //            GenerateAlternativesTable();
         }
+
+        private void AlternativesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            foreach (Alternative alternative in e.NewItems)
+            {
+                alternative.PropertyChanged += GenerateAlternativesTable;
+            }
+            GenerateAlternativesTable();
+        }
     }
 }
+
+

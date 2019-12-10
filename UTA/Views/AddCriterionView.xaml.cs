@@ -24,7 +24,6 @@ namespace UTA.Views
         {
             AddCriterionViewModel = addCriterionViewModel;
             InitializeComponent();
-//            InitComboBoxCriterionType();
             SetBindings();
         }
 
@@ -36,26 +35,11 @@ namespace UTA.Views
             ComboBoxCriterionType.SetBinding(ComboBox.ItemsSourceProperty, new Binding("CriteriaTypeList") { Source = AddCriterionViewModel });
             TextBoxCriterionLinear.SetBinding(TextBox.TextProperty, new Binding("InputCriterionLinearSegments") { Source = this });
         }
-        private void InitComboBoxCriterionType()
-        {
-            CriteriaTypeList = AddCriterionViewModel.CriteriaTypeList;
-            /*CriterionDirectionTypes = MainViewModel.CriterionDirectionTypes;
-            ComboBoxCriterionType.SelectedValuePath = "Key";
-            ComboBoxCriterionType.DisplayMemberPath = "Value";
-            foreach (KeyValuePair<string, string> criterionDirectionType in CriterionDirectionTypes)
-            {
-                ComboBoxCriterionType.Items.Add(criterionDirectionType);
-            }
-            ComboBoxCriterionType.SelectedIndex = 0;*/
-        }
 
-        public MainViewModel MainViewModel { get; set; }
         public string InputCriterionDescription { get; set; }
         public string InputCriterionName { get; set; }
         public string InputCriterionDirection { get; set; }
         public string InputCriterionLinearSegments { get; set; }
-        //        public static Dictionary<string, string> CriterionDirectionTypes { get; set; }
-        public List<string> CriteriaTypeList { get; set; }
         public bool AddedCriterion { get; set; } = false;
 
 
