@@ -3,9 +3,9 @@ using DataModel.Input;
 
 namespace DataModel.Results
 {
-    public class PartialUtilityFunction
+    public class PartialUtility
     {
-        public PartialUtilityFunction(Criterion criterion, Dictionary<float, float> pointsValues)
+        public PartialUtility(Criterion criterion, Dictionary<float, float> pointsValues)
         {
             Criterion = criterion;
             PointsValues = pointsValues;

@@ -5,12 +5,12 @@ namespace DataModel.Results
 {
     public class FinalRanking : Ranking
     {
-        public FinalRanking(List<Alternative> variantsList, List<float> globalUtilities) : base(variantsList)
+        public FinalRanking(List<KeyValuePair<Alternative, int>> alternativeList, List<float> globalUtilities) : base(
+            alternativeList)
         {
             GlobalUtilities = globalUtilities;
         }
 
         public List<float> GlobalUtilities { get; set; }
-
     }
 }

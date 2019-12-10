@@ -8,16 +8,18 @@ namespace DataModel.Results
         public Ranking()
         {
         }
-        public Ranking(List<KeyValuePair<Alternative, int>> variantsList)
+
+        public Ranking(List<KeyValuePair<Alternative, int>> alternativeList)
         {
-            VariantsList = variantsList;
+            AlternativeList = alternativeList;
         }
+
+        /// <summary> order of variants in list defines reference ranking order </summary>
+        public List<KeyValuePair<Alternative, int>> AlternativeList { get; set; }
 
         public void AddVariant(Alternative alternative, int rank)
         {
-            VariantsList.Add(new KeyValuePair<Alternative, int>(alternative, rank));
+            AlternativeList.Add(new KeyValuePair<Alternative, int>(alternative, rank));
         }
-        /// <summary> order of variants in list defines reference ranking order </summary>
-        public List<KeyValuePair<Alternative, int>> VariantsList { get; set; }
     }
 }
