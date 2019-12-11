@@ -7,9 +7,8 @@ namespace DataModel.Results
     {
         public FinalRanking FinalRanking { get; set; }
 
-        public List<PartialUtilityFunction> PartialUtilityFunctions { get; set; }
+        public List<PartialUtility> PartialUtilityFunctions { get; set; }
 
         public float KendallCoefficient { get; set; }
-
     }
 }
