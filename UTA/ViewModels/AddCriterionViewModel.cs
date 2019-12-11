@@ -33,7 +33,7 @@ namespace UTA.ViewModels
         {
             if (!Criteria.AddCriterion(criterionName, criterionDescription, criterionDirection, linearSegments))
                 return false;
-            MainViewModel.Alternatives.AddNewCriterionToAlternatives(criterionName, "0.1", MainViewModel.GenerateAlternativesTable); //add crit values
+            MainViewModel.Alternatives.AddNewCriterionToAlternatives(criterionName, 0.1f, MainViewModel.GenerateAlternativesTable); //add crit values
             MainViewModel.GenerateCriteriaTable();
             MainViewModel.GenerateAlternativesTable();
             return true;

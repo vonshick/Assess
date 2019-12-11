@@ -25,7 +25,7 @@ namespace DataModel.Input
         {
             foreach (Criterion criterion in criteriaCollection)
             {
-                CriterionValue criterionValue = new CriterionValue(criterion.Name, "2.0");
+                CriterionValue criterionValue = new CriterionValue(criterion.Name, 2.0f);
                 criterionValue.PropertyChanged += criterionValuePropertyChangedEventHandler;
                 AddCriterionValue(criterionValue);
             }

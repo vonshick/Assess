@@ -29,7 +29,7 @@ namespace UTA.Models.DataBase
             return alternative;
         }
 
-        public void AddNewCriterionToAlternatives(string name, string value, PropertyChangedEventHandler criterionValuePropertyChangedEventHandler)
+        public void AddNewCriterionToAlternatives(string name, float value, PropertyChangedEventHandler criterionValuePropertyChangedEventHandler)
         {
             foreach (var alternative in AlternativesCollection)
             {
