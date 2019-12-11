@@ -10,13 +10,13 @@ namespace DataModel.Input
     {
         public Alternative()
         {
-            CriteriaValues = new Dictionary<string, float>();
+            CriteriaValues = new Dictionary<Criterion, float>();
             CriteriaValuesList = new List<CriterionValue>();
         }
 
         public Alternative(ObservableCollection<Criterion> criteriaCollection, PropertyChangedEventHandler criterionValuePropertyChangedEventHandler)
         {
-            CriteriaValues = new Dictionary<string, float>();
+            CriteriaValues = new Dictionary<Criterion, float>();
             CriteriaValuesList = new List<CriterionValue>();
             InitCriteriaValues(criteriaCollection, criterionValuePropertyChangedEventHandler);
         }
@@ -35,14 +35,14 @@ namespace DataModel.Input
         {
             Name = name;
             Description = description;
-            CriteriaValues = new Dictionary<string, float>();
+            CriteriaValues = new Dictionary<Criterion, float>();
             CriteriaValuesList = new List<CriterionValue>();
             InitCriteriaValues(criteriaCollection, criterionValuePropertyChangedEventHandler);
         }
 
         private string _name;
         private string _description;
-        private Dictionary<string, float> _criteriaValues;
+        private Dictionary<Criterion, float> _criteriaValues;
 
         //todo make sure the order is same as in criteriaList
         public List<CriterionValue> CriteriaValuesList
@@ -94,7 +94,7 @@ namespace DataModel.Input
 
         //TODO remove, CriteriaValuesList used now instead
         /// <summary> pairs: (criterion name, value) </summary>
-        public Dictionary<string, float> CriteriaValues
+        public Dictionary<Criterion, float> CriteriaValues
         {
             get => _criteriaValues;
             set
