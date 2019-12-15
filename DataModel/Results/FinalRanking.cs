@@ -10,6 +10,6 @@ namespace DataModel.Results
         {
             FinalRankingList = finalRankingList;
         }
-        public List<FinalRankingEntry> FinalRankingList { get; set; } = new List<FinalRankingEntry>();
+        public List<FinalRankingEntry> FinalRankingList { get; set; }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace DataModel.Structs
 {
-    public struct ReferenceRankingEntry
+    public class ReferenceRankingEntry
     {
         public int Rank { get; set; }
         public Alternative Alternative { get; set; }

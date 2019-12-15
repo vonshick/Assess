@@ -10,6 +10,6 @@ namespace DataModel.Results
         {
             ReferenceRankingList = referenceRankingList;
         }
-        public List<ReferenceRankingEntry> ReferenceRankingList { get; set; } = new List<ReferenceRankingEntry>();
+        public List<ReferenceRankingEntry> ReferenceRankingList { get; set; }
     }
 }
