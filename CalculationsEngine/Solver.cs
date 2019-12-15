@@ -16,11 +16,11 @@ namespace CalculationsEngine
         public Solver(ReferenceRanking referenceRanking)
         {
             variantsList = new List<KeyValuePair<Alternative, int>>();
-            foreach (var r in referenceRanking.ReferenceRankingList)
-                variantsList.Add(new KeyValuePair<Alternative, int>(r.Alternative, r.Rank));
+            foreach (var referenceRankingEntry in referenceRanking.ReferenceRankingList)
+                variantsList.Add(new KeyValuePair<Alternative, int>(referenceRankingEntry.Alternative, referenceRankingEntry.Rank));
             //variantsList = referenceRanking.AlternativeList;
             var cfc = CriterionFieldsCount;
-            foreach (var c in variantsList[0].Key.CriteriaValues.Keys) cfc += c.LinearSegments;
+            foreach (var criterion in variantsList[0].Key.CriteriaValues.Keys) cfc += criterion.LinearSegments;
             CriterionFieldsCount = cfc;
             equals = new List<int>();
             for (var i = 0; i < variantsList.Count - 1; i++)
