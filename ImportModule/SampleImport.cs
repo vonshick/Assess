@@ -1,73 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Diagnostics;
+using System.IO;
 using DataModel.Input;
 
 namespace ImportModule
 {
     public class SampleImport
     {
-        public static XMCDALoader ProcessXMCDA()
-        {
-            XMCDALoader xmcdaLoader = new XMCDALoader(Path.Combine(Environment.CurrentDirectory, "xmcda"));
-            xmcdaLoader.LoadXMCDA();
 
-            xmcdaLoader.setMinAndMaxCriterionValues();
+        public static DataLoader ProcessSampleData() {            
+            // XMLLoader dataLoader = new XMLLoader();
+            // dataLoader.LoadData("sample.xml");
 
-            Trace.WriteLine("Criteria:");
-            for (int i = 0; i < xmcdaLoader.CriterionList.Count; i++)
-            {
-                Trace.WriteLine("");
-                Trace.WriteLine(xmcdaLoader.CriterionList[i].Name);
-                Trace.WriteLine(xmcdaLoader.CriterionList[i].CriterionDirection);
-                Trace.WriteLine("min:" + xmcdaLoader.CriterionList[i].MinValue);
-                Trace.WriteLine("max:" + xmcdaLoader.CriterionList[i].MaxValue);
-                Trace.WriteLine("");
-            }
+            // UTXLoader dataLoader = new UTXLoader();
+            // dataLoader.LoadData("utx_with_enum.utx");
 
-            Trace.WriteLine("Alternatives:");
-            for (int i = 0; i < xmcdaLoader.AlternativeList.Count; i++)
-            {
-                Dictionary<Criterion, float> dictionary = xmcdaLoader.AlternativeList[i].CriteriaValues;
-                foreach (KeyValuePair<Criterion, float> kvp in dictionary)
-                {
-                    Trace.WriteLine(kvp.Key.Name + " = " + kvp.Value);
-                }
-                Trace.WriteLine("");
-            }
+            // CSVLoader dataLoader = new CSVLoader();
+            // dataLoader.LoadCSV("Zeszyt1.csv");
+            // dataLoader.LoadData("Lab7_bus.csv");
+
+            XMCDALoader dataLoader = new XMCDALoader();
+            dataLoader.LoadData(Path.Combine(Environment.CurrentDirectory, "xmcda"));
 
             Trace.WriteLine("### ### ### ### ### ### ### ### ### ###");
-            Trace.WriteLine("");
-            return xmcdaLoader;
-        }
-
-        // Set one of boolean variables to 'true' to process file with specific extension
-        public static DataLoader ProcessSampleData(bool csv, bool utx, bool xml) {
-            DataLoader dataLoader = new DataLoader();
-            if (csv)
-            {
-                Trace.WriteLine("#### CSV #####");
-                // dataLoader.LoadCSV("Zeszyt1.csv");
-                dataLoader.LoadCSV("Lab7_bus.csv");
-            }
-            else if (utx)
-            {
-                Trace.WriteLine("#### UTX #####");
-                dataLoader.LoadUTX("utx_with_enum.utx");
-            }
-            else if (xml)
-            {
-                Trace.WriteLine("#### XML #####");
-                dataLoader.LoadXML("sample.xml");
-            }
-            else
-            {
-                Trace.WriteLine("No file extension was chosen!");
-            }
-
-            dataLoader.setMinAndMaxCriterionValues();
-
             Trace.WriteLine("Criteria:");
             for (int i = 0; i < dataLoader.CriterionList.Count; i++)
             {

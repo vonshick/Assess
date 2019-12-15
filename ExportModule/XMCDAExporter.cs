@@ -1,5 +1,6 @@
 ﻿using System;
 using DataModel.Input;
+using DataModel.Results;
 using System.Collections.Generic;
 using System.Xml;
 using System.IO;
@@ -10,13 +11,22 @@ namespace ExportModule
     {
         private List<Criterion> criterionList;
         private List<Alternative> alternativeList;
+        private List<KeyValuePair<Alternative, int>> resultsList;
+        private List<PartialUtility> partialUtilityList;
         private string outputDirectory;
         private XmlTextWriter xmcdaWriter;
-
-        public XMCDAExporter(string outputDirectory, List<Criterion> criterionList, List<Alternative> alternativeList) {
+        //TODO vonshick change two resultsList and partialUtilityList into Results object
+        public XMCDAExporter(string outputDirectory,
+                             List<Criterion> criterionList,
+                             List<Alternative> alternativeList,
+                             List<KeyValuePair<Alternative, int>> resultsList,
+                             List<PartialUtility> partialUtilityList)
+        {
             this.outputDirectory = outputDirectory;
             this.criterionList = criterionList;
             this.alternativeList = alternativeList;
+            this.resultsList = resultsList;
+            this.partialUtilityList = partialUtilityList;
         }
 
         private void initializeWriter(string filePath)
@@ -31,12 +41,13 @@ namespace ExportModule
             xmcdaWriter.WriteAttributeString("xsi:schemaLocation", "http://www.decision-deck.org/2016/XMCDA-3.0.2 http://www.decision-deck.org/xmcda/_downloads/XMCDA-3.0.2.xsd");
         }
 
-        private void saveCriterions() {
-            
+        private void saveCriterions()
+        {
+
             initializeWriter(Path.Combine(outputDirectory, "criteria.xml"));
             xmcdaWriter.WriteStartElement("criteria");
-            
-            foreach(Criterion criterion in criterionList) 
+
+            foreach (Criterion criterion in criterionList)
             {
                 xmcdaWriter.WriteStartElement("criterion");
                 xmcdaWriter.WriteAttributeString("id", criterion.ID);
@@ -52,12 +63,13 @@ namespace ExportModule
             xmcdaWriter.Close();
         }
 
-        private void saveCriterionScales() {
-            
+        private void saveCriterionScales()
+        {
+
             initializeWriter(Path.Combine(outputDirectory, "criteria_scales.xml"));
             xmcdaWriter.WriteStartElement("criteriaScales");
-            
-            foreach(Criterion criterion in criterionList) 
+
+            foreach (Criterion criterion in criterionList)
             {
                 xmcdaWriter.WriteStartElement("criterionScale");
                 xmcdaWriter.WriteStartElement("criterionID");
@@ -80,12 +92,13 @@ namespace ExportModule
             xmcdaWriter.Close();
         }
 
-        private void savePerformanceTable() {
-            
+        private void savePerformanceTable()
+        {
+
             initializeWriter(Path.Combine(outputDirectory, "performance_table.xml"));
             xmcdaWriter.WriteStartElement("performanceTable");
             xmcdaWriter.WriteAttributeString("mcdaConcept", "REAL");
-            foreach(Alternative alternative in alternativeList) 
+            foreach (Alternative alternative in alternativeList)
             {
                 xmcdaWriter.WriteStartElement("alternativePerformances");
                 xmcdaWriter.WriteStartElement("alternativeID");
@@ -108,7 +121,7 @@ namespace ExportModule
                     xmcdaWriter.WriteEndElement();
                 }
                 xmcdaWriter.WriteEndElement();
-            }            
+            }
 
             xmcdaWriter.WriteEndElement();
             xmcdaWriter.WriteEndDocument();
@@ -116,11 +129,104 @@ namespace ExportModule
 
         }
 
+        private void saveRanking()
+        {
+            initializeWriter(Path.Combine(outputDirectory, "alternatives_ranks.xml"));
+            xmcdaWriter.WriteStartElement("alternativesValues");
+
+            foreach (KeyValuePair<Alternative, int> resultPair in resultsList)
+            {
+                xmcdaWriter.WriteStartElement("alternativeValue");
+                xmcdaWriter.WriteStartElement("alternativeID");
+                xmcdaWriter.WriteString(resultPair.Key.Name);
+                xmcdaWriter.WriteEndElement();
+                xmcdaWriter.WriteStartElement("value");
+                xmcdaWriter.WriteStartElement("integer");
+                xmcdaWriter.WriteString(resultPair.Value.ToString());
+                xmcdaWriter.WriteEndElement();
+                xmcdaWriter.WriteEndElement();
+                xmcdaWriter.WriteEndElement();
+            }
+
+            xmcdaWriter.WriteEndElement();
+            xmcdaWriter.WriteEndDocument();
+            xmcdaWriter.Close();
+        }
+
+        public void saveCriteriaSegments()
+        {
+            initializeWriter(Path.Combine(outputDirectory, "criteria_segments.xml"));
+            xmcdaWriter.WriteStartElement("criteriaValues");
+
+            foreach (PartialUtility partialUtility in partialUtilityList)
+            {
+                xmcdaWriter.WriteStartElement("criterionValue");
+                xmcdaWriter.WriteStartElement("criterionID");
+                xmcdaWriter.WriteString(partialUtility.Criterion.ID);
+                xmcdaWriter.WriteEndElement();
+                xmcdaWriter.WriteStartElement("value");
+                xmcdaWriter.WriteStartElement("integer");
+                xmcdaWriter.WriteString(partialUtility.PointsValues.Count.ToString());
+                xmcdaWriter.WriteEndElement();
+                xmcdaWriter.WriteEndElement();
+                xmcdaWriter.WriteEndElement();
+            }
+
+            xmcdaWriter.WriteEndElement();
+            xmcdaWriter.WriteEndDocument();
+            xmcdaWriter.Close();
+        }
+
+        private void saveValueFunctions()
+        {
+            initializeWriter(Path.Combine(outputDirectory, "value_functions.xml"));
+            xmcdaWriter.WriteStartElement("criteria");
+            xmcdaWriter.WriteAttributeString("mcdaConcept", "criteria");
+
+            foreach (PartialUtility partialUtility in partialUtilityList)
+            {
+                xmcdaWriter.WriteStartElement("criterion");
+                xmcdaWriter.WriteStartElement("criterionID");
+                xmcdaWriter.WriteString(partialUtility.Criterion.ID);
+                xmcdaWriter.WriteEndElement();
+                xmcdaWriter.WriteStartElement("criterionFunction");
+                xmcdaWriter.WriteStartElement("points");
+                foreach(KeyValuePair<float, float> pointValue in partialUtility.PointsValues){
+                    xmcdaWriter.WriteStartElement("point");
+
+                    xmcdaWriter.WriteStartElement("abscissa");
+                    xmcdaWriter.WriteStartElement("real");
+                    xmcdaWriter.WriteString(pointValue.Key.ToString());
+                    xmcdaWriter.WriteEndElement();
+                    xmcdaWriter.WriteEndElement();
+
+                    xmcdaWriter.WriteStartElement("ordinate");
+                    xmcdaWriter.WriteStartElement("real");
+                    xmcdaWriter.WriteString(pointValue.Value.ToString());
+                    xmcdaWriter.WriteEndElement();
+                    xmcdaWriter.WriteEndElement();
+
+                    xmcdaWriter.WriteEndElement();
+                }
+
+                xmcdaWriter.WriteEndElement();
+                xmcdaWriter.WriteEndElement();
+                xmcdaWriter.WriteEndElement();
+            }
+
+            xmcdaWriter.WriteEndElement();
+            xmcdaWriter.WriteEndDocument();
+            xmcdaWriter.Close();
+        }
+
         public void saveSession()
         {
             saveCriterions();
             saveCriterionScales();
             savePerformanceTable();
+            saveRanking();
+            saveCriteriaSegments();
+            saveValueFunctions();
         }
     }
 }
