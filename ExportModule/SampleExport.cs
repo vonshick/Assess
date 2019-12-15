@@ -36,13 +36,13 @@ namespace ExportModule
             return(resultsList);
         }
 
-        public static void exportXMCDA(List<Criterion> criterionList, List<Alternative> alternativeList)
+        public static void exportXMCDA(string dataDirectoryPath, List<Criterion> criterionList, List<Alternative> alternativeList)
         {
 
             var partialUtilities = createSamplePartialUtilities(criterionList);
             var resultsList = createSampleResults(alternativeList);
 
-            string xmcdaOutputDirectory = Path.Combine(Environment.CurrentDirectory, "xmcda_output");
+            string xmcdaOutputDirectory = Path.Combine(dataDirectoryPath, "xmcda_output");
             XMCDAExporter xmcdaExporter = new XMCDAExporter(xmcdaOutputDirectory,
                                                             criterionList,
                                                             alternativeList,

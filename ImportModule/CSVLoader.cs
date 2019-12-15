@@ -61,7 +61,8 @@ namespace ImportModule
                     // iterating from 1 because first column is empty
                     for (int i = 1; i < criterionDirectionsArray.Length; i++)
                     {
-                        criterionList.Add(new Criterion(criterionNamesArray[i], criterionDirectionsArray[i]));
+                        // for CSV ID and Name are the same value
+                        criterionList.Add(new Criterion(criterionNamesArray[i], criterionDirectionsArray[i]) { ID = criterionNamesArray[i] });
                     }
 
                     while (!reader.EndOfStream)
@@ -85,10 +86,13 @@ namespace ImportModule
                 // make warning more accurate 
                 // if process failed while processing first line 
                 // than it is possible that the structure of whole file is wrong
-                if(lineNumber > 1) {
+                if (lineNumber > 1)
+                {
                     Trace.WriteLine("The process failed while processing line " + lineNumber.ToString() + " of CSV file");
                     Trace.WriteLine("Error: " + e.Message);
-                } else {
+                }
+                else
+                {
                     Trace.WriteLine("Processing CSV file " + filePath + " failed.");
                     Trace.WriteLine("Error: " + e.Message);
                 }

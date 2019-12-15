@@ -18,7 +18,8 @@ namespace ImportModule
         {
             ValidateFilePath(filePath);
 
-            try {
+            try
+            {
                 //load XML
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.Load(filePath);
@@ -32,7 +33,9 @@ namespace ImportModule
                     {
                         foreach (XmlNode attribute in xmlNode)
                         {
-                            Criterion criterion = new Criterion() { Name = attribute.Attributes["AttrID"].Value };
+                            Criterion criterion = new Criterion() { };
+                            // for UTX ID and Name are the same value
+                            criterion.Name = criterion.ID = attribute.Attributes["AttrID"].Value;
                             bool saveCriterion = true;
                             Dictionary<string, string> enumIdsNamesDictionary = new Dictionary<string, string>();
                             Dictionary<string, float> enumIdsValuesDictionary = new Dictionary<string, float>();
@@ -142,8 +145,10 @@ namespace ImportModule
                             alternativeList.Add(alternative);
                         }
                     }
-                } 
-            } catch(Exception e) {
+                }
+            }
+            catch (Exception e)
+            {
                 //TODO vonshick WARNINGS
                 Trace.WriteLine("Loading UTX " + filePath + " failed! " + e.Message);
             }
