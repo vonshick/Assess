@@ -7,23 +7,28 @@ namespace CalculationsEngine
 {
     internal class Solver
     {
-        private readonly Ranking ReferenceRanking;
+        private readonly ReferenceRanking ReferenceRanking;
         private readonly List<KeyValuePair<Alternative, int>> VariantsList;
         private new readonly List<int> Equals;
         private double[] Solution;
 
 
-        public Solver(Ranking referenceRanking)
+        public Solver(ReferenceRanking referenceRanking)
         {
-            VariantsList = referenceRanking.AlternativeList;
+            VariantsList = new List<KeyValuePair<Alternative, int>>();
+            foreach (var r in referenceRanking.ReferenceRankingList)
+            {
+                VariantsList.Add(new KeyValuePair<Alternative, int>(r.Alternative, r.Rank));
+            }
+            //VariantsList = referenceRanking.AlternativeList;
             var cfc = CriterionFieldsCount;
-            foreach (var c in referenceRanking.AlternativeList[0].Key.CriteriaValues.Keys) cfc += c.LinearSegments;
+            foreach (var c in VariantsList[0].Key.CriteriaValues.Keys) cfc += c.LinearSegments;
             CriterionFieldsCount = cfc;
             Equals = new List<int>();
-            for (var i = 0; i < referenceRanking.AlternativeList.Count - 1; i++)
-                if (referenceRanking.AlternativeList[i].Value == referenceRanking.AlternativeList[i + 1].Value)
+            for (var i = 0; i < VariantsList.Count - 1; i++)
+                if (VariantsList[i].Value == VariantsList[i + 1].Value)
                     Equals.Add(i);
-            Equals.Add(referenceRanking.AlternativeList.Count - 1);
+            Equals.Add(VariantsList.Count - 1);
         }
 
         private int CriterionFieldsCount { get; }

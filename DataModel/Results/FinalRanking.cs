@@ -1,16 +1,15 @@
 ﻿using System.Collections.Generic;
 using DataModel.Input;
+using DataModel.Structs;
 
 namespace DataModel.Results
 {
-    public class FinalRanking : Ranking
+    public class FinalRanking
     {
-        public FinalRanking(List<KeyValuePair<Alternative, int>> alternativeList, List<float> globalUtilities) : base(
-            alternativeList)
+        public FinalRanking(List<FinalRankingEntry> finalRankingList)
         {
-            GlobalUtilities = globalUtilities;
+            FinalRankingList = finalRankingList;
         }
-
-        public List<float> GlobalUtilities { get; set; }
+        public List<FinalRankingEntry> FinalRankingList { get; set; } = new List<FinalRankingEntry>();
     }
 }
