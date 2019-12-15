@@ -40,10 +40,10 @@ namespace CalculationsEngine
             width = WidthOfSimplexMatrix(variantsList[0].Key);
             Matrix = CreateSimplexMatrix(height, width);
 
-            var solution =
+            var solutionOfSimplex =
                 new Simplex(Matrix, variantsList.Count); //widthOfPrimary = width - height, widthOfSlack = height
-            Solution = solution.Drive(NumberOfIteration);
-            MakePartialUtilityFunction(Solution);
+            solution = solutionOfSimplex.Drive(NumberOfIteration);
+            MakePartialUtilityFunction(solution);
         }
 
         private List<PartialUtility> MakePartialUtilityFunction(double[] doubles)
