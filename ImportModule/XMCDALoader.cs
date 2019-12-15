@@ -59,21 +59,6 @@ namespace ImportModule
             }
         }
 
-        private void LoadCriteriaThresholds()
-        {
-
-        }
-
-        private void LoadAlternatives()
-        {
-
-        }
-
-        private void LoadMethodParameteres()
-        {
-
-        }
-
         private void LoadPerformanceTable()
         {
             ValidateFilePath(Path.Combine(xmcdaDirectory, "performance_table.xml"));
@@ -104,11 +89,6 @@ namespace ImportModule
 
                 alternativeList.Add(alternative);
             }
-        }
-
-        private void LoadWeights()
-        {
-
         }
 
         private void LoadAlternativesRanks()
@@ -197,14 +177,15 @@ namespace ImportModule
             this.xmcdaDirectory = xmcdaDirectory;
             LoadCriteria();
             LoadCriteriaScales();
-            LoadCriteriaThresholds();
-            LoadAlternatives();
-            LoadMethodParameteres();
             LoadPerformanceTable();
-            LoadWeights();
-            LoadAlternativesRanks();
-            LoadValueFunctions();
             setMinAndMaxCriterionValues();
         }
+
+        public void LoadResults() 
+        {
+            LoadAlternativesRanks();
+            LoadValueFunctions();
+        }
+        
     }
 }
