@@ -7,28 +7,26 @@ namespace CalculationsEngine
 {
     internal class Solver
     {
-        private readonly ReferenceRanking ReferenceRanking;
-        private readonly List<KeyValuePair<Alternative, int>> VariantsList;
-        private new readonly List<int> Equals;
-        private double[] Solution;
+        private readonly List<int> equals;
+        private readonly ReferenceRanking referenceRanking;
+        private readonly List<KeyValuePair<Alternative, int>> variantsList;
+        private double[] solution;
 
 
         public Solver(ReferenceRanking referenceRanking)
         {
-            VariantsList = new List<KeyValuePair<Alternative, int>>();
+            variantsList = new List<KeyValuePair<Alternative, int>>();
             foreach (var r in referenceRanking.ReferenceRankingList)
-            {
-                VariantsList.Add(new KeyValuePair<Alternative, int>(r.Alternative, r.Rank));
-            }
-            //VariantsList = referenceRanking.AlternativeList;
+                variantsList.Add(new KeyValuePair<Alternative, int>(r.Alternative, r.Rank));
+            //variantsList = referenceRanking.AlternativeList;
             var cfc = CriterionFieldsCount;
-            foreach (var c in VariantsList[0].Key.CriteriaValues.Keys) cfc += c.LinearSegments;
+            foreach (var c in variantsList[0].Key.CriteriaValues.Keys) cfc += c.LinearSegments;
             CriterionFieldsCount = cfc;
-            Equals = new List<int>();
-            for (var i = 0; i < VariantsList.Count - 1; i++)
-                if (VariantsList[i].Value == VariantsList[i + 1].Value)
-                    Equals.Add(i);
-            Equals.Add(VariantsList.Count - 1);
+            equals = new List<int>();
+            for (var i = 0; i < variantsList.Count - 1; i++)
+                if (variantsList[i].Value == variantsList[i + 1].Value)
+                    equals.Add(i);
+            equals.Add(variantsList.Count - 1);
         }
 
         private int CriterionFieldsCount { get; }
@@ -37,13 +35,13 @@ namespace CalculationsEngine
 
         public void Calculate()
         {
-            int height, width, heightOfPrimaryMatrix = VariantsList[0].Key.CriteriaValues.Count;
+            int height, width, heightOfPrimaryMatrix = variantsList[0].Key.CriteriaValues.Count;
             height = HeightOfSimplexMatrix();
-            width = WidthOfSimplexMatrix(VariantsList[0].Key);
+            width = WidthOfSimplexMatrix(variantsList[0].Key);
             Matrix = CreateSimplexMatrix(height, width);
 
             var solution =
-                new Simplex(Matrix, VariantsList.Count); //widthOfPrimary = width - height, widthOfSlack = height
+                new Simplex(Matrix, variantsList.Count); //widthOfPrimary = width - height, widthOfSlack = height
             Solution = solution.Drive(NumberOfIteration);
             MakePartialUtilityFunction(Solution);
         }
@@ -54,7 +52,7 @@ namespace CalculationsEngine
             var partialUtilityList = new List<PartialUtility>();
             int linearSegments, count = 0;
             Dictionary<float, float> dict;
-            foreach (var entry in VariantsList[0].Key.CriteriaValues)
+            foreach (var entry in variantsList[0].Key.CriteriaValues)
             {
                 dict = new Dictionary<float, float>();
                 linearSegments = entry.Key.LinearSegments;
@@ -71,7 +69,7 @@ namespace CalculationsEngine
             double[,] simplexMatrix = new double[height, width], matrix;
             matrix = CreateMatrix();
             var widthWithoutSlack = width - height;
-            for (var r = 0; r < VariantsList.Count - 1; r++)
+            for (var r = 0; r < variantsList.Count - 1; r++)
             {
                 for (var c = 0; c < CriterionFieldsCount; c++) simplexMatrix[r, c] = matrix[r, c] - matrix[r + 1, c];
                 simplexMatrix[r, r * 2 + CriterionFieldsCount] = -1;
@@ -82,11 +80,11 @@ namespace CalculationsEngine
 
             //Create last ideal line = 1
             for (var c = 0; c < CriterionFieldsCount; c++)
-                simplexMatrix[VariantsList.Count - 1, c] = c < CriterionFieldsCount ? 1 : 0;
+                simplexMatrix[variantsList.Count - 1, c] = c < CriterionFieldsCount ? 1 : 0;
             //Add slack 1 and subtract surplus -1 variables.
             for (var r = 0; r < height; r++)
             for (var c = widthWithoutSlack; c < width; c++)
-                simplexMatrix[r, c] = c != r + widthWithoutSlack ? 0 : r < VariantsList.Count ? -1 : 1;
+                simplexMatrix[r, c] = c != r + widthWithoutSlack ? 0 : r < variantsList.Count ? -1 : 1;
             simplexMatrix = AddPAndAnswerColumn(simplexMatrix, widthWithoutSlack);
             return simplexMatrix;
         }
@@ -104,21 +102,21 @@ namespace CalculationsEngine
             for (var r = 0; r < height; r++) simplexMatrix[r, sM.GetLength(1) + 1] = 0.05;
             //Copy equals
             int i = 0, col;
-            for (var r = VariantsList.Count; r < height; r++)
+            for (var r = variantsList.Count; r < height; r++)
             {
                 for (var c = 0; c < widthWithoutSlack; c++)
                 {
-                    simplexMatrix[r, c] = simplexMatrix[Equals[i], c];
+                    simplexMatrix[r, c] = simplexMatrix[equals[i], c];
                     col = sM.GetLength(1) + 1;
                     if (r != height - 1)
                     {
                         simplexMatrix[r, col] = 0;
-                        simplexMatrix[Equals[i], col] = 0;
+                        simplexMatrix[equals[i], col] = 0;
                     }
                     else
                     {
                         simplexMatrix[r, col] = 1;
-                        simplexMatrix[Equals[i], col] = 1;
+                        simplexMatrix[equals[i], col] = 1;
                     }
                 }
 
@@ -130,11 +128,11 @@ namespace CalculationsEngine
 
         public double[,] CreateMatrix()
         {
-            var matrix = new double[VariantsList[0].Key.CriteriaValues.Count, CriterionFieldsCount];
+            var matrix = new double[variantsList[0].Key.CriteriaValues.Count, CriterionFieldsCount];
             double[] row;
-            for (var i = 0; i < VariantsList.Count; i++)
+            for (var i = 0; i < variantsList.Count; i++)
             {
-                row = GenerateRow(CriterionFieldsCount, VariantsList[i].Key);
+                row = GenerateRow(CriterionFieldsCount, variantsList[i].Key);
                 for (var j = 0; j < CriterionFieldsCount; j++) matrix[i, j] = row[j];
             }
 
@@ -225,12 +223,12 @@ namespace CalculationsEngine
 
         public int HeightOfSimplexMatrix()
         {
-            var hom = VariantsList.Count;
-            for (var i = 0; i < VariantsList.Count - 1; i++)
-                if (VariantsList[i].Value == VariantsList[i + 1].Value)
-                    Equals.Add(i);
-            Equals.Add(VariantsList.Count - 1);
-            hom += Equals.Count;
+            var hom = variantsList.Count;
+            for (var i = 0; i < variantsList.Count - 1; i++)
+                if (variantsList[i].Value == variantsList[i + 1].Value)
+                    equals.Add(i);
+            equals.Add(variantsList.Count - 1);
+            hom += equals.Count;
             return hom;
         }
     }
