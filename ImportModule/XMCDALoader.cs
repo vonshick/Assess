@@ -23,6 +23,8 @@ namespace ImportModule
 
         private void LoadCriteria()
         {
+            ValidateFilePath(Path.Combine(xmcdaDirectory, "criteria.xml"));
+
             XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.Load(Path.Combine(xmcdaDirectory, "criteria.xml"));
 
@@ -41,6 +43,8 @@ namespace ImportModule
 
         private void LoadCriteriaScales()
         {
+            ValidateFilePath(Path.Combine(xmcdaDirectory, "criteria_scales.xml"));
+            
             XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.Load(Path.Combine(xmcdaDirectory, "criteria_scales.xml"));
 
@@ -72,6 +76,8 @@ namespace ImportModule
 
         private void LoadPerformanceTable()
         {
+            ValidateFilePath(Path.Combine(xmcdaDirectory, "performance_table.xml"));
+
             XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.Load(Path.Combine(xmcdaDirectory, "performance_table.xml"));
 
@@ -107,6 +113,8 @@ namespace ImportModule
 
         private void LoadAlternativesRanks()
         {
+            ValidateFilePath(Path.Combine(xmcdaDirectory, "alternatives_ranks.xml"));
+
             XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.Load(Path.Combine(xmcdaDirectory, "alternatives_ranks.xml"));
 
@@ -133,6 +141,8 @@ namespace ImportModule
 
         private void LoadValueFunctions()
         {
+            ValidateFilePath(Path.Combine(xmcdaDirectory, "value_functions.xml"));
+
             XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.Load(Path.Combine(xmcdaDirectory, "value_functions.xml"));
 

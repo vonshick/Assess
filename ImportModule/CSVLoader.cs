@@ -44,6 +44,8 @@ namespace ImportModule
 
         override protected void ProcessFile(string filePath)
         {
+            ValidateFilePath(filePath);
+
             try
             {
                 using (var reader = new StreamReader(filePath, Encoding.UTF8))
@@ -79,8 +81,17 @@ namespace ImportModule
             }
             catch (Exception e)
             {
-                Trace.WriteLine("The process failed while processing line " + lineNumber.ToString() + " of CSV file");
-                Trace.WriteLine("Error: " + e.ToString());
+                //TODO vonshick WARNINGS
+                // make warning more accurate 
+                // if process failed while processing first line 
+                // than it is possible that the structure of whole file is wrong
+                if(lineNumber > 1) {
+                    Trace.WriteLine("The process failed while processing line " + lineNumber.ToString() + " of CSV file");
+                    Trace.WriteLine("Error: " + e.Message);
+                } else {
+                    Trace.WriteLine("Processing CSV file " + filePath + " failed.");
+                    Trace.WriteLine("Error: " + e.Message);
+                }
             }
         }
     }
