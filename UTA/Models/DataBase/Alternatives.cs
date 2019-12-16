@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using DataModel.Input;
 
 namespace UTA.Models.DataBase
@@ -23,19 +22,18 @@ namespace UTA.Models.DataBase
             ReferenceRanking = new ReferenceRanking(4);
         }
 
-        public Alternative AddAlternative(string name, string description, PropertyChangedEventHandler criterionValuePropertyChangedEventHandler)
+        public Alternative AddAlternative(string name, string description)
         {
-            Alternative alternative = new Alternative(name, description, Criteria.CriteriaCollection, criterionValuePropertyChangedEventHandler);
+            Alternative alternative = new Alternative(name, description, Criteria.CriteriaCollection);
             AlternativesCollection.Add(alternative);
             return alternative;
         }
 
-        public void AddNewCriterionToAlternatives(string name, float value, PropertyChangedEventHandler criterionValuePropertyChangedEventHandler)
+        public void AddNewCriterionToAlternatives(string name, float value)
         {
             foreach (var alternative in AlternativesCollection)
             {
                 CriterionValue criterionValue = new CriterionValue(name, value);
-                criterionValue.PropertyChanged += criterionValuePropertyChangedEventHandler;
                 alternative.AddCriterionValue(criterionValue);
             }
         }

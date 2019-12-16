@@ -34,10 +34,7 @@ namespace UTA.Views
          InitializeComponent();
          DataContext = _viewmodel;
          SetBindings();
-         _viewmodel.PropertyChanged += ViewmodelPropertyChanged;
          _viewmodel.Criteria.CriteriaCollection.CollectionChanged += UpdateAlternativesDataGridColumns;
-         _viewmodel.GenerateCriteriaTable();
-         _viewmodel.GenerateAlternativesTable();
          ButtonEditAlternatives.Content = "Editing is OFF";
 
          var tabViewSource = CollectionViewSource.GetDefaultView(TabControl.Items);

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace DataModel.Input
 {
@@ -15,24 +14,23 @@ namespace DataModel.Input
             ReferenceRank = -1;
         }
 
-        public void InitCriteriaValues(ObservableCollection<Criterion> criteriaCollection, PropertyChangedEventHandler criterionValuePropertyChangedEventHandler)
+        public void InitCriteriaValues(ObservableCollection<Criterion> criteriaCollection)
         {
             foreach (Criterion criterion in criteriaCollection)
             {
                 CriterionValue criterionValue = new CriterionValue(criterion.Name, 2.0f);
-                criterionValue.PropertyChanged += criterionValuePropertyChangedEventHandler;
                 AddCriterionValue(criterionValue);
             }
         }
 
-        public Alternative(string name, string description, ObservableCollection<Criterion> criteriaCollection, PropertyChangedEventHandler criterionValuePropertyChangedEventHandler)
+        public Alternative(string name, string description, ObservableCollection<Criterion> criteriaCollection)
         {
             Name = name;
             Description = description;
             ReferenceRank = -1;
             CriteriaValues = new Dictionary<Criterion, float>();
             CriteriaValuesList = new List<CriterionValue>();
-            InitCriteriaValues(criteriaCollection, criterionValuePropertyChangedEventHandler);
+            InitCriteriaValues(criteriaCollection);
         }
 
         private string _name;

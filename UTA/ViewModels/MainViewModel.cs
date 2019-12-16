@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Runtime.CompilerServices;
 using System.Windows;
+﻿using System.Collections.Specialized;
 using System.Windows.Controls;
 using System.Windows.Media;
 using DataModel.Input;
@@ -17,7 +18,7 @@ using UTA.Views;
 
 namespace UTA.ViewModels
 {
-    public class MainViewModel : INotifyPropertyChanged
+    public class MainViewModel
     {
         public static Dictionary<string, string> CriterionDirectionTypes = new Dictionary<string, string>
         {
@@ -123,8 +124,6 @@ namespace UTA.ViewModels
             var addCriterionViewModel = new AddCriterionViewModel {MainViewModel = this, Criteria = Criteria};
             var addCriterionWindow = new AddCriterionView(addCriterionViewModel);
             addCriterionWindow.ShowDialog();
-            //if (!Criteria.AddCriterion(criterionName, criterionDescription, criterionDirection, linearSegments))
-            //   return false;
         }
 
         public void AddAlternative(string name, string description)
@@ -226,10 +225,8 @@ namespace UTA.ViewModels
 
         public void AddAlternativeFromDataGrid(object sender, AddingNewItemEventArgs e)
         {
-            var alternative = new Alternative("initName", "initDesc", Criteria.CriteriaCollection,
-                GenerateAlternativesTable);
+            Alternative alternative = new Alternative("initName", "initDesc", Criteria.CriteriaCollection);
             e.NewItem = alternative;
-//            GenerateAlternativesTable();
         }
 
         private void AlternativesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -237,11 +234,8 @@ namespace UTA.ViewModels
             if (e.NewItems != null)
                 foreach (Alternative alternative in e.NewItems)
                 {
-                    alternative.PropertyChanged += GenerateAlternativesTable;
                     Alternatives.HandleNewAlternativeRanking(alternative);
                 }
-
-//            GenerateAlternativesTable();
         }
 
         // TODO: remove. temporary class for designing and preview purposes

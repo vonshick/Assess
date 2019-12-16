@@ -551,19 +551,17 @@
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Name" Width="120" DisplayMemberBinding="{Binding Name}" />
+                            <GridViewColumn Header="Description" Width="120" DisplayMemberBinding="{Binding Description}" />
+                            <GridViewColumn Header="ReferenceRank" Width="120" DisplayMemberBinding="{Binding ReferenceRank}" />
                         </GridView>
                     </ListView.View>
                 </ListView>
                     <Label Content="Ranking" />
                 <Grid>
-                    <!-- <DataGrid Name="RankingDataGrid" IsReadOnly="True" Height="100" VerticalAlignment="Top" Margin="10,0,233.6,0"/> -->
-                    <!-- <DataGrid Name="RankingDataGrid2" IsReadOnly="True" Height="100" VerticalAlignment="Top" Margin="219,0,9.6,0"/> -->
-                    <!-- <ListView Name="RankingListView" AllowDrop="True" Height="100" VerticalAlignment="Top" Margin="10,0,233.6,0"/> -->
                     <ListView Name="RankingListView1" ItemsSource="{Binding}" Height="100" VerticalAlignment="Top" Margin="0,0,218,0"
                               dragDropFramework:DragDrop.IsDragSource="True"
                               dragDropFramework:DragDrop.IsDropTarget="True"
                               dragDropFramework:DragDrop.DropHandler="{StaticResource AlternativeDropHandler}">
-                        <!-- dragDropFramework:DragDrop.DropHandler=> -->
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Name" Width="120" DisplayMemberBinding="{Binding Name}" />
@@ -571,12 +569,7 @@
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Click="RemoveAlternativeFromRankButton">Remove</Button>
-                                            <!-- <Button  -->
-                                            <!-- Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListView}}, -->
-                                            <!-- Path=DataContext.RemoveAlternativeRankButton}">Remove</Button> -->
                                         </DataTemplate>
-                                        <!-- <Button Command="{Binding Path=RemoveRankButton}" -->
-                                        <!-- CommandParameter="{Binding ElementName=root, Path=(FocusManager.FocusedElement)}">Remove</Button></DataTemplate> -->
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
                             </GridView>
@@ -588,13 +581,6 @@
                               dragDropFramework:DragDrop.DropHandler="{StaticResource AlternativeDropHandler}">
                         <ListView.View>
                             <GridView>
-                                <!-- <GridViewColumn Header="Sel." Width="32"> -->
-                                <!--     <GridViewColumn.CellTemplate> -->
-                                <!--         <DataTemplate> -->
-                                <!--             <CheckBox IsChecked="{Binding IsSelected}"/> -->
-                                <!--         </DataTemplate> -->
-                                <!--     </GridViewColumn.CellTemplate> -->
-                                <!-- </GridViewColumn> -->
                                 <GridViewColumn Header="Name2" Width="120" DisplayMemberBinding="{Binding Name}" />
                                 <GridViewColumn>
                                     <GridViewColumn.CellTemplate>
