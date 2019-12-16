@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media.Animation;
 using DataModel.Input;
 using UTA.Models;
 using UTA.ViewModels;
@@ -21,7 +22,6 @@ namespace UTA.Views
       private readonly MainViewModel _viewmodel = new MainViewModel();
       private RepeatButton _scrollLeftButton;
       private RepeatButton _scrollRightButton;
-
       private ScrollViewer _tabScrollViewer;
 
       public MainView()
@@ -42,6 +42,20 @@ namespace UTA.Views
 
          var tabViewSource = CollectionViewSource.GetDefaultView(TabControl.Items);
          tabViewSource.CollectionChanged += TabsCollectionChanged;
+        //            AlternativesListView.SetBinding(ListView.ItemsSourceProperty, new Binding("AlternativesTable") { Source = _viewmodel });
+
+        //todo bind new element from datagrid
+        AlternativesListView.ItemsSource = _viewmodel.Alternatives.AlternativesNotRankedCollection;
+
+        //            CriteriaListView.SetBinding(ListView.ItemsSourceProperty, new Binding("CriteriaTable") { Source = _viewmodel });
+        CriteriaListView.ItemsSource = _viewmodel.Criteria.CriteriaCollection;
+
+//            RankingListView.SetBinding(ListView.ItemsSourceProperty, new Binding("AlternativesTable") { Source = _viewmodel });
+//            RankingListView2.SetBinding(ListView.ItemsSourceProperty, new Binding("AlternativesTable") { Source = _viewmodel });
+        RankingListView1.ItemsSource = _viewmodel.Alternatives.ReferenceRanking.RankingsCollection[0];
+        RankingListView2.ItemsSource = _viewmodel.Alternatives.ReferenceRanking.RankingsCollection[1];
+        RankingListView3.ItemsSource = _viewmodel.Alternatives.ReferenceRanking.RankingsCollection[2];
+        RankingListView4.ItemsSource = _viewmodel.Alternatives.ReferenceRanking.RankingsCollection[3];
       }
 
       private void SetBindings()
@@ -58,8 +72,8 @@ namespace UTA.Views
             new Binding("AlternativesTable") {Source = _viewmodel});
          CriteriaListView.SetBinding(ListView.ItemsSourceProperty, new Binding("CriteriaTable") {Source = _viewmodel});
 
-         RankingListView.SetBinding(ListView.ItemsSourceProperty,
-            new Binding("AlternativesTable") {Source = _viewmodel});
+//         RankingListView.SetBinding(ListView.ItemsSourceProperty,
+//            new Binding("AlternativesTable") {Source = _viewmodel});
       }
 
       public string InputAlternativeName { get; set; }
@@ -70,7 +84,7 @@ namespace UTA.Views
          switch (e.PropertyName)
          {
             case "AlternativesTable":
-               RenderListViews();
+//               RenderListViews();
                break;
             case "CriteriaTable":
                //CriteriaListView.View = GenerateGridView(_viewmodel.CriteriaTable);
@@ -84,28 +98,41 @@ namespace UTA.Views
       }
 
       private void RenderListViews()
-      {
-         AlternativesListView.View = GenerateGridView(_viewmodel.AlternativesTable);
-         CriteriaListView.View = GenerateGridView(_viewmodel.CriteriaTable);
-         RankingListView.View = GenerateGridView(_viewmodel.AlternativesTable);
-      }
+        {
+            AlternativesListView.View = GenerateGridView(_viewmodel.AlternativesTable);
+//            CriteriaListView.View = GenerateGridView(_viewmodel.CriteriaTable);
+//            RankingListView.View = GenerateGridView(_viewmodel.AlternativesTable);
+//            RankingListView2.View = GenerateGridView(_viewmodel.AlternativesTable);
+        }
 
-      private GridView GenerateGridView(DataTable table)
-      {
-         GridView view = new GridView();
-         foreach (DataColumn column in table.Columns)
-         {
-            view.Columns.Add(new GridViewColumn()
+        private GridView GenerateGridView(DataTable table)
+        {
+            GridView view = new GridView();
+            foreach (DataColumn column in table.Columns)
             {
-               Header = column.ColumnName,
-               DisplayMemberBinding = new Binding(column.ColumnName)
-            });
-         }
+                view.Columns.Add(new GridViewColumn()
+                {
+                    Header = column.ColumnName,
+                    DisplayMemberBinding = new Binding(column.ColumnName)
+                });
+            }
+            return view;
+        }
 
-         return view;
-      }
+        private void RemoveAlternativeButton(object sender, RoutedEventArgs e)
+        {
+            _viewmodel.Alternatives.RemoveAlternative((Alternative) EditAlternativesDataGrid.SelectedItem);
+        }
 
-      public void ShowAddCriterionDialog(object sender, RoutedEventArgs routedEventArgs)
+        private void RemoveAlternativeFromRankButton(object sender, RoutedEventArgs e)
+        {
+            Button sourceBtn = sender as Button;
+            Alternative alternative = sourceBtn.DataContext as Alternative;
+            _viewmodel.Alternatives.RemoveAlternativeFromRank(alternative);
+        }
+
+
+        public void ShowAddCriterionDialog(object sender, RoutedEventArgs routedEventArgs)
       {
          _viewmodel.ShowAddCriterionDialog();
       }

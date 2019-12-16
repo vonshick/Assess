@@ -12,13 +12,7 @@ namespace DataModel.Input
         {
             CriteriaValues = new Dictionary<Criterion, float>();
             CriteriaValuesList = new List<CriterionValue>();
-        }
-
-        public Alternative(ObservableCollection<Criterion> criteriaCollection, PropertyChangedEventHandler criterionValuePropertyChangedEventHandler)
-        {
-            CriteriaValues = new Dictionary<Criterion, float>();
-            CriteriaValuesList = new List<CriterionValue>();
-            InitCriteriaValues(criteriaCollection, criterionValuePropertyChangedEventHandler);
+            ReferenceRank = -1;
         }
 
         public void InitCriteriaValues(ObservableCollection<Criterion> criteriaCollection, PropertyChangedEventHandler criterionValuePropertyChangedEventHandler)
@@ -35,6 +29,7 @@ namespace DataModel.Input
         {
             Name = name;
             Description = description;
+            ReferenceRank = -1;
             CriteriaValues = new Dictionary<Criterion, float>();
             CriteriaValuesList = new List<CriterionValue>();
             InitCriteriaValues(criteriaCollection, criterionValuePropertyChangedEventHandler);
@@ -47,7 +42,7 @@ namespace DataModel.Input
         //todo make sure the order is same as in criteriaList
         public List<CriterionValue> CriteriaValuesList
         {
-            //todo onchane event like in CriteriaValues to update everything after adding alternative from datagrid's last row
+            //todo on change event like in CriteriaValues to update everything after adding alternative from datagrid's last row
             get; set;
         }
 
@@ -91,6 +86,7 @@ namespace DataModel.Input
             }
         }
 
+        public int ReferenceRank { get; set; }
 
         //TODO remove, CriteriaValuesList used now instead
         /// <summary> pairs: (criterion name, value) </summary>

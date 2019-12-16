@@ -9,6 +9,7 @@
                       xmlns:viewModels="clr-namespace:UTA.ViewModels"
                       xmlns:views="clr-namespace:UTA.Views"
                       xmlns:tabModel="clr-namespace:UTA.Models.Tab"
+                      xmlns:dragDropFramework="urn:gong-wpf-dragdrop"
                       x:Class="UTA.Views.MainView" mc:Ignorable="d"
                       d:DataContext="{d:DesignInstance viewModels:MainViewModel}" Title="UTA" WindowState="Maximized"
                       Width="1300" Height="700" MinWidth="900" MinHeight="700" Left="12" Top="12">
@@ -256,7 +257,7 @@
       <!--left panel (alternatives and criteria)-->
       <Border Grid.Row="1" Grid.Column="0" Background="{StaticResource ColorInterface6}" BorderThickness="0,0,1,0"
               BorderBrush="{StaticResource ColorBorders1}">
-        <Grid>
+          <Grid>
           <Grid.RowDefinitions>
             <RowDefinition Height="24" />
             <RowDefinition Height="*" />
@@ -270,7 +271,6 @@
               <RowDefinition />
               <RowDefinition />
             </Grid.RowDefinitions>
-
             <Grid.Resources>
               <ControlTemplate x:Key="LeftPanelListViewItemTemplateButtonTemplate" TargetType="{x:Type ButtonBase}">
                 <Border x:Name="Border" BorderThickness="0,0,0,1" BorderBrush="{StaticResource ColorInterface3}"
@@ -529,23 +529,133 @@
               <TextBlock Text="Description" VerticalAlignment="Center"/>
               <TextBox Name="TextBoxAlternativeDescription" Height="23" Width="120" />
               <Button Name="ButtonAddAlternative" Click="AddAlternative" Content="Add" Width="120" />
+              <DataGrid Name="EditAlternativesDataGrid" IsReadOnly="True" ItemsSource="{Binding}" AutoGenerateColumns="False" Height="102" Margin="60,0,58,0">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Click="RemoveAlternativeButton">Remove</Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Binding="{Binding Name, Mode=TwoWay}" Header="Name"/>
+                        <DataGridTextColumn Binding="{Binding Description, Mode=TwoWay}" Header="Description"/>
+                        <DataGridTextColumn Binding="{Binding ReferenceRank, Mode=TwoWay}" IsReadOnly="True" Header="Rank"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <Button x:Name="ButtonEditAlternatives" Click="EditAlternativesSwitch" Content="Edit On/Off" Width="74"/>
+                <ListView Name="AlternativesListView" ItemsSource="{Binding}" Height="102" Margin="60,0,58,0"
+                          dragDropFramework:DragDrop.IsDragSource="True"
+                          dragDropFramework:DragDrop.IsDropTarget="True"
+                          dragDropFramework:DragDrop.DropHandler="{StaticResource AlternativeDropHandler}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Name" Width="120" DisplayMemberBinding="{Binding Name}" />
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                    <Label Content="Ranking" />
+                <Grid>
+                    <!-- <DataGrid Name="RankingDataGrid" IsReadOnly="True" Height="100" VerticalAlignment="Top" Margin="10,0,233.6,0"/> -->
+                    <!-- <DataGrid Name="RankingDataGrid2" IsReadOnly="True" Height="100" VerticalAlignment="Top" Margin="219,0,9.6,0"/> -->
+                    <!-- <ListView Name="RankingListView" AllowDrop="True" Height="100" VerticalAlignment="Top" Margin="10,0,233.6,0"/> -->
+                    <ListView Name="RankingListView1" ItemsSource="{Binding}" Height="100" VerticalAlignment="Top" Margin="0,0,218,0"
+                              dragDropFramework:DragDrop.IsDragSource="True"
+                              dragDropFramework:DragDrop.IsDropTarget="True"
+                              dragDropFramework:DragDrop.DropHandler="{StaticResource AlternativeDropHandler}">
+                        <!-- dragDropFramework:DragDrop.DropHandler=> -->
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Name" Width="120" DisplayMemberBinding="{Binding Name}" />
+                                <GridViewColumn>
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Click="RemoveAlternativeFromRankButton">Remove</Button>
+                                            <!-- <Button  -->
+                                            <!-- Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListView}}, -->
+                                            <!-- Path=DataContext.RemoveAlternativeRankButton}">Remove</Button> -->
+                                        </DataTemplate>
+                                        <!-- <Button Command="{Binding Path=RemoveRankButton}" -->
+                                        <!-- CommandParameter="{Binding ElementName=root, Path=(FocusManager.FocusedElement)}">Remove</Button></DataTemplate> -->
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <ListView Name="RankingListView2" ItemsSource="{Binding}" Height="100" VerticalAlignment="Top" Margin="219,0,9.6,0"
+                              dragDropFramework:DragDrop.IsDragSource="True"
+                              dragDropFramework:DragDrop.IsDropTarget="True"
+                              dragDropFramework:DragDrop.DropHandler="{StaticResource AlternativeDropHandler}">
+                        <ListView.View>
+                            <GridView>
+                                <!-- <GridViewColumn Header="Sel." Width="32"> -->
+                                <!--     <GridViewColumn.CellTemplate> -->
+                                <!--         <DataTemplate> -->
+                                <!--             <CheckBox IsChecked="{Binding IsSelected}"/> -->
+                                <!--         </DataTemplate> -->
+                                <!--     </GridViewColumn.CellTemplate> -->
+                                <!-- </GridViewColumn> -->
+                                <GridViewColumn Header="Name2" Width="120" DisplayMemberBinding="{Binding Name}" />
+                                <GridViewColumn>
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Click="RemoveAlternativeFromRankButton">Remove</Button>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+                <Grid>
+                    <ListView Name="RankingListView3" ItemsSource="{Binding}" Height="100" VerticalAlignment="Top" Margin="0,0,218,0"
+                              dragDropFramework:DragDrop.IsDragSource="True"
+                              dragDropFramework:DragDrop.IsDropTarget="True"
+                              dragDropFramework:DragDrop.DropHandler="{StaticResource AlternativeDropHandler}">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Name" Width="120" DisplayMemberBinding="{Binding Name}" />
+                                <GridViewColumn>
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Click="RemoveAlternativeFromRankButton">Remove</Button>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <ListView Name="RankingListView4" ItemsSource="{Binding}" Height="100" VerticalAlignment="Top" Margin="219,0,9.6,0"
+                              dragDropFramework:DragDrop.IsDragSource="True"
+                              dragDropFramework:DragDrop.IsDropTarget="True"
+                              dragDropFramework:DragDrop.DropHandler="{StaticResource AlternativeDropHandler}">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Name2" Width="120" DisplayMemberBinding="{Binding Name}" />
+                                <GridViewColumn>
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Click="RemoveAlternativeFromRankButton">Remove</Button>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+                <Label Content="Criteria" />
+                <Button x:Name="ButtonAddCriterion" Click="ShowAddCriterionDialog" Content="Add" Width="74"/>
+                <ListView Name="CriteriaListView" ItemsSource="{Binding}" Height="102" Width="342">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Criterion" Width="120" DisplayMemberBinding="{Binding Name}" />
+                            <GridViewColumn Header="Description" Width="120" DisplayMemberBinding="{Binding Description}" />
+                            <GridViewColumn Header="Type" Width="120" DisplayMemberBinding="{Binding CriterionDirection}" />
+                            <GridViewColumn Header="Linear Segments" Width="120" DisplayMemberBinding="{Binding LinearSegments}" />
+                        </GridView>
+                    </ListView.View>
+                </ListView>
             </StackPanel>
-            <ListView Name="AlternativesListView" BorderThickness="1" BorderBrush="{StaticResource ColorBorders2}" Height="100" Margin="0,8,0,0"/>
-            <!-- <DataGrid Name="EditAlternativesDataGrid" IsReadOnly="True" Height="102" /> -->
-            <DataGrid Name="EditAlternativesDataGrid" IsReadOnly="True" ItemsSource="{Binding}" AutoGenerateColumns="False" BorderThickness="1" BorderBrush="{StaticResource ColorBorders2}"  Height="100" Margin="0,8,0,0">
-              <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding Name, Mode=TwoWay}" Header="Name" />
-                <DataGridTextColumn Binding="{Binding Description, Mode=TwoWay}" Header="Description" />
-              </DataGrid.Columns>
-            </DataGrid>
-            <Button x:Name="ButtonEditAlternatives" Click="EditAlternativesSwitch" Content="Edit On/Off" Width="120" Margin="0,8,0,0"/>
-            <Button x:Name="ButtonAddCriterion" Click="ShowAddCriterionDialog" Content="Add Criterion" Width="120" Margin="0,8,0,0"/>
-            <ListView Name="CriteriaListView" Height="100" BorderThickness="1" BorderBrush="{StaticResource ColorBorders2}" />
-
-            <TextBlock Text="Ranking" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,8,0,0"/>
-            <!-- <DataGrid Name="RankingDataGrid" IsReadOnly="True" Height="100" VerticalAlignment="Top" /> -->
-            <!-- <DataGrid Name="RankingDataGrid2" IsReadOnly="True" Height="100" VerticalAlignment="Top" /> -->
-            <ListView Name="RankingListView" Height="100" Margin="0,8,0,0" BorderThickness="1" BorderBrush="{StaticResource ColorBorders2}" />
           </StackPanel >
         </StackPanel>
       </Border>
