@@ -75,6 +75,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ChartTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\CriteriaTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -101,11 +105,15 @@
     </Compile>
     <Compile Include="Models\ReferenceRankingConverter.cs" />
     <Compile Include="ViewModels\AlternativesTabViewModel.cs" />
+    <Compile Include="ViewModels\ChartTabViewModel.cs" />
     <Compile Include="ViewModels\CriteriaTabViewModel.cs" />
     <Compile Include="ViewModels\ReferenceRankingTabViewModel.cs" />
     <Compile Include="ViewModels\SettingsTabViewModel.cs" />
     <Compile Include="Views\AlternativesTab.xaml.cs">
       <DependentUpon>AlternativesTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ChartTab.xaml.cs">
+      <DependentUpon>ChartTab.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\CriteriaTab.xaml.cs">
       <DependentUpon>CriteriaTab.xaml</DependentUpon>

@@ -1,0 +1,16 @@
+﻿<UserControl x:Class="UTA.Views.ChartTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+             xmlns:local="clr-namespace:UTA.Views"
+             xmlns:mainViewModel="clr-namespace:UTA.ViewModels"
+             mc:Ignorable="d"
+             d:DesignHeight="700" d:DesignWidth="900"
+             d:DataContext="{d:DesignInstance mainViewModel:MainViewModel}"
+             DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type controls:MetroWindow}}}">
+  <Grid DataContext="{Binding ChartTabViewModel}" Background="{StaticResource ColorInterface7}">
+
+  </Grid>
+</UserControl>

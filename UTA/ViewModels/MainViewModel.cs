@@ -43,11 +43,13 @@ namespace UTA.ViewModels
             Tabs.CollectionChanged += TabsCollectionChanged;
             ShowTabCommand = new RelayCommand(tabModel => ShowTab((ITab) tabModel));
 
-            CriteriaTabViewModel = new CriteriaTabViewModel(Criteria, Alternatives);
-            AlternativesTabViewModel = new AlternativesTabViewModel(Criteria, Alternatives);
-            ReferenceRankingTabViewModel = new ReferenceRankingTabViewModel(Criteria, Alternatives);
-            SettingsTabViewModel = new SettingsTabViewModel();
-        }
+         CriteriaTabViewModel = new CriteriaTabViewModel(Criteria, Alternatives);
+         AlternativesTabViewModel = new AlternativesTabViewModel(Criteria, Alternatives);
+         ReferenceRankingTabViewModel = new ReferenceRankingTabViewModel(Criteria, Alternatives);
+         ChartTabViewModel = new ChartTabViewModel(Criteria, Alternatives);
+         SettingsTabViewModel = new SettingsTabViewModel();
+         Tabs.Add(ChartTabViewModel);
+      }
 
         // TODO: remove property after using real rankings
         public Ranking Rankings { get; set; } = new Ranking();
@@ -61,6 +63,7 @@ namespace UTA.ViewModels
         public AlternativesTabViewModel AlternativesTabViewModel { get; }
         public ReferenceRankingTabViewModel ReferenceRankingTabViewModel { get; }
         public SettingsTabViewModel SettingsTabViewModel { get; }
+        public ChartTabViewModel ChartTabViewModel { get; }
 
 
         // TODO: use in proper place (to refactor)
@@ -75,15 +78,16 @@ namespace UTA.ViewModels
             }
         }
 
+
         public ITab TabToSelect
-        {
-            get => _tabToSelect;
-            set
-            {
-                _tabToSelect = value;
-                OnPropertyChanged(nameof(TabToSelect));
-            }
-        }
+      {
+         get => _tabToSelect;
+         set
+         {
+            _tabToSelect = value;
+            OnPropertyChanged(nameof(TabToSelect));
+         }
+      }
 
         public DataTable AlternativesTable
         {

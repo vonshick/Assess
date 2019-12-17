@@ -449,6 +449,9 @@
               <DataTemplate DataType="{x:Type viewModels:ReferenceRankingTabViewModel}">
                 <views:ReferenceRankingTab />
               </DataTemplate>
+              <DataTemplate DataType="{x:Type viewModels:ChartTabViewModel}">
+                <views:ChartTab />
+              </DataTemplate>
               <DataTemplate DataType="{x:Type viewModels:SettingsTabViewModel}">
                 <views:SettingsTab />
               </DataTemplate>
