@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using DataModel.PropertyChangedExtended;
 
 namespace DataModel.Input
 {
-    public class Criterion
+    public class Criterion : INotifyPropertyChangedExtended<string>
     {
         public Criterion() { }
         public Criterion(string name, string criterionDirection)
@@ -39,12 +42,41 @@ namespace DataModel.Input
         public string ID { get; set; }
         public bool IsEnum {get; set; } = false;
         public Dictionary<string, float> EnumDictionary {get; set; }
-        public string Name { get; set; }
+        private string _name;
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                if (_name != value)
+                {
+                    string old = _name;
+                    _name = value;
+                    Console.WriteLine("Crit " + this.GetHashCode() + " has new name: " + value);
+                    NotifyPropertyChanged("Name", old, value);
+                }
+            }
+        }
+
         public string Description { get; set; }
         public enum CriterionDirectionTypes { Gain, Cost, Ordinal };
         public string CriterionDirection { get; set; }
         public int LinearSegments { get; set; }
         public float MinValue { get; set; }
         public float MaxValue { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public virtual void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(sender, e);
+            }
+        }
+        protected void NotifyPropertyChanged(string propertyName, string oldValue, string newValue)
+        {
+            OnPropertyChanged(this, new PropertyChangedExtendedEventArgs<string>(propertyName, oldValue, newValue));
+        }
+
     }
 }

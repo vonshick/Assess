@@ -7,11 +7,13 @@ using System.Data;
 using System.Runtime.CompilerServices;
 using System.Windows;
 ﻿using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Media;
 using DataModel.Input;
 using UTA.Annotations;
 using UTA.Interactivity;
+using DataModel.PropertyChangedExtended;
 using UTA.Models.DataBase;
 using UTA.Models.Tab;
 using UTA.Views;
@@ -283,6 +285,12 @@ namespace UTA.ViewModels
                     Alternative = alternative;
                 }
             }
+        }
+
+        public void CriterionRenamed(object sender, PropertyChangedEventArgs e)
+        {
+            PropertyChangedExtendedEventArgs<string> eExtended = (PropertyChangedExtendedEventArgs<string>) e;
+            Alternatives.UpdateCriteriaValueName(eExtended.OldValue, eExtended.NewValue);
         }
 
         public struct FinalRankingEntry

@@ -31,47 +31,59 @@ namespace UTA.Views
 //         DataLoader dataLoader = SampleImport.ProcessSampleData(dataDirectoryPath); // csv
 //         SampleExport.exportXMCDA(dataDirectoryPath, dataLoader.CriterionList, dataLoader.AlternativeList);
 
-         InitializeComponent();
-         DataContext = _viewmodel;
-         SetBindings();
-         _viewmodel.Criteria.CriteriaCollection.CollectionChanged += UpdateAlternativesDataGridColumns;
-         ButtonEditAlternatives.Content = "Editing is OFF";
-
-         var tabViewSource = CollectionViewSource.GetDefaultView(TabControl.Items);
-         tabViewSource.CollectionChanged += TabsCollectionChanged;
-        //            AlternativesListView.SetBinding(ListView.ItemsSourceProperty, new Binding("AlternativesTable") { Source = _viewmodel });
-
-        //todo bind new element from datagrid
-        AlternativesListView.ItemsSource = _viewmodel.Alternatives.AlternativesNotRankedCollection;
-
-        //            CriteriaListView.SetBinding(ListView.ItemsSourceProperty, new Binding("CriteriaTable") { Source = _viewmodel });
-        CriteriaListView.ItemsSource = _viewmodel.Criteria.CriteriaCollection;
-
-//            RankingListView.SetBinding(ListView.ItemsSourceProperty, new Binding("AlternativesTable") { Source = _viewmodel });
-//            RankingListView2.SetBinding(ListView.ItemsSourceProperty, new Binding("AlternativesTable") { Source = _viewmodel });
-        RankingListView1.ItemsSource = _viewmodel.Alternatives.ReferenceRanking.RankingsCollection[0];
-        RankingListView2.ItemsSource = _viewmodel.Alternatives.ReferenceRanking.RankingsCollection[1];
-        RankingListView3.ItemsSource = _viewmodel.Alternatives.ReferenceRanking.RankingsCollection[2];
-        RankingListView4.ItemsSource = _viewmodel.Alternatives.ReferenceRanking.RankingsCollection[3];
+            InitializeComponent();
+            DataContext = _viewmodel;
+            SetBindings();
+            _viewmodel.Criteria.CriteriaCollection.CollectionChanged += UpdateAlternativesDataGridColumns;
+            ButtonEditAlternatives.Content = "Editing is OFF";
+            AlternativesListView.GiveFeedback += OnGiveFeedback;
+            var tabViewSource = CollectionViewSource.GetDefaultView(TabControl.Items);
+            tabViewSource.CollectionChanged += TabsCollectionChanged;
       }
 
-      private void SetBindings()
-      {
-         TextBoxAlternativeName.SetBinding(TextBox.TextProperty, new Binding("InputAlternativeName") {Source = this});
-         TextBoxAlternativeDescription.SetBinding(TextBox.TextProperty,
-            new Binding("InputAlternativeDescription") {Source = this});
+        protected void OnGiveFeedback(object o, GiveFeedbackEventArgs e)
+        {
+            e.UseDefaultCursors = false;
+            Mouse.SetCursor(Cursors.Hand);
+            e.Handled = true;
+        }
 
-         EditAlternativesDataGrid.ItemsSource = _viewmodel.Alternatives.AlternativesCollection;
-         //EditAlternativesDataGrid.CellEditEnding += RowEditEnding;
-         EditAlternativesDataGrid.AddingNewItem += _viewmodel.AddAlternativeFromDataGrid;
+        private void SetBindings()
+        {
+            TextBoxAlternativeName.SetBinding(TextBox.TextProperty, new Binding("InputAlternativeName") { Source = this });
+            TextBoxAlternativeDescription.SetBinding(TextBox.TextProperty,
+                new Binding("InputAlternativeDescription") { Source = this });
 
-         AlternativesListView.SetBinding(ListView.ItemsSourceProperty,
-            new Binding("AlternativesTable") {Source = _viewmodel});
-         CriteriaListView.SetBinding(ListView.ItemsSourceProperty, new Binding("CriteriaTable") {Source = _viewmodel});
+            EditAlternativesDataGrid.ItemsSource = _viewmodel.Alternatives.AlternativesCollection;
+            //EditAlternativesDataGrid.CellEditEnding += RowEditEnding;
+            EditAlternativesDataGrid.AddingNewItem += _viewmodel.AddAlternativeFromDataGrid;
 
-//         RankingListView.SetBinding(ListView.ItemsSourceProperty,
-//            new Binding("AlternativesTable") {Source = _viewmodel});
-      }
+            //            AlternativesListView.SetBinding(ListView.ItemsSourceProperty, new Binding("AlternativesTable") { Source = _viewmodel });
+
+            //todo bind new element from datagrid
+            AlternativesListView.ItemsSource = _viewmodel.Alternatives.AlternativesNotRankedCollection;
+
+            //            CriteriaListView.SetBinding(ListView.ItemsSourceProperty, new Binding("CriteriaTable") { Source = _viewmodel });
+            //            CriteriaListView.ItemsSource = _viewmodel.Criteria.CriteriaCollection;
+
+            //            RankingListView.SetBinding(ListView.ItemsSourceProperty, new Binding("AlternativesTable") { Source = _viewmodel });
+            //            RankingListView2.SetBinding(ListView.ItemsSourceProperty, new Binding("AlternativesTable") { Source = _viewmodel });
+            RankingListView1.ItemsSource = _viewmodel.Alternatives.ReferenceRanking.RankingsCollection[0];
+            RankingListView2.ItemsSource = _viewmodel.Alternatives.ReferenceRanking.RankingsCollection[1];
+            RankingListView3.ItemsSource = _viewmodel.Alternatives.ReferenceRanking.RankingsCollection[2];
+            RankingListView4.ItemsSource = _viewmodel.Alternatives.ReferenceRanking.RankingsCollection[3];
+
+            EditCriteriaDataGrid.ItemsSource = _viewmodel.Criteria.CriteriaCollection;
+        }
+
+        public void ShowAddCriterionDialog(object sender, RoutedEventArgs routedEventArgs)
+        {
+            foreach (DataGridColumn dataGridColumn in EditAlternativesDataGrid.Columns)
+            {
+                Console.WriteLine(dataGridColumn.Header);
+            }
+            _viewmodel.ShowAddCriterionDialog();
+        }
 
       public string InputAlternativeName { get; set; }
       public string InputAlternativeDescription { get; set; }
@@ -118,7 +130,10 @@ namespace UTA.Views
 
         private void RemoveAlternativeButton(object sender, RoutedEventArgs e)
         {
-            _viewmodel.Alternatives.RemoveAlternative((Alternative) EditAlternativesDataGrid.SelectedItem);
+            if (EditAlternativesDataGrid.SelectedItem is Alternative alternative)
+            {
+                _viewmodel.Alternatives.RemoveAlternative(alternative);
+            }
         }
 
         private void RemoveAlternativeFromRankButton(object sender, RoutedEventArgs e)
@@ -129,10 +144,29 @@ namespace UTA.Views
         }
 
 
-        public void ShowAddCriterionDialog(object sender, RoutedEventArgs routedEventArgs)
-      {
-         _viewmodel.ShowAddCriterionDialog();
-      }
+        private void AddAlternativesDataGridColumn(Criterion criterion, int startingIndex)
+        {
+            DataGridTextColumn textColumn = new DataGridTextColumn { Binding = new Binding() { Path = new PropertyPath("CriteriaValuesList[" + startingIndex + "].Value"), Mode = BindingMode.TwoWay } };
+            EditAlternativesDataGrid.Columns.Add(textColumn);
+
+            BindingProxy bindingProxy = new BindingProxy {Data = criterion};
+
+            //todo not working
+            string critResName = "criterion[" + startingIndex + "]";
+            EditAlternativesDataGrid.Resources.Add(critResName, bindingProxy);
+            //            textColumn.DataContext = (Criterion)header.Resources["criterion"];
+            //            textColumn.Header = new Binding() { Path = new PropertyPath("Name"), Source = (Criterion)EditAlternativesDataGrid.Resources[critResName] };
+            TextBlock header = new TextBlock();
+            header.SetBinding(TextBlock.TextProperty, new Binding() { Path = new PropertyPath("Data.Name"), Source = (BindingProxy)EditAlternativesDataGrid.Resources[critResName]});
+            textColumn.Header = header;
+
+
+            //            var template = new DataTemplate();
+            //            template.VisualTree = new FrameworkElementFactory(typeof(TextBlock));
+            //            template.VisualTree.SetBinding(TextBlock.TextProperty, new Binding() { Path = new PropertyPath("Name"), Source = criterion });
+            //            textColumn.HeaderTemplate = template;
+
+        }
 
       private void AddAlternative(object sender, RoutedEventArgs e)
       {
@@ -152,16 +186,18 @@ namespace UTA.Views
 
       private void EditAlternativesSwitch(object sender, RoutedEventArgs e)
       {
-         EditAlternativesDataGrid.IsReadOnly = !EditAlternativesDataGrid.IsReadOnly;
-         if (EditAlternativesDataGrid.IsReadOnly)
-         {
-            //_viewmodel.UpdateAlternatives();
-            ButtonEditAlternatives.Content = "Editing is OFF";
-         }
-         else
-         {
-            ButtonEditAlternatives.Content = "Editing is ON";
-         }
+          EditAlternativesDataGrid.IsReadOnly = !EditAlternativesDataGrid.IsReadOnly;
+          if (EditAlternativesDataGrid.IsReadOnly)
+          {
+              //_viewmodel.UpdateAlternatives();
+              ButtonEditAlternatives.Content = "Editing is OFF";
+              EditAlternativesDataGrid.Columns[0].Visibility = Visibility.Collapsed;
+          }
+          else
+          {
+              EditAlternativesDataGrid.Columns[0].Visibility = Visibility.Visible;
+              ButtonEditAlternatives.Content = "Editing is ON";
+          }
       }
 
       public void UpdateAlternativesDataGridColumns(object sender, NotifyCollectionChangedEventArgs e)
@@ -171,17 +207,6 @@ namespace UTA.Views
          {
             AddAlternativesDataGridColumn(criterion, startingIndex++);
          }
-      }
-
-      private void AddAlternativesDataGridColumn(Criterion criterion, int startingIndex)
-      {
-         DataGridTextColumn textColumn = new DataGridTextColumn
-         {
-            Header = criterion.Name,
-            Binding = new Binding()
-               {Mode = BindingMode.TwoWay, Path = new PropertyPath("CriteriaValuesList[" + startingIndex + "].Value")}
-         };
-         EditAlternativesDataGrid.Columns.Add(textColumn);
       }
 
       /*private void RowEditEnding(object sender, DataGridCellEditEndingEventArgs e)

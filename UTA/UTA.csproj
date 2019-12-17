@@ -109,6 +109,8 @@
     <Compile Include="Views\CriteriaTab.xaml.cs">
       <DependentUpon>CriteriaTab.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\AlternativeDropHandler.cs" />
+    <Compile Include="Models\BindingProxy.cs" />
     <Compile Include="Models\DataBase\Alternatives.cs" />
     <Compile Include="Models\DataBase\Criteria.cs" />
     <Compile Include="Interactivity\RelayCommand.cs" />

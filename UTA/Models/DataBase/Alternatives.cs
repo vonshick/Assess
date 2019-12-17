@@ -72,6 +72,14 @@ namespace UTA.Models.DataBase
             AlternativesNotRankedCollection.Add(alternative);
         }
 
+        public void UpdateCriteriaValueName(string oldName, string newName)
+        {
+            foreach (Alternative alternative in AlternativesCollection)
+            {
+                alternative.UpdateCriterionValueName(oldName, newName);
+            }
+        }
+
         private void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)

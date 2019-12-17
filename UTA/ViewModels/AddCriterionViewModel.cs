@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Linq;
 using DataModel.Input;
 using UTA.Models.DataBase;
-using UTA.Views;
 
 namespace UTA.ViewModels
 {
@@ -25,10 +22,14 @@ namespace UTA.ViewModels
 
         public bool AddCriterion(string criterionName, string criterionDescription, string criterionDirection, int linearSegments)
         {
-            if (!Criteria.AddCriterion(criterionName, criterionDescription, criterionDirection, linearSegments))
-                return false;
-            MainViewModel.Alternatives.AddNewCriterionToAlternatives(criterionName, 0.1f); //add crit values
-            return true;
+            if (Criteria.AddCriterion(criterionName, criterionDescription, criterionDirection, linearSegments) is
+                Criterion criterion)
+            {
+                MainViewModel.Alternatives.AddNewCriterionToAlternatives(criterionName, 0.1f); //add crit values
+                criterion.PropertyChanged += MainViewModel.CriterionRenamed;
+                return true;
+            }
+            else return false;
         }
 
 

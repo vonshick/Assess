@@ -530,7 +530,7 @@
               <TextBox Name="TextBoxAlternativeDescription" Height="23" Width="120" />
               <Button Name="ButtonAddAlternative" Click="AddAlternative" Content="Add" Width="120" />
               <DataGrid Name="EditAlternativesDataGrid" IsReadOnly="True" ItemsSource="{Binding}" AutoGenerateColumns="False" Height="102" Margin="60,0,58,0">
-                    <DataGrid.Columns>
+                  <DataGrid.Columns>
                         <DataGridTemplateColumn>
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
@@ -540,7 +540,6 @@
                         </DataGridTemplateColumn>
                         <DataGridTextColumn Binding="{Binding Name, Mode=TwoWay}" Header="Name"/>
                         <DataGridTextColumn Binding="{Binding Description, Mode=TwoWay}" Header="Description"/>
-                        <DataGridTextColumn Binding="{Binding ReferenceRank, Mode=TwoWay}" IsReadOnly="True" Header="Rank"/>
                     </DataGrid.Columns>
                 </DataGrid>
                 <Button x:Name="ButtonEditAlternatives" Click="EditAlternativesSwitch" Content="Edit On/Off" Width="74"/>
@@ -631,16 +630,24 @@
                 </Grid>
                 <Label Content="Criteria" />
                 <Button x:Name="ButtonAddCriterion" Click="ShowAddCriterionDialog" Content="Add" Width="74"/>
-                <ListView Name="CriteriaListView" ItemsSource="{Binding}" Height="102" Width="342">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="Criterion" Width="120" DisplayMemberBinding="{Binding Name}" />
-                            <GridViewColumn Header="Description" Width="120" DisplayMemberBinding="{Binding Description}" />
-                            <GridViewColumn Header="Type" Width="120" DisplayMemberBinding="{Binding CriterionDirection}" />
-                            <GridViewColumn Header="Linear Segments" Width="120" DisplayMemberBinding="{Binding LinearSegments}" />
-                        </GridView>
-                    </ListView.View>
-                </ListView>
+                <!-- <ListView Name="CriteriaListView" ItemsSource="{Binding}" Height="102" Width="342"> -->
+                <!--     <ListView.View> -->
+                <!--         <GridView> -->
+                <!--             <GridViewColumn Header="Criterion" Width="120" DisplayMemberBinding="{Binding Name}" /> -->
+                <!--             <GridViewColumn Header="Description" Width="120" DisplayMemberBinding="{Binding Description}" /> -->
+                <!--             <GridViewColumn Header="Type" Width="120" DisplayMemberBinding="{Binding CriterionDirection}" /> -->
+                <!--             <GridViewColumn Header="Linear Segments" Width="120" DisplayMemberBinding="{Binding LinearSegments}" /> -->
+                <!--         </GridView> -->
+                <!--     </ListView.View> -->
+                <!-- </ListView> -->
+                <DataGrid Name="EditCriteriaDataGrid" IsReadOnly="false" ItemsSource="{Binding}" AutoGenerateColumns="False" Height="102" Margin="60,0,58,0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Criterion" Width="120" Binding="{Binding Name, Mode=TwoWay}" />
+                        <DataGridTextColumn Header="Description" Width="120" Binding="{Binding Description, Mode=TwoWay}" />
+                        <DataGridTextColumn Header="Type" Width="120" Binding="{Binding CriterionDirection, Mode=TwoWay}" />
+                        <DataGridTextColumn Header="Linear Segments" Width="120" Binding="{Binding LinearSegments, Mode=TwoWay}" />
+                    </DataGrid.Columns>
+                </DataGrid>
             </StackPanel>
           </StackPanel >
         </StackPanel>

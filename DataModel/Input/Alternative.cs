@@ -50,7 +50,6 @@ namespace DataModel.Input
             Console.WriteLine("Added to alternative " + Name + " value (" + criterionValue.Name + "," + criterionValue.Value + ")");
         }
         
-        //todo call it in case of change of any criteria name
         public void UpdateCriterionValueName(string oldName, string newName)
         {
             //call it in criteria class when criteriaList changes. Event should be handled there
