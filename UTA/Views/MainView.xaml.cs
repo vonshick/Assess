@@ -26,13 +26,10 @@ namespace UTA.Views
 
       public MainView()
       {
-         // TODO vonshick REMOVE IT AFTER TESTING
-         // DataLoader csvLoader = SampleImport.ProcessSampleData(true, false, false); // csv
-         // DataLoader utxLoader = SampleImport.ProcessSampleData(false, true, false); // utx
-         // DataLoader xmlLoader = SampleImport.ProcessSampleData(false, false, true); // xml
-         // TODO vonshick REMOVE IT AFTER TESTING
-         // XMCDALoader xmcdaLoader = SampleImport.ProcessXMCDA(); // xmcda            
-         // SampleExport.exportXMCDA(xmcdaLoader.CriterionList, xmcdaLoader.AlternativeList);
+//         TODO vonshick REMOVE IT AFTER TESTING
+//         string dataDirectoryPath = "C:\\Data";
+//         DataLoader dataLoader = SampleImport.ProcessSampleData(dataDirectoryPath); // csv
+//         SampleExport.exportXMCDA(dataDirectoryPath, dataLoader.CriterionList, dataLoader.AlternativeList);
 
          InitializeComponent();
          DataContext = _viewmodel;
