@@ -2,55 +2,31 @@
 using System.Globalization;
 using System.IO;
 using System.Xml;
+using System.Diagnostics;
 using DataModel.Input;
+using DataModel.Results;
 
 namespace ImportModule
 {
-    public class XMCDALoader
+    public class XMCDALoader : DataLoader
     {
-        public List<Criterion> CriterionList { get; set; }
-        public List<Alternative> AlternativeList { get; set; }
-        public string XMCDADirectory { get; set; }
+        private string xmcdaDirectory;
 
-        public XMCDALoader(string xmcdaDirectory) 
+        private List<KeyValuePair<Alternative, int>> alternativesRanking;
+        private List<PartialUtility> partialUtilityList;
+
+        public XMCDALoader() : base()
         {
-            CriterionList = new List<Criterion>();
-            AlternativeList = new List<Alternative>();
-            XMCDADirectory = xmcdaDirectory;
-        }
-
-        public void setMinAndMaxCriterionValues()
-        {
-            for (int i = 0; i < CriterionList.Count; i++)
-            {
-                // 1 / 0 equals infinity
-                // it is forbidden to divide by 0 as constant
-                // but it is allowed to divide by variable equal to it
-                float min = float.PositiveInfinity, max = float.NegativeInfinity;
-
-                for (int j = 0; j < AlternativeList.Count; j++)
-                {
-                    float value = AlternativeList[j].CriteriaValues[CriterionList[i]];
-
-                    if (value < min)
-                    {
-                        min = value;
-                    }
-                    if (value > max)
-                    {
-                        max = value;
-                    }
-                }
-                
-                CriterionList[i].MaxValue = max;
-                CriterionList[i].MinValue = min;
-            }
+            alternativesRanking = new List<KeyValuePair<Alternative, int>>();
+            partialUtilityList = new List<PartialUtility>();
         }
 
         private void LoadCriteria()
         {
+            ValidateFilePath(Path.Combine(xmcdaDirectory, "criteria.xml"));
+
             XmlDocument xmlDocument = new XmlDocument();
-            xmlDocument.Load(Path.Combine(XMCDADirectory, "criteria.xml"));
+            xmlDocument.Load(Path.Combine(xmcdaDirectory, "criteria.xml"));
 
             // this file contains only one main block - <criteria>
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
@@ -60,15 +36,17 @@ namespace ImportModule
                     Name = xmlNode.Attributes["name"].Value,
                     ID = xmlNode.Attributes["id"].Value
                 };
-                
-                CriterionList.Add(criterion);
+
+                criterionList.Add(criterion);
             }
         }
 
         private void LoadCriteriaScales()
         {
+            ValidateFilePath(Path.Combine(xmcdaDirectory, "criteria_scales.xml"));
+            
             XmlDocument xmlDocument = new XmlDocument();
-            xmlDocument.Load(Path.Combine(XMCDADirectory, "criteria_scales.xml"));
+            xmlDocument.Load(Path.Combine(xmcdaDirectory, "criteria_scales.xml"));
 
             // this file contains only one main block - <criteriaScales>
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
@@ -76,35 +54,22 @@ namespace ImportModule
                 string criterionID = xmlNode.ChildNodes[0].InnerText;
                 string criterionDirection = xmlNode.ChildNodes[1].FirstChild.FirstChild.FirstChild.InnerText;
 
-                var index = CriterionList.FindIndex(criterion => criterion.ID == criterionID);
-                CriterionList[index].CriterionDirection = criterionDirection == "max" ? "g" : "c";
+                var index = criterionList.FindIndex(criterion => criterion.ID == criterionID);
+                criterionList[index].CriterionDirection = criterionDirection == "max" ? "g" : "c";
             }
-        }
-
-        private void LoadCriteriaThresholds()
-        {
-
-        }
-
-        private void LoadAlternatives()
-        {
-
-        }
-
-        private void LoadMethodParameteres()
-        {
-
         }
 
         private void LoadPerformanceTable()
         {
+            ValidateFilePath(Path.Combine(xmcdaDirectory, "performance_table.xml"));
+
             XmlDocument xmlDocument = new XmlDocument();
-            xmlDocument.Load(Path.Combine(XMCDADirectory, "performance_table.xml"));
+            xmlDocument.Load(Path.Combine(xmcdaDirectory, "performance_table.xml"));
 
             // this file contains only one main block - <criteriaScales>
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
             {
-                Alternative alternative = new Alternative {CriteriaValues = new Dictionary<Criterion, float>()};
+                Alternative alternative = new Alternative { CriteriaValues = new Dictionary<Criterion, float>() };
 
                 foreach (XmlNode performance in xmlNode.ChildNodes)
                 {
@@ -116,30 +81,111 @@ namespace ImportModule
                     else
                     {
                         string criterionID = performance.ChildNodes[0].InnerText;
-                        Criterion matchingCriterion = CriterionList.Find(criterion => criterion.ID == criterionID);
+                        Criterion matchingCriterion = criterionList.Find(criterion => criterion.ID == criterionID);
                         float value = float.Parse(performance.ChildNodes[1].FirstChild.InnerText, CultureInfo.InvariantCulture);
                         alternative.CriteriaValues.Add(matchingCriterion, value);
                     }
                 }
-                
-                AlternativeList.Add(alternative);
+
+                alternativeList.Add(alternative);
             }
         }
 
-        private void LoadWeights()
+        private void LoadAlternativesRanks()
         {
+            ValidateFilePath(Path.Combine(xmcdaDirectory, "alternatives_ranks.xml"));
 
+            XmlDocument xmlDocument = new XmlDocument();
+            xmlDocument.Load(Path.Combine(xmcdaDirectory, "alternatives_ranks.xml"));
+
+            foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
+            {
+                string alternativeName = "";
+
+                foreach (XmlNode alternativeResult in xmlNode.ChildNodes)
+                {
+                    // first node containts alternative ID
+                    if (alternativeResult.Name == "alternativeID")
+                    {
+                        alternativeName = alternativeResult.InnerText;
+                    }
+                    else
+                    {
+                        int rank = int.Parse(alternativeResult.ChildNodes[0].InnerText);
+                        Alternative matchingAlternative = alternativeList.Find(alternative => alternative.Name == alternativeName);
+                        alternativesRanking.Add(new KeyValuePair<Alternative, int>(matchingAlternative, rank));
+                    }
+                }
+            }
         }
 
-        public void LoadXMCDA()
+        private void LoadValueFunctions()
         {
+            ValidateFilePath(Path.Combine(xmcdaDirectory, "value_functions.xml"));
+
+            XmlDocument xmlDocument = new XmlDocument();
+            xmlDocument.Load(Path.Combine(xmcdaDirectory, "value_functions.xml"));
+
+            foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
+            {
+                string criterionID = "";
+                Dictionary<float, float> argumentsValues = new Dictionary<float, float>();
+
+                foreach (XmlNode criterionFunction in xmlNode.ChildNodes)
+                {
+                    if (criterionFunction.Name == "criterionID")
+                    {
+                        criterionID = criterionFunction.InnerText;
+                    }
+                    else
+                    {
+                        foreach (XmlNode point in criterionFunction.FirstChild.ChildNodes)
+                        {
+                            float argument = float.PositiveInfinity;
+                            float value = float.PositiveInfinity;
+
+                            foreach (XmlNode coordinate in point.ChildNodes)
+                            {
+
+                                if (coordinate.Name == "abscissa")
+                                {
+                                    argument = float.Parse(coordinate.FirstChild.InnerText);
+                                }
+                                else
+                                {
+                                    value = float.Parse(coordinate.FirstChild.InnerText);
+                                    if (argument == float.PositiveInfinity || value == float.PositiveInfinity)
+                                    {
+                                        Trace.WriteLine("Format of value_functions.xml file is not valid");
+                                        return;
+                                    }
+
+                                    argumentsValues.Add(argument, value);
+                                }
+                            }
+                        }
+
+                        var matchingCriterion = criterionList.Find(criterion => criterion.ID == criterionID);
+                        partialUtilityList.Add(new PartialUtility(matchingCriterion, argumentsValues));
+                    }
+                }
+            }
+        }
+
+        override protected void ProcessFile(string xmcdaDirectory)
+        {
+            this.xmcdaDirectory = xmcdaDirectory;
             LoadCriteria();
             LoadCriteriaScales();
-            LoadCriteriaThresholds();
-            LoadAlternatives();
-            LoadMethodParameteres();
             LoadPerformanceTable();
-            LoadWeights();
+            setMinAndMaxCriterionValues();
         }
+
+        public void LoadResults() 
+        {
+            LoadAlternativesRanks();
+            LoadValueFunctions();
+        }
+        
     }
 }
