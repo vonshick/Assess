@@ -6,8 +6,6 @@ using System.ComponentModel;
 using System.Data;
 using System.Runtime.CompilerServices;
 using System.Windows;
-﻿using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Media;
 using DataModel.Input;
@@ -130,59 +128,8 @@ namespace UTA.ViewModels
 
         public void AddAlternative(string name, string description)
         {
-            var alternative = Alternatives.AddAlternative(name, description, GenerateAlternativesTable);
+            var alternative = Alternatives.AddAlternative(name, description);
             alternative.PropertyChanged += GenerateAlternativesTable;
-        }
-
-        public void GenerateAlternativesTable()
-        {
-            var table = new DataTable();
-            GenerateColumnsAlternativesTable(table);
-            GenerateRowsAlternativesTable(table);
-            AlternativesTable = table;
-        }
-
-        private void GenerateColumnsAlternativesTable(DataTable table)
-        {
-            table.Columns.Add("Alternative");
-            table.Columns.Add("Description");
-            foreach (var criterion in Criteria.CriteriaCollection)
-                //todo verify column does not already exist (ie. first two always exist)
-
-                table.Columns.Add(criterion.Name);
-        }
-
-        private void GenerateRowsAlternativesTable(DataTable table)
-        {
-            foreach (var alternative in Alternatives.AlternativesCollection)
-            {
-                var rowData = new List<string>();
-                rowData.Add(alternative.Name);
-                rowData.Add(alternative.Description);
-                if (alternative.CriteriaValuesList != null)
-                    foreach (var criterionValue in alternative.CriteriaValuesList)
-                        rowData.Add(criterionValue.Value.ToString());
-
-                table.Rows.Add(rowData.ToArray());
-            }
-        }
-
-        public void GenerateCriteriaTable()
-        {
-            var table = new DataTable();
-            GenerateRowsCriteriaTable(table);
-            CriteriaTable = table;
-        }
-
-        private void GenerateRowsCriteriaTable(DataTable table)
-        {
-            table.Columns.Add("Criterion");
-            table.Columns.Add("Description");
-            table.Columns.Add("Type");
-            table.Columns.Add("Linear Segments");
-            foreach (var criterion in Criteria.CriteriaCollection)
-                table.Rows.Add(criterion.Name, criterion.Description, criterion.CriterionDirection,
-                    criterion.LinearSegments);
         }
 
         private void TabsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -248,23 +195,23 @@ namespace UTA.ViewModels
                 for (var i = 1; i <= 20; i += 2)
                 {
                     FinalRanking.Add(new FinalRankingEntry(i,
-                        new Alternative($"Alternative {i}", null, CriteriaCollection, null),
+                        new Alternative($"Alternative {i}", null, CriteriaCollection),
                         (float) ((10 - i / 2) * 0.1 - 0.000001)));
                     FinalRanking.Add(new FinalRankingEntry(i + 1,
-                        new Alternative($"Alternative {i + 1}", null, CriteriaCollection, null),
+                        new Alternative($"Alternative {i + 1}", null, CriteriaCollection),
                         (float) ((10 - i / 2) * 0.1 - 0.050001)));
                 }
 
                 for (var i = 1; i <= 20; i++)
                 {
                     ReferenceRanking.Add(new ReferenceRankingEntry(i,
-                        new Alternative("Alternative X", null, CriteriaCollection, null)));
+                        new Alternative("Alternative X", null, CriteriaCollection)));
                     if (i % 2 == 0)
                         ReferenceRanking.Add(new ReferenceRankingEntry(i,
-                            new Alternative("Alternative X", null, CriteriaCollection, null)));
+                            new Alternative("Alternative X", null, CriteriaCollection)));
                     if (i % 3 == 0)
                         ReferenceRanking.Add(new ReferenceRankingEntry(i,
-                            new Alternative("Alternative X", null, CriteriaCollection, null)));
+                            new Alternative("Alternative X", null, CriteriaCollection)));
                 }
             }
 

@@ -10,11 +10,13 @@
                       xmlns:views="clr-namespace:UTA.Views"
                       xmlns:tabModel="clr-namespace:UTA.Models.Tab"
                       xmlns:dragDropFramework="urn:gong-wpf-dragdrop"
+                      xmlns:models="clr-namespace:UTA.Models"
                       x:Class="UTA.Views.MainView" mc:Ignorable="d"
                       d:DataContext="{d:DesignInstance viewModels:MainViewModel}" Title="UTA" WindowState="Maximized"
                       Width="1300" Height="700" MinWidth="900" MinHeight="700" Left="12" Top="12">
   <controls:MetroWindow.Resources>
-    <!--values-->
+      <models:AlternativeDropHandler x:Key="AlternativeDropHandler"/>
+        <!--values-->
     <sys:Double x:Key="ExpanderHeaderHeight">26</sys:Double>
 
     <!--keyed templates-->
@@ -529,7 +531,20 @@
               <TextBlock Text="Description" VerticalAlignment="Center"/>
               <TextBox Name="TextBoxAlternativeDescription" Height="23" Width="120" />
               <Button Name="ButtonAddAlternative" Click="AddAlternative" Content="Add" Width="120" />
-              <DataGrid Name="EditAlternativesDataGrid" IsReadOnly="True" ItemsSource="{Binding}" AutoGenerateColumns="False" Height="102" Margin="60,0,58,0">
+            </StackPanel>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="32" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition MinWidth="168" Width="2*" />
+                        <ColumnDefinition Width="19*" />
+                        <ColumnDefinition MinWidth="168" Width="3*" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Row="1" Grid.Column="1">
+                                <DataGrid Name="EditAlternativesDataGrid" IsReadOnly="True" ItemsSource="{Binding}" AutoGenerateColumns="False" Height="102" Margin="60,0,58,0">
                   <DataGrid.Columns>
                         <DataGridTemplateColumn>
                             <DataGridTemplateColumn.CellTemplate>
@@ -556,8 +571,8 @@
                     </ListView.View>
                 </ListView>
                     <Label Content="Ranking" />
-                <Grid>
-                    <ListView Name="RankingListView1" ItemsSource="{Binding}" Height="100" VerticalAlignment="Top" Margin="0,0,218,0"
+                <StackPanel Orientation="Horizontal">
+                                <ListView Name="RankingListView1" ItemsSource="{Binding}" Height="100" Width="200" VerticalAlignment="Top" Margin="0,0,21,0"
                               dragDropFramework:DragDrop.IsDragSource="True"
                               dragDropFramework:DragDrop.IsDropTarget="True"
                               dragDropFramework:DragDrop.DropHandler="{StaticResource AlternativeDropHandler}">
@@ -574,7 +589,7 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <ListView Name="RankingListView2" ItemsSource="{Binding}" Height="100" VerticalAlignment="Top" Margin="219,0,9.6,0"
+                                <ListView Name="RankingListView2" ItemsSource="{Binding}" Height="100" Width="200" VerticalAlignment="Top"
                               dragDropFramework:DragDrop.IsDragSource="True"
                               dragDropFramework:DragDrop.IsDropTarget="True"
                               dragDropFramework:DragDrop.DropHandler="{StaticResource AlternativeDropHandler}">
@@ -591,9 +606,9 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                </Grid>
-                <Grid>
-                    <ListView Name="RankingListView3" ItemsSource="{Binding}" Height="100" VerticalAlignment="Top" Margin="0,0,218,0"
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                                <ListView Name="RankingListView3" ItemsSource="{Binding}" Height="100" Width="200" VerticalAlignment="Top" Margin="0,0,21,0"
                               dragDropFramework:DragDrop.IsDragSource="True"
                               dragDropFramework:DragDrop.IsDropTarget="True"
                               dragDropFramework:DragDrop.DropHandler="{StaticResource AlternativeDropHandler}">
@@ -610,7 +625,7 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <ListView Name="RankingListView4" ItemsSource="{Binding}" Height="100" VerticalAlignment="Top" Margin="219,0,9.6,0"
+                        <ListView Name="RankingListView4" ItemsSource="{Binding}" Height="100" Width="200" VerticalAlignment="Top"
                               dragDropFramework:DragDrop.IsDragSource="True"
                               dragDropFramework:DragDrop.IsDropTarget="True"
                               dragDropFramework:DragDrop.DropHandler="{StaticResource AlternativeDropHandler}">
@@ -627,7 +642,8 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                </Grid>
+                    </StackPanel>
+
                 <Label Content="Criteria" />
                 <Button x:Name="ButtonAddCriterion" Click="ShowAddCriterionDialog" Content="Add" Width="74"/>
                 <!-- <ListView Name="CriteriaListView" ItemsSource="{Binding}" Height="102" Width="342"> -->
@@ -648,7 +664,8 @@
                         <DataGridTextColumn Header="Linear Segments" Width="120" Binding="{Binding LinearSegments, Mode=TwoWay}" />
                     </DataGrid.Columns>
                 </DataGrid>
-            </StackPanel>
+                </StackPanel>
+            </Grid>
           </StackPanel >
         </StackPanel>
       </Border>

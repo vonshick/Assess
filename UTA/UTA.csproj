@@ -109,7 +109,6 @@
     <Compile Include="Views\CriteriaTab.xaml.cs">
       <DependentUpon>CriteriaTab.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Models\AlternativeDropHandler.cs" />
     <Compile Include="Models\BindingProxy.cs" />
     <Compile Include="Models\DataBase\Alternatives.cs" />
     <Compile Include="Models\DataBase\Criteria.cs" />
@@ -125,7 +124,6 @@
     </Compile>
     <Compile Include="Models\AlternativeDropHandler.cs" />
     <Compile Include="Models\DataBase\ReferenceRanking.cs" />
-    <Compile Include="Models\RelyCommand.cs" />
     <Compile Include="Models\DataValidation.cs" />
     <Compile Include="ViewModels\AddCriterionViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
