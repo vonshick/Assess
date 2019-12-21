@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Xml;
 
 namespace ImportModule
@@ -13,6 +14,21 @@ namespace ImportModule
         public XMLLoader() : base()
         {
         }
+
+        private string checkCriteriaIdsUniqueness(string id) 
+        {
+            string[] usedIds = criterionList.Select(criterion => criterion.ID).ToArray();
+            foreach(string usedId in usedIds) 
+            {
+                if(id.Equals(usedId))
+                {
+                    throw new ImproperFileStructureException("Attribute ID '" + id + "' has been already used!");
+                }
+            }
+            
+            return id;
+        }
+
         override protected void ProcessFile(string filePath)
         {
             ValidateFilePath(filePath);
@@ -36,7 +52,7 @@ namespace ImportModule
                     {
                         foreach (XmlNode attribute in xmlNode)
                         {
-                            Criterion criterion = new Criterion() { ID = attribute.Attributes["AttrID"].Value };
+                            Criterion criterion = new Criterion() { ID = checkCriteriaIdsUniqueness(attribute.Attributes["AttrID"].Value) };
                             // two specific groups of nodes may appear in attributes - name and description
                             // we don't want to save it as criterion
                             bool saveCriterion = true;
@@ -48,7 +64,7 @@ namespace ImportModule
                                 switch (attributePart.Name)
                                 {
                                     case "NAME":
-                                        criterion.Name = value;
+                                        criterion.Name = checkCriteriaNamesUniqueness(value);
                                         break;
                                     case "DESCRIPTION":
                                         criterion.Description = value;
@@ -119,7 +135,7 @@ namespace ImportModule
                                 }
                                 else if (attributeID == nameAttributeId)
                                 {
-                                    alternative.Name = value;
+                                    alternative.Name = checkAlternativesNamesUniqueness(value);
                                 }
                                 else
                                 {
@@ -133,10 +149,15 @@ namespace ImportModule
                         }
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                Trace.WriteLine("Loading XML " + filePath + " failed! " + e.Message);
+            } catch(Exception exception) {
+                if (exception is ImproperFileStructureException)
+                {
+                    Trace.WriteLine(exception.Message);
+                }
+                else
+                {
+                    Trace.WriteLine("Loading XML " + filePath + " failed! " + exception.Message);
+                }
             }
         }
     }

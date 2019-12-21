@@ -14,6 +14,20 @@ namespace ImportModule
 
         }
 
+        private string checkCriteriaIdsUniqueness(string id) 
+        {
+            string[] usedIds = criterionList.Select(criterion => criterion.ID).ToArray();
+            foreach(string usedId in usedIds) 
+            {
+                if(id.Equals(usedId))
+                {
+                    throw new ImproperFileStructureException("Attribute ID '" + id + "' has been already used!");
+                }
+            }
+            
+            return id;
+        }
+
         override protected void ProcessFile(string filePath)
         {
             ValidateFilePath(filePath);
@@ -35,7 +49,7 @@ namespace ImportModule
                         {
                             Criterion criterion = new Criterion() { };
                             // for UTX ID and Name are the same value
-                            criterion.Name = criterion.ID = attribute.Attributes["AttrID"].Value;
+                            criterion.Name = criterion.ID = checkCriteriaIdsUniqueness(attribute.Attributes["AttrID"].Value);
                             bool saveCriterion = true;
                             Dictionary<string, string> enumIdsNamesDictionary = new Dictionary<string, string>();
                             Dictionary<string, float> enumIdsValuesDictionary = new Dictionary<string, float>();
@@ -113,7 +127,7 @@ namespace ImportModule
                     {
                         foreach (XmlNode instance in xmlNode)
                         {
-                            Alternative alternative = new Alternative() { Name = instance.Attributes["ObjID"].Value };
+                            Alternative alternative = new Alternative() { Name = checkAlternativesNamesUniqueness(instance.Attributes["ObjID"].Value) };
                             Dictionary<Criterion, float> criteriaValuesDictionary = new Dictionary<Criterion, float>();
 
                             foreach (XmlNode instancePart in instance)
@@ -147,10 +161,16 @@ namespace ImportModule
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                //TODO vonshick WARNINGS
-                Trace.WriteLine("Loading UTX " + filePath + " failed! " + e.Message);
+                if (exception is ImproperFileStructureException)
+                {
+                    Trace.WriteLine(exception.Message);
+                }
+                else
+                {
+                    Trace.WriteLine("Loading UTX " + filePath + " failed! " + exception.Message);
+                }
             }
         }
     }
