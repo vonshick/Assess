@@ -1,6 +1,8 @@
 using DataModel.Input;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using DataModel.Input;
 
 namespace ImportModule
 {
@@ -63,6 +65,48 @@ namespace ImportModule
         {
 
         }
+
+        protected bool isNameUsed(string newName, string[] usedNames)
+        {
+            foreach (string usedName in usedNames)
+            {
+                if (newName.Equals(usedName))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        protected string addSuffixToName(string newName, string[] usedNames)
+        {
+            bool nameAlreadyExists = isNameUsed(newName, usedNames);
+            int counter = 1;
+            string nameFreeToUse = newName;
+
+            while (nameAlreadyExists)
+            {
+                nameFreeToUse = newName + "_" + counter.ToString();
+                nameAlreadyExists = isNameUsed(nameFreeToUse, usedNames);
+                counter++;
+            }
+
+            return nameFreeToUse;
+        }
+
+        protected string checkCriteriaNamesUniqueness(string newName)
+        {
+            string[] usedNames = criterionList.Select(criterion => criterion.Name).ToArray();
+            return (addSuffixToName(newName, usedNames));
+        }
+ 
+        protected string checkAlternativesNamesUniqueness(string newName)
+        {
+            string[] usedNames = alternativeList.Select(alternative => alternative.Name).ToArray();
+            return (addSuffixToName(newName, usedNames));
+        }
+
 
         public virtual void LoadData(string path)
         {

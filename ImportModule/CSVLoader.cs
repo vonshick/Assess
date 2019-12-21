@@ -26,7 +26,7 @@ namespace ImportModule
         {
             lineNumber++;
             string[] alternativeValues = reader.ReadLine().Split(separator);
-            
+
             if (alternativeValues.Length != numberOfColumns)
             {
                 //TODO vonshick WARNINGS
@@ -38,7 +38,7 @@ namespace ImportModule
 
         // validate if contain only 'c', 'g' and separator
         // if structure is correct set separator and expected number of columns
-        private void validateStructure(string firstLine) 
+        private void validateStructure(string firstLine)
         {
             string removedCost = Regex.Replace(firstLine, "c", "");
             string removedCostAndGain = Regex.Replace(removedCost, "g", "");
@@ -77,14 +77,14 @@ namespace ImportModule
                     for (int i = 1; i < criterionDirectionsArray.Length; i++)
                     {
                         // for CSV ID and Name are the same value
-                        criterionList.Add(new Criterion(criterionNamesArray[i], criterionDirectionsArray[i]) { ID = criterionNamesArray[i] });
+                        criterionList.Add(new Criterion(checkCriteriaNamesUniqueness(criterionNamesArray[i]), criterionDirectionsArray[i]) { ID = checkCriteriaNamesUniqueness(criterionNamesArray[i]) });
                     }
 
                     while (!reader.EndOfStream)
                     {
                         var values = ReadNewLine(reader);
 
-                        Alternative alternative = new Alternative { Name = values[0], CriteriaValues = new Dictionary<Criterion, float>() };
+                        Alternative alternative = new Alternative { Name = checkAlternativesNamesUniqueness(values[0]), CriteriaValues = new Dictionary<Criterion, float>() };
 
                         for (int i = 0; i < criterionList.Count; i++)
                         {
