@@ -15,20 +15,6 @@ namespace ImportModule
         {
         }
 
-        private string checkCriteriaIdsUniqueness(string id) 
-        {
-            string[] usedIds = criterionList.Select(criterion => criterion.ID).ToArray();
-            foreach(string usedId in usedIds) 
-            {
-                if(id.Equals(usedId))
-                {
-                    throw new ImproperFileStructureException("Attribute ID '" + id + "' has been already used!");
-                }
-            }
-            
-            return id;
-        }
-
         override protected void ProcessFile(string filePath)
         {
             ValidateFilePath(filePath);

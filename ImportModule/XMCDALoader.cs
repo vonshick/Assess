@@ -33,8 +33,8 @@ namespace ImportModule
             {
                 Criterion criterion = new Criterion()
                 {
-                    Name = xmlNode.Attributes["name"].Value,
-                    ID = xmlNode.Attributes["id"].Value
+                    Name = checkCriteriaNamesUniqueness(xmlNode.Attributes["name"].Value),
+                    ID = checkCriteriaIdsUniqueness(xmlNode.Attributes["id"].Value)
                 };
 
                 criterionList.Add(criterion);
@@ -76,7 +76,7 @@ namespace ImportModule
                     // first node containts alternative ID
                     if (performance.Name == "alternativeID")
                     {
-                        alternative.Name = performance.InnerText;
+                        alternative.Name = checkAlternativesNamesUniqueness(performance.InnerText);
                     }
                     else
                     {
