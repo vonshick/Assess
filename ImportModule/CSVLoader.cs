@@ -84,11 +84,11 @@ namespace ImportModule
                     {
                         var values = ReadNewLine(reader);
 
-                        Alternative alternative = new Alternative { Name = checkAlternativesNamesUniqueness(values[0]), CriteriaValues = new Dictionary<Criterion, float>() };
+                        Alternative alternative = new Alternative { Name = checkAlternativesNamesUniqueness(values[0]), CriteriaValuesList = new List<CriterionValue>()};
 
                         for (int i = 0; i < criterionList.Count; i++)
                         {
-                            alternative.CriteriaValues.Add(criterionList[i], float.Parse(values[i + 1], CultureInfo.InvariantCulture));
+                            alternative.CriteriaValuesList.Add(new CriterionValue(criterionList[i].Name, float.Parse(values[i + 1], CultureInfo.InvariantCulture)));
                         }
 
                         alternativeList.Add(alternative);

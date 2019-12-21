@@ -114,7 +114,7 @@ namespace ImportModule
                         foreach (XmlNode instance in xmlNode)
                         {
                             Alternative alternative = new Alternative() { Name = checkAlternativesNamesUniqueness(instance.Attributes["ObjID"].Value) };
-                            Dictionary<Criterion, float> criteriaValuesDictionary = new Dictionary<Criterion, float>();
+                            List<CriterionValue> criteriaValuesList = new List<CriterionValue>();
 
                             foreach (XmlNode instancePart in instance)
                             {
@@ -132,16 +132,16 @@ namespace ImportModule
                                     {
                                         float enumValue = criterion.EnumDictionary[value];
                                         //so far we save only numerical value of enum in attribute
-                                        criteriaValuesDictionary.Add(criterion, enumValue);
+                                        criteriaValuesList.Add(new CriterionValue(criterion.Name, enumValue));
                                     }
                                     else
                                     {
-                                        criteriaValuesDictionary.Add(criterion, float.Parse(value, CultureInfo.InvariantCulture));
+                                        criteriaValuesList.Add(new CriterionValue(criterion.Name, float.Parse(value, CultureInfo.InvariantCulture)));
                                     }
                                 }
                             }
 
-                            alternative.CriteriaValues = criteriaValuesDictionary;
+                            alternative.CriteriaValuesList = criteriaValuesList;
                             alternativeList.Add(alternative);
                         }
                     }

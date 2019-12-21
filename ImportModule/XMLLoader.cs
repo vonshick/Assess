@@ -108,7 +108,7 @@ namespace ImportModule
                         {
 
                             Alternative alternative = new Alternative();
-                            Dictionary<Criterion, float> criteriaValuesDictionary = new Dictionary<Criterion, float>();
+                            List<CriterionValue> criteriaValuesList = new List<CriterionValue>();
 
                             foreach (XmlNode instancePart in instance)
                             {
@@ -126,11 +126,11 @@ namespace ImportModule
                                 else
                                 {
                                     Criterion criterion = criterionList.Find(element => element.ID == attributeID);
-                                    criteriaValuesDictionary.Add(criterion, float.Parse(value, CultureInfo.InvariantCulture));
+                                    criteriaValuesList.Add(new CriterionValue(criterion.Name, float.Parse(value, CultureInfo.InvariantCulture)));
                                 }
                             }
 
-                            alternative.CriteriaValues = criteriaValuesDictionary;
+                            alternative.CriteriaValuesList = criteriaValuesList;
                             alternativeList.Add(alternative);
                         }
                     }

@@ -95,7 +95,7 @@ namespace ImportModule
             return nameFreeToUse;
         }
 
-        private string checkCriteriaIdsUniqueness(string id) 
+        protected string checkCriteriaIdsUniqueness(string id) 
         {
             string[] usedIds = criterionList.Select(criterion => criterion.ID).ToArray();
             foreach(string usedId in usedIds) 
