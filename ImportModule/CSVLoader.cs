@@ -5,6 +5,9 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
+using DataModel.Input;
 
 namespace ImportModule
 {
@@ -12,6 +15,7 @@ namespace ImportModule
     {
         private int lineNumber;
         private char separator;
+        private int numberOfColumns;
 
         public CSVLoader() : base()
         {
@@ -21,24 +25,35 @@ namespace ImportModule
         private string[] ReadNewLine(StreamReader reader)
         {
             lineNumber++;
-            return (reader.ReadLine().Split(separator));
+            string[] alternativeValues = reader.ReadLine().Split(separator);
+            
+            if (alternativeValues.Length != numberOfColumns)
+            {
+                //TODO vonshick WARNINGS
+                throw new ImproperFileStructureException("Improper number of columns in line " + lineNumber.ToString() + " of CSV file");
+            }
+
+            return (alternativeValues);
         }
 
-        // In case when values are not separated by comma but by semicolon
-        private void setSeparator(string firstLine)
+        // validate if contain only 'c', 'g' and separator
+        // if structure is correct set separator and expected number of columns
+        private void validateStructure(string firstLine) 
         {
-            if (firstLine.Contains(";") && !firstLine.Contains(","))
+            string removedCost = Regex.Replace(firstLine, "c", "");
+            string removedCostAndGain = Regex.Replace(removedCost, "g", "");
+            char[] separators = removedCostAndGain.ToCharArray();
+            var separatorSet = new HashSet<char>(separators);
+
+            if (separatorSet.Count != 1)
             {
-                separator = ';';
-            }
-            else if (firstLine.Contains(",") && !firstLine.Contains(";"))
-            {
-                separator = ',';
+                //TODO vonshick WARNINGS
+                throw new ImproperFileStructureException("Improper criteria directions row - it should contain only 'c', 'g' and separator (e.g. ',', ';') characters.");
             }
             else
             {
-                Trace.WriteLine("File format is not valid! Values have to be separated by ';' or ','.");
-                return;
+                separator = separators[0];
+                numberOfColumns = separators.Length + 1;
             }
         }
 
@@ -53,7 +68,7 @@ namespace ImportModule
 
                     lineNumber++;
                     string firstLine = reader.ReadLine();
-                    setSeparator(firstLine);
+                    validateStructure(firstLine);
 
                     string[] criterionDirectionsArray = firstLine.Split(separator);
 
@@ -80,22 +95,29 @@ namespace ImportModule
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                //TODO vonshick WARNINGS
-                // make warning more accurate 
-                // if process failed while processing first line 
-                // than it is possible that the structure of whole file is wrong
-                if (lineNumber > 1)
+                if (exception is ImproperFileStructureException)
                 {
-                    Trace.WriteLine("The process failed while processing line " + lineNumber.ToString() + " of CSV file");
-                    Trace.WriteLine("Error: " + e.Message);
+                    Trace.WriteLine(exception.Message);
                 }
                 else
                 {
-                    Trace.WriteLine("Processing CSV file " + filePath + " failed.");
-                    Trace.WriteLine("Error: " + e.Message);
+                    //TODO vonshick WARNINGS
+                    // if process failed while processing first line 
+                    // than it is possible that the structure of whole file is wrong
+                    if (lineNumber > 1)
+                    {
+                        Trace.WriteLine("The process failed while processing line " + lineNumber.ToString() + " of CSV file");
+                        Trace.WriteLine("Error: " + exception.Message);
+                    }
+                    else
+                    {
+                        Trace.WriteLine("Processing CSV file " + filePath + " failed.");
+                        Trace.WriteLine("Error: " + exception.Message);
+                    }
                 }
+
             }
         }
     }
