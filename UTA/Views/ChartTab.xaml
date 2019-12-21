@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+             xmlns:oxy="http://oxyplot.org/wpf"
              xmlns:local="clr-namespace:UTA.Views"
              xmlns:mainViewModel="clr-namespace:UTA.ViewModels"
              mc:Ignorable="d"
@@ -11,6 +12,6 @@
              d:DataContext="{d:DesignInstance mainViewModel:MainViewModel}"
              DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type controls:MetroWindow}}}">
   <Grid DataContext="{Binding ChartTabViewModel}" Background="{StaticResource ColorInterface7}">
-
+    <oxy:PlotView Model="{Binding MyModel}" Height="600" Width="800" Background="{StaticResource ColorInterface7}"/>
   </Grid>
 </UserControl>

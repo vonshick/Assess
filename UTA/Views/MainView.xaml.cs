@@ -39,6 +39,9 @@ namespace UTA.Views
             AlternativesListView.GiveFeedback += OnGiveFeedback;
             var tabViewSource = CollectionViewSource.GetDefaultView(TabControl.Items);
             tabViewSource.CollectionChanged += TabsCollectionChanged;
+
+            // TODO: remove. for chart testing purposes.
+            _viewmodel.ShowTab(_viewmodel.ChartTabViewModel);
         }
 
         public string InputAlternativeName { get; set; }

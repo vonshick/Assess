@@ -46,9 +46,32 @@ namespace UTA.ViewModels
          CriteriaTabViewModel = new CriteriaTabViewModel(Criteria, Alternatives);
          AlternativesTabViewModel = new AlternativesTabViewModel(Criteria, Alternatives);
          ReferenceRankingTabViewModel = new ReferenceRankingTabViewModel(Criteria, Alternatives);
-         ChartTabViewModel = new ChartTabViewModel(Criteria, Alternatives);
          SettingsTabViewModel = new SettingsTabViewModel();
-         Tabs.Add(ChartTabViewModel);
+
+         ChartTabViewModels = new List<ChartTabViewModel>();
+          
+
+         // TODO: remove. for chart testing purposes
+         Criteria.AddCriterion("0-100 km/h", "", "Cost", 5);
+         Criteria.AddCriterion("Power", "", "Gain", 8);
+         Alternatives.AddAlternative("Q", "", null);
+         Alternatives.AddAlternative("W", "", null);
+         Alternatives.AddAlternative("E", "", null);
+         Alternatives.AddAlternative("R", "", null);
+         Alternatives.AddAlternative("T", "", null);
+         Alternatives.AddAlternative("Y", "", null);
+         Alternatives.AddAlternative("U", "", null);
+         Alternatives.AddAlternative("I", "", null);
+         Alternatives.AddAlternative("O", "", null);
+         Alternatives.AddAlternative("P", "", null);
+
+         foreach (var alternative in Alternatives.AlternativesCollection)
+         {
+            alternative.InitCriteriaValues(Criteria.CriteriaCollection, null);
+            for (var j = 0; j < alternative.CriteriaValuesList.Count; j++)
+               alternative.CriteriaValuesList[j].Value = j == 0 ? j : j * 50;
+         }
+
       }
 
         // TODO: remove property after using real rankings
@@ -57,13 +80,6 @@ namespace UTA.ViewModels
         public Alternatives Alternatives { get; set; }
         public Criteria Criteria { get; set; }
         public RelayCommand ShowTabCommand { get; }
-
-        public ObservableCollection<ITab> Tabs { get; }
-        public CriteriaTabViewModel CriteriaTabViewModel { get; }
-        public AlternativesTabViewModel AlternativesTabViewModel { get; }
-        public ReferenceRankingTabViewModel ReferenceRankingTabViewModel { get; }
-        public SettingsTabViewModel SettingsTabViewModel { get; }
-        public ChartTabViewModel ChartTabViewModel { get; }
 
 
         // TODO: use in proper place (to refactor)
@@ -78,6 +94,13 @@ namespace UTA.ViewModels
             }
         }
 
+      public ObservableCollection<ITab> Tabs { get; }
+      public CriteriaTabViewModel CriteriaTabViewModel { get; }
+      public AlternativesTabViewModel AlternativesTabViewModel { get; }
+      public ReferenceRankingTabViewModel ReferenceRankingTabViewModel { get; }
+      public SettingsTabViewModel SettingsTabViewModel { get; }
+      public List<ChartTabViewModel> ChartTabViewModels { get; set; }
+      public List<ChartTabViewModel> UpdatedChartTabViewModels { get; set; }
 
         public ITab TabToSelect
       {
