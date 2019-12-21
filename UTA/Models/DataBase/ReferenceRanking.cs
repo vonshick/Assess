@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using DataModel.Input;
+using referenceRankingStructs = DataModel.Results.ReferenceRanking;
 
 namespace UTA.Models.DataBase
 {
@@ -33,6 +34,11 @@ namespace UTA.Models.DataBase
         }
 
         public ObservableCollection<ObservableCollection<Alternative>> RankingsCollection { get; set; }
+
+        public referenceRankingStructs getRankingAsListOfStructs()
+        {
+            return ReferenceRankingConverter.ListToStruct(this);
+        }
 
         private void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
