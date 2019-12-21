@@ -40,9 +40,9 @@ namespace UTA.Models.DataBase
 
         public void HandleNewAlternativeRanking(Alternative alternative)
         {
-            if (alternative.ReferenceRank != -1)
+            if (alternative.ReferenceRank != null)
             {
-                ReferenceRanking.AddAlternativeToRank(alternative);
+                ReferenceRanking.AddAlternativeToRank(alternative, alternative.ReferenceRank.Value);
             }
             else
             {
@@ -52,11 +52,11 @@ namespace UTA.Models.DataBase
 
         public void RemoveAlternative(Alternative alternative)
         {
-            int rank = alternative.ReferenceRank;
-            if (rank != -1)
+            int? rank = alternative.ReferenceRank;
+            if (rank != null)
             {
                 Console.WriteLine("Removing ranked alternative " + alternative.Name);
-                ReferenceRanking.RemoveAlternativeFromRank(alternative);
+                ReferenceRanking.RemoveAlternativeFromRank(alternative, rank.Value);
             }
             else
             {
@@ -68,7 +68,7 @@ namespace UTA.Models.DataBase
 
         public void RemoveAlternativeFromRank(Alternative alternative)
         {
-            ReferenceRanking.RemoveAlternativeFromRank(alternative);
+            ReferenceRanking.RemoveAlternativeFromRank(alternative, alternative.ReferenceRank.Value);
             AlternativesNotRankedCollection.Add(alternative);
         }
 
@@ -86,7 +86,7 @@ namespace UTA.Models.DataBase
             {
                 foreach (Alternative alternative in e.NewItems)
                 {
-                    alternative.ReferenceRank = -1;
+                    alternative.ReferenceRank = null;
                 }
             }
         }

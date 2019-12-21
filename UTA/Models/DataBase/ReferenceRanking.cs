@@ -46,14 +46,13 @@ namespace UTA.Models.DataBase
             }
         }
 
-        public void RemoveAlternativeFromRank(Alternative alternative)
+        public void RemoveAlternativeFromRank(Alternative alternative, int rank)
         {
-            RankingsCollection[alternative.ReferenceRank - 1].Remove(alternative);
+            RankingsCollection[rank - 1].Remove(alternative);
         }
 
-        public void AddAlternativeToRank(Alternative alternative)
+        public void AddAlternativeToRank(Alternative alternative, int rank)
         {
-            int rank = alternative.ReferenceRank;
             if (RankingsCollection.Count < rank) ExpandAvailableRanksNumber(rank);
             RankingsCollection[rank - 1].Add(alternative);
         }

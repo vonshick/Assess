@@ -259,7 +259,7 @@
       <!--left panel (alternatives and criteria)-->
       <Border Grid.Row="1" Grid.Column="0" Background="{StaticResource ColorInterface6}" BorderThickness="0,0,1,0"
               BorderBrush="{StaticResource ColorBorders1}">
-          <Grid>
+        <Grid>
           <Grid.RowDefinitions>
             <RowDefinition Height="24" />
             <RowDefinition Height="*" />
@@ -273,6 +273,7 @@
               <RowDefinition />
               <RowDefinition />
             </Grid.RowDefinitions>
+
             <Grid.Resources>
               <ControlTemplate x:Key="LeftPanelListViewItemTemplateButtonTemplate" TargetType="{x:Type ButtonBase}">
                 <Border x:Name="Border" BorderThickness="0,0,0,1" BorderBrush="{StaticResource ColorInterface3}"
@@ -549,7 +550,7 @@
                         <DataGridTemplateColumn>
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Click="RemoveAlternativeButton">Remove</Button>
+                                    <Button Click="RemoveAlternativeButtonClicked">Remove</Button>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -582,7 +583,7 @@
                                 <GridViewColumn>
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Click="RemoveAlternativeFromRankButton">Remove</Button>
+                                            <Button Click="RemoveAlternativeFromRankButtonClicked">Remove</Button>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
@@ -599,7 +600,7 @@
                                 <GridViewColumn>
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Click="RemoveAlternativeFromRankButton">Remove</Button>
+                                            <Button Click="RemoveAlternativeFromRankButtonClicked">Remove</Button>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
@@ -618,7 +619,7 @@
                                 <GridViewColumn>
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Click="RemoveAlternativeFromRankButton">Remove</Button>
+                                            <Button Click="RemoveAlternativeFromRankButtonClicked">Remove</Button>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
@@ -635,7 +636,7 @@
                                 <GridViewColumn>
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Click="RemoveAlternativeFromRankButton">Remove</Button>
+                                            <Button Click="RemoveAlternativeFromRankButtonClicked">Remove</Button>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>

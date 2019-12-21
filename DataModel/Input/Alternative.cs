@@ -11,7 +11,7 @@ namespace DataModel.Input
         {
             CriteriaValues = new Dictionary<Criterion, float>();
             CriteriaValuesList = new List<CriterionValue>();
-            ReferenceRank = -1;
+            ReferenceRank = null;
         }
 
         public void InitCriteriaValues(ObservableCollection<Criterion> criteriaCollection)
@@ -27,7 +27,7 @@ namespace DataModel.Input
         {
             Name = name;
             Description = description;
-            ReferenceRank = -1;
+            ReferenceRank = null;
             CriteriaValues = new Dictionary<Criterion, float>();
             CriteriaValuesList = new List<CriterionValue>();
             InitCriteriaValues(criteriaCollection);
@@ -83,7 +83,7 @@ namespace DataModel.Input
             }
         }
 
-        public int ReferenceRank { get; set; }
+        public int? ReferenceRank { get; set; }
 
         //TODO remove, CriteriaValuesList used now instead
         /// <summary> pairs: (criterion name, value) </summary>

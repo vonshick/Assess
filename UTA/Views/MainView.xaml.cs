@@ -128,7 +128,7 @@ namespace UTA.Views
             return view;
         }
 
-        private void RemoveAlternativeButton(object sender, RoutedEventArgs e)
+        private void RemoveAlternativeButtonClicked(object sender, RoutedEventArgs e)
         {
             if (EditAlternativesDataGrid.SelectedItem is Alternative alternative)
             {
@@ -136,7 +136,7 @@ namespace UTA.Views
             }
         }
 
-        private void RemoveAlternativeFromRankButton(object sender, RoutedEventArgs e)
+        private void RemoveAlternativeFromRankButtonClicked(object sender, RoutedEventArgs e)
         {
             Button sourceBtn = sender as Button;
             Alternative alternative = sourceBtn.DataContext as Alternative;
