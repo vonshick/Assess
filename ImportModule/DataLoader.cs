@@ -110,12 +110,17 @@ namespace ImportModule
 
         protected string checkCriteriaIdsUniqueness(string id) 
         {
+            if(id.Equals(""))
+            {
+                throw new ImproperFileStructureException("Criterion ID can not be empty string!");
+            }
+
             string[] usedIds = criterionList.Select(criterion => criterion.ID).ToArray();
             foreach(string usedId in usedIds) 
             {
                 if(id.Equals(usedId))
                 {
-                    throw new ImproperFileStructureException("Attribute ID '" + id + "' has been already used!");
+                    throw new ImproperFileStructureException("Criterion ID '" + id + "' has been already used!");
                 }
             }
             
@@ -124,12 +129,22 @@ namespace ImportModule
 
         protected string checkCriteriaNamesUniqueness(string newName)
         {
+            if(newName.Equals(""))
+            {
+                throw new ImproperFileStructureException("Criterion name can not be empty string!");
+            }
+
             string[] usedNames = criterionList.Select(criterion => criterion.Name).ToArray();
             return (addSuffixToName(newName, usedNames));
         }
  
         protected string checkAlternativesNamesUniqueness(string newName)
         {
+            if(newName.Equals(""))
+            {
+                throw new ImproperFileStructureException("Alternative name can not be empty string!");
+            }
+
             string[] usedNames = alternativeList.Select(alternative => alternative.Name).ToArray();
             return (addSuffixToName(newName, usedNames));
         }
