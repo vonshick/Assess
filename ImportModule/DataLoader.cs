@@ -60,11 +60,21 @@ namespace ImportModule
             if (!File.Exists(@path))
             {
                 //TODO vonshick WARNINGS
-                throw (new FileNotFoundException("File " + path + " does not exists!"));
-            }
+                throw(new FileNotFoundException("File " + path + " does not exists!"));
+            } 
         }
 
-        protected virtual void ProcessFile(string path)
+        protected void ValidateFileExtension(string path, string expectedExtension)
+        {
+            if (!Path.GetExtension(path).Equals(expectedExtension))
+            {
+                //TODO vonshick WARNINGS
+                throw (new ImproperFileStructureException("Wrong extension of the file " + path + ". Expected extension: " + expectedExtension));
+            }
+
+        }
+
+        protected virtual void ProcessFile(string path) 
         {
 
         }
@@ -124,7 +134,7 @@ namespace ImportModule
             return (addSuffixToName(newName, usedNames));
         }
 
-
+        // expectedExtension is a param that contains string in format like ".csv", ".utx", ".xml"
         public virtual void LoadData(string path)
         {
             ProcessFile(path);

@@ -8,10 +8,9 @@ namespace ImportModule
     public class SampleImport
     {
 
-        public static DataLoader ProcessSampleData(string dataDirectoryPath)
-        {
-            // XMLLoader dataLoader = new XMLLoader();
-            // dataLoader.LoadData(Path.Combine(dataDirectoryPath, "sample.xml"));
+        public static DataLoader ProcessSampleData(string dataDirectoryPath) {                  
+            XMLLoader dataLoader = new XMLLoader();
+            dataLoader.LoadData(Path.Combine(dataDirectoryPath, "sample.xml"));
 
             // UTXLoader dataLoader = new UTXLoader();
             // dataLoader.LoadData(Path.Combine(dataDirectoryPath, "utx_with_enum.utx"));

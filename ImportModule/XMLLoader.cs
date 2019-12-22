@@ -18,9 +18,9 @@ namespace ImportModule
         override protected void ProcessFile(string filePath)
         {
             ValidateFilePath(filePath);
+            ValidateFileExtension(filePath, ".xml");
 
-            try
-            {
+            try {
                 //load XML
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.Load(filePath);
