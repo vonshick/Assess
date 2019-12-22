@@ -65,11 +65,18 @@ namespace ImportModule
 
             XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.Load(Path.Combine(xmcdaDirectory, "performance_table.xml"));
+            int nodeCounter = 1;
 
             // this file contains only one main block - <criteriaScales>
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
             {
                 Alternative alternative = new Alternative { CriteriaValues = new Dictionary<Criterion, float>() };
+
+                // one of children nodes is the name node  
+                if ((xmlNode.ChildNodes.Count - 1) != criterionList.Count)
+                {
+                    throw new ImproperFileStructureException("For alternative " + nodeCounter + " there are provided " + (xmlNode.ChildNodes.Count - 1) + " criteria values and required are " + criterionList.Count);
+                }
 
                 foreach (XmlNode performance in xmlNode.ChildNodes)
                 {
@@ -94,6 +101,7 @@ namespace ImportModule
                 }
 
                 alternativeList.Add(alternative);
+                nodeCounter++;
             }
         }
 

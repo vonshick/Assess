@@ -104,10 +104,18 @@ namespace ImportModule
                     }
                     else if (xmlNode.Name == "OBJECTS")
                     {
+                        int nodeCounter = 1;
+
                         foreach (XmlNode instance in xmlNode)
                         {
 
                             Alternative alternative = new Alternative();
+
+                            if ((instance.ChildNodes.Count - 2) != criterionList.Count)
+                            {
+                                throw new ImproperFileStructureException("For alternative " + nodeCounter + " there are provided " + (instance.ChildNodes.Count - 2) + " criteria values and required are " + criterionList.Count);
+                            }
+
                             List<CriterionValue> criteriaValuesList = new List<CriterionValue>();
 
                             foreach (XmlNode instancePart in instance)
@@ -138,6 +146,7 @@ namespace ImportModule
 
                             alternative.CriteriaValuesList = criteriaValuesList;
                             alternativeList.Add(alternative);
+                            nodeCounter++;
                         }
                     }
                 }

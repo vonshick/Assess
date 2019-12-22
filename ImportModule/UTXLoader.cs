@@ -115,6 +115,12 @@ namespace ImportModule
                         foreach (XmlNode instance in xmlNode)
                         {
                             Alternative alternative = new Alternative() { Name = checkAlternativesNamesUniqueness(instance.Attributes["ObjID"].Value) };
+
+                            if ((instance.ChildNodes.Count - 1) != criterionList.Count)
+                            {
+                                throw new ImproperFileStructureException(alternative.Name + ": there are provided " + (instance.ChildNodes.Count - 1) + " criteria values and required are " + criterionList.Count);
+                            }
+
                             List<CriterionValue> criteriaValuesList = new List<CriterionValue>();
 
                             foreach (XmlNode instancePart in instance)
