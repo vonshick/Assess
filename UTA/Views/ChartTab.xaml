@@ -9,9 +9,8 @@
              xmlns:mainViewModel="clr-namespace:UTA.ViewModels"
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="900"
-             d:DataContext="{d:DesignInstance mainViewModel:MainViewModel}"
-             DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type controls:MetroWindow}}}">
-  <Grid DataContext="{Binding ChartTabViewModel}" Background="{StaticResource ColorInterface7}">
-    <oxy:PlotView Model="{Binding MyModel}" Height="600" Width="800" Background="{StaticResource ColorInterface7}"/>
+             d:DataContext="{d:DesignInstance mainViewModel:ChartTabViewModel}">
+  <Grid Background="Transparent">
+    <oxy:PlotView Model="{Binding PlotModel}" Height="600" Width="800" Background="Transparent"/>
   </Grid>
 </UserControl>

@@ -8,6 +8,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using DataModel.Input;
+using MahApps.Metro.Controls.Dialogs;
 using UTA.Models;
 using UTA.ViewModels;
 
@@ -16,12 +17,12 @@ using UTA.ViewModels;
 
 namespace UTA.Views
 {
-    public partial class MainView
-    {
-        private readonly MainViewModel _viewmodel = new MainViewModel();
-        private RepeatButton _scrollLeftButton;
-        private RepeatButton _scrollRightButton;
-        private ScrollViewer _tabScrollViewer;
+   public partial class MainView
+   {
+      private readonly MainViewModel _viewmodel = new MainViewModel(DialogCoordinator.Instance);
+      private RepeatButton _scrollLeftButton;
+      private RepeatButton _scrollRightButton;
+      private ScrollViewer _tabScrollViewer;
 
         public MainView()
         {
@@ -39,9 +40,6 @@ namespace UTA.Views
             AlternativesListView.GiveFeedback += OnGiveFeedback;
             var tabViewSource = CollectionViewSource.GetDefaultView(TabControl.Items);
             tabViewSource.CollectionChanged += TabsCollectionChanged;
-
-            // TODO: remove. for chart testing purposes.
-            _viewmodel.ShowTab(_viewmodel.ChartTabViewModel);
         }
 
         public string InputAlternativeName { get; set; }

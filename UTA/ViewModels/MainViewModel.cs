@@ -4,11 +4,13 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using DataModel.Input;
+using MahApps.Metro.Controls.Dialogs;
 using DataModel.PropertyChangedExtended;
 using UTA.Annotations;
 using UTA.Interactivity;
@@ -34,22 +36,22 @@ namespace UTA.ViewModels
 
         private ITab _tabToSelect;
 
-        public MainViewModel()
-        {
-            Criteria = new Criteria();
-            Alternatives = new Alternatives(Criteria);
-            Alternatives.AlternativesCollection.CollectionChanged += AlternativesCollectionChanged;
-            Tabs = new ObservableCollection<ITab>();
-            Tabs.CollectionChanged += TabsCollectionChanged;
-            ShowTabCommand = new RelayCommand(tabModel => ShowTab((ITab) tabModel));
+      public MainViewModel(IDialogCoordinator dialogCoordinator)
+      {
+         Criteria = new Criteria();
+         Alternatives = new Alternatives(Criteria);
+         Alternatives.AlternativesCollection.CollectionChanged += AlternativesCollectionChanged;
+         Tabs = new ObservableCollection<ITab>();
+         Tabs.CollectionChanged += TabsCollectionChanged;
+         ShowTabCommand = new RelayCommand(tabModel => ShowTab((ITab) tabModel));
+         _dialogCoordinator = dialogCoordinator;
 
          CriteriaTabViewModel = new CriteriaTabViewModel(Criteria, Alternatives);
          AlternativesTabViewModel = new AlternativesTabViewModel(Criteria, Alternatives);
          ReferenceRankingTabViewModel = new ReferenceRankingTabViewModel(Criteria, Alternatives);
          SettingsTabViewModel = new SettingsTabViewModel();
-
          ChartTabViewModels = new List<ChartTabViewModel>();
-          
+
 
          // TODO: remove. for chart testing purposes
          Criteria.AddCriterion("0-100 km/h", "", "Cost", 5);
@@ -64,22 +66,22 @@ namespace UTA.ViewModels
          Alternatives.AddAlternative("I", "", null);
          Alternatives.AddAlternative("O", "", null);
          Alternatives.AddAlternative("P", "", null);
-
-         foreach (var alternative in Alternatives.AlternativesCollection)
+         for (var i = 0; i < Alternatives.AlternativesCollection.Count; i++)
          {
+            var alternative = Alternatives.AlternativesCollection[i];
             alternative.InitCriteriaValues(Criteria.CriteriaCollection, null);
             for (var j = 0; j < alternative.CriteriaValuesList.Count; j++)
-               alternative.CriteriaValuesList[j].Value = j == 0 ? j : j * 50;
+               alternative.CriteriaValuesList[j].Value = j % 2 == 0 ? i : i * 50;
          }
-
       }
 
         // TODO: remove property after using real rankings
         public Ranking Rankings { get; set; } = new Ranking();
 
-        public Alternatives Alternatives { get; set; }
-        public Criteria Criteria { get; set; }
-        public RelayCommand ShowTabCommand { get; }
+      public Alternatives Alternatives { get; set; }
+      public Criteria Criteria { get; set; }
+      public RelayCommand ShowTabCommand { get; }
+      private readonly IDialogCoordinator _dialogCoordinator;
 
 
         // TODO: use in proper place (to refactor)
@@ -100,7 +102,6 @@ namespace UTA.ViewModels
       public ReferenceRankingTabViewModel ReferenceRankingTabViewModel { get; }
       public SettingsTabViewModel SettingsTabViewModel { get; }
       public List<ChartTabViewModel> ChartTabViewModels { get; set; }
-      public List<ChartTabViewModel> UpdatedChartTabViewModels { get; set; }
 
         public ITab TabToSelect
       {
@@ -210,12 +211,71 @@ namespace UTA.ViewModels
             Alternatives.UpdateCriteriaValueName(eExtended.OldValue, eExtended.NewValue);
         }
 
+      [UsedImplicitly]
+      public async void SolveButtonClicked(object sender, RoutedEventArgs e)
+      {
+         // TODO: use flyouts maybe to inform user what to do, to begin calculations
+         if (Criteria.CriteriaCollection.Count == 0)
+         {
+            AddTabIfNeeded(CriteriaTabViewModel);
+            AddTabIfNeeded(AlternativesTabViewModel);
+            AddTabIfNeeded(ReferenceRankingTabViewModel);
+            ShowTab(CriteriaTabViewModel);
+            return;
+         }
 
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+         if (Alternatives.AlternativesCollection.Count <= 1)
+         {
+            AddTabIfNeeded(AlternativesTabViewModel);
+            AddTabIfNeeded(ReferenceRankingTabViewModel);
+            ShowTab(AlternativesTabViewModel);
+            return;
+         }
+
+         var isAnyCriterionValueNull = Alternatives.AlternativesCollection.Any(alternative =>
+            alternative.CriteriaValuesList.Any(criterionValue => criterionValue.Value == null));
+         if (isAnyCriterionValueNull)
+         {
+            ShowTab(AlternativesTabViewModel);
+            return;
+         }
+
+         // TODO: ShowTab(refrank) if reference ranking has less than two levels or any level unfilled
+
+         if (ChartTabViewModels.Count == 0) ShowChartTabs();
+         else
+         {
+            var shouldGenerateNewCharts = await _dialogCoordinator.ShowMessageAsync(this, "Losing current progress",
+               "Your current partial utilities and final ranking data will be lost. Do you want to continue?",
+               MessageDialogStyle.AffirmativeAndNegative) == MessageDialogResult.Affirmative;
+            if (shouldGenerateNewCharts) ShowChartTabs();
+         }
+      }
+
+      private void AddTabIfNeeded(ITab tab)
+      {
+         if (!Tabs.Contains(tab)) Tabs.Add(tab);
+      }
+
+      private void ShowChartTabs()
+      {
+         foreach (var viewModel in ChartTabViewModels) Tabs.Remove(viewModel);
+         ChartTabViewModels.Clear();
+         foreach (var criterion in Criteria.CriteriaCollection)
+         {
+            var viewModel = new ChartTabViewModel(criterion, Alternatives);
+            ChartTabViewModels.Add(viewModel);
+            Tabs.Add(viewModel);
+         }
+
+         if (ChartTabViewModels.Count > 0) ShowTab(ChartTabViewModels[0]);
+      }
+
+      [NotifyPropertyChangedInvocator]
+      protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+      {
+         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+      }
 
         // TODO: remove. temporary class for designing and preview purposes
         public class Ranking

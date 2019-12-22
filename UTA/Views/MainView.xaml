@@ -4,6 +4,8 @@
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:sys="clr-namespace:System;assembly=mscorlib"
                       xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                      xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+                      Dialog:DialogParticipation.Register="{Binding}"
                       xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
                       xmlns:icons="clr-namespace:MahApps.Metro.IconPacks;assembly=MahApps.Metro.IconPacks.Material"
                       xmlns:viewModels="clr-namespace:UTA.ViewModels"
@@ -124,7 +126,13 @@
         <MenuItem Margin="{StaticResource MenuItemBottomMargin}" Header="Exit" />
       </MenuItem>
       <MenuItem Header="Solution" Style="{StaticResource MenuBarItem}">
-        <MenuItem Margin="{StaticResource MenuItemTopMargin}" Header="Solve" />
+        <MenuItem Margin="{StaticResource MenuItemTopMargin}" Header="Solve">
+          <i:Interaction.Triggers>
+            <i:EventTrigger EventName="Click">
+              <i:CallMethodAction TargetObject="{Binding}" MethodName="SolveButtonClicked" />
+            </i:EventTrigger>
+          </i:Interaction.Triggers>
+        </MenuItem>
         <Separator />
         <MenuItem Margin="{StaticResource MenuItemBottomMargin}" Header="Preserve Kendall's Coefficient"
                   IsCheckable="True" IsChecked="{Binding PreserveKendallCoefficient}"/>
@@ -198,7 +206,13 @@
         <DockPanel Height="28" LastChildFill="False">
           <Button Content="Solve" Style="{StaticResource PrimaryRoundButton}"
                   FontSize="{StaticResource CommonFontSize1}" Margin="0,0,8,0" Padding="20,0,20,1"
-                  DockPanel.Dock="Left" />
+                  DockPanel.Dock="Left">
+            <i:Interaction.Triggers>
+              <i:EventTrigger EventName="Click">
+                <i:CallMethodAction TargetObject="{Binding}" MethodName="SolveButtonClicked" />
+              </i:EventTrigger>
+            </i:Interaction.Triggers>
+          </Button>
 
           <Rectangle Focusable="False" Margin="0,0,8,0" Width="1" Fill="{StaticResource ColorSeparator}"
                      DockPanel.Dock="Left" />

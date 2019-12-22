@@ -62,6 +62,7 @@ namespace DataModel.Input
         public enum CriterionDirectionTypes { Gain, Cost, Ordinal };
         public string CriterionDirection { get; set; }
         public int LinearSegments { get; set; }
+        // TODO: update min and max values after value changes in alternative editor
         public float MinValue { get; set; }
         public float MaxValue { get; set; }
 
