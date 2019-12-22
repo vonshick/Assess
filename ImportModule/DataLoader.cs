@@ -1,5 +1,6 @@
 using DataModel.Input;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using DataModel.Input;
@@ -125,6 +126,20 @@ namespace ImportModule
             }
             
             return id;
+        }
+
+        protected void checkIfValueIsValid(string value, string criterionId, string alternativeId)
+        {
+            if (value.Equals(""))
+            {
+                throw new ImproperFileStructureException("Value can not be empty. Alternative " + alternativeId + ", criterion " + criterionId);
+            }
+
+            float output = 0;
+            if (!float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out output))
+            {
+                throw new ImproperFileStructureException("Improper value format '" + value + "'. Value has to be floating point. Alternative " + alternativeId + ", criterion " + criterionId);
+            }
         }
 
         protected string checkCriteriaNamesUniqueness(string newName)

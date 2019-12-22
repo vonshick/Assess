@@ -113,7 +113,7 @@ namespace ImportModule
 
                             if ((instance.ChildNodes.Count - 2) != criterionList.Count)
                             {
-                                throw new ImproperFileStructureException("For alternative " + nodeCounter + " there are provided " + (instance.ChildNodes.Count - 2) + " criteria values and required are " + criterionList.Count);
+                                throw new ImproperFileStructureException("There are provided " + (instance.ChildNodes.Count - 2) + " criteria values and required are " + criterionList.Count);
                             }
 
                             List<CriterionValue> criteriaValuesList = new List<CriterionValue>();
@@ -139,6 +139,8 @@ namespace ImportModule
                                     {
                                         throw new ImproperFileStructureException(alternative.Name + ": Criterion with ID " + attributeID + " does not exist");
                                     }
+
+                                    checkIfValueIsValid(value, criterion.Name, nodeCounter.ToString());
 
                                     criteriaValuesList.Add(new CriterionValue(criterion.Name, float.Parse(value, CultureInfo.InvariantCulture)));
                                 }

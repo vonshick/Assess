@@ -141,6 +141,8 @@ namespace ImportModule
                                         throw new ImproperFileStructureException(alternative.Name + ": Criterion with name " + attributeName + " does not exist");
                                     }
 
+                                    checkIfValueIsValid(value, criterion.Name, alternative.Name);
+
                                     if (criterion.IsEnum)
                                     {
                                         float enumValue = criterion.EnumDictionary[value];
