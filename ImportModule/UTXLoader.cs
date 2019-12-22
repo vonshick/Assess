@@ -129,6 +129,12 @@ namespace ImportModule
                                 else
                                 {
                                     Criterion criterion = criterionList.Find(element => element.Name == attributeName);
+
+                                    if (criterion == null)
+                                    {
+                                        throw new ImproperFileStructureException(alternative.Name + ": Criterion with name " + attributeName + " does not exist");
+                                    }
+
                                     if (criterion.IsEnum)
                                     {
                                         float enumValue = criterion.EnumDictionary[value];

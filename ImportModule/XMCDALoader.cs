@@ -82,6 +82,12 @@ namespace ImportModule
                     {
                         string criterionID = performance.ChildNodes[0].InnerText;
                         Criterion matchingCriterion = criterionList.Find(criterion => criterion.ID == criterionID);
+
+                        if (matchingCriterion == null)
+                        {
+                            throw new ImproperFileStructureException(alternative.Name + ": Criterion with ID " + criterionID + " does not exist");
+                        }
+
                         float value = float.Parse(performance.ChildNodes[1].FirstChild.InnerText, CultureInfo.InvariantCulture);
                         alternative.CriteriaValuesList.Add(new CriterionValue(matchingCriterion.Name, value));
                     }

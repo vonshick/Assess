@@ -126,6 +126,12 @@ namespace ImportModule
                                 else
                                 {
                                     Criterion criterion = criterionList.Find(element => element.ID == attributeID);
+
+                                    if (criterion == null)
+                                    {
+                                        throw new ImproperFileStructureException(alternative.Name + ": Criterion with ID " + attributeID + " does not exist");
+                                    }
+
                                     criteriaValuesList.Add(new CriterionValue(criterion.Name, float.Parse(value, CultureInfo.InvariantCulture)));
                                 }
                             }
