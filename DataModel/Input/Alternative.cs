@@ -18,7 +18,7 @@ namespace DataModel.Input
         {
             foreach (Criterion criterion in criteriaCollection)
             {
-                CriterionValue criterionValue = new CriterionValue(criterion.Name, 2.0f);
+                CriterionValue criterionValue = new CriterionValue(criterion.Name, null);
                 AddCriterionValue(criterionValue);
             }
         }

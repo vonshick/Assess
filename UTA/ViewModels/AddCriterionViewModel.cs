@@ -25,7 +25,7 @@ namespace UTA.ViewModels
             if (Criteria.AddCriterion(criterionName, criterionDescription, criterionDirection, linearSegments) is
                 Criterion criterion)
             {
-                MainViewModel.Alternatives.AddNewCriterionToAlternatives(criterionName, 0.1f); //add crit values
+                MainViewModel.Alternatives.AddNewCriterionToAlternatives(criterionName, null); //add crit values
                 criterion.PropertyChanged += MainViewModel.CriterionRenamed;
                 return true;
             }

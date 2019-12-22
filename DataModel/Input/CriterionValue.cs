@@ -4,9 +4,9 @@ namespace DataModel.Input
 {
     public class CriterionValue : INotifyPropertyChanged
     {
-        private float _value;
+        private float? _value;
 
-        public CriterionValue(string name, float value)
+        public CriterionValue(string name, float? value)
         {
             Name = name;
             Value = value;
@@ -14,7 +14,7 @@ namespace DataModel.Input
 
         public string Name { get; set; }
 
-        public float Value
+        public float? Value
         {
             get => _value;
             set

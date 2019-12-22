@@ -29,7 +29,7 @@ namespace UTA.Models.DataBase
             return alternative;
         }
 
-        public void AddNewCriterionToAlternatives(string name, float value)
+        public void AddNewCriterionToAlternatives(string name, float? value)
         {
             foreach (var alternative in AlternativesCollection)
             {

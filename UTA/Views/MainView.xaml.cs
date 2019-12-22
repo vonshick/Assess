@@ -138,8 +138,8 @@ namespace UTA.Views
 
         private void RemoveAlternativeFromRankButtonClicked(object sender, RoutedEventArgs e)
         {
-            Button sourceBtn = sender as Button;
-            Alternative alternative = sourceBtn.DataContext as Alternative;
+            var sourceBtn = (Button) sender;
+            var alternative = (Alternative) sourceBtn.DataContext;
             _viewmodel.Alternatives.RemoveAlternativeFromRank(alternative);
         }
 

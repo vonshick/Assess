@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Windows;
 using DataModel.Input;
 using GongSolutions.Wpf.DragDrop;
@@ -6,7 +7,7 @@ using GongSolutions.Wpf.DragDrop.Utilities;
 
 namespace UTA.Models
 {
-    class AlternativeDropHandler : IDropTarget
+    public class AlternativeDropHandler : IDropTarget
     {
         public void DragOver(IDropInfo dropInfo)
         {
@@ -21,7 +22,7 @@ namespace UTA.Models
         {
             if (dropInfo.DragInfo.SourceCollection.Equals(dropInfo.TargetCollection)) return;
 
-            Alternative sourceItem = dropInfo.Data as Alternative;
+            var sourceItem = (Alternative) dropInfo.Data;
 
             IList sourceList = dropInfo.DragInfo.SourceCollection.TryGetList();
             sourceList.Remove(sourceItem);
