@@ -16,8 +16,8 @@ namespace ImportModule
             // UTXLoader dataLoader = new UTXLoader();
             // dataLoader.LoadData(Path.Combine(dataDirectoryPath, "utx_with_enum.utx"));
 
-            CSVLoader dataLoader = new CSVLoader();
-            dataLoader.LoadData(Path.Combine(dataDirectoryPath, "Zeszyt1.csv"));
+            // CSVLoader dataLoader = new CSVLoader();
+            // dataLoader.LoadData(Path.Combine(dataDirectoryPath, "Zeszyt1.csv"));
 //            dataLoader.LoadData(Path.Combine(dataDirectoryPath, "Lab7_bus.csv"));
 
             // XMCDALoader dataLoader = new XMCDALoader();
@@ -39,10 +39,10 @@ namespace ImportModule
             for (int i = 0; i < dataLoader.AlternativeList.Count; i++)
             {
                 Trace.WriteLine(dataLoader.AlternativeList[i].Name);
-                Dictionary<Criterion, float> dictionary = dataLoader.AlternativeList[i].CriteriaValues;
-                foreach (KeyValuePair<Criterion, float> kvp in dictionary)
+                List<CriterionValue> criteriaValuesList = dataLoader.AlternativeList[i].CriteriaValuesList;
+                foreach (CriterionValue criterionValue in criteriaValuesList)
                 {
-                    Trace.WriteLine(kvp.Key.Name + " = " + kvp.Value);
+                    Trace.WriteLine(criterionValue.Name + " = " + criterionValue.Value);
                 }
                 Trace.WriteLine("");
             }

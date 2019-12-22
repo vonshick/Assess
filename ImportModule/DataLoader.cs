@@ -35,7 +35,10 @@ namespace ImportModule
 
                 for (int j = 0; j < alternativeList.Count; j++)
                 {
-                    float value = alternativeList[j].CriteriaValues[criterionList[i]];
+
+                    CriterionValue matchingCriterionValue = alternativeList[j].CriteriaValuesList.Find(criterionValue => criterionValue.Name == criterionList[i].Name);
+
+                    float value = matchingCriterionValue.Value;
 
                     if (value < min)
                     {
