@@ -2,9 +2,9 @@
 
 namespace ImportModule
 {
-    public class ImproperFileStructureException: Exception
+    public class ImproperFileStructureException : Exception
     {
-        public ImproperFileStructureException(string message): base(message)
+        public ImproperFileStructureException(string message) : base(message)
         {
         }
     }

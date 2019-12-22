@@ -17,7 +17,7 @@ namespace ImportModule
         override protected void ProcessFile(string filePath)
         {
             ValidateFilePath(filePath);
-            ValidateFileExtension(filePath,".utx");
+            ValidateFileExtension(filePath, ".utx");
 
             try
             {

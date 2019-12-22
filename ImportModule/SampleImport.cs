@@ -8,7 +8,8 @@ namespace ImportModule
     public class SampleImport
     {
 
-        public static DataLoader ProcessSampleData(string dataDirectoryPath) {                  
+        public static DataLoader ProcessSampleData(string dataDirectoryPath)
+        {
             XMLLoader dataLoader = new XMLLoader();
             dataLoader.LoadData(Path.Combine(dataDirectoryPath, "sample.xml"));
 
@@ -17,7 +18,7 @@ namespace ImportModule
 
             // CSVLoader dataLoader = new CSVLoader();
             // dataLoader.LoadData(Path.Combine(dataDirectoryPath, "Zeszyt1.csv"));
-//            dataLoader.LoadData(Path.Combine(dataDirectoryPath, "Lab7_bus.csv"));
+            //            dataLoader.LoadData(Path.Combine(dataDirectoryPath, "Lab7_bus.csv"));
 
             // XMCDALoader dataLoader = new XMCDALoader();
             // dataLoader.LoadData(Path.Combine(dataDirectoryPath, "xmcda"));

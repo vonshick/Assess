@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 using System.Xml;
 
 namespace ImportModule
@@ -20,7 +19,8 @@ namespace ImportModule
             ValidateFilePath(filePath);
             ValidateFileExtension(filePath, ".xml");
 
-            try {
+            try
+            {
                 //load XML
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.Load(filePath);
@@ -152,7 +152,9 @@ namespace ImportModule
                         }
                     }
                 }
-            } catch(Exception exception) {
+            }
+            catch (Exception exception)
+            {
                 if (exception is ImproperFileStructureException)
                 {
                     Trace.WriteLine(exception.Message);

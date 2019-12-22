@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using DataModel.Input;
 
 namespace ImportModule
 {
@@ -61,8 +60,8 @@ namespace ImportModule
             if (!File.Exists(@path))
             {
                 //TODO vonshick WARNINGS
-                throw(new FileNotFoundException("File " + path + " does not exists!"));
-            } 
+                throw (new FileNotFoundException("File " + path + " does not exists!"));
+            }
         }
 
         protected void ValidateFileExtension(string path, string expectedExtension)
@@ -75,7 +74,7 @@ namespace ImportModule
 
         }
 
-        protected virtual void ProcessFile(string path) 
+        protected virtual void ProcessFile(string path)
         {
 
         }
@@ -109,22 +108,22 @@ namespace ImportModule
             return nameFreeToUse;
         }
 
-        protected string checkCriteriaIdsUniqueness(string id) 
+        protected string checkCriteriaIdsUniqueness(string id)
         {
-            if(id.Equals(""))
+            if (id.Equals(""))
             {
                 throw new ImproperFileStructureException("Criterion ID can not be empty string!");
             }
 
             string[] usedIds = criterionList.Select(criterion => criterion.ID).ToArray();
-            foreach(string usedId in usedIds) 
+            foreach (string usedId in usedIds)
             {
-                if(id.Equals(usedId))
+                if (id.Equals(usedId))
                 {
                     throw new ImproperFileStructureException("Criterion ID '" + id + "' has been already used!");
                 }
             }
-            
+
             return id;
         }
 
@@ -144,7 +143,7 @@ namespace ImportModule
 
         protected string checkCriteriaNamesUniqueness(string newName)
         {
-            if(newName.Equals(""))
+            if (newName.Equals(""))
             {
                 throw new ImproperFileStructureException("Criterion name can not be empty string!");
             }
@@ -152,10 +151,10 @@ namespace ImportModule
             string[] usedNames = criterionList.Select(criterion => criterion.Name).ToArray();
             return (addSuffixToName(newName, usedNames));
         }
- 
+
         protected string checkAlternativesNamesUniqueness(string newName)
         {
-            if(newName.Equals(""))
+            if (newName.Equals(""))
             {
                 throw new ImproperFileStructureException("Alternative name can not be empty string!");
             }

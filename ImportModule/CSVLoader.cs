@@ -5,9 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
-using DataModel.Input;
 
 namespace ImportModule
 {
@@ -85,7 +83,7 @@ namespace ImportModule
                     {
                         var values = ReadNewLine(reader);
 
-                        Alternative alternative = new Alternative { Name = checkAlternativesNamesUniqueness(values[0]), CriteriaValuesList = new List<CriterionValue>()};
+                        Alternative alternative = new Alternative { Name = checkAlternativesNamesUniqueness(values[0]), CriteriaValuesList = new List<CriterionValue>() };
 
                         for (int i = 0; i < criterionList.Count; i++)
                         {
