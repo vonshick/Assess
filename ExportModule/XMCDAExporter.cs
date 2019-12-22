@@ -1,9 +1,8 @@
-﻿using System;
-using DataModel.Input;
+﻿using DataModel.Input;
 using DataModel.Results;
 using System.Collections.Generic;
-using System.Xml;
 using System.IO;
+using System.Xml;
 
 namespace ExportModule
 {
@@ -191,7 +190,8 @@ namespace ExportModule
                 xmcdaWriter.WriteEndElement();
                 xmcdaWriter.WriteStartElement("criterionFunction");
                 xmcdaWriter.WriteStartElement("points");
-                foreach(KeyValuePair<float, float> pointValue in partialUtility.PointsValues){
+                foreach (KeyValuePair<float, float> pointValue in partialUtility.PointsValues)
+                {
                     xmcdaWriter.WriteStartElement("point");
 
                     xmcdaWriter.WriteStartElement("abscissa");

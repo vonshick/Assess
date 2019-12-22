@@ -1,10 +1,10 @@
+using DataModel.Input;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using System.Diagnostics;
-using DataModel.Input;
 
 namespace ImportModule
 {

@@ -2,11 +2,11 @@
 
 namespace UTA.Views
 {
-   public partial class SettingsTab : UserControl
-   {
-      public SettingsTab()
-      {
-         InitializeComponent();
-      }
-   }
+    public partial class SettingsTab : UserControl
+    {
+        public SettingsTab()
+        {
+            InitializeComponent();
+        }
+    }
 }

@@ -2,11 +2,11 @@
 
 namespace UTA.ViewModels
 {
-   public class SettingsTabViewModel : Tab
-   {
-      public SettingsTabViewModel()
-      {
-         Name = "Settings";
-      }
-   }
+    public class SettingsTabViewModel : Tab
+    {
+        public SettingsTabViewModel()
+        {
+            Name = "Settings";
+        }
+    }
 }

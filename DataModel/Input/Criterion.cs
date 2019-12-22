@@ -1,7 +1,7 @@
-﻿using System;
+﻿using DataModel.PropertyChangedExtended;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using DataModel.PropertyChangedExtended;
 
 namespace DataModel.Input
 {
@@ -31,7 +31,7 @@ namespace DataModel.Input
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((Criterion) obj);
+            return Equals((Criterion)obj);
         }
 
         public override int GetHashCode()
@@ -40,8 +40,8 @@ namespace DataModel.Input
         }
 
         public string ID { get; set; }
-        public bool IsEnum {get; set; } = false;
-        public Dictionary<string, float> EnumDictionary {get; set; }
+        public bool IsEnum { get; set; } = false;
+        public Dictionary<string, float> EnumDictionary { get; set; }
         private string _name;
         public string Name
         {

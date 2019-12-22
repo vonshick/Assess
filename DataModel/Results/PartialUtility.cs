@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using DataModel.Input;
+﻿using DataModel.Input;
+using System.Collections.Generic;
 
 namespace DataModel.Results
 {

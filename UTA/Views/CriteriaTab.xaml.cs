@@ -2,11 +2,11 @@
 
 namespace UTA.Views
 {
-   public partial class CriteriaTab : UserControl
-   {
-      public CriteriaTab()
-      {
-         InitializeComponent();
-      }
-   }
+    public partial class CriteriaTab : UserControl
+    {
+        public CriteriaTab()
+        {
+            InitializeComponent();
+        }
+    }
 }

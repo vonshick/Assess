@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DataModel.Input;
+using DataModel.PropertyChangedExtended;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -8,10 +10,8 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using DataModel.Input;
 using UTA.Annotations;
 using UTA.Interactivity;
-using DataModel.PropertyChangedExtended;
 using UTA.Models.DataBase;
 using UTA.Models.Tab;
 using UTA.Views;
@@ -41,7 +41,7 @@ namespace UTA.ViewModels
             Alternatives.AlternativesCollection.CollectionChanged += AlternativesCollectionChanged;
             Tabs = new ObservableCollection<ITab>();
             Tabs.CollectionChanged += TabsCollectionChanged;
-            ShowTabCommand = new RelayCommand(tabModel => ShowTab((ITab) tabModel));
+            ShowTabCommand = new RelayCommand(tabModel => ShowTab((ITab)tabModel));
 
             CriteriaTabViewModel = new CriteriaTabViewModel(Criteria, Alternatives);
             AlternativesTabViewModel = new AlternativesTabViewModel(Criteria, Alternatives);
@@ -121,7 +121,7 @@ namespace UTA.ViewModels
 
         public void ShowAddCriterionDialog()
         {
-            var addCriterionViewModel = new AddCriterionViewModel {MainViewModel = this, Criteria = Criteria};
+            var addCriterionViewModel = new AddCriterionViewModel { MainViewModel = this, Criteria = Criteria };
             var addCriterionWindow = new AddCriterionView(addCriterionViewModel);
             addCriterionWindow.ShowDialog();
         }
@@ -135,14 +135,14 @@ namespace UTA.ViewModels
         private void TabsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
-                ((ITab) e.NewItems[0]).CloseRequested += Tabs_Removing;
+                ((ITab)e.NewItems[0]).CloseRequested += Tabs_Removing;
             else if (e.Action == NotifyCollectionChangedAction.Remove)
-                ((ITab) e.OldItems[0]).CloseRequested -= Tabs_Removing;
+                ((ITab)e.OldItems[0]).CloseRequested -= Tabs_Removing;
         }
 
         private void Tabs_Removing(object sender, EventArgs e)
         {
-            Tabs.Remove((ITab) sender);
+            Tabs.Remove((ITab)sender);
         }
 
         [UsedImplicitly]
@@ -169,7 +169,7 @@ namespace UTA.ViewModels
         //todo not needed anymore?
         public void GenerateAlternativesTable(object sender, PropertyChangedEventArgs e)
         {
-//            GenerateAlternativesTable();
+            //            GenerateAlternativesTable();
         }
 
         public void AddAlternativeFromDataGrid(object sender, AddingNewItemEventArgs e)
@@ -196,10 +196,10 @@ namespace UTA.ViewModels
                 {
                     FinalRanking.Add(new FinalRankingEntry(i,
                         new Alternative($"Alternative {i}", null, CriteriaCollection),
-                        (float) ((10 - i / 2) * 0.1 - 0.000001)));
+                        (float)((10 - i / 2) * 0.1 - 0.000001)));
                     FinalRanking.Add(new FinalRankingEntry(i + 1,
                         new Alternative($"Alternative {i + 1}", null, CriteriaCollection),
-                        (float) ((10 - i / 2) * 0.1 - 0.050001)));
+                        (float)((10 - i / 2) * 0.1 - 0.050001)));
                 }
 
                 for (var i = 1; i <= 20; i++)
@@ -236,7 +236,7 @@ namespace UTA.ViewModels
 
         public void CriterionRenamed(object sender, PropertyChangedEventArgs e)
         {
-            PropertyChangedExtendedEventArgs<string> eExtended = (PropertyChangedExtendedEventArgs<string>) e;
+            PropertyChangedExtendedEventArgs<string> eExtended = (PropertyChangedExtendedEventArgs<string>)e;
             Alternatives.UpdateCriteriaValueName(eExtended.OldValue, eExtended.NewValue);
         }
 

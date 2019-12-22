@@ -1,9 +1,9 @@
+using DataModel.Input;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Xml;
-using DataModel.Input;
 
 namespace ImportModule
 {

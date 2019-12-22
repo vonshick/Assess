@@ -49,7 +49,7 @@ namespace DataModel.Input
             CriteriaValuesList.Add(criterionValue);
             Console.WriteLine("Added to alternative " + Name + " value (" + criterionValue.Name + "," + criterionValue.Value + ")");
         }
-        
+
         public void UpdateCriterionValueName(string oldName, string newName)
         {
             //call it in criteria class when criteriaList changes. Event should be handled there

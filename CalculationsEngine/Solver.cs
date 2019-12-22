@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using DataModel.Input;
+﻿using DataModel.Input;
 using DataModel.Results;
+using System;
+using System.Collections.Generic;
 
 namespace CalculationsEngine
 {
@@ -50,10 +50,10 @@ namespace CalculationsEngine
 
         private List<PartialUtility> MakePartialUtilityFunction(double[] doubles)
         {
-            var floatArray = Array.ConvertAll(doubles, x => (float) x);
+            var floatArray = Array.ConvertAll(doubles, x => (float)x);
             var partialUtilityList = new List<PartialUtility>();
             var count = 0;
-            Dictionary<float, float> dict = new Dictionary<float, float> { {0, 0} };
+            Dictionary<float, float> dict = new Dictionary<float, float> { { 0, 0 } };
             foreach (var entry in variantsList[0].Key.CriteriaValues)
             {
                 var linearSegments = entry.Key.LinearSegments;

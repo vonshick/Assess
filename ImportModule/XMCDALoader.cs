@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using DataModel.Input;
+using DataModel.Results;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Xml;
-using System.Diagnostics;
-using DataModel.Input;
-using DataModel.Results;
 
 namespace ImportModule
 {
@@ -44,7 +44,7 @@ namespace ImportModule
         private void LoadCriteriaScales()
         {
             ValidateFilePath(Path.Combine(xmcdaDirectory, "criteria_scales.xml"));
-            
+
             XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.Load(Path.Combine(xmcdaDirectory, "criteria_scales.xml"));
 
@@ -181,11 +181,11 @@ namespace ImportModule
             setMinAndMaxCriterionValues();
         }
 
-        public void LoadResults() 
+        public void LoadResults()
         {
             LoadAlternativesRanks();
             LoadValueFunctions();
         }
-        
+
     }
 }

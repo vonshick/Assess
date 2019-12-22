@@ -1,8 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using DataModel.Input;
 using DataModel.Results;
+using System.Collections.Generic;
+using System.IO;
 
 
 namespace ExportModule
@@ -26,14 +25,14 @@ namespace ExportModule
             return (partialUtilities);
         }
 
-        private static List <KeyValuePair<Alternative, int>> createSampleResults(List<Alternative> alternativeList)
+        private static List<KeyValuePair<Alternative, int>> createSampleResults(List<Alternative> alternativeList)
         {
-            List < KeyValuePair<Alternative, int> > resultsList = new List<KeyValuePair<Alternative, int>>();
+            List<KeyValuePair<Alternative, int>> resultsList = new List<KeyValuePair<Alternative, int>>();
             for (int i = 0; i < alternativeList.Count; i++)
             {
-                resultsList.Add(new KeyValuePair<Alternative, int> (alternativeList[i], i));
+                resultsList.Add(new KeyValuePair<Alternative, int>(alternativeList[i], i));
             }
-            return(resultsList);
+            return (resultsList);
         }
 
         public static void exportXMCDA(string dataDirectoryPath, List<Criterion> criterionList, List<Alternative> alternativeList)

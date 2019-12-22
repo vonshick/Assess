@@ -1,23 +1,24 @@
+using DataModel.Input;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Xml;
-using DataModel.Input;
 
 namespace ImportModule
 {
     public class XMLLoader : DataLoader
     {
 
-        public XMLLoader() : base() 
+        public XMLLoader() : base()
         {
         }
         override protected void ProcessFile(string filePath)
         {
             ValidateFilePath(filePath);
-            
-            try {
+
+            try
+            {
                 //load XML
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.Load(filePath);
@@ -132,7 +133,9 @@ namespace ImportModule
                         }
                     }
                 }
-            } catch(Exception e) {
+            }
+            catch (Exception e)
+            {
                 Trace.WriteLine("Loading XML " + filePath + " failed! " + e.Message);
             }
         }

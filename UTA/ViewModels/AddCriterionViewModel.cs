@@ -1,7 +1,7 @@
-﻿using System;
+﻿using DataModel.Input;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using DataModel.Input;
 using UTA.Models.DataBase;
 
 namespace UTA.ViewModels

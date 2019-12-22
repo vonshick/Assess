@@ -2,11 +2,11 @@
 
 namespace UTA.Views
 {
-   public partial class ReferenceRankingTab : UserControl
-   {
-      public ReferenceRankingTab()
-      {
-         InitializeComponent();
-      }
-   }
+    public partial class ReferenceRankingTab : UserControl
+    {
+        public ReferenceRankingTab()
+        {
+            InitializeComponent();
+        }
+    }
 }

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using DataModel.Results;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using DataModel.Results;
 
 namespace CalculationsEngine
 {
@@ -23,8 +23,8 @@ namespace CalculationsEngine
             arrayOfStars = new int[stars];
             for (var i = 0; i < arrayOfStars.Length; i++) arrayOfStars[i] = lowerBound + i;
             for (var r = 0; r < height; r++)
-            for (var c = 0; c < width; c++)
-                this.simplexMatrix[r, c] = simplexMatrix[r, c];
+                for (var c = 0; c < width; c++)
+                    this.simplexMatrix[r, c] = simplexMatrix[r, c];
 
             //Extra row solve min problem => -1
             for (var c = 0; c < width; c++) this.simplexMatrix[height, c] = c < lowerBound ? 0 : -1;

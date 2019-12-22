@@ -2,11 +2,11 @@
 
 namespace UTA.Views
 {
-   public partial class AlternativesTab : UserControl
-   {
-      public AlternativesTab()
-      {
-         InitializeComponent();
-      }
-   }
+    public partial class AlternativesTab : UserControl
+    {
+        public AlternativesTab()
+        {
+            InitializeComponent();
+        }
+    }
 }

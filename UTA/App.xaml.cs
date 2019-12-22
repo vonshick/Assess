@@ -2,7 +2,7 @@
 
 namespace UTA
 {
-   public partial class App : Application
-   {
-   }
+    public partial class App : Application
+    {
+    }
 }

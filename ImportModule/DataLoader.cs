@@ -1,6 +1,6 @@
+using DataModel.Input;
 using System.Collections.Generic;
 using System.IO;
-using DataModel.Input;
 
 namespace ImportModule
 {
@@ -44,27 +44,28 @@ namespace ImportModule
                         max = value;
                     }
                 }
-                
+
                 criterionList[i].MaxValue = max;
                 criterionList[i].MinValue = min;
             }
         }
 
-        protected void ValidateFilePath(string path) 
+        protected void ValidateFilePath(string path)
         {
-            if (!File.Exists(@path)) {
+            if (!File.Exists(@path))
+            {
                 //TODO vonshick WARNINGS
-                throw(new FileNotFoundException("File " + path + " does not exists!"));
-            } 
-        } 
+                throw (new FileNotFoundException("File " + path + " does not exists!"));
+            }
+        }
 
-        protected virtual void ProcessFile(string path) 
+        protected virtual void ProcessFile(string path)
         {
 
         }
-        
+
         public virtual void LoadData(string path)
-        {   
+        {
             ProcessFile(path);
             setMinAndMaxCriterionValues();
         }

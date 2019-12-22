@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using DataModel.Input;
-using DataModel.Structs;
+﻿using DataModel.Structs;
+using System.Collections.Generic;
 
 namespace DataModel.Results
 {

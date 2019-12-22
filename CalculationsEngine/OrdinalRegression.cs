@@ -1,5 +1,4 @@
-﻿using DataModel;
-using DataModel.Results;
+﻿using DataModel.Results;
 
 namespace CalculationsEngine
 {

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using DataModel.Input;
+using DataModel.Structs;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using DataModel.Input;
-using DataModel.Structs;
 using ReferenceRankingLists = UTA.Models.DataBase.ReferenceRanking;
 using referenceRankingStructs = DataModel.Results.ReferenceRanking;
 
