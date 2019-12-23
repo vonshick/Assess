@@ -1,5 +1,4 @@
-﻿using DataModel.Input;
-using System;
+﻿using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
@@ -8,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using DataModel.Input;
 using UTA.Models;
 using UTA.ViewModels;
 
@@ -33,12 +33,16 @@ namespace UTA.Views
             InitializeComponent();
             DataContext = _viewmodel;
             SetBindings();
+            _viewmodel.PropertyChanged += ViewmodelPropertyChanged;
             _viewmodel.Criteria.CriteriaCollection.CollectionChanged += UpdateAlternativesDataGridColumns;
             ButtonEditAlternatives.Content = "Editing is OFF";
             AlternativesListView.GiveFeedback += OnGiveFeedback;
             var tabViewSource = CollectionViewSource.GetDefaultView(TabControl.Items);
             tabViewSource.CollectionChanged += TabsCollectionChanged;
         }
+
+        public string InputAlternativeName { get; set; }
+        public string InputAlternativeDescription { get; set; }
 
         protected void OnGiveFeedback(object o, GiveFeedbackEventArgs e)
         {
@@ -49,9 +53,8 @@ namespace UTA.Views
 
         private void SetBindings()
         {
-            TextBoxAlternativeName.SetBinding(TextBox.TextProperty, new Binding("InputAlternativeName") { Source = this });
-            TextBoxAlternativeDescription.SetBinding(TextBox.TextProperty,
-                new Binding("InputAlternativeDescription") { Source = this });
+            TextBoxAlternativeName.SetBinding(TextBox.TextProperty, new Binding("InputAlternativeName") {Source = this});
+            TextBoxAlternativeDescription.SetBinding(TextBox.TextProperty, new Binding("InputAlternativeDescription") {Source = this});
 
             EditAlternativesDataGrid.ItemsSource = _viewmodel.Alternatives.AlternativesCollection;
             //EditAlternativesDataGrid.CellEditEnding += RowEditEnding;
@@ -77,15 +80,9 @@ namespace UTA.Views
 
         public void ShowAddCriterionDialog(object sender, RoutedEventArgs routedEventArgs)
         {
-            foreach (DataGridColumn dataGridColumn in EditAlternativesDataGrid.Columns)
-            {
-                Console.WriteLine(dataGridColumn.Header);
-            }
+            foreach (var dataGridColumn in EditAlternativesDataGrid.Columns) Console.WriteLine(dataGridColumn.Header);
             _viewmodel.ShowAddCriterionDialog();
         }
-
-        public string InputAlternativeName { get; set; }
-        public string InputAlternativeDescription { get; set; }
 
         public void ViewmodelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -115,56 +112,58 @@ namespace UTA.Views
 
         private GridView GenerateGridView(DataTable table)
         {
-            GridView view = new GridView();
+            var view = new GridView();
             foreach (DataColumn column in table.Columns)
-            {
-                view.Columns.Add(new GridViewColumn()
-                {
-                    Header = column.ColumnName,
-                    DisplayMemberBinding = new Binding(column.ColumnName)
-                });
-            }
+                view.Columns.Add(new GridViewColumn {Header = column.ColumnName, DisplayMemberBinding = new Binding(column.ColumnName)});
             return view;
         }
 
         private void RemoveAlternativeButtonClicked(object sender, RoutedEventArgs e)
         {
             if (EditAlternativesDataGrid.SelectedItem is Alternative alternative)
-            {
                 _viewmodel.Alternatives.RemoveAlternative(alternative);
-            }
         }
 
         private void RemoveAlternativeFromRankButtonClicked(object sender, RoutedEventArgs e)
         {
-            var sourceBtn = (Button)sender;
-            var alternative = (Alternative)sourceBtn.DataContext;
+            var sourceBtn = (Button) sender;
+            var alternative = (Alternative) sourceBtn.DataContext;
             _viewmodel.Alternatives.RemoveAlternativeFromRank(alternative);
         }
 
 
         private void AddAlternativesDataGridColumn(Criterion criterion, int startingIndex)
         {
-            DataGridTextColumn textColumn = new DataGridTextColumn { Binding = new Binding() { Path = new PropertyPath("CriteriaValuesList[" + startingIndex + "].Value"), Mode = BindingMode.TwoWay } };
+            var textColumn = new DataGridTextColumn
+            {
+                Binding = new Binding
+                {
+                    Path = new PropertyPath("CriteriaValuesList[" + startingIndex + "].Value"),
+                    Mode = BindingMode.TwoWay
+                }
+            };
             EditAlternativesDataGrid.Columns.Add(textColumn);
 
-            BindingProxy bindingProxy = new BindingProxy { Data = criterion };
+            var bindingProxy = new BindingProxy {Data = criterion};
 
             //todo not working
-            string critResName = "criterion[" + startingIndex + "]";
+            var critResName = "criterion[" + startingIndex + "]";
             EditAlternativesDataGrid.Resources.Add(critResName, bindingProxy);
             //            textColumn.DataContext = (Criterion)header.Resources["criterion"];
             //            textColumn.Header = new Binding() { Path = new PropertyPath("Name"), Source = (Criterion)EditAlternativesDataGrid.Resources[critResName] };
-            TextBlock header = new TextBlock();
-            header.SetBinding(TextBlock.TextProperty, new Binding() { Path = new PropertyPath("Data.Name"), Source = (BindingProxy)EditAlternativesDataGrid.Resources[critResName] });
+            var header = new TextBlock();
+            header.SetBinding(TextBlock.TextProperty,
+                new Binding
+                {
+                    Path = new PropertyPath("Data.Name"),
+                    Source = (BindingProxy) EditAlternativesDataGrid.Resources[critResName]
+                });
             textColumn.Header = header;
-
 
             //            var template = new DataTemplate();
             //            template.VisualTree = new FrameworkElementFactory(typeof(TextBlock));
             //            template.VisualTree.SetBinding(TextBlock.TextProperty, new Binding() { Path = new PropertyPath("Name"), Source = criterion });
             //            textColumn.HeaderTemplate = template;
-
         }
 
         private void AddAlternative(object sender, RoutedEventArgs e)
@@ -176,10 +175,6 @@ namespace UTA.Views
                 TextBoxAlternativeDescription.Clear();
                 InputAlternativeName = "";
                 InputAlternativeDescription = "";
-            }
-            else
-            {
-                //todo notify user
             }
         }
 
@@ -201,11 +196,8 @@ namespace UTA.Views
 
         public void UpdateAlternativesDataGridColumns(object sender, NotifyCollectionChangedEventArgs e)
         {
-            int startingIndex = e.NewStartingIndex;
-            foreach (Criterion criterion in e.NewItems)
-            {
-                AddAlternativesDataGridColumn(criterion, startingIndex++);
-            }
+            var startingIndex = e.NewStartingIndex;
+            foreach (Criterion criterion in e.NewItems) AddAlternativesDataGridColumn(criterion, startingIndex++);
         }
 
         /*private void RowEditEnding(object sender, DataGridCellEditEndingEventArgs e)
@@ -238,19 +230,18 @@ namespace UTA.Views
             if (e.Action == NotifyCollectionChangedAction.Add) TabControl.SelectedIndex = _viewmodel.Tabs.Count - 1;
             else if (e.Action == NotifyCollectionChangedAction.Remove)
                 TabControl.SelectedIndex = _viewmodel.Tabs.Count == e.OldStartingIndex
-                   ? e.OldStartingIndex - 1
-                   : e.OldStartingIndex;
+                    ? e.OldStartingIndex - 1
+                    : e.OldStartingIndex;
         }
 
         private void TabControlHeaderSizeChanged(object sender, EventArgs e)
         {
-            if (_tabScrollViewer == null)
-                _tabScrollViewer = (ScrollViewer)TabControl.Template.FindName("TabScrollViewer", TabControl);
+            if (_tabScrollViewer == null) _tabScrollViewer = (ScrollViewer) TabControl.Template.FindName("TabScrollViewer", TabControl);
             var tabScrollViewerTemplate = _tabScrollViewer.Template;
             if (_scrollLeftButton == null)
-                _scrollLeftButton = (RepeatButton)tabScrollViewerTemplate.FindName("ScrollLeftButton", _tabScrollViewer);
+                _scrollLeftButton = (RepeatButton) tabScrollViewerTemplate.FindName("ScrollLeftButton", _tabScrollViewer);
             if (_scrollRightButton == null)
-                _scrollRightButton = (RepeatButton)tabScrollViewerTemplate.FindName("ScrollRightButton", _tabScrollViewer);
+                _scrollRightButton = (RepeatButton) tabScrollViewerTemplate.FindName("ScrollRightButton", _tabScrollViewer);
 
             if (_tabScrollViewer.ScrollableWidth > 0 && _scrollRightButton.Visibility == Visibility.Collapsed)
                 _scrollRightButton.Visibility = _scrollLeftButton.Visibility = Visibility.Visible;
@@ -261,17 +252,17 @@ namespace UTA.Views
 
         private void Expander_Toggled(object sender, RoutedEventArgs e)
         {
-            var expander = (Expander)sender;
-            var panelGrid = (Grid)expander.Parent;
-            var expanderIndex = panelGrid.Children.IndexOf((UIElement)sender);
+            var expander = (Expander) sender;
+            var panelGrid = (Grid) expander.Parent;
+            var expanderIndex = panelGrid.Children.IndexOf((UIElement) sender);
             panelGrid.RowDefinitions[expanderIndex].Height = expander.IsExpanded
-               ? new GridLength(expanderIndex == 0 ? 55 : 45, GridUnitType.Star)
-               : new GridLength((double)FindResource("ExpanderHeaderHeight") + (expanderIndex == 0 ? 2 : 4));
+                ? new GridLength(expanderIndex == 0 ? 55 : 45, GridUnitType.Star)
+                : new GridLength((double) FindResource("ExpanderHeaderHeight") + (expanderIndex == 0 ? 2 : 4));
         }
 
         private void Tabs_Scrolled(object sender, MouseWheelEventArgs e)
         {
-            var scrollViewer = (ScrollViewer)sender;
+            var scrollViewer = (ScrollViewer) sender;
             const int scrollAmount = 3;
             if (e.Delta < 0)
                 for (var i = 0; i < scrollAmount; i++)
@@ -283,31 +274,29 @@ namespace UTA.Views
 
         private void InstancePanelListItemClicked(object sender, RoutedEventArgs e)
         {
-            var selectedListViewItem = MainViewModel.FindParent<ListViewItem>((DependencyObject)sender);
-            var alternativesExpander = (Expander)FindName("AlternativesExpander");
-            if (alternativesExpander != null && selectedListViewItem.IsDescendantOf(alternativesExpander))
+            var selectedListViewItem = MainViewModel.FindParent<ListViewItem>((DependencyObject) sender);
+            if (FindName("AlternativesExpander") is Expander alternativesExpander &&
+                selectedListViewItem.IsDescendantOf(alternativesExpander))
             {
                 _viewmodel.ShowTab(_viewmodel.AlternativesTabViewModel);
                 // TODO: navigate to selected item after tab open
                 return;
             }
 
-            var criteriaExpander = (Expander)FindName("CriteriaExpander");
-            if (criteriaExpander != null && selectedListViewItem.IsDescendantOf(criteriaExpander))
+            if (FindName("CriteriaExpander") is Expander criteriaExpander && selectedListViewItem.IsDescendantOf(criteriaExpander))
                 _viewmodel.ShowTab(_viewmodel.CriteriaTabViewModel);
             // TODO: navigate to selected item after tab open
         }
 
         private void MenuBarTopbarViewToggled(object sender, RoutedEventArgs e)
         {
-            var viewTopbar = (MenuItem)sender;
-            MainViewGrid.RowDefinitions[0].Height =
-               viewTopbar.IsChecked ? new GridLength(1, GridUnitType.Auto) : new GridLength(0);
+            var viewTopbar = (MenuItem) sender;
+            MainViewGrid.RowDefinitions[0].Height = viewTopbar.IsChecked ? new GridLength(1, GridUnitType.Auto) : new GridLength(0);
         }
 
         private void MenuBarPanelViewToggled(object sender, RoutedEventArgs e)
         {
-            var viewPanel = (MenuItem)sender;
+            var viewPanel = (MenuItem) sender;
             string widthResourceKey;
             string minWidthResourceKey;
             int panelColumnIndex;
@@ -329,8 +318,8 @@ namespace UTA.Views
 
             if (viewPanel.IsChecked)
             {
-                var width = ((GridLength)MainViewGrid.FindResource(widthResourceKey)).Value;
-                var minWidth = (double)MainViewGrid.FindResource(minWidthResourceKey);
+                var width = ((GridLength) MainViewGrid.FindResource(widthResourceKey)).Value;
+                var minWidth = (double) MainViewGrid.FindResource(minWidthResourceKey);
                 MainViewGrid.ColumnDefinitions[panelColumnIndex].Width = new GridLength(width);
                 MainViewGrid.ColumnDefinitions[panelColumnIndex].MinWidth = minWidth;
                 columnsGridSplitter.Visibility = Visibility.Visible;
