@@ -135,7 +135,7 @@
         </MenuItem>
         <Separator />
         <MenuItem Margin="{StaticResource MenuItemBottomMargin}" Header="Preserve Kendall's Coefficient"
-                  IsCheckable="True" IsChecked="{Binding PreserveKendallCoefficient}"/>
+                  IsCheckable="True" IsChecked="{Binding PreserveKendallCoefficient}" />
       </MenuItem>
       <MenuItem Header="Show" Style="{StaticResource MenuBarItem}">
         <MenuItem Margin="{StaticResource MenuItemTopMargin}" Header="Criteria">
@@ -546,7 +546,7 @@
             <StackPanel Orientation="Horizontal">
               <TextBlock Text="Name" VerticalAlignment="Center" />
               <TextBox Name="TextBoxAlternativeName" Height="23" Width="120" />
-              <TextBlock Text="Description" VerticalAlignment="Center"/>
+              <TextBlock Text="Description" VerticalAlignment="Center" />
               <TextBox Name="TextBoxAlternativeDescription" Height="23" Width="120" />
               <Button Name="ButtonAddAlternative" Click="AddAlternative" Content="Add" Width="120" />
             </StackPanel>
