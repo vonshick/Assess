@@ -2,11 +2,11 @@
 
 namespace UTA.Views
 {
-   public partial class ChartTab : UserControl
-   {
-      public ChartTab()
-      {
-         InitializeComponent();
-      }
-   }
+    public partial class ChartTab : UserControl
+    {
+        public ChartTab()
+        {
+            InitializeComponent();
+        }
+    }
 }

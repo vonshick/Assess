@@ -15,7 +15,7 @@
                       xmlns:models="clr-namespace:UTA.Models"
                       x:Class="UTA.Views.MainView" mc:Ignorable="d"
                       d:DataContext="{d:DesignInstance viewModels:MainViewModel}" Title="UTA" WindowState="Maximized"
-                      Width="1300" Height="700" MinWidth="900" MinHeight="700" Left="12" Top="12">
+                      Width="1300" Height="700" MinWidth="800" MinHeight="600" Left="12" Top="12">
   <controls:MetroWindow.Resources>
       <models:AlternativeDropHandler x:Key="AlternativeDropHandler"/>
         <!--values-->
@@ -522,18 +522,22 @@
                   </Style>
                 </DataTemplate.Resources>
 
-                <Border Width="170" BorderBrush="{StaticResource ColorBorders1}" Margin="-6,-2">
+                <Border Width="180" BorderBrush="{StaticResource ColorBorders1}" Margin="-6,-2">
                   <Border.InputBindings>
                     <MouseBinding Gesture="MiddleClick" Command="{Binding CloseCommand}" />
                   </Border.InputBindings>
-                  <DockPanel LastChildFill="False">
+                  <Grid>
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition></ColumnDefinition>
+                      <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
                     <TextBlock Text="{Binding Name}" FontSize="{StaticResource CommonFontSize2}"
                                Foreground="{StaticResource ColorFontDark}" VerticalAlignment="Center" Margin="8,0,8,1" />
-                    <Button DockPanel.Dock="Right" Command="{Binding CloseCommand}" Margin="0,0,4,0">
+                    <Button Grid.Column="1" DockPanel.Dock="Right" Command="{Binding CloseCommand}" Margin="0,0,4,0">
                       <icons:PackIconMaterial Kind="Close" Width="10" Height="10"
                                               Foreground="{StaticResource ColorFontDark}" />
                     </Button>
-                  </DockPanel>
+                  </Grid>
                 </Border>
               </DataTemplate>
             </TabControl.ItemTemplate>

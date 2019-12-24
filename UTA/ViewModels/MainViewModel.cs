@@ -36,52 +36,60 @@ namespace UTA.ViewModels
 
         private ITab _tabToSelect;
 
-      public MainViewModel(IDialogCoordinator dialogCoordinator)
-      {
-         Criteria = new Criteria();
-         Alternatives = new Alternatives(Criteria);
-         Alternatives.AlternativesCollection.CollectionChanged += AlternativesCollectionChanged;
-         Tabs = new ObservableCollection<ITab>();
-         Tabs.CollectionChanged += TabsCollectionChanged;
-         ShowTabCommand = new RelayCommand(tabModel => ShowTab((ITab) tabModel));
-         _dialogCoordinator = dialogCoordinator;
+        public MainViewModel(IDialogCoordinator dialogCoordinator)
+        {
+            Criteria = new Criteria();
+            Alternatives = new Alternatives(Criteria);
+            Alternatives.AlternativesCollection.CollectionChanged += AlternativesCollectionChanged;
+            Tabs = new ObservableCollection<ITab>();
+            Tabs.CollectionChanged += TabsCollectionChanged;
+            ShowTabCommand = new RelayCommand(tabModel => ShowTab((ITab) tabModel));
+            _dialogCoordinator = dialogCoordinator;
 
-         CriteriaTabViewModel = new CriteriaTabViewModel(Criteria, Alternatives);
-         AlternativesTabViewModel = new AlternativesTabViewModel(Criteria, Alternatives);
-         ReferenceRankingTabViewModel = new ReferenceRankingTabViewModel(Criteria, Alternatives);
-         SettingsTabViewModel = new SettingsTabViewModel();
-         ChartTabViewModels = new List<ChartTabViewModel>();
+            CriteriaTabViewModel = new CriteriaTabViewModel(Criteria, Alternatives);
+            AlternativesTabViewModel = new AlternativesTabViewModel(Criteria, Alternatives);
+            ReferenceRankingTabViewModel = new ReferenceRankingTabViewModel(Criteria, Alternatives);
+            SettingsTabViewModel = new SettingsTabViewModel();
+            ChartTabViewModels = new List<ChartTabViewModel>();
 
 
-         // TODO: remove. for chart testing purposes
-         Criteria.AddCriterion("0-100 km/h", "", "Cost", 5);
-         Criteria.AddCriterion("Power", "", "Gain", 8);
-         Alternatives.AddAlternative("Q", "", null);
-         Alternatives.AddAlternative("W", "", null);
-         Alternatives.AddAlternative("E", "", null);
-         Alternatives.AddAlternative("R", "", null);
-         Alternatives.AddAlternative("T", "", null);
-         Alternatives.AddAlternative("Y", "", null);
-         Alternatives.AddAlternative("U", "", null);
-         Alternatives.AddAlternative("I", "", null);
-         Alternatives.AddAlternative("O", "", null);
-         Alternatives.AddAlternative("P", "", null);
-         for (var i = 0; i < Alternatives.AlternativesCollection.Count; i++)
-         {
-            var alternative = Alternatives.AlternativesCollection[i];
-            alternative.InitCriteriaValues(Criteria.CriteriaCollection, null);
-            for (var j = 0; j < alternative.CriteriaValuesList.Count; j++)
-               alternative.CriteriaValuesList[j].Value = j % 2 == 0 ? i : i * 50;
-         }
-      }
+            // TODO: remove. for chart testing purposes
+            Criteria.AddCriterion("Power", "", "Gain", 8);
+            Criteria.AddCriterion("0-100 km/h", "", "Cost", 5);
+            Criteria.CriteriaCollection[0].MinValue = Criteria.CriteriaCollection[1].MinValue = 0;
+            Criteria.CriteriaCollection[0].MaxValue = Criteria.CriteriaCollection[1].MaxValue = 1;
+            Alternatives.AddAlternative("Q", "");
+            Alternatives.AddAlternative("W", "");
+            Alternatives.AddAlternative("E", "");
+            Alternatives.AddAlternative("R", "");
+            Alternatives.AddAlternative("T", "");
+            Alternatives.AddAlternative("Y", "");
+            Alternatives.AddAlternative("U", "");
+            Alternatives.AddAlternative("I", "");
+            Alternatives.AddAlternative("O", "");
+            Alternatives.AddAlternative("P", "");
+            for (var i = 0; i < Alternatives.AlternativesCollection.Count; i++)
+            {
+                var alternative = Alternatives.AlternativesCollection[i];
+                for (var j = 0; j < alternative.CriteriaValuesList.Count; j++)
+                    alternative.CriteriaValuesList[j].Value = i * 0.1f;
+            }
+        }
 
         // TODO: remove property after using real rankings
         public Ranking Rankings { get; set; } = new Ranking();
 
-      public Alternatives Alternatives { get; set; }
-      public Criteria Criteria { get; set; }
-      public RelayCommand ShowTabCommand { get; }
-      private readonly IDialogCoordinator _dialogCoordinator;
+        public Alternatives Alternatives { get; set; }
+        public Criteria Criteria { get; set; }
+        public RelayCommand ShowTabCommand { get; }
+        private readonly IDialogCoordinator _dialogCoordinator;
+
+        public ObservableCollection<ITab> Tabs { get; }
+        public CriteriaTabViewModel CriteriaTabViewModel { get; }
+        public AlternativesTabViewModel AlternativesTabViewModel { get; }
+        public ReferenceRankingTabViewModel ReferenceRankingTabViewModel { get; }
+        public SettingsTabViewModel SettingsTabViewModel { get; }
+        public List<ChartTabViewModel> ChartTabViewModels { get; set; }
 
 
         // TODO: use in proper place (to refactor)
@@ -96,22 +104,15 @@ namespace UTA.ViewModels
             }
         }
 
-      public ObservableCollection<ITab> Tabs { get; }
-      public CriteriaTabViewModel CriteriaTabViewModel { get; }
-      public AlternativesTabViewModel AlternativesTabViewModel { get; }
-      public ReferenceRankingTabViewModel ReferenceRankingTabViewModel { get; }
-      public SettingsTabViewModel SettingsTabViewModel { get; }
-      public List<ChartTabViewModel> ChartTabViewModels { get; set; }
-
         public ITab TabToSelect
-      {
-         get => _tabToSelect;
-         set
-         {
-            _tabToSelect = value;
-            OnPropertyChanged(nameof(TabToSelect));
-         }
-      }
+        {
+            get => _tabToSelect;
+            set
+            {
+                _tabToSelect = value;
+                OnPropertyChanged(nameof(TabToSelect));
+            }
+        }
 
         public DataTable AlternativesTable
         {
@@ -211,71 +212,76 @@ namespace UTA.ViewModels
             Alternatives.UpdateCriteriaValueName(eExtended.OldValue, eExtended.NewValue);
         }
 
-      [UsedImplicitly]
-      public async void SolveButtonClicked(object sender, RoutedEventArgs e)
-      {
-         // TODO: use flyouts maybe to inform user what to do, to begin calculations
-         if (Criteria.CriteriaCollection.Count == 0)
-         {
-            AddTabIfNeeded(CriteriaTabViewModel);
-            AddTabIfNeeded(AlternativesTabViewModel);
-            AddTabIfNeeded(ReferenceRankingTabViewModel);
-            ShowTab(CriteriaTabViewModel);
-            return;
-         }
+        [UsedImplicitly]
+        public async void SolveButtonClicked(object sender, RoutedEventArgs e)
+        {
+            // TODO: use flyouts maybe to inform user what to do, to begin calculations
+            if (Criteria.CriteriaCollection.Count == 0)
+            {
+                AddTabIfNeeded(CriteriaTabViewModel);
+                AddTabIfNeeded(AlternativesTabViewModel);
+                AddTabIfNeeded(ReferenceRankingTabViewModel);
+                ShowTab(CriteriaTabViewModel);
+                return;
+            }
 
-         if (Alternatives.AlternativesCollection.Count <= 1)
-         {
-            AddTabIfNeeded(AlternativesTabViewModel);
-            AddTabIfNeeded(ReferenceRankingTabViewModel);
-            ShowTab(AlternativesTabViewModel);
-            return;
-         }
+            if (Alternatives.AlternativesCollection.Count <= 1)
+            {
+                AddTabIfNeeded(AlternativesTabViewModel);
+                AddTabIfNeeded(ReferenceRankingTabViewModel);
+                ShowTab(AlternativesTabViewModel);
+                return;
+            }
 
-         var isAnyCriterionValueNull = Alternatives.AlternativesCollection.Any(alternative =>
-            alternative.CriteriaValuesList.Any(criterionValue => criterionValue.Value == null));
-         if (isAnyCriterionValueNull)
-         {
-            ShowTab(AlternativesTabViewModel);
-            return;
-         }
+            var isAnyCriterionValueNull = Alternatives.AlternativesCollection.Any(alternative =>
+                alternative.CriteriaValuesList.Any(criterionValue => criterionValue.Value == null));
+            if (isAnyCriterionValueNull)
+            {
+                ShowTab(AlternativesTabViewModel);
+                return;
+            }
 
-         // TODO: ShowTab(refrank) if reference ranking has less than two levels or any level unfilled
+            // TODO: ShowTab(refrank) if reference ranking has less than two levels or any level unfilled
 
-         if (ChartTabViewModels.Count == 0) ShowChartTabs();
-         else
-         {
-            var shouldGenerateNewCharts = await _dialogCoordinator.ShowMessageAsync(this, "Losing current progress",
-               "Your current partial utilities and final ranking data will be lost. Do you want to continue?",
-               MessageDialogStyle.AffirmativeAndNegative) == MessageDialogResult.Affirmative;
-            if (shouldGenerateNewCharts) ShowChartTabs();
-         }
-      }
+            if (ChartTabViewModels.Count == 0) ShowChartTabs();
+            else
+            {
+                var dialogResult = await _dialogCoordinator.ShowMessageAsync(this, "Losing current progress",
+                    "Your current partial utilities and final ranking data will be lost. Do you want to continue?",
+                    MessageDialogStyle.AffirmativeAndNegative,
+                    new MetroDialogSettings()
+                    {
+                        AffirmativeButtonText = "Yes", AnimateShow = false, AnimateHide = false,
+                        DefaultButtonFocus = MessageDialogResult.Affirmative
+                    });
+                if (dialogResult == MessageDialogResult.Affirmative) ShowChartTabs();
+            }
+        }
 
-      private void AddTabIfNeeded(ITab tab)
-      {
-         if (!Tabs.Contains(tab)) Tabs.Add(tab);
-      }
+        private void AddTabIfNeeded(ITab tab)
+        {
+            if (!Tabs.Contains(tab)) Tabs.Add(tab);
+        }
 
-      private void ShowChartTabs()
-      {
-         foreach (var viewModel in ChartTabViewModels) Tabs.Remove(viewModel);
-         ChartTabViewModels.Clear();
-         foreach (var criterion in Criteria.CriteriaCollection)
-         {
-            var viewModel = new ChartTabViewModel(criterion, Alternatives);
-            ChartTabViewModels.Add(viewModel);
-            Tabs.Add(viewModel);
-         }
+        private void ShowChartTabs()
+        {
+            foreach (var viewModel in ChartTabViewModels) Tabs.Remove(viewModel);
+            ChartTabViewModels.Clear();
+            foreach (var criterion in Criteria.CriteriaCollection)
+            {
+                var viewModel = new ChartTabViewModel(criterion, Alternatives, SettingsTabViewModel);
+                ChartTabViewModels.Add(viewModel);
+                Tabs.Add(viewModel);
+            }
 
-         if (ChartTabViewModels.Count > 0) ShowTab(ChartTabViewModels[0]);
-      }
+            if (ChartTabViewModels.Count > 0) ShowTab(ChartTabViewModels[0]);
+        }
 
-      [NotifyPropertyChangedInvocator]
-      protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-      {
-         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-      }
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
         // TODO: remove. temporary class for designing and preview purposes
         public class Ranking
