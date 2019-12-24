@@ -2,6 +2,8 @@
 using DataModel.Results;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using DataModel.Structs;
 
 namespace CalculationsEngine
 {
@@ -9,11 +11,12 @@ namespace CalculationsEngine
     {
         private readonly List<int> equals;
         private readonly ReferenceRanking referenceRanking;
+        private readonly ReferenceRanking allVariantsRanking;
         private readonly List<KeyValuePair<Alternative, int>> variantsList;
-        private double[] solution;
+        private Dictionary<double, double> solution;
 
 
-        public Solver(ReferenceRanking referenceRanking)
+        public Solver(ReferenceRanking referenceRanking, ReferenceRanking allVariantsRanking)
         {
             this.referenceRanking = referenceRanking;
             variantsList = new List<KeyValuePair<Alternative, int>>();
@@ -33,6 +36,10 @@ namespace CalculationsEngine
 
         private int CriterionFieldsCount { get; }
         private double[,] Matrix { get; set; }
+        private Results Result { get; set; }
+        private int[] BasicVariables { get; set; }
+
+        private double[] Cj { get; set; }
         private int NumberOfIteration { get; set; }
 
         public void Calculate()
@@ -40,34 +47,184 @@ namespace CalculationsEngine
             var heightOfPrimaryMatrix = variantsList[0].Key.CriteriaValues.Count;
             var height = HeightOfSimplexMatrix();
             var width = WidthOfSimplexMatrix(variantsList[0].Key);
-            Matrix = CreateSimplexMatrix(height, width);
+            List<PartialUtility> partialUtilityList;
+            double[] arrayOfValues;
+            double[,] transientMatrix = CreateMatrix();
+            Matrix = CreateSimplexMatrix(height, width, transientMatrix);
+            float tau;
 
-            var solutionOfSimplex =
-                new Simplex(Matrix, variantsList.Count); //widthOfPrimary = width - height, widthOfSlack = height
-            solution = solutionOfSimplex.Drive(NumberOfIteration);
-            MakePartialUtilityFunction(solution);
+            var simplex =
+                new Simplex(Matrix, BasicVariables, Cj); //widthOfPrimary = width - height, widthOfSlack = height
+            simplex.Run(NumberOfIteration);
+            solution = simplex.solution;
+            (partialUtilityList, arrayOfValues) = MakePartialUtilityFunction(solution);
+            List<FinalRankingEntry> finalReferenceList = CreateRanking(arrayOfValues, transientMatrix);
+            FinalRanking finalReferenceRanking = new FinalRanking(finalReferenceList);
+            tau = CalculateKendallCoeficient(finalReferenceRanking);
+            Result.PartialUtilityFunctions = partialUtilityList;
+            Result.FinalRanking = finalReferenceRanking;
+            Result.KendallCoefficient = tau;
         }
 
-        private List<PartialUtility> MakePartialUtilityFunction(double[] doubles)
+        private float CalculateKendallCoeficient(FinalRanking finalReferenceRanking)
         {
-            var floatArray = Array.ConvertAll(doubles, x => (float)x);
-            var partialUtilityList = new List<PartialUtility>();
-            var count = 0;
-            Dictionary<float, float> dict = new Dictionary<float, float> { { 0, 0 } };
-            foreach (var entry in variantsList[0].Key.CriteriaValues)
+            var matrix1 = CreateKendallMatrix();
+            var matrix2 = CreateKendallMatrix(finalReferenceRanking);
+            float lengthBetweenMatrix = 0, tau;
+            for (var row = 0; row < matrix1.GetLength(0); row++)
             {
-                var linearSegments = entry.Key.LinearSegments;
-                for (var i = 1; i < linearSegments + 1; i++) dict.Add(i, floatArray[count++]);
-                partialUtilityList.Add(new PartialUtility(entry.Key, dict));
+                for (var c = 0; c < matrix1.GetLength(1); c++)
+                {
+                    lengthBetweenMatrix += Math.Abs(matrix1[row, c] - matrix2[row, c]);
+                }
             }
 
-            return partialUtilityList;
+            lengthBetweenMatrix /= 2;
+            tau = 1 - (4 * lengthBetweenMatrix) /
+                  (finalReferenceRanking.FinalRankingList.Count * (finalReferenceRanking.FinalRankingList.Count - 1));
+            return tau;
         }
 
-        public double[,] CreateSimplexMatrix(int height, int width)
+        private float[,] CreateKendallMatrix()
         {
-            double[,] simplexMatrix = new double[height, width], matrix = CreateMatrix();
-            var widthWithoutSlack = width - height;
+            float[,] rankingMatrix = new float[referenceRanking.ReferenceRankingList.Count, referenceRanking.ReferenceRankingList.Count];
+            for (var row = 0; row < rankingMatrix.GetLength(0); row++)
+            {
+                for (var c = 0; c < rankingMatrix.GetLength(1); c++)
+                {
+                    if(row == c || referenceRanking.ReferenceRankingList[c].Rank - referenceRanking.ReferenceRankingList[row].Rank > 0) rankingMatrix[row, c] = 0;
+                    if (referenceRanking.ReferenceRankingList[c].Rank - referenceRanking.ReferenceRankingList[row].Rank == 0) rankingMatrix[row, c] = 0.5F;
+                    rankingMatrix[row, c] = 1;
+                }
+            }
+
+            return rankingMatrix;
+        }
+
+        private float[,] CreateKendallMatrix(FinalRanking ranking)
+        {
+            float[,] rankingMatrix = new float[ranking.FinalRankingList.Count, ranking.FinalRankingList.Count];
+            for (var row = 0; row < rankingMatrix.GetLength(0); row++)
+            {
+                for (var c = 0; c < rankingMatrix.GetLength(1); c++)
+                {
+                    if (row == c || ranking.FinalRankingList[c].Utility - ranking.FinalRankingList[row].Utility > 0.05) rankingMatrix[row, c] = 0;
+                    if (ranking.FinalRankingList[c].Utility - ranking.FinalRankingList[row].Utility <= 0.05) rankingMatrix[row, c] = 0.5F;
+                    rankingMatrix[row, c] = 1;
+                }
+            }
+
+            return rankingMatrix;
+        }
+
+        private List<FinalRankingEntry> CreateRanking(double[] arrayOfValues, double[,] transientMatrix)
+        {
+            List<FinalRankingEntry> finalRankingList = new List<FinalRankingEntry>();
+            for (var i = 0; i < transientMatrix.Length; i++)
+            {
+                var score = CreateFinalRankingEntryUtility(arrayOfValues, GetRow(transientMatrix, i));
+                var finalRankingEntry = new FinalRankingEntry(-1, variantsList[i].Key, (float) score);
+                finalRankingList.Add(finalRankingEntry);
+            }
+
+            List<FinalRankingEntry> finalRankingSorted = finalRankingList.OrderBy(o => o.Utility).ToList();
+            for (var i = 0; i < transientMatrix.Length; i++)
+            {
+                finalRankingSorted[i].Position = i;
+            }
+
+            return finalRankingSorted;
+        }
+
+        private double CreateFinalRankingEntryUtility(double[] arrayOfValues, double[] row)
+        {
+            double score = 0;
+            for (var i = 0; i < arrayOfValues.Length; i++) score += arrayOfValues[i] * row[i];
+            return score;
+        }
+
+
+        private (List<PartialUtility>, double[]) MakePartialUtilityFunction(Dictionary<double, double> doubles)
+        {
+            var partialUtilityList = new List<PartialUtility>();
+            Dictionary<float, float> dict;
+            double[] partialArray = new double[] { }, arrayOfValues = new double[] {};
+            var count = 0;
+            foreach (var entry in variantsList[0].Key.CriteriaValues)
+            {
+                (count, dict, partialArray) = NextPartialUtility(doubles, entry.Key, count);
+                arrayOfValues = AddTailToArray(arrayOfValues, partialArray);
+                partialUtilityList.Add(new PartialUtility(entry.Key, dict));
+                //TODO min max - range
+            }
+
+            return (partialUtilityList, arrayOfValues);
+        }
+
+        private double[] AddTailToArray(double[] arrayOfValues, double[] partialArray)
+        {
+            double[] newArray = new double[arrayOfValues.Length + partialArray.Length];
+            for (var i = 0; i < arrayOfValues.Length; i++)
+            {
+                newArray[i] = arrayOfValues[i];
+            }
+            for(var i = arrayOfValues.Length; i < arrayOfValues.Length + partialArray.Length; i++)
+            {
+                newArray[i] = partialArray[i];
+            }
+
+            return newArray;
+        }
+
+        private (int, Dictionary<float, float>, double[]) NextPartialUtility(Dictionary<double, double> doubles, Criterion criterion, int count)
+        {
+            var linearSegments = criterion.LinearSegments;
+            var arrayOfValues = new double[criterion.LinearSegments];
+            Dictionary<float, float> dict;
+            double segmentValue = (criterion.MaxValue - criterion.MinValue) / linearSegments, currentPoint, currentValue = 0;
+            if (criterion.CriterionDirection == "g")
+            {
+                currentPoint = criterion.MinValue;
+                dict = new Dictionary<float, float> { { (float)currentPoint, (float)currentValue } };
+                for (var s = 1; s < linearSegments; s++)
+                {
+                    currentPoint = criterion.MinValue + s * segmentValue;
+                    arrayOfValues[s - 1] = 0;
+                    if (doubles.Keys.Contains(count))
+                    {
+                        currentValue += doubles[count];
+                        arrayOfValues[s - 1] = doubles[count];
+                    }
+                    dict.Add((float)currentPoint, (float)currentValue);
+                    count++;
+                }
+            }
+            else
+            {
+                currentPoint = criterion.MaxValue;
+                dict = new Dictionary<float, float> { { (float)currentPoint, (float)currentValue } };
+                for (var s = 1; s < linearSegments; s++)
+                {
+                    currentPoint = criterion.MaxValue - s * segmentValue;
+                    arrayOfValues[s - 1] = 0;
+                    if (doubles.Keys.Contains(count))
+                    {
+                        currentValue += doubles[count];
+                        arrayOfValues[s - 1] = doubles[count];
+                    }
+                    arrayOfValues[s - 1] = currentValue;
+                    dict.Add((float)currentPoint, (float)currentValue);
+                    count++;
+                }
+            }
+            return (count, dict, arrayOfValues);
+        }
+
+
+        public double[,] CreateSimplexMatrix(int height, int width, double[,] matrix)
+        {
+            double[,] simplexMatrix = new double[height, width];
+            var widthWithoutSlack = width - height - equals.Count;
             for (var r = 0; r < variantsList.Count - 1; r++)
             {
                 for (var c = 0; c < CriterionFieldsCount; c++) simplexMatrix[r, c] = matrix[r, c] - matrix[r + 1, c];
@@ -81,46 +238,34 @@ namespace CalculationsEngine
             for (var c = 0; c < CriterionFieldsCount; c++)
                 simplexMatrix[variantsList.Count - 1, c] = c < CriterionFieldsCount ? 1 : 0;
             //Add slack 1 and subtract surplus -1 variables.
+            var i = 0;
             for (var r = 0; r < height; r++)
-                for (var c = widthWithoutSlack; c < width; c++)
-                    simplexMatrix[r, c] = c != r + widthWithoutSlack ? 0 : r < variantsList.Count ? -1 : 1;
-            simplexMatrix = AddPAndAnswerColumn(simplexMatrix, widthWithoutSlack);
+            {
+                for (var c = widthWithoutSlack; c < widthWithoutSlack + height; c++)
+                    if (equals.Contains(r) && c == widthWithoutSlack + i)
+                    {
+                        simplexMatrix[r, c] = equals.Contains(r) ? -1 : 0;
+                        i++;
+                    }
+                for (var c = widthWithoutSlack + height; c < width; c++)
+                    simplexMatrix[r, c] = c != r + widthWithoutSlack ? 0 : 1;
+            }
+
+            simplexMatrix = AddAnswerColumn(simplexMatrix);
             return simplexMatrix;
         }
 
-        public double[,] AddPAndAnswerColumn(double[,] sM, int widthWithoutSlack)
+        public double[,] AddAnswerColumn(double[,] sM)
         {
-            int height = sM.GetLength(0), width = sM.GetLength(1) + 2;
+            int height = sM.GetLength(0), width = sM.GetLength(1) + 1;
             var simplexMatrix = new double[height, width];
-            for (var r = 0; r < height; r++)
+            for (var row = 0; row < height; row++)
             {
-                for (var c = 0; c < sM.GetLength(1); c++) simplexMatrix[r, c] = sM[r, c];
-                simplexMatrix[r, sM.GetLength(1)] = r == height - 1 ? 1 : 0;
+                for (var c = 0; c < sM.GetLength(1); c++) simplexMatrix[row, c] = sM[row, c];
+                simplexMatrix[row, sM.GetLength(1)] = equals.Contains(row) ? 0.05 : 0;
             }
 
-            for (var r = 0; r < height; r++) simplexMatrix[r, sM.GetLength(1) + 1] = 0.05;
-            //Copy equals
-            int i = 0, col;
-            for (var r = variantsList.Count; r < height; r++)
-            {
-                for (var c = 0; c < widthWithoutSlack; c++)
-                {
-                    simplexMatrix[r, c] = simplexMatrix[equals[i], c];
-                    col = sM.GetLength(1) + 1;
-                    if (r != height - 1)
-                    {
-                        simplexMatrix[r, col] = 0;
-                        simplexMatrix[equals[i], col] = 0;
-                    }
-                    else
-                    {
-                        simplexMatrix[r, col] = 1;
-                        simplexMatrix[equals[i], col] = 1;
-                    }
-                }
-
-                i++;
-            }
+            simplexMatrix[height, sM.GetLength(1)] = 1;
 
             return simplexMatrix;
         }
@@ -215,17 +360,20 @@ namespace CalculationsEngine
         {
             var width = CriterionFieldsCount;
             width += (alternative.CriteriaValues.Count - 1) * 2 + 4;
-            width += HeightOfSimplexMatrix();
+            width += HeightOfSimplexMatrix() + equals.Count;
             return width;
         }
 
         public int HeightOfSimplexMatrix()
         {
-            for (var i = 0; i < variantsList.Count - 1; i++)
-                if (variantsList[i].Value == variantsList[i + 1].Value)
-                    equals.Add(i);
-            equals.Add(variantsList.Count - 1);
-            return variantsList.Count + equals.Count;
+            return variantsList.Count;
+        }
+
+        public double[] GetRow(double[,] matrix, int rowNumber)
+        {
+            return Enumerable.Range(0, matrix.GetLength(1))
+                .Select(x => matrix[rowNumber, x])
+                .ToArray();
         }
     }
 }

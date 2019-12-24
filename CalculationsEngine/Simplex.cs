@@ -1,147 +1,247 @@
-﻿using DataModel.Results;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+//using DataModel.Results;
 
 namespace CalculationsEngine
 {
     internal class Simplex
     {
-        private readonly int[] arrayOfStars;
-        private readonly int[] basicArray;
-        private readonly int lowerBound;
-        private readonly double[,] simplexMatrix;
-        private List<PartialUtility> PartialUtilityList;
-        private double[] solution;
+        private readonly double[] CjZj;
+        private readonly double[] CjZjInfinity;
+        private readonly int[] basicVariables;
+        private readonly double[] Cj;
+        private double[,] simplexMatrix;
+        public Dictionary<double, double> solution { get; set; }
 
-        public Simplex(double[,] simplexMatrix, int stars)
+
+        public Simplex(double[,] matrix, int[] basic, double[] cj)
         {
-            int height = simplexMatrix.GetLength(0), width = simplexMatrix.GetLength(1);
-            this.simplexMatrix = new double[height + 1, width];
-            basicArray = new int[height];
-            lowerBound = width - height - 2;
-            arrayOfStars = new int[stars];
-            for (var i = 0; i < arrayOfStars.Length; i++) arrayOfStars[i] = lowerBound + i;
-            for (var r = 0; r < height; r++)
-                for (var c = 0; c < width; c++)
-                    this.simplexMatrix[r, c] = simplexMatrix[r, c];
 
-            //Extra row solve min problem => -1
-            for (var c = 0; c < width; c++) this.simplexMatrix[height, c] = c < lowerBound ? 0 : -1;
-            this.simplexMatrix[height, width - 1] = 1;
-            this.simplexMatrix[height, width] = 0;
+            simplexMatrix = matrix;
+            basicVariables = basic;
+            Cj = cj;
+            CjZj = new double[Cj.Length];
+            CjZjInfinity = new double[Cj.Length];
+            solution = new Dictionary<double, double>();
         }
 
-        internal double[] Drive(int v)
+        internal void Run(int v)
         {
-            var finish = CheckFinish();
-            for (var i = 0; i < v; i++)
+            solution = null;
+            for (var iteration = 0; iteration < v; iteration++)
             {
-                if (finish) break;
-                var (row, col) = Pivot();
-                if (row > -1)
-                {
-                    //calculateRow(row, col);
-                    CalculateColAndRows(row, col);
-                    UpdateBasicVar(row, col);
-                }
 
-                finish = CheckFinish();
+                CalculateCjZjAndInfinity();
+                if (checkFinish() == true)
+                {
+                    saveSolution();
+                    break;
+                } 
+                var pivotCol = GetIndexOfMostNegativeCjZj();
+                var testRatio = TestRatio(pivotCol);
+                var pivotRow = Array.IndexOf(testRatio, testRatio.Min());
+                calculateMatrix(pivotRow, pivotCol);
+                updateBasicVariables(pivotRow, pivotCol);
+
             }
 
-            return solution = finish ? null : ReadSolution();
         }
 
-        private double[] ReadSolution()
+        private void saveSolution()
         {
-            var solution = new double[lowerBound - 1];
-            for (var i = 0; i < basicArray.Length; i++)
-                solution[i] = simplexMatrix[i, simplexMatrix.GetLength(1) - 1] / simplexMatrix[i, basicArray[i]];
-            return solution;
+            for (var row = 0; row < simplexMatrix.GetLength(0); row++)
+            {
+                solution.Add(basicVariables[row], simplexMatrix[row, simplexMatrix.GetLength(1)]);
+            }
         }
 
-        private void UpdateBasicVar(int row, int col)
+        private void updateBasicVariables(int pivotRow, int pivotCol)
         {
-            basicArray[row] = col;
+            basicVariables[pivotRow] = pivotCol;
         }
 
-        private bool CheckFinish()
+        void calculateMatrix(int pivotRow, int pivotCol)
         {
-            var finish = true;
-            for (var c = 0; c < simplexMatrix.GetLength(1) - 1; c++)
-                if (simplexMatrix[simplexMatrix.GetLength(0) - 1, c] < 0)
+            var temporaryMatrix = new double[simplexMatrix.GetLength(0), simplexMatrix.GetLength(1)];
+            for (var row = 0; row < simplexMatrix.GetLength(0); row++)
+            {
+                for (var column = 0; column < simplexMatrix.GetLength(1); column++)
+                {
+                    if (pivotRow == row) temporaryMatrix[pivotRow, column] = Math.Round((simplexMatrix[pivotRow, column] / simplexMatrix[pivotRow, pivotCol]), 3);
+                    else if (pivotCol == column) temporaryMatrix[row, pivotCol] = 0;
+                    else temporaryMatrix[row, column] = Math.Round(simplexMatrix[row, column] - (simplexMatrix[pivotRow, column] * simplexMatrix[row, pivotCol] / simplexMatrix[pivotRow, pivotCol]), 3);
+                }
+            }
+
+            simplexMatrix = temporaryMatrix;
+        }
+
+        void calculateMatrix2(int pivotRow, int pivotCol)
+        {
+            var temporaryMatrix = new double[simplexMatrix.GetLength(0), simplexMatrix.GetLength(1)];
+            for (var row = 0; row < simplexMatrix.GetLength(0); row++)
+            {
+                for (var column = 0; column < simplexMatrix.GetLength(1); column++)
+                {
+                    if (pivotRow == row) temporaryMatrix[pivotRow, column] = Math.Round((simplexMatrix[pivotRow, column] / simplexMatrix[pivotRow, pivotCol]), 3);
+                    else if (pivotCol == column) temporaryMatrix[row, pivotCol] = 0;
+                    else
+                    {
+                        var value = simplexMatrix[row, pivotCol] / simplexMatrix[pivotRow, pivotCol];
+                        temporaryMatrix[row, column] = Math.Round(simplexMatrix[row, column] - (simplexMatrix[pivotRow, column] * simplexMatrix[row, pivotCol] / simplexMatrix[pivotRow, pivotCol]), 3);
+                    }
+                }
+            }
+
+            simplexMatrix = temporaryMatrix;
+        }
+
+        bool checkFinish()
+        {
+            bool finish = true;
+            for (var column = 0; column < CjZj.Length; column++)
+            {
+                if (CjZjInfinity[column] < 0)
+                {
                     finish = false;
-            foreach (var t in basicArray)
-                if (arrayOfStars.Contains(t))
-                    finish = false;
+                }
+                else
+                {
+                    if (CjZj[column] < 0 && CjZjInfinity[column] == 0) finish = false;
+                }
+            }
+
             return finish;
         }
 
-        private void CalculateColAndRows(int row, int col)
+        void CalculateCjZjAndInfinity()
         {
-            for (var r = 0; r < simplexMatrix.GetLength(0); r++)
+            for (var column = 0; column < CjZj.Length; column++)
             {
-                if (r == row) continue;
-                var num = simplexMatrix[row, col] / Math.Abs(simplexMatrix[r, col]);
-                for (var c = 0; c < simplexMatrix.GetLength(1); c++)
-                    if (simplexMatrix[r, col] > 0)
-                        simplexMatrix[r, c] = num * simplexMatrix[r, c] - simplexMatrix[row, c];
+                if (double.IsInfinity(Cj[column]))
+                {
+                    CjZjInfinity[column] = 1;
+                    CjZj[column] = 0;
+                }
+                else
+                {
+                    CjZjInfinity[column] = 0;
+                    CjZj[column] = Cj[column];
+                }
+
+                for (var columnElement = 0; columnElement < simplexMatrix.GetLength(0); columnElement++)
+                {
+                    var CiElement = Cj[basicVariables[columnElement]];
+                    if (double.IsInfinity(CiElement))
+                    {
+                        CjZjInfinity[column] -= simplexMatrix[columnElement, column];
+                    }
                     else
-                        simplexMatrix[r, c] = num * simplexMatrix[r, c] + simplexMatrix[row, c];
+                    {
+                        CjZj[column] -= Math.Round(simplexMatrix[columnElement, column] * CiElement, 3);
+                    }
+                }
             }
         }
 
-        private void CalculateRow(int row, int col)
+        int GetIndexOfMostNegativeCjZj()
         {
-            var num = simplexMatrix[row, col];
-            for (var c = 0; c < simplexMatrix.GetLength(1); c++) simplexMatrix[row, c] = simplexMatrix[row, c] / num;
-            simplexMatrix[row, col] = 1;
+            var min = Double.PositiveInfinity;
+            var index = -1;
+            var list = new List<int>();
+            for (var i = 0; i < CjZjInfinity.Length; i++)
+            {
+                if (min > CjZjInfinity[i])
+                {
+                    min = CjZjInfinity[i];
+                    index = i;
+                    list.Clear();
+                }
+                if (min == CjZjInfinity[i]) list.Add(i);
+            }
+            if (list.Count == 1) return index;
+            min = Double.PositiveInfinity;
+            if (list.Count > 1)
+            {
+                for (var i = 0; i < list.Count; i++)
+                {
+                    if (min > CjZj[list[i]])
+                    {
+                        min = CjZj[list[i]];
+                        index = list[i];
+                    }
+                }
+
+                return index;
+            }
+            min = Double.PositiveInfinity;
+            for (var i = 0; i < CjZj.Length; i++)
+            {
+                if (min > CjZj[i])
+                {
+                    min = CjZj[i];
+                    index = i;
+                }
+            }
+            return index;
         }
 
-        private (int row, int col) Pivot()
+        double[] TestRatio(int col)
         {
-            int col = -1, row = -1;
-            double min = 0, calc = 0;
+            var ratio = new double[simplexMatrix.GetLength(0)];
+            for (var i = 0; i < simplexMatrix.GetLength(0); i++)
+            {
+                if (simplexMatrix[i, col] > 0)
+                    ratio[i] = simplexMatrix[i, simplexMatrix.GetLength(1) - 1] / simplexMatrix[i, col];
+                else ratio[i] = Double.PositiveInfinity;
+            }
 
-            //col - largest pos val in row first star / bottom
-            for (var i = 0; i < basicArray.GetLength(0); i++)
-                if (arrayOfStars.Contains(basicArray[i]))
+            return ratio;
+        }
+
+
+        private void print(double[,] simplexMatrix)
+        {
+            int rowLength = simplexMatrix.GetLength(0);
+            int colLength = simplexMatrix.GetLength(1);
+
+            for (int i = 0; i < rowLength; i++)
+            {
+                Console.Write("basic: " + basicVariables[i] + " ");
+                for (int j = 0; j < colLength; j++)
                 {
-                    col = basicArray[i];
-                    break;
+                    Console.Write(string.Format("{0} ", simplexMatrix[i, j]));
                 }
+                Console.Write(Environment.NewLine);
+            }
+            Console.ReadLine();
+        }
+        private void print(double[] array)
+        {
+            int rowLength = array.GetLength(0);
 
-            if (col == -1)
-                for (var c = 0; c < simplexMatrix.GetLength(1) - 1; c++)
-                    if (simplexMatrix[simplexMatrix.GetLength(0) - 1, c] < min)
-                    {
-                        min = simplexMatrix[simplexMatrix.GetLength(0) - 1, c];
-                        col = c;
-                    }
+            for (int i = 0; i < rowLength; i++)
+            {
+                Console.Write(string.Format("{0} ", array[i]));
 
-            if (col == -1) return (row, col);
-            //row -  test ratio
-            min = 0;
-            for (var r = 0; r < simplexMatrix.GetLength(0) - 1; r++)
-                if (simplexMatrix[r, col] > 0)
-                {
-                    calc = simplexMatrix[r, simplexMatrix.GetLength(1) - 1] / simplexMatrix[r, col];
-                    if (min == 0)
-                    {
-                        min = calc;
-                        row = r;
-                    }
-                    else
-                    {
-                        if (calc < min)
-                        {
-                            min = calc;
-                            row = r;
-                        }
-                    }
-                }
-
-            return (row, col);
+            }
+            Console.Write(Environment.NewLine);
+            Console.ReadLine();
         }
     }
+
 }
+
