@@ -10,8 +10,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using DataModel.Input;
-using MahApps.Metro.Controls.Dialogs;
 using DataModel.PropertyChangedExtended;
+using MahApps.Metro.Controls.Dialogs;
 using UTA.Annotations;
 using UTA.Interactivity;
 using UTA.Models.DataBase;
@@ -20,7 +20,7 @@ using UTA.Views;
 
 namespace UTA.ViewModels
 {
-    public class MainViewModel
+    public class MainViewModel : INotifyPropertyChanged
     {
         public static Dictionary<string, string> CriterionDirectionTypes = new Dictionary<string, string>
         {
@@ -29,12 +29,14 @@ namespace UTA.ViewModels
             {"o", "Ordinal"}
         };
 
-        private DataTable _alternativesTable;
+        private readonly IDialogCoordinator _dialogCoordinator;
+        public readonly ObservableCollection<ChartTabViewModel> ChartTabViewModels;
 
+        private DataTable _alternativesTable;
         private DataTable _criteriaTable;
         private bool _preserveKendallCoefficient = true;
-
         private ITab _tabToSelect;
+
 
         public MainViewModel(IDialogCoordinator dialogCoordinator)
         {
@@ -43,14 +45,14 @@ namespace UTA.ViewModels
             Alternatives.AlternativesCollection.CollectionChanged += AlternativesCollectionChanged;
             Tabs = new ObservableCollection<ITab>();
             Tabs.CollectionChanged += TabsCollectionChanged;
-            ShowTabCommand = new RelayCommand(tabModel => ShowTab((ITab) tabModel));
+            ShowTabCommand = new RelayCommand(tabViewModel => ShowTab((ITab) tabViewModel));
             _dialogCoordinator = dialogCoordinator;
 
             CriteriaTabViewModel = new CriteriaTabViewModel(Criteria, Alternatives);
             AlternativesTabViewModel = new AlternativesTabViewModel(Criteria, Alternatives);
             ReferenceRankingTabViewModel = new ReferenceRankingTabViewModel(Criteria, Alternatives);
             SettingsTabViewModel = new SettingsTabViewModel();
-            ChartTabViewModels = new List<ChartTabViewModel>();
+            ChartTabViewModels = new ObservableCollection<ChartTabViewModel>();
 
 
             // TODO: remove. for chart testing purposes
@@ -76,21 +78,19 @@ namespace UTA.ViewModels
             }
         }
 
+
         // TODO: remove property after using real rankings
         public Ranking Rankings { get; set; } = new Ranking();
 
         public Alternatives Alternatives { get; set; }
         public Criteria Criteria { get; set; }
         public RelayCommand ShowTabCommand { get; }
-        private readonly IDialogCoordinator _dialogCoordinator;
 
         public ObservableCollection<ITab> Tabs { get; }
         public CriteriaTabViewModel CriteriaTabViewModel { get; }
         public AlternativesTabViewModel AlternativesTabViewModel { get; }
         public ReferenceRankingTabViewModel ReferenceRankingTabViewModel { get; }
         public SettingsTabViewModel SettingsTabViewModel { get; }
-        public List<ChartTabViewModel> ChartTabViewModels { get; set; }
-
 
         // TODO: use in proper place (to refactor)
         public bool PreserveKendallCoefficient
@@ -137,6 +137,7 @@ namespace UTA.ViewModels
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
 
         public static T FindParent<T>(DependencyObject child) where T : DependencyObject
         {
@@ -241,15 +242,18 @@ namespace UTA.ViewModels
                 return;
             }
 
-            // TODO: ShowTab(refrank) if reference ranking has less than two levels or any level unfilled
+            // TODO: ShowTab(refrank) if reference ranking has more than two levels filled
 
-            if (ChartTabViewModels.Count == 0) ShowChartTabs();
+            if (ChartTabViewModels.Count == 0)
+            {
+                ShowChartTabs();
+            }
             else
             {
                 var dialogResult = await _dialogCoordinator.ShowMessageAsync(this, "Losing current progress",
-                    "Your current partial utilities and final ranking data will be lost. Do you want to continue?",
+                    "Your current partial utilities and final ranking data will be lost.\nDo you want to continue?",
                     MessageDialogStyle.AffirmativeAndNegative,
-                    new MetroDialogSettings()
+                    new MetroDialogSettings
                     {
                         AffirmativeButtonText = "Yes", AnimateShow = false, AnimateHide = false,
                         DefaultButtonFocus = MessageDialogResult.Affirmative
@@ -269,7 +273,7 @@ namespace UTA.ViewModels
             ChartTabViewModels.Clear();
             foreach (var criterion in Criteria.CriteriaCollection)
             {
-                var viewModel = new ChartTabViewModel(criterion, Alternatives, SettingsTabViewModel);
+                var viewModel = new ChartTabViewModel(criterion, SettingsTabViewModel);
                 ChartTabViewModels.Add(viewModel);
                 Tabs.Add(viewModel);
             }
