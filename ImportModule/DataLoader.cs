@@ -37,16 +37,21 @@ namespace ImportModule
                 {
 
                     CriterionValue matchingCriterionValue = alternativeList[j].CriteriaValuesList.Find(criterionValue => criterionValue.Name == criterionList[i].Name);
+                    if(matchingCriterionValue != null) {
+                        float value = (float) matchingCriterionValue.Value;
 
-                    float value = (float) matchingCriterionValue.Value;
-
-                    if (value < min)
+                        if (value < min)
+                        {
+                            min = value;
+                        }
+                        if (value > max)
+                        {
+                            max = value;
+                        }
+                    } 
+                    else 
                     {
-                        min = value;
-                    }
-                    if (value > max)
-                    {
-                        max = value;
+                        throw new System.Exception("There was no criterion in alternative " + alternativeList[j].Name + " called " + criterionList[i].Name);
                     }
                 }
 
@@ -64,6 +69,7 @@ namespace ImportModule
             }
         }
 
+        // expectedExtension is a param that contains string in format like ".csv", ".utx", ".xml"
         protected void ValidateFileExtension(string path, string expectedExtension)
         {
             if (!Path.GetExtension(path).Equals(expectedExtension))
@@ -163,7 +169,6 @@ namespace ImportModule
             return (addSuffixToName(newName, usedNames));
         }
 
-        // expectedExtension is a param that contains string in format like ".csv", ".utx", ".xml"
         public virtual void LoadData(string path)
         {
             ProcessFile(path);
