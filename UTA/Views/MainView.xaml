@@ -17,7 +17,7 @@
                       xmlns:converters="clr-namespace:UTA.Converters"
                       x:Class="UTA.Views.MainView" mc:Ignorable="d"
                       d:DataContext="{d:DesignInstance viewModels:MainViewModel}" Title="UTA" WindowState="Maximized"
-                      Width="1300" Height="700" MinWidth="800" MinHeight="600" Left="12" Top="12">
+                      Width="1300" Height="700" MinWidth="800" MinHeight="600" Left="12" Top="12" Closing="ApplicationClosing">
   <controls:MetroWindow.Resources>
     <!--values-->
     <sys:Double x:Key="ExpanderHeaderHeight">26</sys:Double>
@@ -107,8 +107,20 @@
         </Style>
       </Menu.Resources>
       <MenuItem Header="File" Style="{StaticResource MenuBarItem}">
-        <MenuItem Margin="{StaticResource MenuItemTopMargin}" Header="New" />
-        <MenuItem Header="Open" />
+        <MenuItem Margin="{StaticResource MenuItemTopMargin}" Header="New">
+          <i:Interaction.Triggers>
+            <i:EventTrigger EventName="Click">
+              <i:CallMethodAction TargetObject="{Binding}" MethodName="NewSolution" />
+            </i:EventTrigger>
+          </i:Interaction.Triggers>
+        </MenuItem>
+        <MenuItem Header="Open">
+          <i:Interaction.Triggers>
+            <i:EventTrigger EventName="Click">
+              <i:CallMethodAction TargetObject="{Binding}" MethodName="OpenMenuItemClicked" />
+            </i:EventTrigger>
+          </i:Interaction.Triggers>
+        </MenuItem>
         <Separator />
         <MenuItem Header="Save" />
         <MenuItem Header="Save As..." />
@@ -123,7 +135,7 @@
           </i:Interaction.Triggers>
         </MenuItem>
         <Separator />
-        <MenuItem Margin="{StaticResource MenuItemBottomMargin}" Header="Exit" />
+        <MenuItem Margin="{StaticResource MenuItemBottomMargin}" Header="Exit" Click="ExitMenuItemClicked"/>
       </MenuItem>
       <MenuItem Header="Solution" Style="{StaticResource MenuBarItem}">
         <MenuItem Margin="{StaticResource MenuItemTopMargin}" Header="Solve">
@@ -292,8 +304,9 @@
               <ControlTemplate x:Key="LeftPanelListViewItemTemplateButtonTemplate" TargetType="{x:Type ButtonBase}">
                 <Border x:Name="Border" BorderThickness="0,0,0,1" BorderBrush="{StaticResource ColorInterface3}"
                         Background="Transparent">
-                  <ContentPresenter Margin="12,4,8,4" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                  <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" />
                 </Border>
+
                 <ControlTemplate.Triggers>
                   <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" TargetName="Border" Value="{StaticResource ColorInterface6Hover}" />
@@ -301,67 +314,92 @@
                 </ControlTemplate.Triggers>
               </ControlTemplate>
 
-              <ControlTemplate x:Key="LeftPanelListViewItemTemplate" TargetType="{x:Type ListViewItem}">
-                <Button Template="{StaticResource LeftPanelListViewItemTemplateButtonTemplate}" Padding="0"
-                        Style="{x:Null}" Click="InstancePanelListItemClicked">
-                  <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}"
-                                    Content="{TemplateBinding Content}" />
-                </Button>
-              </ControlTemplate>
-
-              <Style TargetType="{x:Type ListView}" BasedOn="{StaticResource MetroListView}">
+              <Style TargetType="{x:Type ListView}">
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="Background" Value="Transparent" />
-              </Style>
-
-              <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
-                <Setter Property="Template" Value="{StaticResource LeftPanelListViewItemTemplate}" />
-                <Setter Property="Padding" Value="0" />
               </Style>
             </Grid.Resources>
 
             <Expander Name="AlternativesExpander" Header="Alternatives"
                       Expanded="Expander_Toggled" Collapsed="Expander_Toggled"
                       HeaderTemplate="{StaticResource ExpanderWithPlusButtonHeaderTemplate}" IsExpanded="True">
-              <ListView ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                <ListViewItem Content="Alternative X" />
-                <ListViewItem Content="Alternative X" />
-                <ListViewItem Content="Alternative X" />
-                <ListViewItem Content="Alternative X" />
-                <ListViewItem Content="Alternative X" />
-                <ListViewItem Content="Alternative X" />
-                <ListViewItem Content="Alternative X" />
-                <ListViewItem Content="Alternative X" />
-                <ListViewItem Content="Alternative X" />
-                <ListViewItem Content="Alternative X" />
-                <ListViewItem Content="Alternative X" />
-                <ListViewItem Content="Alternative X" />
-                <ListViewItem Content="Alternative X" />
-                <ListViewItem Content="Alternative X" />
-                <ListViewItem Content="Alternative X" />
-                <ListViewItem Content="Alternative X" />
-                <ListViewItem Content="Alternative X" />
+              <Expander.Resources>
+                <Style TargetType="{x:Type ListViewItem}">
+                  <Setter Property="Template">
+                    <Setter.Value>
+                      <ControlTemplate TargetType="{x:Type ListViewItem}">
+                        <Button Template="{StaticResource LeftPanelListViewItemTemplateButtonTemplate}"
+                                Style="{x:Null}" Click="InstancePanelListItemClicked">
+                          <ContentPresenter Margin="12,4,8,4" ContentTemplate="{TemplateBinding ContentTemplate}"
+                                            Content="{TemplateBinding Content}" />
+                        </Button>
+                      </ControlTemplate>
+                    </Setter.Value>
+                  </Setter>
+                </Style>
+
+                <CollectionViewSource x:Key="AlternativesViewSource"
+                                      Source="{Binding Alternatives.AlternativesCollection}" />
+              </Expander.Resources>
+
+              <ListView ItemsSource="{Binding Source={StaticResource AlternativesViewSource}}"
+                        ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListView.ItemTemplate>
+                  <DataTemplate>
+                    <TextBlock Text="{Binding Name}" />
+                  </DataTemplate>
+                </ListView.ItemTemplate>
               </ListView>
-              <!--</ScrollViewer>-->
             </Expander>
 
             <Expander Name="CriteriaExpander" Header="Criteria" Grid.Row="1"
                       Collapsed="Expander_Toggled" Expanded="Expander_Toggled"
                       HeaderTemplate="{StaticResource ExpanderWithPlusButtonHeaderTemplate}" IsExpanded="True">
-              <ListView ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                <ListViewItem Content="Criterion X" />
-                <ListViewItem Content="Criterion X" />
-                <ListViewItem Content="Criterion X" />
-                <ListViewItem Content="Criterion X" />
-                <ListViewItem Content="Criterion X" />
-                <ListViewItem Content="Criterion X" />
-                <ListViewItem Content="Criterion X" />
-                <ListViewItem Content="Criterion X" />
-                <ListViewItem Content="Criterion X" />
-                <ListViewItem Content="Criterion X" />
-                <ListViewItem Content="Criterion X" />
-                <ListViewItem Content="Criterion X" />
-                <ListViewItem Content="Criterion X" />
+              <Expander.Resources>
+                <!--hack solution to change grid header background color-->
+                <Style TargetType="{x:Type ScrollViewer}">
+                  <Setter Property="Background" Value="{StaticResource ColorInterface5}" />
+                </Style>
+
+                <CollectionViewSource x:Key="CriteriaViewSource" Source="{Binding Criteria.CriteriaCollection}" />
+              </Expander.Resources>
+
+              <ListView ItemsSource="{Binding Source={StaticResource CriteriaViewSource}}"
+                        ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListView.ItemContainerStyle>
+                  <Style TargetType="{x:Type ListViewItem}">
+                    <Setter Property="Template">
+                      <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ListViewItem}">
+                          <Button Template="{StaticResource LeftPanelListViewItemTemplateButtonTemplate}" Style="{x:Null}" Click="InstancePanelListItemClicked">
+                            <GridViewRowPresenter Margin="0,4" Content="{TemplateBinding Content}"
+                                                  Columns="{TemplateBinding GridView.ColumnCollection}" />
+                          </Button>
+                        </ControlTemplate>
+                      </Setter.Value>
+                    </Setter>
+                  </Style>
+                </ListView.ItemContainerStyle>
+
+                <ListView.View>
+                  <GridView AllowsColumnReorder="False">
+                    <GridViewColumn Header="Name" Width="150">
+                      <GridViewColumn.HeaderContainerStyle>
+                        <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource MetroGridViewColumnHeader}">
+                          <Setter Property="Padding" Value="10,0,0,0"></Setter>
+                        </Style>
+                      </GridViewColumn.HeaderContainerStyle>
+
+                      <GridViewColumn.CellTemplate>
+                        <DataTemplate>
+                          <TextBlock Text="{Binding Name}" Margin="6,0,0,0"></TextBlock>
+                        </DataTemplate>
+                      </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Type" DisplayMemberBinding="{Binding CriterionDirection}" Width="9999" />
+                  </GridView>
+                </ListView.View>
               </ListView>
             </Expander>
           </Grid>
@@ -602,9 +640,12 @@
                     </Setter.Value>
                   </Setter>
                 </Style>
+
+                <CollectionViewSource x:Key="FinalRankingViewSource"
+                                      Source="{Binding Results.FinalRanking.FinalRankingCollection}" />
               </Expander.Resources>
 
-              <ListView ItemsSource="{Binding Rankings.FinalRanking}"
+              <ListView ItemsSource="{Binding Source={StaticResource FinalRankingViewSource}}"
                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListView.View>
                   <GridView AllowsColumnReorder="False">
@@ -620,8 +661,7 @@
                       Expanded="Expander_Toggled" IsExpanded="True"
                       HeaderTemplate="{StaticResource ExpanderPlainHeaderTemplate}">
               <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-                <ItemsControl Name="ReferenceRankingItemsControl"
-                              ItemsSource="{Binding ReferenceRanking.RankingsCollection}"
+                <ItemsControl ItemsSource="{Binding ReferenceRanking.RankingsCollection}"
                               AlternationCount="10000">
                   <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -639,7 +679,7 @@
                                   Path=TemplatedParent.(ItemsControl.AlternationIndex),
                                   StringFormat=Rank {0},
                                   Converter={StaticResource IndexToRankConverter}}"
-                                  Margin="4,0,4,2" />
+                                  Margin="4,0,4,2" FontSize="{StaticResource CommonFontSize2}" />
                               </Border>
                               <ItemsPresenter />
                             </StackPanel>

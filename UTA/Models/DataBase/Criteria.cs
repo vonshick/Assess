@@ -49,5 +49,10 @@ namespace UTA.Models.DataBase
         }
 
         //todo handle name changes: change column bindings and headers, CriteriaValues in alternatives, etc
+
+        public void Reset()
+        {
+            CriteriaCollection.Clear();
+        }
     }
 }

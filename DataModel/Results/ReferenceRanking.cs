@@ -43,6 +43,11 @@ namespace DataModel.Results
             }
         }
 
+        public void Reset()
+        {
+            RankingsCollection.Clear();
+        }
+
         public ObservableCollection<ObservableCollection<Alternative>> RankingsCollection { get; set; }
 
         //public referenceRankingStructs getRankingAsListOfStructs()

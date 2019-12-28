@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -73,7 +75,7 @@ namespace UTA.Views
             var panelGrid = (Grid) expander.Parent;
             var expanderIndex = panelGrid.Children.IndexOf((UIElement) sender);
             panelGrid.RowDefinitions[expanderIndex].Height = expander.IsExpanded
-                ? new GridLength(expanderIndex == 0 ? 60 : 40, GridUnitType.Star)
+                ? new GridLength(expanderIndex == 0 ? 61 : 39, GridUnitType.Star)
                 : new GridLength((double) FindResource("ExpanderHeaderHeight") + (expanderIndex == 0 ? 2 : 4));
         }
 
@@ -156,11 +158,13 @@ namespace UTA.Views
             {
                 FinalRankingExpander.IsExpanded = false;
                 ReferenceRankingExpander.IsExpanded = true;
+
                 var itemsToRemove = new List<MenuItem>();
                 foreach (var item in ShowMenu.Items)
                     if (item is MenuItem menuItem && (string) menuItem.Tag == "Chart")
                         itemsToRemove.Add(menuItem);
                 foreach (var menuItem in itemsToRemove) ShowMenu.Items.Remove(menuItem);
+
                 if (ShowMenu.Items[ShowMenu.Items.Count - 1] is Separator separator) ShowMenu.Items.Remove(separator);
                 ((MenuItem) ShowMenu.Items[ShowMenu.Items.Count - 1]).Margin = _menuItemBottomMargin;
             }
@@ -168,6 +172,7 @@ namespace UTA.Views
             {
                 FinalRankingExpander.IsExpanded = true;
                 ReferenceRankingExpander.IsExpanded = false;
+
                 if (ShowMenu.Items[ShowMenu.Items.Count - 1] is MenuItem lastMenuItem)
                 {
                     lastMenuItem.Margin = new Thickness(0);
@@ -179,6 +184,37 @@ namespace UTA.Views
                 newMenuItem.Click += (s, args) => _viewmodel.ShowTab(newChartTabViewModel);
                 ShowMenu.Items.Add(newMenuItem);
             }
+        }
+
+        private void ExitMenuItemClicked(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private async void ApplicationClosing(object sender, CancelEventArgs e)
+        {
+            if (!_viewmodel.IsThereAnyApplicationProgress()) return;
+            // cancel exit, because application doesn't wait for async function and closes anyway
+            e.Cancel = true;
+
+            var dialogResult = await this.ShowMessageAsync("Quitting application.",
+                "You have unsaved progress. Would you like to save it before leaving?",
+                MessageDialogStyle.AffirmativeAndNegativeAndSingleAuxiliary,
+                new MetroDialogSettings
+                {
+                    AffirmativeButtonText = "Yes",
+                    NegativeButtonText = "No",
+                    FirstAuxiliaryButtonText = "Cancel",
+                    AnimateShow = false, AnimateHide = false,
+                    DefaultButtonFocus = MessageDialogResult.Affirmative
+                });
+
+            if (dialogResult == MessageDialogResult.Affirmative)
+            {
+                // TODO: save file
+                Application.Current.Shutdown();
+            }
+            else if (dialogResult == MessageDialogResult.Negative) Application.Current.Shutdown();
         }
     }
 }

@@ -10,10 +10,19 @@ namespace DataModel.Results
             FinalRanking = new FinalRanking();
         }
 
+
         public FinalRanking FinalRanking { get; set; }
 
         public List<PartialUtility> PartialUtilityFunctions { get; set; }
 
         public float KendallCoefficient { get; set; }
+
+
+        public void Reset()
+        {
+            FinalRanking.FinalRankingCollection.Clear();
+            PartialUtilityFunctions?.Clear();
+            KendallCoefficient = 0;
+        }
     }
 }

@@ -10,11 +10,15 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using DataModel.Input;
 using DataModel.Results;
+using DataModel.Structs;
+using ImportModule;
 using MahApps.Metro.Controls.Dialogs;
+using Microsoft.Win32;
 using UTA.Annotations;
 using UTA.Interactivity;
 using UTA.Models.DataBase;
 using UTA.Models.Tab;
+using UTA.Views;
 
 namespace UTA.ViewModels
 {
@@ -30,6 +34,7 @@ namespace UTA.ViewModels
             Criteria = new Criteria();
             Alternatives = new Alternatives(Criteria);
             ReferenceRanking = new ReferenceRanking(0);
+            Results = new Results();
 
             Tabs = new ObservableCollection<ITab>();
             Tabs.CollectionChanged += TabsCollectionChanged;
@@ -43,45 +48,37 @@ namespace UTA.ViewModels
             ChartTabViewModels = new ObservableCollection<ChartTabViewModel>();
 
 
-            // TODO: remove. for chart testing purposes
+            // TODO: remove. for testing purposes
             Criteria.AddCriterion("Power", "", "Gain", 8);
             Criteria.AddCriterion("0-100 km/h", "", "Cost", 5);
             Criteria.CriteriaCollection[0].MinValue = Criteria.CriteriaCollection[1].MinValue = 0;
             Criteria.CriteriaCollection[0].MaxValue = Criteria.CriteriaCollection[1].MaxValue = 1;
-            Alternatives.AddAlternative("Q", "");
-            Alternatives.AddAlternative("W", "");
-            Alternatives.AddAlternative("E", "");
-            Alternatives.AddAlternative("R", "");
-            Alternatives.AddAlternative("T", "");
-            Alternatives.AddAlternative("Y", "");
-            Alternatives.AddAlternative("U", "");
-            Alternatives.AddAlternative("I", "");
-            Alternatives.AddAlternative("O", "");
-            Alternatives.AddAlternative("P", "");
+            for (var i = 0; i < 20; i++) Alternatives.AddAlternative("Alternative X", "");
+
             for (var i = 0; i < Alternatives.AlternativesCollection.Count; i++)
+                foreach (var criterionValue in Alternatives.AlternativesCollection[i].CriteriaValuesList)
+                    criterionValue.Value = i * 0.1f;
+
+            for (var i = 1; i < 20; i++)
             {
-                var alternative = Alternatives.AlternativesCollection[i];
-                for (var j = 0; j < alternative.CriteriaValuesList.Count; j++)
-                    alternative.CriteriaValuesList[j].Value = i * 0.1f;
+                ReferenceRanking.AddAlternativeToRank(new Alternative {Name = "Reference X"}, i);
+                if (i % 2 == 0)
+                    ReferenceRanking.AddAlternativeToRank(new Alternative {Name = "Reference XX"}, i);
+                if (i % 3 == 0)
+                    ReferenceRanking.AddAlternativeToRank(new Alternative {Name = "Reference XXX"}, i);
             }
 
-            // TODO: remove. for testing purposes only.
-            for (var i = 1; i <= 20; i++)
-            {
-                ReferenceRanking.AddAlternativeToRank(new Alternative {Name = "Alternative X"}, i);
-                if (i % 2 == 0)
-                    ReferenceRanking.AddAlternativeToRank(new Alternative {Name = "Alternative XX"}, i);
-                if (i % 3 == 0)
-                    ReferenceRanking.AddAlternativeToRank(new Alternative {Name = "Alternative XXX"}, i);
-            }
+            for (var i = 1; i <= Alternatives.AlternativesCollection.Count; i++)
+                Results.FinalRanking.FinalRankingCollection.Add(new FinalRankingEntry(i, new Alternative {Name = "Final X"},
+                    Alternatives.AlternativesCollection.Count - i));
         }
 
-        // TODO: remove property after using real rankings
-        public Ranking Rankings { get; set; } = new Ranking();
 
         public Alternatives Alternatives { get; set; }
         public Criteria Criteria { get; set; }
         public ReferenceRanking ReferenceRanking { get; set; }
+        public Results Results { get; set; }
+
         public RelayCommand ShowTabCommand { get; }
         public ObservableCollection<ITab> Tabs { get; }
         public CriteriaTabViewModel CriteriaTabViewModel { get; }
@@ -89,7 +86,7 @@ namespace UTA.ViewModels
         public ReferenceRankingTabViewModel ReferenceRankingTabViewModel { get; }
         public SettingsTabViewModel SettingsTabViewModel { get; }
 
-        // TODO: use in proper place (to refactor)
+
         public bool PreserveKendallCoefficient
         {
             get => _preserveKendallCoefficient;
@@ -112,6 +109,7 @@ namespace UTA.ViewModels
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
 
         public static T FindParent<T>(DependencyObject child) where T : DependencyObject
         {
@@ -186,14 +184,14 @@ namespace UTA.ViewModels
             }
             else
             {
-                var dialogResult = await _dialogCoordinator.ShowMessageAsync(this, "Losing current progress",
+                var dialogResult = await _dialogCoordinator.ShowMessageAsync(this, "Losing current progress.",
                     "Your current partial utilities and final ranking data will be lost.\nDo you want to continue?",
                     MessageDialogStyle.AffirmativeAndNegative,
                     new MetroDialogSettings
                     {
                         AffirmativeButtonText = "Yes",
-                        AnimateShow = false,
-                        AnimateHide = false,
+                        NegativeButtonText = "Cancel",
+                        AnimateShow = false, AnimateHide = false,
                         DefaultButtonFocus = MessageDialogResult.Affirmative
                     });
                 if (dialogResult == MessageDialogResult.Affirmative) ShowChartTabs();
@@ -219,71 +217,86 @@ namespace UTA.ViewModels
             if (ChartTabViewModels.Count > 0) ShowTab(ChartTabViewModels[0]);
         }
 
+        public bool IsThereAnyApplicationProgress()
+        {
+            return Results.FinalRanking.FinalRankingCollection.Count != 0 || ReferenceRanking.RankingsCollection.Count != 0 ||
+                   Alternatives.AlternativesCollection.Count != 0 || Criteria.CriteriaCollection.Count != 0;
+        }
+
+        public void NewSolution()
+        {
+            NewSolution(null, null);
+        }
+
+        public async void NewSolution(object sender, RoutedEventArgs e)
+        {
+            if (!IsThereAnyApplicationProgress()) return;
+
+            var dialogResult = await _dialogCoordinator.ShowMessageAsync(this, "Losing current progress.",
+                "Your progress will be lost. Do you want to continue?",
+                MessageDialogStyle.AffirmativeAndNegative,
+                new MetroDialogSettings
+                {
+                    AffirmativeButtonText = "Yes",
+                    NegativeButtonText = "Cancel",
+                    AnimateShow = false, AnimateHide = false,
+                    DefaultButtonFocus = MessageDialogResult.Affirmative
+                });
+            if (dialogResult != MessageDialogResult.Affirmative) return;
+
+            Results.Reset();
+            ReferenceRanking.Reset();
+            Alternatives.Reset();
+            Criteria.Reset();
+            foreach (var chartTabViewModel in ChartTabViewModels)
+                Tabs.Remove(chartTabViewModel);
+            ChartTabViewModels.Clear();
+        }
+
+        [UsedImplicitly]
+        public void OpenMenuItemClicked(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = "UTA Files (*.xmcda; *.xml; *.csv; *.utx)|*.xmcda;*.xml;*.csv;*.utx",
+                InitialDirectory = AppDomain.CurrentDomain.BaseDirectory
+            };
+            if (openFileDialog.ShowDialog() != true) return;
+            var filePath = openFileDialog.FileName;
+            try
+            {
+                if (filePath.EndsWith(".xmcda"))
+                {
+                    var dataLoader = new XMCDALoader();
+                    dataLoader.LoadData(filePath);
+                }
+                else if (filePath.EndsWith(".xml"))
+                {
+                    var dataLoader = new XMLLoader();
+                    dataLoader.LoadData(filePath);
+                }
+                else if (filePath.EndsWith(".csv"))
+                {
+                    var dataLoader = new CSVLoader();
+                    dataLoader.LoadData(filePath);
+                }
+                else if (filePath.EndsWith(".utx"))
+                {
+                    var dataLoader = new UTXLoader();
+                    dataLoader.LoadData(filePath);
+                }
+            }
+            catch (ImproperFileStructureException exception)
+            {
+                Console.WriteLine(exception);
+                throw;
+            }
+        }
+
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        // TODO: remove. temporary class for designing and preview purposes
-        public class Ranking
-        {
-            public Ranking()
-            {
-                for (var i = 1; i <= 20; i += 2)
-                {
-                    FinalRanking.Add(new FinalRankingEntry(i,
-                        new Alternative($"Alternative {i}", null, CriteriaCollection),
-                        (float) ((10 - i / 2) * 0.1 - 0.000001)));
-                    FinalRanking.Add(new FinalRankingEntry(i + 1,
-                        new Alternative($"Alternative {i + 1}", null, CriteriaCollection),
-                        (float) ((10 - i / 2) * 0.1 - 0.050001)));
-                }
-
-                for (var i = 1; i <= 20; i++)
-                {
-                    ReferenceRanking.Add(new ReferenceRankingEntry(i,
-                        new Alternative("Alternative X", null, CriteriaCollection)));
-                    if (i % 2 == 0)
-                        ReferenceRanking.Add(new ReferenceRankingEntry(i,
-                            new Alternative("Alternative X", null, CriteriaCollection)));
-                    if (i % 3 == 0)
-                        ReferenceRanking.Add(new ReferenceRankingEntry(i,
-                            new Alternative("Alternative X", null, CriteriaCollection)));
-                }
-            }
-
-            public List<FinalRankingEntry> FinalRanking { get; set; } = new List<FinalRankingEntry>();
-            public List<ReferenceRankingEntry> ReferenceRanking { get; set; } = new List<ReferenceRankingEntry>();
-
-            public ObservableCollection<Criterion> CriteriaCollection { get; set; } =
-                new ObservableCollection<Criterion>();
-
-            public struct ReferenceRankingEntry
-            {
-                public int Rank { get; set; }
-                public Alternative Alternative { get; set; }
-
-                public ReferenceRankingEntry(int rank, Alternative alternative)
-                {
-                    Rank = rank;
-                    Alternative = alternative;
-                }
-            }
-        }
-
-        public struct FinalRankingEntry
-        {
-            public int Position { get; set; }
-            public Alternative Alternative { get; set; }
-            public float Utility { get; set; }
-
-            public FinalRankingEntry(int position, Alternative alternative, float utility)
-            {
-                Position = position;
-                Alternative = alternative;
-                Utility = utility;
-            }
         }
     }
 }

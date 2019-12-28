@@ -101,6 +101,12 @@ namespace UTA.Models.DataBase
             AlternativesCollection.Add(Placeholder);
         }
 
+        public void Reset()
+        {
+            AlternativesCollection.Clear();
+            AlternativesNotRankedCollection.Clear();
+        }
+
         private void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             Console.WriteLine("alt coll changed");
