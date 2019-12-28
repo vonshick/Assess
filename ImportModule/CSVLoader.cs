@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace ImportModule
 {
@@ -12,6 +13,7 @@ namespace ImportModule
     {
         private int lineNumber;
         private char separator;
+        private int numberOfColumns;
 
         public CSVLoader() : base()
         {
@@ -21,30 +23,42 @@ namespace ImportModule
         private string[] ReadNewLine(StreamReader reader)
         {
             lineNumber++;
-            return (reader.ReadLine().Split(separator));
+            string[] alternativeValues = reader.ReadLine().Split(separator);
+
+            if (alternativeValues.Length != numberOfColumns)
+            {
+                //TODO vonshick WARNINGS
+                throw new ImproperFileStructureException("Improper number of columns in line " + lineNumber.ToString() + " of CSV file");
+            }
+
+            return (alternativeValues);
         }
 
-        // In case when values are not separated by comma but by semicolon
-        private void setSeparator(string firstLine)
+        // validate if contain only 'c', 'g' and separator
+        // if structure is correct set separator and expected number of columns
+        private void validateStructure(string firstLine)
         {
-            if (firstLine.Contains(";") && !firstLine.Contains(","))
+            string removedCost = Regex.Replace(firstLine, "c", "");
+            string removedCostAndGain = Regex.Replace(removedCost, "g", "");
+            char[] separators = removedCostAndGain.ToCharArray();
+            var separatorSet = new HashSet<char>(separators);
+
+            if (separatorSet.Count != 1)
             {
-                separator = ';';
-            }
-            else if (firstLine.Contains(",") && !firstLine.Contains(";"))
-            {
-                separator = ',';
+                //TODO vonshick WARNINGS
+                throw new ImproperFileStructureException("Improper criteria directions row - it should contain only 'c', 'g' and separator (e.g. ',', ';') characters.");
             }
             else
             {
-                Trace.WriteLine("File format is not valid! Values have to be separated by ';' or ','.");
-                return;
+                separator = separators[0];
+                numberOfColumns = separators.Length + 1;
             }
         }
 
         override protected void ProcessFile(string filePath)
         {
             ValidateFilePath(filePath);
+            ValidateFileExtension(filePath, ".csv");
 
             try
             {
@@ -53,7 +67,7 @@ namespace ImportModule
 
                     lineNumber++;
                     string firstLine = reader.ReadLine();
-                    setSeparator(firstLine);
+                    validateStructure(firstLine);
 
                     string[] criterionDirectionsArray = firstLine.Split(separator);
 
@@ -62,40 +76,48 @@ namespace ImportModule
                     for (int i = 1; i < criterionDirectionsArray.Length; i++)
                     {
                         // for CSV ID and Name are the same value
-                        criterionList.Add(new Criterion(criterionNamesArray[i], criterionDirectionsArray[i]) { ID = criterionNamesArray[i] });
+                        criterionList.Add(new Criterion(checkCriteriaNamesUniqueness(criterionNamesArray[i]), criterionDirectionsArray[i]) { ID = checkCriteriaNamesUniqueness(criterionNamesArray[i]) });
                     }
 
                     while (!reader.EndOfStream)
                     {
                         var values = ReadNewLine(reader);
 
-                        Alternative alternative = new Alternative { Name = values[0], CriteriaValues = new Dictionary<Criterion, float>() };
+                        Alternative alternative = new Alternative { Name = checkAlternativesNamesUniqueness(values[0]), CriteriaValuesList = new List<CriterionValue>() };
 
                         for (int i = 0; i < criterionList.Count; i++)
                         {
-                            alternative.CriteriaValues.Add(criterionList[i], float.Parse(values[i + 1], CultureInfo.InvariantCulture));
+                            checkIfValueIsValid(values[i + 1], criterionList[i].Name, alternative.Name);
+                            alternative.CriteriaValuesList.Add(new CriterionValue(criterionList[i].Name, float.Parse(values[i + 1], CultureInfo.InvariantCulture)));
                         }
 
                         alternativeList.Add(alternative);
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                //TODO vonshick WARNINGS
-                // make warning more accurate 
-                // if process failed while processing first line 
-                // than it is possible that the structure of whole file is wrong
-                if (lineNumber > 1)
+                if (exception is ImproperFileStructureException)
                 {
-                    Trace.WriteLine("The process failed while processing line " + lineNumber.ToString() + " of CSV file");
-                    Trace.WriteLine("Error: " + e.Message);
+                    Trace.WriteLine(exception.Message);
                 }
                 else
                 {
-                    Trace.WriteLine("Processing CSV file " + filePath + " failed.");
-                    Trace.WriteLine("Error: " + e.Message);
+                    //TODO vonshick WARNINGS
+                    // if process failed while processing first line 
+                    // than it is possible that the structure of whole file is wrong
+                    if (lineNumber > 1)
+                    {
+                        Trace.WriteLine("The process failed while processing line " + lineNumber.ToString() + " of CSV file");
+                        Trace.WriteLine("Error: " + exception.Message);
+                    }
+                    else
+                    {
+                        Trace.WriteLine("Processing CSV file " + filePath + " failed.");
+                        Trace.WriteLine("Error: " + exception.Message);
+                    }
                 }
+
             }
         }
     }

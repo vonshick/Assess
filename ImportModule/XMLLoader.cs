@@ -13,9 +13,11 @@ namespace ImportModule
         public XMLLoader() : base()
         {
         }
+
         override protected void ProcessFile(string filePath)
         {
             ValidateFilePath(filePath);
+            ValidateFileExtension(filePath, ".xml");
 
             try
             {
@@ -36,7 +38,7 @@ namespace ImportModule
                     {
                         foreach (XmlNode attribute in xmlNode)
                         {
-                            Criterion criterion = new Criterion() { ID = attribute.Attributes["AttrID"].Value };
+                            Criterion criterion = new Criterion() { ID = checkCriteriaIdsUniqueness(attribute.Attributes["AttrID"].Value) };
                             // two specific groups of nodes may appear in attributes - name and description
                             // we don't want to save it as criterion
                             bool saveCriterion = true;
@@ -48,7 +50,7 @@ namespace ImportModule
                                 switch (attributePart.Name)
                                 {
                                     case "NAME":
-                                        criterion.Name = value;
+                                        criterion.Name = checkCriteriaNamesUniqueness(value);
                                         break;
                                     case "DESCRIPTION":
                                         criterion.Description = value;
@@ -102,11 +104,19 @@ namespace ImportModule
                     }
                     else if (xmlNode.Name == "OBJECTS")
                     {
+                        int nodeCounter = 1;
+
                         foreach (XmlNode instance in xmlNode)
                         {
 
                             Alternative alternative = new Alternative();
-                            Dictionary<Criterion, float> criteriaValuesDictionary = new Dictionary<Criterion, float>();
+
+                            if ((instance.ChildNodes.Count - 2) != criterionList.Count)
+                            {
+                                throw new ImproperFileStructureException("There are provided " + (instance.ChildNodes.Count - 2) + " criteria values and required are " + criterionList.Count);
+                            }
+
+                            List<CriterionValue> criteriaValuesList = new List<CriterionValue>();
 
                             foreach (XmlNode instancePart in instance)
                             {
@@ -119,24 +129,40 @@ namespace ImportModule
                                 }
                                 else if (attributeID == nameAttributeId)
                                 {
-                                    alternative.Name = value;
+                                    alternative.Name = checkAlternativesNamesUniqueness(value);
                                 }
                                 else
                                 {
                                     Criterion criterion = criterionList.Find(element => element.ID == attributeID);
-                                    criteriaValuesDictionary.Add(criterion, float.Parse(value, CultureInfo.InvariantCulture));
+
+                                    if (criterion == null)
+                                    {
+                                        throw new ImproperFileStructureException(alternative.Name + ": Criterion with ID " + attributeID + " does not exist");
+                                    }
+
+                                    checkIfValueIsValid(value, criterion.Name, nodeCounter.ToString());
+
+                                    criteriaValuesList.Add(new CriterionValue(criterion.Name, float.Parse(value, CultureInfo.InvariantCulture)));
                                 }
                             }
 
-                            alternative.CriteriaValues = criteriaValuesDictionary;
+                            alternative.CriteriaValuesList = criteriaValuesList;
                             alternativeList.Add(alternative);
+                            nodeCounter++;
                         }
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                Trace.WriteLine("Loading XML " + filePath + " failed! " + e.Message);
+                if (exception is ImproperFileStructureException)
+                {
+                    Trace.WriteLine(exception.Message);
+                }
+                else
+                {
+                    Trace.WriteLine("Loading XML " + filePath + " failed! " + exception.Message);
+                }
             }
         }
     }
