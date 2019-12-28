@@ -14,7 +14,7 @@ namespace DataModel.Input
             Ordinal
         }
 
-        public static double MinNumberOfLinearSegments = 2; // type double, because can't use other type in xaml
+        public static double MinNumberOfLinearSegments = 1; // type double, because can't use other type in xaml
         public static double MaxNumberOfLinearSegments = 99;
         private int _linearSegments;
         private string _name;
@@ -65,8 +65,6 @@ namespace DataModel.Input
             set
             {
                 if (value == _linearSegments) return;
-                if (value < MinNumberOfLinearSegments || value > MaxNumberOfLinearSegments)
-                    throw new ArgumentException($"Value must be in the range: {MinNumberOfLinearSegments} - {MaxNumberOfLinearSegments}");
                 _linearSegments = value;
                 OnPropertyChanged(nameof(LinearSegments));
             }

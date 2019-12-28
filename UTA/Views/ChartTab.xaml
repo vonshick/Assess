@@ -21,7 +21,7 @@
       <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
         <TextBlock Text="Number of linear segments" VerticalAlignment="Center" Margin="0,0,8,0" />
         <!--TODO: discuss about maximal number of linear segments-->
-        <controls:NumericUpDown Value="{Binding Criterion.LinearSegments, ValidatesOnExceptions=True}" MinWidth="70"
+        <controls:NumericUpDown Value="{Binding Criterion.LinearSegments, UpdateSourceTrigger=LostFocus}" MinWidth="70"
                                 MaxWidth="80" Minimum="{x:Static criterion:Criterion.MinNumberOfLinearSegments}"
                                 Maximum="{x:Static criterion:Criterion.MaxNumberOfLinearSegments}"
                                 HorizontalContentAlignment="Left" />
