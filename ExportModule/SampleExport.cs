@@ -1,5 +1,6 @@
 using DataModel.Input;
 using DataModel.Results;
+using DataModel.Structs;
 using System.Collections.Generic;
 using System.IO;
 
@@ -25,28 +26,29 @@ namespace ExportModule
             return (partialUtilities);
         }
 
-        private static List<KeyValuePair<Alternative, int>> createSampleResults(List<Alternative> alternativeList)
+        private static FinalRanking createSampleFinalRanking(List<Alternative> alternativeList)
         {
-            List<KeyValuePair<Alternative, int>> resultsList = new List<KeyValuePair<Alternative, int>>();
+            var finalRakingList = new List<FinalRankingEntry>();
+            
             for (int i = 0; i < alternativeList.Count; i++)
             {
-                resultsList.Add(new KeyValuePair<Alternative, int>(alternativeList[i], i));
+                finalRakingList.Add(new FinalRankingEntry(i + 1, alternativeList[i], 1 / (i + 1)));
             }
-            return (resultsList);
+
+            return new FinalRanking(finalRakingList);
         }
 
         public static void exportXMCDA(string dataDirectoryPath, List<Criterion> criterionList, List<Alternative> alternativeList)
         {
-
-            var partialUtilities = createSamplePartialUtilities(criterionList);
-            var resultsList = createSampleResults(alternativeList);
+            var results = new Results();
+            results.PartialUtilityFunctions = createSamplePartialUtilities(criterionList);
+            results.FinalRanking = createSampleFinalRanking(alternativeList);
 
             string xmcdaOutputDirectory = Path.Combine(dataDirectoryPath, "xmcda_output");
             XMCDAExporter xmcdaExporter = new XMCDAExporter(xmcdaOutputDirectory,
                                                             criterionList,
-                                                            alternativeList,
-                                                            resultsList,
-                                                            partialUtilities);
+                                                            alternativeList, 
+                                                            results);
             xmcdaExporter.saveSession();
         }
     }
