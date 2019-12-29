@@ -12,14 +12,17 @@ namespace ExportModule
         private static List<PartialUtility> createSamplePartialUtilities(List<Criterion> criterionList)
         {
             List<PartialUtility> partialUtilities = new List<PartialUtility>();
-            Dictionary<float, float> pointsValues = new Dictionary<float, float>();
-            pointsValues.Add(1, 1);
-            pointsValues.Add(2, 2);
-            pointsValues.Add(3, 4);
+            List<PartialUtilityValues> pointsValuesList = new List<PartialUtilityValues>();
+            PartialUtilityValues pointsValues1 = new PartialUtilityValues(0,0,0,0);
+            PartialUtilityValues pointsValues2 = new PartialUtilityValues(1, 0.5f, 0.55f, 0.6f);
+            PartialUtilityValues pointsValues3 = new PartialUtilityValues(2, 0.8f, 0.55f, 1);
+            pointsValuesList.Add(pointsValues1);
+            pointsValuesList.Add(pointsValues2);
+            pointsValuesList.Add(pointsValues3);
 
             foreach (Criterion criterion in criterionList)
             {
-                partialUtilities.Add(new PartialUtility(criterion, pointsValues));
+                partialUtilities.Add(new PartialUtility(criterion, pointsValuesList));
             }
 
             return (partialUtilities);

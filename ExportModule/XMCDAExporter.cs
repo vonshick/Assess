@@ -190,13 +190,13 @@ namespace ExportModule
                 xmcdaWriter.WriteEndElement();
                 xmcdaWriter.WriteStartElement("criterionFunction");
                 xmcdaWriter.WriteStartElement("points");
-                foreach (KeyValuePair<float, float> pointValue in partialUtility.PointsValues)
+                foreach (PartialUtilityValues pointValue in partialUtility.PointsValues)
                 {
                     xmcdaWriter.WriteStartElement("point");
 
                     xmcdaWriter.WriteStartElement("abscissa");
                     xmcdaWriter.WriteStartElement("real");
-                    xmcdaWriter.WriteString(pointValue.Key.ToString());
+                    xmcdaWriter.WriteString(pointValue.Point.ToString());
                     xmcdaWriter.WriteEndElement();
                     xmcdaWriter.WriteEndElement();
 
