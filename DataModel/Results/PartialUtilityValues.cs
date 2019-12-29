@@ -5,12 +5,12 @@ using System.Text;
 
 namespace DataModel.Results
 {
-    public struct PartialUtilityValues
+    public class PartialUtilityValues
     {
         public float Point;
         public float Value;
-        public float MinValue { get; set; }
-        public float MaxValue { get; set; }
+        public float MinValue;
+        public float MaxValue;
 
         public PartialUtilityValues(float point, float value)
         {
