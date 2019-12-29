@@ -64,7 +64,7 @@ namespace CalculationsEngine
         {
             for (var row = 0; row < simplexMatrix.GetLength(0); row++)
             {
-                solution.Add(basicVariables[row], simplexMatrix[row, simplexMatrix.GetLength(1)]);
+                solution.Add(basicVariables[row], simplexMatrix[basicVariables[row], simplexMatrix.GetLength(1)]);
             }
         }
 

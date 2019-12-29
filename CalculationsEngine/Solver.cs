@@ -2,6 +2,7 @@
 using DataModel.Results;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using DataModel.Structs;
 
@@ -13,6 +14,7 @@ namespace CalculationsEngine
         private readonly ReferenceRanking referenceRanking;
         private readonly ReferenceRanking allVariantsRanking;
         private readonly List<KeyValuePair<Alternative, int>> variantsList;
+        private double[] arrayOfValues;
         private Dictionary<double, double> solution;
 
 
@@ -36,9 +38,9 @@ namespace CalculationsEngine
 
         private int CriterionFieldsCount { get; }
         private double[,] Matrix { get; set; }
-        private Results Result { get; set; }
+        public Results Result { get; set; }
         private int[] BasicVariables { get; set; }
-
+        private double[,] RestrictionsMatrix { get; set; }
         private double[] Cj { get; set; }
         private int NumberOfIteration { get; set; }
 
@@ -48,7 +50,8 @@ namespace CalculationsEngine
             var height = HeightOfSimplexMatrix();
             var width = WidthOfSimplexMatrix(variantsList[0].Key);
             List<PartialUtility> partialUtilityList;
-            double[] arrayOfValues;
+
+
             double[,] transientMatrix = CreateMatrix();
             Matrix = CreateSimplexMatrix(height, width, transientMatrix);
             float tau;
@@ -60,13 +63,217 @@ namespace CalculationsEngine
             (partialUtilityList, arrayOfValues) = MakePartialUtilityFunction(solution);
             List<FinalRankingEntry> finalReferenceList = CreateRanking(arrayOfValues, transientMatrix);
             FinalRanking finalReferenceRanking = new FinalRanking(finalReferenceList);
-            tau = CalculateKendallCoeficient(finalReferenceRanking);
+            bool recalculate = false;
+            var widthWithoutSlack = width - height - equals.Count;
+            for (var i = widthWithoutSlack; i < width; i++)
+                if (solution.ContainsKey(i))
+                    recalculate = true;
+
+            if (recalculate)
+            {
+                var recalculatedMatrix = RecreateMatrix(finalReferenceRanking);
+                RestrictionsMatrix = CalculateRestrictions(recalculatedMatrix, finalReferenceRanking);
+
+            }
+            else
+            {
+                RestrictionsMatrix = CalculateRestrictions(Matrix, finalReferenceRanking);
+            }
+
+            double[] minArray;
+            double[] maxArray;
+            (minArray, maxArray) = CalculateRangeOfValues(RestrictionsMatrix, variantsList[0].Key, arrayOfValues);
+            var count = 0;
+            var arrayOfCriterion = variantsList[0].Key.CriteriaValues.Keys.ToArray();
+            for (var numOfCriterion = 0; numOfCriterion < arrayOfCriterion.Length; numOfCriterion++)
+            {
+                for (int i = 0; i < arrayOfCriterion[numOfCriterion].LinearSegments; i++)
+                {
+                    partialUtilityList[numOfCriterion].PointsValues[i].MinValue = (float)minArray[count];
+                    partialUtilityList[numOfCriterion].PointsValues[i].MaxValue = (float)maxArray[count];
+                    count++;
+                }
+            }
+
+            tau = CalculateKendallCoefficient(finalReferenceRanking);
             Result.PartialUtilityFunctions = partialUtilityList;
             Result.FinalRanking = finalReferenceRanking;
             Result.KendallCoefficient = tau;
         }
 
-        private float CalculateKendallCoeficient(FinalRanking finalReferenceRanking)
+        public void ChangeValue(float value, PartialUtility partialUtility, float point)
+        {
+            var count = 0;
+            var index = -1;
+            var arrayOfCriterion = variantsList[0].Key.CriteriaValues.Keys.ToArray();
+            for (var numOfCriterion = 0; numOfCriterion < arrayOfCriterion.Length; numOfCriterion++)
+            {
+                if (Result.PartialUtilityFunctions[numOfCriterion].Criterion == partialUtility.Criterion) index = numOfCriterion;
+                else count += arrayOfCriterion[numOfCriterion].LinearSegments;
+            }
+            for (int i = 0; i < partialUtility.PointsValues.Count; i++)
+                if (partialUtility.PointsValues[i].Point == point)
+                {
+                    if (i < partialUtility.PointsValues.Count - 1)
+                    {
+                        partialUtility.PointsValues[i + 1].Value = partialUtility.PointsValues[i].Value - value;
+                        partialUtility.PointsValues[i].Value = value;
+                        Result.PartialUtilityFunctions[index] = partialUtility;
+                        arrayOfValues[count + i + 1] = arrayOfValues[count + i] - value;
+                        arrayOfValues[count + i] = value;
+                    }
+                    else
+                    {
+                        //TODO calculate last
+                    }
+                }
+                    
+        }
+
+        private (double[] deepCopyofMin, double[] deepCopyofMax) CalculateRangeOfValues(double[,] restrictionsMatrix, Alternative exampleAlternative, double[] arrayOfValues)
+        {
+            double[] min = new double[restrictionsMatrix.GetLength(1) - 1];
+            double[] max = new double[restrictionsMatrix.GetLength(1) - 1];
+            //
+            for (int i = 0; i < restrictionsMatrix.GetLength(1) - 1; i++)
+            {
+                min[i] = 0;
+                max[i] = 1;
+            }
+            var arrayOfCriterion = exampleAlternative.CriteriaValues.Keys.ToArray();
+            var criterionEndPoints = new List<int>();
+            var count = 0;
+            for (int i = 0; i < arrayOfCriterion.Length; i++)
+            {
+                count += arrayOfCriterion[i].LinearSegments;
+                criterionEndPoints.Add(count);
+            }
+
+            double localMin,  localMax;
+            
+            
+            for (var row = 0; row < restrictionsMatrix.GetLength(0); row++)
+            {
+                count = 0;
+                for (var numOfCriterion = 0; numOfCriterion < arrayOfCriterion.Length; numOfCriterion++)
+                {
+                    for (int i = 0; i < arrayOfCriterion[numOfCriterion].LinearSegments; i++)
+                    {
+                        if (i == arrayOfCriterion[numOfCriterion].LinearSegments - 1)
+                        {
+                            ( localMin,  localMax) = CalculateValue(GetRow(restrictionsMatrix, row), count, arrayOfValues, false);
+
+                        }
+                        else
+                        {
+                            ( localMin,  localMax) = CalculateValue(GetRow(restrictionsMatrix, row), count, arrayOfValues, true);
+                            
+                        }
+                        if (min[count] < localMin) min[count] = localMin;
+                        if (max[count] > localMax) max[count] = localMax;
+                        count++;
+                    }
+                }
+            }
+            double[] deepCopyofMin = new double[min.Length];
+            double[] deepCopyofMax = new double[max.Length];
+            for (var i = 0; i < min.Length; i++)
+            {
+                deepCopyofMax[i] = max[i];
+                deepCopyofMin[i] = min[i];
+            }
+            foreach (var element in criterionEndPoints)
+            {
+                double endPointsMin = 0;
+                double endPointsMax = 1; 
+                foreach (var innerElement in criterionEndPoints)
+                {
+                    if (element != innerElement)
+                    {
+                        if (endPointsMax > max[innerElement] - arrayOfValues[innerElement]) endPointsMax = max[innerElement] - arrayOfValues[innerElement];
+                        if (endPointsMin < arrayOfValues[innerElement] - min[innerElement]) endPointsMin = arrayOfValues[innerElement] - min[innerElement];
+                    }
+                }
+
+                if (endPointsMax * (criterionEndPoints.Count - 1) < arrayOfValues[element] - min[element])
+                    deepCopyofMin[element] = endPointsMax * (criterionEndPoints.Count - 1);
+                if (endPointsMin * (criterionEndPoints.Count - 1) > max[element] - arrayOfValues[element])
+                    deepCopyofMin[element] = endPointsMax * (criterionEndPoints.Count - 1);
+            }
+            return (deepCopyofMin, deepCopyofMax);
+        }
+
+        private (double min, double max) CalculateValue(double[] row, int index, double[] arrayOfValues, bool hasNext)
+        {
+            var min = (double)0;
+            var max = (double)1;
+            var sum = (double)0;
+
+            
+            if (row[index] == 0)
+            {
+                return (min, max);
+
+            }
+            else if(row[index] > 0)
+            {
+                for (var i = 0; i < row.Length - 1; i++)
+                    if (i != index) sum -= arrayOfValues[i] * row[i];
+                sum += arrayOfValues[row.Length - 1];
+                sum /= row[index];
+                if(hasNext)
+                    if (max > row[index] + row[index + 1])
+                    {
+                        max = row[index] + row[index + 1];
+                    }
+                return (sum, max);
+            }
+            else
+            {
+                for (var i = 0; i < row.Length - 1; i++)
+                    if (i != index) sum -= arrayOfValues[i] * row[i];
+                sum += arrayOfValues[row.Length - 1];
+                sum /= -row[index];
+                if (hasNext)
+                    if (sum > row[index] + row[index + 1])
+                    {
+                        sum = row[index] + row[index + 1];
+                    }
+                return (min, sum);
+            }
+        }
+
+
+        private double[,] CalculateRestrictions(double[,] recalculatedMatrix, FinalRanking finalRanking)
+        {
+            double[,] matrix = new double[recalculatedMatrix.GetLength(0) - 1, recalculatedMatrix.GetLength(1) + 1];
+
+            for (var r = 0; r < variantsList.Count - 1; r++)
+            {
+                for (var c = 0; c < CriterionFieldsCount; c++) matrix[r, c] = recalculatedMatrix[r, c] - recalculatedMatrix[r + 1, c];
+                if (finalRanking.FinalRankingList[r + 1].Utility - finalRanking.FinalRankingList[r].Utility > 0.05)
+                    matrix[r, matrix.GetLength(1)] = 0;
+                else
+                    matrix[r, matrix.GetLength(1)] = 0.05;
+            }
+
+            return matrix;
+        }
+
+        public double[,] RecreateMatrix(FinalRanking finalRanking)
+        {
+            List<FinalRankingEntry> finalRankingEntryList = finalRanking.FinalRankingList;
+            var matrix = new double[finalRankingEntryList[0].Alternative.CriteriaValues.Count, CriterionFieldsCount];
+            for (var i = 0; i < variantsList.Count; i++)
+            {
+                var row = GenerateRow(CriterionFieldsCount, finalRankingEntryList[i].Alternative);
+                for (var j = 0; j < CriterionFieldsCount; j++) matrix[i, j] = row[j];
+            }
+
+            return matrix;
+        }
+
+        private float CalculateKendallCoefficient(FinalRanking finalReferenceRanking)
         {
             var matrix1 = CreateKendallMatrix();
             var matrix2 = CreateKendallMatrix(finalReferenceRanking);
@@ -147,14 +354,14 @@ namespace CalculationsEngine
         private (List<PartialUtility>, double[]) MakePartialUtilityFunction(Dictionary<double, double> doubles)
         {
             var partialUtilityList = new List<PartialUtility>();
-            Dictionary<float, float> dict;
+            List<PartialUtilityValues> list;
             double[] partialArray = new double[] { }, arrayOfValues = new double[] {};
             var count = 0;
             foreach (var entry in variantsList[0].Key.CriteriaValues)
             {
-                (count, dict, partialArray) = NextPartialUtility(doubles, entry.Key, count);
+                (count, list, partialArray) = NextPartialUtility(doubles, entry.Key, count);
                 arrayOfValues = AddTailToArray(arrayOfValues, partialArray);
-                partialUtilityList.Add(new PartialUtility(entry.Key, dict));
+                partialUtilityList.Add(new PartialUtility(entry.Key, list));
                 //TODO min max - range
             }
 
@@ -176,16 +383,17 @@ namespace CalculationsEngine
             return newArray;
         }
 
-        private (int, Dictionary<float, float>, double[]) NextPartialUtility(Dictionary<double, double> doubles, Criterion criterion, int count)
+        private (int, List<PartialUtilityValues>, double[]) NextPartialUtility(Dictionary<double, double> doubles, Criterion criterion, int count)
         {
             var linearSegments = criterion.LinearSegments;
             var arrayOfValues = new double[criterion.LinearSegments];
-            Dictionary<float, float> dict;
+            List<PartialUtilityValues> list;
             double segmentValue = (criterion.MaxValue - criterion.MinValue) / linearSegments, currentPoint, currentValue = 0;
             if (criterion.CriterionDirection == "g")
             {
                 currentPoint = criterion.MinValue;
-                dict = new Dictionary<float, float> { { (float)currentPoint, (float)currentValue } };
+                PartialUtilityValues partialUtilityValues = new PartialUtilityValues((float)currentPoint, (float)currentValue);
+                list = new List<PartialUtilityValues> { partialUtilityValues };
                 for (var s = 1; s < linearSegments; s++)
                 {
                     currentPoint = criterion.MinValue + s * segmentValue;
@@ -195,14 +403,16 @@ namespace CalculationsEngine
                         currentValue += doubles[count];
                         arrayOfValues[s - 1] = doubles[count];
                     }
-                    dict.Add((float)currentPoint, (float)currentValue);
+                    partialUtilityValues = new PartialUtilityValues((float)currentPoint, (float)currentValue);
+                    list.Add(partialUtilityValues);
                     count++;
                 }
             }
             else
             {
                 currentPoint = criterion.MaxValue;
-                dict = new Dictionary<float, float> { { (float)currentPoint, (float)currentValue } };
+                PartialUtilityValues partialUtilityValues = new PartialUtilityValues((float)currentPoint, (float)currentValue);
+                list = new List<PartialUtilityValues> { partialUtilityValues };
                 for (var s = 1; s < linearSegments; s++)
                 {
                     currentPoint = criterion.MaxValue - s * segmentValue;
@@ -212,12 +422,12 @@ namespace CalculationsEngine
                         currentValue += doubles[count];
                         arrayOfValues[s - 1] = doubles[count];
                     }
-                    arrayOfValues[s - 1] = currentValue;
-                    dict.Add((float)currentPoint, (float)currentValue);
+                    partialUtilityValues = new PartialUtilityValues((float)currentPoint, (float)currentValue);
+                    list.Add(partialUtilityValues);
                     count++;
                 }
             }
-            return (count, dict, arrayOfValues);
+            return (count, list, arrayOfValues);
         }
 
 
@@ -225,6 +435,10 @@ namespace CalculationsEngine
         {
             double[,] simplexMatrix = new double[height, width];
             var widthWithoutSlack = width - height - equals.Count;
+            double[] cj = new double[width];
+            int[] basic = new int[height];
+            for (var c = 0; c < cj.Length; c++) cj[c] = 0;
+
             for (var r = 0; r < variantsList.Count - 1; r++)
             {
                 for (var c = 0; c < CriterionFieldsCount; c++) simplexMatrix[r, c] = matrix[r, c] - matrix[r + 1, c];
@@ -232,6 +446,8 @@ namespace CalculationsEngine
                 simplexMatrix[r, r * 2 + CriterionFieldsCount + 1] = 1;
                 simplexMatrix[r, r * 2 + CriterionFieldsCount + 2] = 1;
                 simplexMatrix[r, r * 2 + CriterionFieldsCount + 3] = -1;
+                for (var field = 0; field < 4; field++)
+                    cj[r * 2 + CriterionFieldsCount + field] = 1;
             }
 
             //Create last ideal line = 1
@@ -239,18 +455,28 @@ namespace CalculationsEngine
                 simplexMatrix[variantsList.Count - 1, c] = c < CriterionFieldsCount ? 1 : 0;
             //Add slack 1 and subtract surplus -1 variables.
             var i = 0;
+            var bound = widthWithoutSlack + height - equals.Count - 1;
             for (var r = 0; r < height; r++)
             {
-                for (var c = widthWithoutSlack; c < widthWithoutSlack + height; c++)
+                for (var c = widthWithoutSlack; c < bound; c++)
                     if (equals.Contains(r) && c == widthWithoutSlack + i)
                     {
                         simplexMatrix[r, c] = equals.Contains(r) ? -1 : 0;
                         i++;
                     }
-                for (var c = widthWithoutSlack + height; c < width; c++)
+                for (var c = bound; c < width; c++)
                     simplexMatrix[r, c] = c != r + widthWithoutSlack ? 0 : 1;
             }
 
+            for (var c = widthWithoutSlack; c < width; c++)
+                if(c < bound)
+                    cj[c] = c < bound ? 0 : Double.PositiveInfinity;
+
+            for (var r = 0; r < height; r++)
+                basic[r] = bound + r;
+
+            Cj = cj;
+            BasicVariables = basic;
             simplexMatrix = AddAnswerColumn(simplexMatrix);
             return simplexMatrix;
         }

@@ -5,7 +5,7 @@ namespace DataModel.Results
 {
     public class PartialUtility
     {
-        public PartialUtility(Criterion criterion, Dictionary<float, float> pointsValues)
+        public PartialUtility(Criterion criterion, List<PartialUtilityValues> pointsValues)
         {
             Criterion = criterion;
             PointsValues = pointsValues;
@@ -14,6 +14,6 @@ namespace DataModel.Results
         public Criterion Criterion { get; set; }
 
         //Dict(point, value) - point from linear segment
-        public Dictionary<float, float> PointsValues { get; set; }
+        public List<PartialUtilityValues> PointsValues { get; set; }
     }
 }
