@@ -42,6 +42,8 @@ namespace UTA.ViewModels
         {
             Criteria = new Criteria();
             Alternatives = new Alternatives(Criteria);
+            ReferenceRanking = new ReferenceRanking(0);
+
             Alternatives.AlternativesCollection.CollectionChanged += AlternativesCollectionChanged;
             Tabs = new ObservableCollection<ITab>();
             Tabs.CollectionChanged += TabsCollectionChanged;
@@ -76,6 +78,16 @@ namespace UTA.ViewModels
                 for (var j = 0; j < alternative.CriteriaValuesList.Count; j++)
                     alternative.CriteriaValuesList[j].Value = i * 0.1f;
             }
+
+            // TODO: remove. for testing purposes only.
+            for (var i = 1; i <= 20; i++)
+            {
+                ReferenceRanking.AddAlternativeToRank(new Alternative {Name = "Alternative X"}, i);
+                if (i % 2 == 0)
+                    ReferenceRanking.AddAlternativeToRank(new Alternative {Name = "Alternative XX"}, i);
+                if (i % 3 == 0)
+                    ReferenceRanking.AddAlternativeToRank(new Alternative {Name = "Alternative XXX"}, i);
+            }
         }
 
 
@@ -84,9 +96,11 @@ namespace UTA.ViewModels
 
         public Alternatives Alternatives { get; set; }
         public Criteria Criteria { get; set; }
-        public RelayCommand ShowTabCommand { get; }
+        public ReferenceRanking ReferenceRanking { get; set; }
 
+        public RelayCommand ShowTabCommand { get; }
         public ObservableCollection<ITab> Tabs { get; }
+
         public CriteriaTabViewModel CriteriaTabViewModel { get; }
         public AlternativesTabViewModel AlternativesTabViewModel { get; }
         public ReferenceRankingTabViewModel ReferenceRankingTabViewModel { get; }
@@ -255,7 +269,9 @@ namespace UTA.ViewModels
                     MessageDialogStyle.AffirmativeAndNegative,
                     new MetroDialogSettings
                     {
-                        AffirmativeButtonText = "Yes", AnimateShow = false, AnimateHide = false,
+                        AffirmativeButtonText = "Yes",
+                        AnimateShow = false,
+                        AnimateHide = false,
                         DefaultButtonFocus = MessageDialogResult.Affirmative
                     });
                 if (dialogResult == MessageDialogResult.Affirmative) ShowChartTabs();

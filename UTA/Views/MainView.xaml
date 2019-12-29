@@ -13,6 +13,7 @@
                       xmlns:tabModel="clr-namespace:UTA.Models.Tab"
                       xmlns:dragDropFramework="urn:gong-wpf-dragdrop"
                       xmlns:models="clr-namespace:UTA.Models"
+                      xmlns:converters="clr-namespace:UTA.Converters"
                       x:Class="UTA.Views.MainView" mc:Ignorable="d"
                       d:DataContext="{d:DesignInstance viewModels:MainViewModel}" Title="UTA" WindowState="Maximized"
                       Width="1300" Height="700" MinWidth="800" MinHeight="600" Left="12" Top="12">
@@ -765,59 +766,46 @@
             </Expander>
 
             <Expander Name="ReferenceRankingExpander" Header="Reference" Grid.Row="1" Collapsed="Expander_Toggled"
-                      Expanded="Expander_Toggled"
-                      IsExpanded="True" HeaderTemplate="{StaticResource ExpanderPlainHeaderTemplate}">
-              <Expander.Resources>
-                <CollectionViewSource x:Key="GroupedReferenceRankingSource"
-                                      Source="{Binding Rankings.ReferenceRanking}">
-                  <CollectionViewSource.GroupDescriptions>
-                    <PropertyGroupDescription PropertyName="Rank" />
-                  </CollectionViewSource.GroupDescriptions>
-                </CollectionViewSource>
+                      Expanded="Expander_Toggled" IsExpanded="True"
+                      HeaderTemplate="{StaticResource ExpanderPlainHeaderTemplate}">
+              <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                <ItemsControl Name="ReferenceRankingItemsControl"
+                              ItemsSource="{Binding ReferenceRanking.RankingsCollection}"
+                              AlternationCount="10000">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <ItemsControl ItemsSource="{Binding}">
+                        <ItemsControl.Resources>
+                          <converters:IndexToRankConverter x:Key="IndexToRankConverter" />
+                        </ItemsControl.Resources>
+                        <ItemsControl.Template>
+                          <ControlTemplate TargetType="ItemsControl">
+                            <StackPanel Margin="12,0,12,10">
+                              <Border BorderThickness="0,0,0,1" BorderBrush="{StaticResource ColorBorders1}">
+                                <TextBlock
+                                  Text="{Binding 
+                                  RelativeSource={RelativeSource Mode=TemplatedParent}, 
+                                  Path=TemplatedParent.(ItemsControl.AlternationIndex),
+                                  StringFormat=Rank {0},
+                                  Converter={StaticResource IndexToRankConverter}}"
+                                  Margin="4,0,4,2" />
+                              </Border>
+                              <ItemsPresenter />
+                            </StackPanel>
+                          </ControlTemplate>
+                        </ItemsControl.Template>
 
+                        <ItemsControl.ItemTemplate>
+                          <DataTemplate>
+                            <TextBlock Text="{Binding Name}" Margin="4,2,0,2" />
+                          </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                      </ItemsControl>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </ScrollViewer>
 
-                <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource RightPanelListViewItemStyle}">
-                  <Setter Property="Template">
-                    <Setter.Value>
-                      <ControlTemplate TargetType="{x:Type ListViewItem}">
-                        <ContentPresenter Content="{TemplateBinding Content}"
-                                          ContentTemplate="{TemplateBinding ContentTemplate}" />
-                      </ControlTemplate>
-                    </Setter.Value>
-                  </Setter>
-                </Style>
-              </Expander.Resources>
-
-              <ListView Name="ReferenceRankingListView"
-                        ItemsSource="{Binding Source={StaticResource GroupedReferenceRankingSource}}"
-                        ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                <ListView.GroupStyle>
-                  <GroupStyle>
-                    <GroupStyle.ContainerStyle>
-                      <Style TargetType="{x:Type GroupItem}">
-                        <Setter Property="Margin" Value="12,0,12,10" />
-                      </Style>
-                    </GroupStyle.ContainerStyle>
-
-                    <GroupStyle.HeaderTemplate>
-                      <DataTemplate>
-                        <Border BorderThickness="0,0,0,1" BorderBrush="{StaticResource ColorBorders1}">
-                          <WrapPanel Margin="4,0,4,2">
-                            <TextBlock Text="Rank " FontSize="{StaticResource CommonFontSize2}" />
-                            <TextBlock Text="{Binding Name}" FontSize="{StaticResource CommonFontSize2}" />
-                          </WrapPanel>
-                        </Border>
-                      </DataTemplate>
-                    </GroupStyle.HeaderTemplate>
-                  </GroupStyle>
-                </ListView.GroupStyle>
-
-                <ListView.ItemTemplate>
-                  <DataTemplate>
-                    <TextBlock Margin="4,2,0,2" Text="{Binding Alternative.Name}" />
-                  </DataTemplate>
-                </ListView.ItemTemplate>
-              </ListView>
             </Expander>
           </Grid>
         </Grid>
