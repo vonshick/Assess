@@ -1,0 +1,52 @@
+﻿<UserControl x:Class="UTA.Views.ChartTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+             xmlns:oxy="http://oxyplot.org/wpf"
+             xmlns:criterion="clr-namespace:DataModel.Input;assembly=DataModel"
+             xmlns:mainViewModel="clr-namespace:UTA.ViewModels"
+             mc:Ignorable="d"
+             d:DesignHeight="700" d:DesignWidth="900"
+             d:DataContext="{d:DesignInstance mainViewModel:ChartTabViewModel}">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition />
+    </Grid.RowDefinitions>
+
+    <DockPanel LastChildFill="False" Margin="8,8,12,8">
+      <TextBlock DockPanel.Dock="Left" Text="{Binding Title}" FontSize="18" />
+      <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+        <TextBlock Text="Number of linear segments" VerticalAlignment="Center" Margin="0,0,8,0" />
+        <!--TODO: discuss about maximal number of linear segments-->
+        <controls:NumericUpDown Value="{Binding Criterion.LinearSegments, UpdateSourceTrigger=LostFocus}" MinWidth="70"
+                                MaxWidth="80" Minimum="{x:Static criterion:Criterion.MinNumberOfLinearSegments}"
+                                Maximum="{x:Static criterion:Criterion.MaxNumberOfLinearSegments}"
+                                HorizontalContentAlignment="Left" />
+      </StackPanel>
+    </DockPanel>
+    <oxy:PlotView Grid.Row="1" Name="PlotView" Model="{Binding PlotModel}" Background="Transparent" Margin="0,0,13,0">
+      <oxy:PlotView.DefaultTrackerTemplate>
+        <ControlTemplate>
+          <oxy:TrackerControl Position="{Binding Position}" BorderBrush="{StaticResource ColorBorders1}"
+                              Background="#D0FCFCFC">
+            <oxy:TrackerControl.Content>
+              <DockPanel Margin="8,2">
+                <StackPanel Margin="0,0,8,0">
+                  <TextBlock Text="{Binding XAxis.Title}" />
+                  <TextBlock Text="{Binding YAxis.Title}" />
+                </StackPanel>
+                <StackPanel DockPanel.Dock="Right">
+                  <TextBlock Text="{Binding DataPoint.X, StringFormat=F9}" />
+                  <TextBlock Text="{Binding DataPoint.Y, StringFormat=F9}" />
+                </StackPanel>
+              </DockPanel>
+            </oxy:TrackerControl.Content>
+          </oxy:TrackerControl>
+        </ControlTemplate>
+      </oxy:PlotView.DefaultTrackerTemplate>
+    </oxy:PlotView>
+  </Grid>
+</UserControl>

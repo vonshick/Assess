@@ -1,5 +1,6 @@
 ﻿using DataModel.Input;
 using DataModel.Results;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -11,6 +12,7 @@ namespace ImportModule
     public class XMCDALoader : DataLoader
     {
         private string xmcdaDirectory;
+        private string currentlyProcessedFile;
 
         private List<KeyValuePair<Alternative, int>> alternativesRanking;
         private List<PartialUtility> partialUtilityList;
@@ -21,20 +23,28 @@ namespace ImportModule
             partialUtilityList = new List<PartialUtility>();
         }
 
-        private void LoadCriteria()
+        private XmlDocument loadFile(string fileName)
         {
-            ValidateFilePath(Path.Combine(xmcdaDirectory, "criteria.xml"));
+            currentlyProcessedFile = Path.Combine(xmcdaDirectory, fileName);
+            ValidateFilePath(currentlyProcessedFile);
 
             XmlDocument xmlDocument = new XmlDocument();
-            xmlDocument.Load(Path.Combine(xmcdaDirectory, "criteria.xml"));
+            xmlDocument.Load(currentlyProcessedFile);
+
+            return xmlDocument;
+        }
+
+        private void LoadCriteria()
+        {
+            XmlDocument xmlDocument = loadFile("criteria.xml");
 
             // this file contains only one main block - <criteria>
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
             {
                 Criterion criterion = new Criterion()
                 {
-                    Name = xmlNode.Attributes["name"].Value,
-                    ID = xmlNode.Attributes["id"].Value
+                    Name = checkCriteriaNamesUniqueness(xmlNode.Attributes["name"].Value),
+                    ID = checkCriteriaIdsUniqueness(xmlNode.Attributes["id"].Value)
                 };
 
                 criterionList.Add(criterion);
@@ -43,10 +53,7 @@ namespace ImportModule
 
         private void LoadCriteriaScales()
         {
-            ValidateFilePath(Path.Combine(xmcdaDirectory, "criteria_scales.xml"));
-
-            XmlDocument xmlDocument = new XmlDocument();
-            xmlDocument.Load(Path.Combine(xmcdaDirectory, "criteria_scales.xml"));
+            XmlDocument xmlDocument = loadFile("criteria_scales.xml");
 
             // this file contains only one main block - <criteriaScales>
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
@@ -61,42 +68,52 @@ namespace ImportModule
 
         private void LoadPerformanceTable()
         {
-            ValidateFilePath(Path.Combine(xmcdaDirectory, "performance_table.xml"));
-
-            XmlDocument xmlDocument = new XmlDocument();
-            xmlDocument.Load(Path.Combine(xmcdaDirectory, "performance_table.xml"));
+            XmlDocument xmlDocument = loadFile("performance_table.xml");
+            int nodeCounter = 1;
 
             // this file contains only one main block - <criteriaScales>
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
             {
                 Alternative alternative = new Alternative { CriteriaValues = new Dictionary<Criterion, float>() };
 
+                // one of children nodes is the name node  
+                if ((xmlNode.ChildNodes.Count - 1) != criterionList.Count)
+                {
+                    throw new ImproperFileStructureException("There are provided " + (xmlNode.ChildNodes.Count - 1) + " criteria values and required are " + criterionList.Count + ": node " + nodeCounter + " of alternativePerformances");
+                }
+
                 foreach (XmlNode performance in xmlNode.ChildNodes)
                 {
                     // first node containts alternative ID
                     if (performance.Name == "alternativeID")
                     {
-                        alternative.Name = performance.InnerText;
+                        alternative.Name = checkAlternativesNamesUniqueness(performance.InnerText);
                     }
                     else
                     {
                         string criterionID = performance.ChildNodes[0].InnerText;
                         Criterion matchingCriterion = criterionList.Find(criterion => criterion.ID == criterionID);
-                        float value = float.Parse(performance.ChildNodes[1].FirstChild.InnerText, CultureInfo.InvariantCulture);
-                        alternative.CriteriaValues.Add(matchingCriterion, value);
+
+                        if (matchingCriterion == null)
+                        {
+                            throw new ImproperFileStructureException(alternative.Name + ": Criterion with ID " + criterionID + " does not exist");
+                        }
+
+                        string value = performance.ChildNodes[1].FirstChild.InnerText;
+                        checkIfValueIsValid(value, criterionID, alternative.Name);
+
+                        alternative.CriteriaValuesList.Add(new CriterionValue(matchingCriterion.Name, float.Parse(value, CultureInfo.InvariantCulture)));
                     }
                 }
 
                 alternativeList.Add(alternative);
+                nodeCounter++;
             }
         }
 
         private void LoadAlternativesRanks()
         {
-            ValidateFilePath(Path.Combine(xmcdaDirectory, "alternatives_ranks.xml"));
-
-            XmlDocument xmlDocument = new XmlDocument();
-            xmlDocument.Load(Path.Combine(xmcdaDirectory, "alternatives_ranks.xml"));
+            XmlDocument xmlDocument = loadFile("alternatives_ranks.xml");
 
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
             {
@@ -121,10 +138,7 @@ namespace ImportModule
 
         private void LoadValueFunctions()
         {
-            ValidateFilePath(Path.Combine(xmcdaDirectory, "value_functions.xml"));
-
-            XmlDocument xmlDocument = new XmlDocument();
-            xmlDocument.Load(Path.Combine(xmcdaDirectory, "value_functions.xml"));
+            XmlDocument xmlDocument = loadFile("value_functions.xml");
 
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
             {
@@ -174,10 +188,24 @@ namespace ImportModule
         override protected void ProcessFile(string xmcdaDirectory)
         {
             this.xmcdaDirectory = xmcdaDirectory;
-            LoadCriteria();
-            LoadCriteriaScales();
-            LoadPerformanceTable();
-            setMinAndMaxCriterionValues();
+            try
+            {
+                LoadCriteria();
+                LoadCriteriaScales();
+                LoadPerformanceTable();
+                setMinAndMaxCriterionValues();
+            }
+            catch (Exception exception)
+            {
+                if (exception is ImproperFileStructureException)
+                {
+                    Trace.WriteLine(exception.Message);
+                }
+                else
+                {
+                    Trace.WriteLine("Loading XML " + currentlyProcessedFile + " failed! " + exception.Message);
+                }
+            }
         }
 
         public void LoadResults()

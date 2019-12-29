@@ -1,7 +1,8 @@
-using System.Collections.Generic;
-using System.IO;
 using DataModel.Input;
 using DataModel.Results;
+using DataModel.Structs;
+using System.Collections.Generic;
+using System.IO;
 
 namespace ExportModule
 {
@@ -23,24 +24,29 @@ namespace ExportModule
             return partialUtilities;
         }
 
-        private static List<KeyValuePair<Alternative, int>> createSampleResults(List<Alternative> alternativeList)
+        private static FinalRanking createSampleFinalRanking(List<Alternative> alternativeList)
         {
-            var resultsList = new List<KeyValuePair<Alternative, int>>();
-            for (var i = 0; i < alternativeList.Count; i++) resultsList.Add(new KeyValuePair<Alternative, int>(alternativeList[i], i));
-            return resultsList;
+            var finalRakingList = new List<FinalRankingEntry>();
+            
+            for (int i = 0; i < alternativeList.Count; i++)
+            {
+                finalRakingList.Add(new FinalRankingEntry(i + 1, alternativeList[i], 1 / (i + 1)));
+            }
+
+            return new FinalRanking(finalRakingList);
         }
 
         public static void exportXMCDA(string dataDirectoryPath, List<Criterion> criterionList, List<Alternative> alternativeList)
         {
-            var partialUtilities = createSamplePartialUtilities(criterionList);
-            var resultsList = createSampleResults(alternativeList);
+            var results = new Results();
+            results.PartialUtilityFunctions = createSamplePartialUtilities(criterionList);
+            results.FinalRanking = createSampleFinalRanking(alternativeList);
 
-            var xmcdaOutputDirectory = Path.Combine(dataDirectoryPath, "xmcda_output");
-            var xmcdaExporter = new XMCDAExporter(xmcdaOutputDirectory,
-                criterionList,
-                alternativeList,
-                resultsList,
-                partialUtilities);
+            string xmcdaOutputDirectory = Path.Combine(dataDirectoryPath, "xmcda_output");
+            XMCDAExporter xmcdaExporter = new XMCDAExporter(xmcdaOutputDirectory,
+                                                            criterionList,
+                                                            alternativeList, 
+                                                            results);
             xmcdaExporter.saveSession();
         }
     }

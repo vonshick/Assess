@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using DataModel.Structs;
+
+﻿using DataModel.Structs;
+using System.Collections.Generic;
 
 namespace DataModel.Results
 {
@@ -9,7 +10,7 @@ namespace DataModel.Results
         {
             ReferenceRankingList = referenceRankingList;
         }
-
+      
         public List<ReferenceRankingEntry> ReferenceRankingList { get; set; }
     }
 }

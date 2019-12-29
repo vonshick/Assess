@@ -1,5 +1,6 @@
 ﻿using DataModel.Input;
 using DataModel.Results;
+using DataModel.Structs;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
@@ -10,22 +11,28 @@ namespace ExportModule
     {
         private List<Criterion> criterionList;
         private List<Alternative> alternativeList;
-        private List<KeyValuePair<Alternative, int>> resultsList;
-        private List<PartialUtility> partialUtilityList;
+        private Results results;
         private string outputDirectory;
         private XmlTextWriter xmcdaWriter;
         //TODO vonshick change two resultsList and partialUtilityList into Results object
         public XMCDAExporter(string outputDirectory,
                              List<Criterion> criterionList,
                              List<Alternative> alternativeList,
-                             List<KeyValuePair<Alternative, int>> resultsList,
-                             List<PartialUtility> partialUtilityList)
+                             Results results)
         {
             this.outputDirectory = outputDirectory;
             this.criterionList = criterionList;
             this.alternativeList = alternativeList;
-            this.resultsList = resultsList;
-            this.partialUtilityList = partialUtilityList;
+            this.results = results;
+        }
+
+        public XMCDAExporter(string outputDirectory,
+                             List<Criterion> criterionList,
+                             List<Alternative> alternativeList)
+        {
+            this.outputDirectory = outputDirectory;
+            this.criterionList = criterionList;
+            this.alternativeList = alternativeList;
         }
 
         private void initializeWriter(string filePath)
@@ -133,15 +140,15 @@ namespace ExportModule
             initializeWriter(Path.Combine(outputDirectory, "alternatives_ranks.xml"));
             xmcdaWriter.WriteStartElement("alternativesValues");
 
-            foreach (KeyValuePair<Alternative, int> resultPair in resultsList)
+            foreach (FinalRankingEntry finalRankingEntry in results.FinalRanking.FinalRankingList)
             {
                 xmcdaWriter.WriteStartElement("alternativeValue");
                 xmcdaWriter.WriteStartElement("alternativeID");
-                xmcdaWriter.WriteString(resultPair.Key.Name);
+                xmcdaWriter.WriteString(finalRankingEntry.Alternative.Name);
                 xmcdaWriter.WriteEndElement();
                 xmcdaWriter.WriteStartElement("value");
                 xmcdaWriter.WriteStartElement("integer");
-                xmcdaWriter.WriteString(resultPair.Value.ToString());
+                xmcdaWriter.WriteString(finalRankingEntry.Position.ToString());
                 xmcdaWriter.WriteEndElement();
                 xmcdaWriter.WriteEndElement();
                 xmcdaWriter.WriteEndElement();
@@ -157,7 +164,7 @@ namespace ExportModule
             initializeWriter(Path.Combine(outputDirectory, "criteria_segments.xml"));
             xmcdaWriter.WriteStartElement("criteriaValues");
 
-            foreach (PartialUtility partialUtility in partialUtilityList)
+            foreach (PartialUtility partialUtility in results.PartialUtilityFunctions)
             {
                 xmcdaWriter.WriteStartElement("criterionValue");
                 xmcdaWriter.WriteStartElement("criterionID");
@@ -182,7 +189,7 @@ namespace ExportModule
             xmcdaWriter.WriteStartElement("criteria");
             xmcdaWriter.WriteAttributeString("mcdaConcept", "criteria");
 
-            foreach (PartialUtility partialUtility in partialUtilityList)
+            foreach (PartialUtility partialUtility in results.PartialUtilityFunctions)
             {
                 xmcdaWriter.WriteStartElement("criterion");
                 xmcdaWriter.WriteStartElement("criterionID");
@@ -219,14 +226,30 @@ namespace ExportModule
             xmcdaWriter.Close();
         }
 
-        public void saveSession()
+        public void saveInput()
         {
             saveCriterions();
             saveCriterionScales();
             savePerformanceTable();
-            saveRanking();
-            saveCriteriaSegments();
-            saveValueFunctions();
+        }
+
+        public void saveResults()
+        {
+            if(results != null) {
+                saveRanking();
+                saveCriteriaSegments();
+                saveValueFunctions();
+            }
+            else
+            {
+                throw new System.Exception("Results are not available");
+            }
+        }
+
+        public void saveSession()
+        {
+            saveInput();
+            saveResults();
         }
     }
 }
