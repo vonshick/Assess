@@ -1,5 +1,5 @@
-﻿using DataModel.Input;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using DataModel.Input;
 
 namespace DataModel.Results
 {
@@ -12,8 +12,6 @@ namespace DataModel.Results
         }
 
         public Criterion Criterion { get; set; }
-
-        //Dict(point, value) - point from linear segment
         public List<PartialUtilityValues> PointsValues { get; set; }
     }
 }

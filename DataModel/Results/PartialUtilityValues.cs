@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
-
-namespace DataModel.Results
+﻿namespace DataModel.Results
 {
     public class PartialUtilityValues
     {
+        public float MaxValue;
+        public float MinValue;
         public float Point;
         public float Value;
-        public float MinValue;
-        public float MaxValue;
 
         public PartialUtilityValues(float point, float value)
         {
