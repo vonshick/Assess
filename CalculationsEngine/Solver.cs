@@ -27,7 +27,7 @@ namespace CalculationsEngine
             this.referenceRanking = referenceRanking;
             variantsList = new List<KeyValuePair<Alternative, int>>();
             arternativesList = new List<Alternative>();
-            for(var rank = 0; rank < referenceRanking.RankingsCollection.Count; rank++)
+            for (var rank = 0; rank < referenceRanking.RankingsCollection.Count; rank++)
                 foreach (var alternative in referenceRanking.RankingsCollection[rank])
                 {
                     variantsList.Add(new KeyValuePair<Alternative, int>(alternative, rank));
@@ -348,7 +348,8 @@ namespace CalculationsEngine
             {
                 if (row == c || ranking.FinalRankingCollection[c].Utility - ranking.FinalRankingCollection[row].Utility > 0.05)
                     rankingMatrix[row, c] = 0;
-                if (ranking.FinalRankingCollection[c].Utility - ranking.FinalRankingCollection[row].Utility <= 0.05) rankingMatrix[row, c] = 0.5F;
+                if (ranking.FinalRankingCollection[c].Utility - ranking.FinalRankingCollection[row].Utility <= 0.05)
+                    rankingMatrix[row, c] = 0.5F;
                 rankingMatrix[row, c] = 1;
             }
 
