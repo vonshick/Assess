@@ -1,15 +1,66 @@
-﻿using System.Collections.Generic;
-using DataModel.Structs;
+﻿using DataModel.Input;
+using System;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+//using referenceRankingStructs = DataModel.Results.ReferenceRanking;
 
 namespace DataModel.Results
 {
     public class ReferenceRanking
     {
-        public ReferenceRanking(List<ReferenceRankingEntry> referenceRankingList)
+        public ReferenceRanking(int numOfRanksToInitialize)
         {
-            ReferenceRankingList = referenceRankingList;
+            RankingsCollection = new ObservableCollection<ObservableCollection<Alternative>>();
+            ExpandAvailableRanksNumber(numOfRanksToInitialize);
+        }
+        private void ExpandAvailableRanksNumber(int size)
+        {
+            while (RankingsCollection.Count < size)
+            {
+                AddRank();
+            }
         }
 
-        public List<ReferenceRankingEntry> ReferenceRankingList { get; set; }
+        public void AddRank()
+        {
+            ObservableCollection<Alternative> rankingCollection = new ObservableCollection<Alternative>();
+            rankingCollection.CollectionChanged += CollectionChanged;
+            RankingsCollection.Add(rankingCollection);
+        }
+
+        public void RemoveRank(int rank)
+        {
+            RankingsCollection.RemoveAt(rank);
+        }
+
+        public ObservableCollection<ObservableCollection<Alternative>> RankingsCollection { get; set; }
+
+        //public referenceRankingStructs getRankingAsListOfStructs()
+        //{
+        //    return ReferenceRankingConverter.ListToStruct(this);
+        //}
+
+        private void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (Alternative alternative in e.NewItems)
+                {
+                    alternative.ReferenceRank = RankingsCollection.IndexOf((ObservableCollection<Alternative>)sender) + 1;
+                    Console.WriteLine("Alternative added to new rank " + alternative.ReferenceRank);
+                }
+            }
+        }
+
+        public void RemoveAlternativeFromRank(Alternative alternative, int rank)
+        {
+            RankingsCollection[rank - 1].Remove(alternative);
+        }
+
+        public void AddAlternativeToRank(Alternative alternative, int rank)
+        {
+            if (RankingsCollection.Count < rank) ExpandAvailableRanksNumber(rank);
+            RankingsCollection[rank - 1].Add(alternative);
+        }
     }
 }

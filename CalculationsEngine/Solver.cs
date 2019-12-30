@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using DataModel.Input;
 using DataModel.Results;
@@ -20,17 +21,18 @@ namespace CalculationsEngine
         private double[,] transientMatrix;
 
 
-        public Solver(ReferenceRanking referenceRanking, List<Alternative> otherAlternatives)
+        public Solver(ReferenceRanking referenceRanking, List<Alternative> otherAlternatives, Results results)
         {
+            Result = results;
             this.referenceRanking = referenceRanking;
             variantsList = new List<KeyValuePair<Alternative, int>>();
             arternativesList = new List<Alternative>();
-            foreach (var referenceRankingEntry in referenceRanking.ReferenceRankingList)
-            {
-                variantsList.Add(new KeyValuePair<Alternative, int>(referenceRankingEntry.Alternative,
-                    referenceRankingEntry.Rank));
-                arternativesList.Add(referenceRankingEntry.Alternative);
-            }
+            for(var rank = 0; rank < referenceRanking.RankingsCollection.Count; rank++)
+                foreach (var alternative in referenceRanking.RankingsCollection[rank])
+                {
+                    variantsList.Add(new KeyValuePair<Alternative, int>(alternative, rank));
+                    arternativesList.Add(alternative);
+                }
 
             var cfc = 0;
             foreach (var criterion in variantsList[0].Key.CriteriaValues.Keys) cfc += criterion.LinearSegments;
@@ -105,7 +107,7 @@ namespace CalculationsEngine
             for (var i = 0; i < transientMatrix.Length; i++) allFinalRankingEntry[i].Position = i;
 
             Result.PartialUtilityFunctions = partialUtilityList;
-            Result.FinalRanking = new FinalRanking(allFinalRankingEntry);
+            Result.FinalRanking.FinalRankingCollection = new ObservableCollection<FinalRankingEntry>(allFinalRankingEntry);
             Result.KendallCoefficient = tau;
         }
 
@@ -125,31 +127,31 @@ namespace CalculationsEngine
                 }
 
             for (var i = 0; i < partialUtility.PointsValues.Count; i++)
-                if (partialUtility.PointsValues[i].Point == point)
+                if (partialUtility.PointsValues[i].X == point)
                 {
                     if (i < partialUtility.PointsValues.Count - 1)
                     {
-                        arrayOfValues[count - 1 + i + 1] += partialUtility.PointsValues[i].Value - value;
-                        arrayOfValues[count - 1 + i] -= partialUtility.PointsValues[i].Value - value;
-                        partialUtility.PointsValues[i].Value = value;
+                        arrayOfValues[count - 1 + i + 1] += partialUtility.PointsValues[i].Y - value;
+                        arrayOfValues[count - 1 + i] -= partialUtility.PointsValues[i].Y - value;
+                        partialUtility.PointsValues[i].Y = value;
                         Result.PartialUtilityFunctions[index] = partialUtility;
                     }
                     else
                     {
                         var currentCount = 0;
-                        var subValue = (partialUtility.PointsValues[i].Value - value) / (Result.PartialUtilityFunctions.Count - 1);
+                        var subValue = (partialUtility.PointsValues[i].Y - value) / (Result.PartialUtilityFunctions.Count - 1);
                         for (var partialUtilityIndex = 0; i < Result.PartialUtilityFunctions.Count; i++)
                         {
                             currentCount += Result.PartialUtilityFunctions[partialUtilityIndex].Criterion.LinearSegments;
                             if (partialUtilityIndex != index)
                             {
                                 var pointValue = Result.PartialUtilityFunctions[partialUtilityIndex].PointsValues;
-                                pointValue[pointValue.Count - 1].Value += subValue;
+                                pointValue[pointValue.Count - 1].Y += subValue;
                                 arrayOfValues[currentCount - 1] += subValue;
                             }
                         }
 
-                        partialUtility.PointsValues[partialUtility.PointsValues.Count - 1].Value = value;
+                        partialUtility.PointsValues[partialUtility.PointsValues.Count - 1].Y = value;
                         Result.PartialUtilityFunctions[index] = partialUtility;
                     }
                 }
@@ -171,7 +173,7 @@ namespace CalculationsEngine
             var allFinalRankingEntry = finalReferenceList.Concat(restOfReferenceList).ToList();
             allFinalRankingEntry = allFinalRankingEntry.OrderBy(o => o.Utility).ToList();
             for (var i = 0; i < transientMatrix.Length; i++) allFinalRankingEntry[i].Position = i;
-            Result.FinalRanking = new FinalRanking(allFinalRankingEntry);
+            Result.FinalRanking.FinalRankingCollection = new ObservableCollection<FinalRankingEntry>(allFinalRankingEntry);
         }
 
         private (double[] deepCopyofMin, double[] deepCopyofMax) CalculateRangeOfValues(double[,] restrictionsMatrix,
@@ -285,7 +287,7 @@ namespace CalculationsEngine
             for (var r = 0; r < variantsList.Count - 1; r++)
             {
                 for (var c = 0; c < CriterionFieldsCount; c++) matrix[r, c] = recalculatedMatrix[r, c] - recalculatedMatrix[r + 1, c];
-                if (finalRanking.FinalRankingList[r + 1].Utility - finalRanking.FinalRankingList[r].Utility > 0.05)
+                if (finalRanking.FinalRankingCollection[r + 1].Utility - finalRanking.FinalRankingCollection[r].Utility > 0.05)
                     matrix[r, matrix.GetLength(1)] = 0;
                 else
                     matrix[r, matrix.GetLength(1)] = 0.05;
@@ -296,7 +298,7 @@ namespace CalculationsEngine
 
         public double[,] RecreateMatrix(FinalRanking finalRanking)
         {
-            var finalRankingEntryList = finalRanking.FinalRankingList;
+            var finalRankingEntryList = finalRanking.FinalRankingCollection;
             var matrix = new double[finalRankingEntryList[0].Alternative.CriteriaValues.Count, CriterionFieldsCount];
             for (var i = 0; i < variantsList.Count; i++)
             {
@@ -318,19 +320,19 @@ namespace CalculationsEngine
 
             lengthBetweenMatrix /= 2;
             tau = 1 - 4 * lengthBetweenMatrix /
-                  (finalReferenceRanking.FinalRankingList.Count * (finalReferenceRanking.FinalRankingList.Count - 1));
+                  (finalReferenceRanking.FinalRankingCollection.Count * (finalReferenceRanking.FinalRankingCollection.Count - 1));
             return tau;
         }
 
         private float[,] CreateKendallMatrix()
         {
-            var rankingMatrix = new float[referenceRanking.ReferenceRankingList.Count, referenceRanking.ReferenceRankingList.Count];
+            var rankingMatrix = new float[variantsList.Count, variantsList.Count];
             for (var row = 0; row < rankingMatrix.GetLength(0); row++)
             for (var c = 0; c < rankingMatrix.GetLength(1); c++)
             {
-                if (row == c || referenceRanking.ReferenceRankingList[c].Rank - referenceRanking.ReferenceRankingList[row].Rank > 0)
+                if (row == c || variantsList[c].Value - variantsList[row].Value > 0)
                     rankingMatrix[row, c] = 0;
-                if (referenceRanking.ReferenceRankingList[c].Rank - referenceRanking.ReferenceRankingList[row].Rank == 0)
+                if (variantsList[c].Value - variantsList[row].Value == 0)
                     rankingMatrix[row, c] = 0.5F;
                 rankingMatrix[row, c] = 1;
             }
@@ -340,20 +342,20 @@ namespace CalculationsEngine
 
         private float[,] CreateKendallMatrix(FinalRanking ranking)
         {
-            var rankingMatrix = new float[ranking.FinalRankingList.Count, ranking.FinalRankingList.Count];
+            var rankingMatrix = new float[ranking.FinalRankingCollection.Count, ranking.FinalRankingCollection.Count];
             for (var row = 0; row < rankingMatrix.GetLength(0); row++)
             for (var c = 0; c < rankingMatrix.GetLength(1); c++)
             {
-                if (row == c || ranking.FinalRankingList[c].Utility - ranking.FinalRankingList[row].Utility > 0.05)
+                if (row == c || ranking.FinalRankingCollection[c].Utility - ranking.FinalRankingCollection[row].Utility > 0.05)
                     rankingMatrix[row, c] = 0;
-                if (ranking.FinalRankingList[c].Utility - ranking.FinalRankingList[row].Utility <= 0.05) rankingMatrix[row, c] = 0.5F;
+                if (ranking.FinalRankingCollection[c].Utility - ranking.FinalRankingCollection[row].Utility <= 0.05) rankingMatrix[row, c] = 0.5F;
                 rankingMatrix[row, c] = 1;
             }
 
             return rankingMatrix;
         }
 
-        private List<FinalRankingEntry> CreateRanking(double[] arrayOfValues, double[,] transientMatrix,
+        private ObservableCollection<FinalRankingEntry> CreateRanking(double[] arrayOfValues, double[,] transientMatrix,
             List<Alternative> listOfAlternatives)
         {
             var finalRankingList = new List<FinalRankingEntry>();
@@ -367,7 +369,7 @@ namespace CalculationsEngine
             var finalRankingSorted = finalRankingList.OrderBy(o => o.Utility).ToList();
             for (var i = 0; i < transientMatrix.Length; i++) finalRankingSorted[i].Position = i;
 
-            return finalRankingSorted;
+            return new ObservableCollection<FinalRankingEntry>(finalRankingSorted);
         }
 
         private double CreateFinalRankingEntryUtility(double[] arrayOfValues, double[] row)

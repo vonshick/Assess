@@ -4,21 +4,21 @@
     {
         public float MaxValue;
         public float MinValue;
-        public float Point;
-        public float Value;
+        public float X;
+        public float Y;
 
-        public PartialUtilityValues(float point, float value)
+        public PartialUtilityValues(float x, float y)
         {
-            Point = point;
-            Value = value;
+            X = x;
+            Y = y;
             MinValue = float.MaxValue;
             MaxValue = float.MinValue;
         }
 
         public PartialUtilityValues(float point, float value, float minValue, float maxValue)
         {
-            Point = point;
-            Value = value;
+            X = point;
+            Y = value;
             MinValue = minValue;
             MaxValue = maxValue;
         }

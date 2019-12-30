@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using DataModel.Structs;
 
 namespace DataModel.Results
 {
     public class FinalRanking
     {
-        public FinalRanking(List<FinalRankingEntry> finalRankingList)
+        public FinalRanking(ObservableCollection<FinalRankingEntry> finalRankingCollection)
         {
-            FinalRankingList = finalRankingList;
+            FinalRankingCollection = finalRankingCollection;
         }
 
-        public List<FinalRankingEntry> FinalRankingList { get; set; }
+        public ObservableCollection<FinalRankingEntry> FinalRankingCollection { get; set; }
     }
 }
