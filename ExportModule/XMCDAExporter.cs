@@ -140,7 +140,7 @@ namespace ExportModule
             initializeWriter(Path.Combine(outputDirectory, "alternatives_ranks.xml"));
             xmcdaWriter.WriteStartElement("alternativesValues");
 
-            foreach (FinalRankingEntry finalRankingEntry in results.FinalRanking.FinalRankingList)
+            foreach (FinalRankingEntry finalRankingEntry in results.FinalRanking.FinalRankingCollection)
             {
                 xmcdaWriter.WriteStartElement("alternativeValue");
                 xmcdaWriter.WriteStartElement("alternativeID");
@@ -203,13 +203,13 @@ namespace ExportModule
 
                     xmcdaWriter.WriteStartElement("abscissa");
                     xmcdaWriter.WriteStartElement("real");
-                    xmcdaWriter.WriteString(pointValue.Point.ToString());
+                    xmcdaWriter.WriteString(pointValue.X.ToString());
                     xmcdaWriter.WriteEndElement();
                     xmcdaWriter.WriteEndElement();
 
                     xmcdaWriter.WriteStartElement("ordinate");
                     xmcdaWriter.WriteStartElement("real");
-                    xmcdaWriter.WriteString(pointValue.Value.ToString());
+                    xmcdaWriter.WriteString(pointValue.Y.ToString());
                     xmcdaWriter.WriteEndElement();
                     xmcdaWriter.WriteEndElement();
 

@@ -2,6 +2,7 @@ using DataModel.Input;
 using DataModel.Results;
 using DataModel.Structs;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 
 namespace ExportModule
@@ -26,7 +27,7 @@ namespace ExportModule
 
         private static FinalRanking createSampleFinalRanking(List<Alternative> alternativeList)
         {
-            var finalRakingList = new List<FinalRankingEntry>();
+            var finalRakingList = new ObservableCollection<FinalRankingEntry>();
             
             for (int i = 0; i < alternativeList.Count; i++)
             {

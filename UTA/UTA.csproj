@@ -141,7 +141,6 @@
       <DependentUpon>SettingsTab.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\AlternativeDropHandler.cs" />
-    <Compile Include="Models\DataBase\ReferenceRanking.cs" />
     <Compile Include="Models\DataValidation.cs" />
     <Compile Include="ViewModels\AddCriterionViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
