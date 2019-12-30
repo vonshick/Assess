@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
@@ -8,6 +8,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using DataModel.Input;
+using MahApps.Metro.Controls.Dialogs;
 using UTA.Models;
 using UTA.ViewModels;
 
@@ -18,7 +19,8 @@ namespace UTA.Views
 {
     public partial class MainView
     {
-        private readonly MainViewModel _viewmodel = new MainViewModel();
+        private readonly Thickness _menuItemBottomMargin;
+        private readonly MainViewModel _viewmodel = new MainViewModel(DialogCoordinator.Instance);
         private RepeatButton _scrollLeftButton;
         private RepeatButton _scrollRightButton;
         private ScrollViewer _tabScrollViewer;
@@ -33,12 +35,18 @@ namespace UTA.Views
             InitializeComponent();
             DataContext = _viewmodel;
             SetBindings();
-            _viewmodel.PropertyChanged += ViewmodelPropertyChanged;
+            _viewmodel.ChartTabViewModels.CollectionChanged += ChartTabsCollectionChanged;
             _viewmodel.Criteria.CriteriaCollection.CollectionChanged += UpdateAlternativesDataGridColumns;
             ButtonEditAlternatives.Content = "Editing is OFF";
             AlternativesListView.GiveFeedback += OnGiveFeedback;
             var tabViewSource = CollectionViewSource.GetDefaultView(TabControl.Items);
             tabViewSource.CollectionChanged += TabsCollectionChanged;
+
+            _menuItemBottomMargin = (Thickness) ShowMenu.FindResource("MenuItemBottomMargin");
+            _viewmodel.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(_viewmodel.TabToSelect)) TabControl.SelectedItem = _viewmodel.TabToSelect;
+            };
         }
 
         public string InputAlternativeName { get; set; }
@@ -82,24 +90,6 @@ namespace UTA.Views
         {
             foreach (var dataGridColumn in EditAlternativesDataGrid.Columns) Console.WriteLine(dataGridColumn.Header);
             _viewmodel.ShowAddCriterionDialog();
-        }
-
-        public void ViewmodelPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case "AlternativesTable":
-                    //               RenderListViews();
-                    break;
-                case "CriteriaTable":
-                    //CriteriaListView.View = GenerateGridView(_viewmodel.CriteriaTable);
-                    break;
-                case "TabToSelect":
-                    TabControl.SelectedItem = _viewmodel.TabToSelect;
-                    break;
-                default:
-                    throw new Exception("error in prop: " + e.PropertyName);
-            }
         }
 
         private void RenderListViews()
@@ -256,7 +246,7 @@ namespace UTA.Views
             var panelGrid = (Grid) expander.Parent;
             var expanderIndex = panelGrid.Children.IndexOf((UIElement) sender);
             panelGrid.RowDefinitions[expanderIndex].Height = expander.IsExpanded
-                ? new GridLength(expanderIndex == 0 ? 55 : 45, GridUnitType.Star)
+                ? new GridLength(expanderIndex == 0 ? 60 : 40, GridUnitType.Star)
                 : new GridLength((double) FindResource("ExpanderHeaderHeight") + (expanderIndex == 0 ? 2 : 4));
         }
 
@@ -329,6 +319,38 @@ namespace UTA.Views
                 MainViewGrid.ColumnDefinitions[panelColumnIndex].MinWidth = 0;
                 MainViewGrid.ColumnDefinitions[panelColumnIndex].Width = new GridLength(0);
                 columnsGridSplitter.Visibility = Visibility.Collapsed;
+            }
+        }
+
+
+        private void ChartTabsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Reset)
+            {
+                FinalRankingExpander.IsExpanded = false;
+                ReferenceRankingExpander.IsExpanded = true;
+                var itemsToRemove = new List<MenuItem>();
+                foreach (var item in ShowMenu.Items)
+                    if (item is MenuItem menuItem && (string) menuItem.Tag == "Chart")
+                        itemsToRemove.Add(menuItem);
+                foreach (var menuItem in itemsToRemove) ShowMenu.Items.Remove(menuItem);
+                if (ShowMenu.Items[ShowMenu.Items.Count - 1] is Separator separator) ShowMenu.Items.Remove(separator);
+                ((MenuItem) ShowMenu.Items[ShowMenu.Items.Count - 1]).Margin = _menuItemBottomMargin;
+            }
+            else if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                FinalRankingExpander.IsExpanded = true;
+                ReferenceRankingExpander.IsExpanded = false;
+                if (ShowMenu.Items[ShowMenu.Items.Count - 1] is MenuItem lastMenuItem)
+                {
+                    lastMenuItem.Margin = new Thickness(0);
+                    if ((string) lastMenuItem.Tag != "Chart") ShowMenu.Items.Add(new Separator());
+                }
+
+                var newChartTabViewModel = (ChartTabViewModel) e.NewItems[0];
+                var newMenuItem = new MenuItem {Header = newChartTabViewModel.Name, Margin = _menuItemBottomMargin, Tag = "Chart"};
+                newMenuItem.Click += (s, args) => _viewmodel.ShowTab(newChartTabViewModel);
+                ShowMenu.Items.Add(newMenuItem);
             }
         }
     }

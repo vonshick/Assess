@@ -17,6 +17,7 @@ namespace ImportModule
         override protected void ProcessFile(string filePath)
         {
             ValidateFilePath(filePath);
+            ValidateFileExtension(filePath, ".utx");
 
             try
             {
@@ -35,7 +36,7 @@ namespace ImportModule
                         {
                             Criterion criterion = new Criterion() { };
                             // for UTX ID and Name are the same value
-                            criterion.Name = criterion.ID = attribute.Attributes["AttrID"].Value;
+                            criterion.Name = criterion.ID = checkCriteriaIdsUniqueness(attribute.Attributes["AttrID"].Value);
                             bool saveCriterion = true;
                             Dictionary<string, string> enumIdsNamesDictionary = new Dictionary<string, string>();
                             Dictionary<string, float> enumIdsValuesDictionary = new Dictionary<string, float>();
@@ -113,8 +114,14 @@ namespace ImportModule
                     {
                         foreach (XmlNode instance in xmlNode)
                         {
-                            Alternative alternative = new Alternative() { Name = instance.Attributes["ObjID"].Value };
-                            Dictionary<Criterion, float> criteriaValuesDictionary = new Dictionary<Criterion, float>();
+                            Alternative alternative = new Alternative() { Name = checkAlternativesNamesUniqueness(instance.Attributes["ObjID"].Value) };
+
+                            if ((instance.ChildNodes.Count - 1) != criterionList.Count)
+                            {
+                                throw new ImproperFileStructureException(alternative.Name + ": there are provided " + (instance.ChildNodes.Count - 1) + " criteria values and required are " + criterionList.Count);
+                            }
+
+                            List<CriterionValue> criteriaValuesList = new List<CriterionValue>();
 
                             foreach (XmlNode instancePart in instance)
                             {
@@ -128,29 +135,43 @@ namespace ImportModule
                                 else
                                 {
                                     Criterion criterion = criterionList.Find(element => element.Name == attributeName);
+
+                                    if (criterion == null)
+                                    {
+                                        throw new ImproperFileStructureException(alternative.Name + ": Criterion with name " + attributeName + " does not exist");
+                                    }
+
+                                    checkIfValueIsValid(value, criterion.Name, alternative.Name);
+
                                     if (criterion.IsEnum)
                                     {
                                         float enumValue = criterion.EnumDictionary[value];
                                         //so far we save only numerical value of enum in attribute
-                                        criteriaValuesDictionary.Add(criterion, enumValue);
+                                        criteriaValuesList.Add(new CriterionValue(criterion.Name, enumValue));
                                     }
                                     else
                                     {
-                                        criteriaValuesDictionary.Add(criterion, float.Parse(value, CultureInfo.InvariantCulture));
+                                        criteriaValuesList.Add(new CriterionValue(criterion.Name, float.Parse(value, CultureInfo.InvariantCulture)));
                                     }
                                 }
                             }
 
-                            alternative.CriteriaValues = criteriaValuesDictionary;
+                            alternative.CriteriaValuesList = criteriaValuesList;
                             alternativeList.Add(alternative);
                         }
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                //TODO vonshick WARNINGS
-                Trace.WriteLine("Loading UTX " + filePath + " failed! " + e.Message);
+                if (exception is ImproperFileStructureException)
+                {
+                    Trace.WriteLine(exception.Message);
+                }
+                else
+                {
+                    Trace.WriteLine("Loading UTX " + filePath + " failed! " + exception.Message);
+                }
             }
         }
     }

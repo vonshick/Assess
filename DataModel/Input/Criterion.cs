@@ -1,18 +1,34 @@
-﻿using DataModel.PropertyChangedExtended;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using DataModel.PropertyChangedExtended;
 
 namespace DataModel.Input
 {
-    public class Criterion : INotifyPropertyChangedExtended<string>
+    public class Criterion : INotifyPropertyChangedExtended<string>, INotifyPropertyChanged
     {
-        public Criterion() { }
+        public enum CriterionDirectionTypes
+        {
+            Gain,
+            Cost,
+            Ordinal
+        }
+
+        public static double MinNumberOfLinearSegments = 1; // type double, because can't use other type in xaml
+        public static double MaxNumberOfLinearSegments = 99;
+        private int _linearSegments;
+        private string _name;
+
+        public Criterion()
+        {
+        }
+
         public Criterion(string name, string criterionDirection)
         {
             Name = name;
             CriterionDirection = criterionDirection;
         }
+
         public Criterion(string name, string description, string criterionDirection, int linearSegments)
         {
             Name = name;
@@ -20,6 +36,41 @@ namespace DataModel.Input
             CriterionDirection = criterionDirection;
             LinearSegments = linearSegments;
         }
+
+        public string ID { get; set; }
+        public bool IsEnum { get; set; } = false;
+        public Dictionary<string, float> EnumDictionary { get; set; }
+        public string Description { get; set; }
+        public string CriterionDirection { get; set; }
+        // TODO: update min and max values after value changes in alternative editor
+        public float MinValue { get; set; }
+        public float MaxValue { get; set; }
+
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                if (_name == value) return;
+                var oldValue = _name;
+                _name = value;
+                Console.WriteLine("Crit " + GetHashCode() + " has new name: " + value);
+                OnPropertyChangedExtended("Name", oldValue, value);
+            }
+        }
+
+        public int LinearSegments
+        {
+            get => _linearSegments;
+            set
+            {
+                if (value == _linearSegments) return;
+                _linearSegments = value;
+                OnPropertyChanged(nameof(LinearSegments));
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         protected bool Equals(Criterion other)
         {
@@ -30,53 +81,28 @@ namespace DataModel.Input
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((Criterion)obj);
+            if (obj.GetType() != GetType()) return false;
+            return Equals((Criterion) obj);
         }
 
         public override int GetHashCode()
         {
-            return (Name != null ? Name.GetHashCode() : 0);
+            return Name != null ? Name.GetHashCode() : 0;
         }
 
-        public string ID { get; set; }
-        public bool IsEnum { get; set; } = false;
-        public Dictionary<string, float> EnumDictionary { get; set; }
-        private string _name;
-        public string Name
+        protected virtual void OnPropertyChanged(string propertyName = null)
         {
-            get => _name;
-            set
-            {
-                if (_name != value)
-                {
-                    string old = _name;
-                    _name = value;
-                    Console.WriteLine("Crit " + this.GetHashCode() + " has new name: " + value);
-                    NotifyPropertyChanged("Name", old, value);
-                }
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public string Description { get; set; }
-        public enum CriterionDirectionTypes { Gain, Cost, Ordinal };
-        public string CriterionDirection { get; set; }
-        public int LinearSegments { get; set; }
-        public float MinValue { get; set; }
-        public float MaxValue { get; set; }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public virtual void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        public virtual void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(sender, e);
-            }
-        }
-        protected void NotifyPropertyChanged(string propertyName, string oldValue, string newValue)
-        {
-            OnPropertyChanged(this, new PropertyChangedExtendedEventArgs<string>(propertyName, oldValue, newValue));
+            PropertyChanged?.Invoke(this, e);
         }
 
+        protected void OnPropertyChangedExtended(string propertyName, string oldValue, string newValue)
+        {
+            OnPropertyChanged(new PropertyChangedExtendedEventArgs<string>(propertyName, oldValue, newValue));
+        }
     }
 }
