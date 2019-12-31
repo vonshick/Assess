@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using DataModel.Input;
 using DataModel.PropertyChangedExtended;
+using DataModel.Results;
 using MahApps.Metro.Controls.Dialogs;
 using UTA.Annotations;
 using UTA.Interactivity;

@@ -5,6 +5,11 @@ namespace DataModel.Results
     //very general class concept for now
     public class Results
     {
+        public Results()
+        {
+            FinalRanking = new FinalRanking();
+        }
+
         public FinalRanking FinalRanking { get; set; }
 
         public List<PartialUtility> PartialUtilityFunctions { get; set; }

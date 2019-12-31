@@ -140,7 +140,7 @@ namespace ExportModule
             initializeWriter(Path.Combine(outputDirectory, "alternatives_ranks.xml"));
             xmcdaWriter.WriteStartElement("alternativesValues");
 
-            foreach (FinalRankingEntry finalRankingEntry in results.FinalRanking.FinalRankingList)
+            foreach (FinalRankingEntry finalRankingEntry in results.FinalRanking.FinalRankingCollection)
             {
                 xmcdaWriter.WriteStartElement("alternativeValue");
                 xmcdaWriter.WriteStartElement("alternativeID");
@@ -197,19 +197,19 @@ namespace ExportModule
                 xmcdaWriter.WriteEndElement();
                 xmcdaWriter.WriteStartElement("criterionFunction");
                 xmcdaWriter.WriteStartElement("points");
-                foreach (KeyValuePair<float, float> pointValue in partialUtility.PointsValues)
+                foreach (PartialUtilityValues pointValue in partialUtility.PointsValues)
                 {
                     xmcdaWriter.WriteStartElement("point");
 
                     xmcdaWriter.WriteStartElement("abscissa");
                     xmcdaWriter.WriteStartElement("real");
-                    xmcdaWriter.WriteString(pointValue.Key.ToString());
+                    xmcdaWriter.WriteString(pointValue.X.ToString());
                     xmcdaWriter.WriteEndElement();
                     xmcdaWriter.WriteEndElement();
 
                     xmcdaWriter.WriteStartElement("ordinate");
                     xmcdaWriter.WriteStartElement("real");
-                    xmcdaWriter.WriteString(pointValue.Value.ToString());
+                    xmcdaWriter.WriteString(pointValue.Y.ToString());
                     xmcdaWriter.WriteEndElement();
                     xmcdaWriter.WriteEndElement();
 

@@ -143,8 +143,7 @@ namespace ImportModule
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
             {
                 string criterionID = "";
-                Dictionary<float, float> argumentsValues = new Dictionary<float, float>();
-
+                List<PartialUtilityValues> argumentsValues = new List<PartialUtilityValues>();
                 foreach (XmlNode criterionFunction in xmlNode.ChildNodes)
                 {
                     if (criterionFunction.Name == "criterionID")
@@ -174,7 +173,7 @@ namespace ImportModule
                                         return;
                                     }
 
-                                    argumentsValues.Add(argument, value);
+                                    argumentsValues.Add(new PartialUtilityValues(argument, value));
                                 }
                             }
                         }

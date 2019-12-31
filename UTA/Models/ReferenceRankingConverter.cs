@@ -3,13 +3,14 @@ using DataModel.Structs;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using ReferenceRankingLists = UTA.Models.DataBase.ReferenceRanking;
-using referenceRankingStructs = DataModel.Results.ReferenceRanking;
+//using ReferenceRankingLists = UTA.Models.DataBase.ReferenceRanking;
+//using referenceRankingStructs = DataModel.Results.ReferenceRanking;
 
 namespace UTA.Models
 {
     public static class ReferenceRankingConverter
     {
+        /*
         public static referenceRankingStructs ListToStruct(ReferenceRankingLists referenceRankingLists)
         {
             List<ReferenceRankingEntry> referenceRankingEntries = new List<ReferenceRankingEntry>();
@@ -41,5 +42,6 @@ namespace UTA.Models
             }
             return referenceRankingLists;
         }
+        */
     }
 }

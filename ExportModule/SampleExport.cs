@@ -2,33 +2,32 @@ using DataModel.Input;
 using DataModel.Results;
 using DataModel.Structs;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
-
 
 namespace ExportModule
 {
     public class SampleExport
     {
-
         private static List<PartialUtility> createSamplePartialUtilities(List<Criterion> criterionList)
         {
-            List<PartialUtility> partialUtilities = new List<PartialUtility>();
-            Dictionary<float, float> pointsValues = new Dictionary<float, float>();
-            pointsValues.Add(1, 1);
-            pointsValues.Add(2, 2);
-            pointsValues.Add(3, 4);
+            var partialUtilities = new List<PartialUtility>();
+            var pointsValuesList = new List<PartialUtilityValues>();
+            var pointsValues1 = new PartialUtilityValues(0, 0, 0, 0);
+            var pointsValues2 = new PartialUtilityValues(1, 0.5f, 0.55f, 0.6f);
+            var pointsValues3 = new PartialUtilityValues(2, 0.8f, 0.55f, 1);
+            pointsValuesList.Add(pointsValues1);
+            pointsValuesList.Add(pointsValues2);
+            pointsValuesList.Add(pointsValues3);
 
-            foreach (Criterion criterion in criterionList)
-            {
-                partialUtilities.Add(new PartialUtility(criterion, pointsValues));
-            }
+            foreach (var criterion in criterionList) partialUtilities.Add(new PartialUtility(criterion, pointsValuesList));
 
-            return (partialUtilities);
+            return partialUtilities;
         }
 
         private static FinalRanking createSampleFinalRanking(List<Alternative> alternativeList)
         {
-            var finalRakingList = new List<FinalRankingEntry>();
+            var finalRakingList = new ObservableCollection<FinalRankingEntry>();
             
             for (int i = 0; i < alternativeList.Count; i++)
             {
