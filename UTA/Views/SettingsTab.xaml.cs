@@ -1,12 +1,16 @@
 ﻿using System.Windows.Controls;
+using UTA.ViewModels;
 
 namespace UTA.Views
 {
-    public partial class SettingsTab : UserControl
-    {
+   public partial class SettingsTab : UserControl
+   {
+       private readonly SettingsTabViewModel _viewmodel;
+
         public SettingsTab()
-        {
-            InitializeComponent();
-        }
-    }
+      {
+         InitializeComponent();
+         _viewmodel = ((MainViewModel) this.DataContext).SettingsTabViewModel;
+      }
+   }
 }

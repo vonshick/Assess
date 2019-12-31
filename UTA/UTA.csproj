@@ -111,8 +111,11 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Models\DataValidation\AlternativeNameValidationRule.cs" />
+    <Compile Include="Models\DataValidation\CriterionNameValidationRule.cs" />
     <Compile Include="Converters\IndexToRankConverter.cs" />
     <Compile Include="Models\ReferenceRankingConverter.cs" />
+    <Compile Include="OtherViewClasses\VisualChildHelper.cs" />
     <Compile Include="ViewModels\AlternativesTabViewModel.cs" />
     <Compile Include="ViewModels\ChartTabViewModel.cs" />
     <Compile Include="ViewModels\CriteriaTabViewModel.cs" />
@@ -127,7 +130,7 @@
     <Compile Include="Views\CriteriaTab.xaml.cs">
       <DependentUpon>CriteriaTab.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Models\BindingProxy.cs" />
+    <Compile Include="OtherViewClasses\BindingProxy.cs" />
     <Compile Include="Models\DataBase\Alternatives.cs" />
     <Compile Include="Models\DataBase\Criteria.cs" />
     <Compile Include="Interactivity\RelayCommand.cs" />
@@ -140,8 +143,8 @@
     <Compile Include="Views\SettingsTab.xaml.cs">
       <DependentUpon>SettingsTab.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Models\AlternativeDropHandler.cs" />
-    <Compile Include="Models\DataValidation.cs" />
+    <Compile Include="OtherViewClasses\AlternativeDropHandler.cs" />
+    <Compile Include="Models\DataValidation\DataValidation.cs" />
     <Compile Include="ViewModels\AddCriterionViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\AddCriterionView.xaml.cs">

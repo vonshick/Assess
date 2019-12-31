@@ -30,7 +30,17 @@ namespace DataModel.Results
 
         public void RemoveRank(int rank)
         {
+            Console.WriteLine("Removing rank collection " + rank);
             RankingsCollection.RemoveAt(rank);
+            for (int i = rank; i < RankingsCollection.Count; i++)
+            {
+                Console.WriteLine("Updating new collection rank " + i + " was " + (i+1));
+                foreach (var alternative in RankingsCollection[i])
+                {
+                    alternative.ReferenceRank -= 1;
+                    Console.WriteLine("updating alternative " + alternative.Name + " new rank is " + alternative.ReferenceRank);
+                }
+            }
         }
 
         public ObservableCollection<ObservableCollection<Alternative>> RankingsCollection { get; set; }
@@ -44,17 +54,21 @@ namespace DataModel.Results
         {
             if (e.NewItems != null)
             {
+                var collection = (ObservableCollection<Alternative>) sender;
+                int collectionIndex = RankingsCollection.IndexOf(collection);
+                if (e.NewItems.Count == collection.Count &&  collectionIndex == RankingsCollection.Count - 1)   //add last empty rank tab
+                    AddRank();
                 foreach (Alternative alternative in e.NewItems)
                 {
-                    alternative.ReferenceRank = RankingsCollection.IndexOf((ObservableCollection<Alternative>)sender) + 1;
-                    Console.WriteLine("Alternative added to new rank " + alternative.ReferenceRank);
+                    alternative.ReferenceRank = collectionIndex;
+                    Console.WriteLine("Alternative added to rank " + alternative.ReferenceRank);
                 }
             }
         }
 
         public void RemoveAlternativeFromRank(Alternative alternative, int rank)
         {
-            RankingsCollection[rank - 1].Remove(alternative);
+            RankingsCollection[rank].Remove(alternative);
         }
 
         public void AddAlternativeToRank(Alternative alternative, int rank)

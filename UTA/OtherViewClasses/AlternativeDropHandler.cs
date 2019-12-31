@@ -4,7 +4,7 @@ using GongSolutions.Wpf.DragDrop.Utilities;
 using System.Collections;
 using System.Windows;
 
-namespace UTA.Models
+namespace UTA.ViewHelperClasses
 {
     public class AlternativeDropHandler : IDropTarget
     {
@@ -21,7 +21,7 @@ namespace UTA.Models
         {
             if (dropInfo.DragInfo.SourceCollection.Equals(dropInfo.TargetCollection)) return;
 
-            var sourceItem = (Alternative)dropInfo.Data;
+            var sourceItem = (Alternative) dropInfo.Data;
 
             IList sourceList = dropInfo.DragInfo.SourceCollection.TryGetList();
             sourceList.Remove(sourceItem);

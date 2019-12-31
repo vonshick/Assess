@@ -6,11 +6,82 @@
              xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:local="clr-namespace:UTA.Views"
              xmlns:mainViewModel="clr-namespace:UTA.ViewModels"
+             xmlns:dataValidation="clr-namespace:UTA.Models.DataValidation"
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="900"
              d:DataContext="{d:DesignInstance mainViewModel:MainViewModel}"
              DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type controls:MetroWindow}}}">
   <Grid DataContext="{Binding CriteriaTabViewModel}" Background="{StaticResource ColorInterface7}">
-    <TextBlock Text="Criteria Tab" />
+    <TextBlock Text="Criteria Tab"  Margin="0,0,0,20"  />
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="32" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="20" />
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition MinWidth="10" Width="1*" />
+        <ColumnDefinition Width="19*" />
+        <ColumnDefinition MinWidth="10" Width="1*" />
+      </Grid.ColumnDefinitions>
+
+      <Button Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" x:Name="ButtonEditCriteria" Click="EditCriteriaSwitchClicked" Content="Edit is off"
+              MaxWidth="90" Width="Auto" Margin="0, 5" />
+      <DataGrid Grid.Row="2" Grid.Column="1"
+                Name="EditCriteriaDataGrid" IsReadOnly="true"
+                ItemsSource="{Binding Criteria.CriteriaCollection}"
+                CanUserAddRows="False" AutoGenerateColumns="False"
+                BorderBrush="Gray" BorderThickness="3">
+        <DataGrid.Resources>
+          <CollectionViewSource x:Key="CriteriaColl" Source="{Binding Path=Criteria.CriteriaCollection}" />
+        </DataGrid.Resources>
+
+        <DataGrid.Columns>
+          <DataGridTemplateColumn>
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <Button Click="RemoveCriteriaButtonClicked">Remove</Button>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+
+          <DataGridTextColumn Header="Name" Width="3*">
+            <DataGridTextColumn.Binding>
+              <Binding Path="Name" UpdateSourceTrigger="PropertyChanged" NotifyOnValidationError="True">
+                <Binding.ValidationRules>
+                  <dataValidation:CriterionNameValidationRule CriteriaColl="{StaticResource CriteriaColl}"
+                                                                ValidationStep="CommittedValue" />
+                </Binding.ValidationRules>
+              </Binding>
+            </DataGridTextColumn.Binding>
+          </DataGridTextColumn>
+
+          <DataGridTextColumn Header="Description" Width="5*"
+                            Binding="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+          <DataGridComboBoxColumn x:Name="CriteriaDirectionComboBoxColumn" Header="Type" Width="2*"
+                                  SelectedItemBinding="{Binding CriterionDirection, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+          <DataGridTextColumn Header="Linear Segments" Width="2*"
+                            Binding="{Binding LinearSegments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        </DataGrid.Columns>
+      </DataGrid>
+
+      <!-- TODO remove -->
+      <ListView Grid.Row="3" Grid.Column="1" ItemsSource="{Binding Criteria.CriteriaCollection}"
+                Height="Auto">
+        <ListView.View>
+          <GridView>
+            <GridViewColumn Header="Name" Width="120" DisplayMemberBinding="{Binding Name}" />
+            <GridViewColumn Header="Description" Width="120"
+                            DisplayMemberBinding="{Binding Description}" />
+            <GridViewColumn Header="Type" Width="120"
+                            DisplayMemberBinding="{Binding CriterionDirection}" />
+            <GridViewColumn Header="LinearSegments" Width="120" DisplayMemberBinding="{Binding LinearSegments}" />
+          </GridView>
+        </ListView.View>
+      </ListView>
+
+    </Grid>
   </Grid>
 </UserControl>

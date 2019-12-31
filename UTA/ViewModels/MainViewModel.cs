@@ -17,27 +17,22 @@ using UTA.Annotations;
 using UTA.Interactivity;
 using UTA.Models.DataBase;
 using UTA.Models.Tab;
-using UTA.Views;
 
 namespace UTA.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
+        //todo delete if not used
         public static Dictionary<string, string> CriterionDirectionTypes = new Dictionary<string, string>
         {
             {"g", "Gain"},
             {"c", "Cost"},
-            {"o", "Ordinal"}
         };
 
         private readonly IDialogCoordinator _dialogCoordinator;
         public readonly ObservableCollection<ChartTabViewModel> ChartTabViewModels;
-
-        private DataTable _alternativesTable;
-        private DataTable _criteriaTable;
         private bool _preserveKendallCoefficient = true;
         private ITab _tabToSelect;
-
 
         public MainViewModel(IDialogCoordinator dialogCoordinator)
         {
@@ -45,7 +40,9 @@ namespace UTA.ViewModels
             Alternatives = new Alternatives(Criteria);
             ReferenceRanking = new ReferenceRanking(0);
 
-            Alternatives.AlternativesCollection.CollectionChanged += AlternativesCollectionChanged;
+            RemoveRankCommand = new RelayCommand(rank => RemoveRank((int)rank));
+            RemoveAlternativeFromRankCommand = new RelayCommand(alternative => RemoveAlternativeFromRank((Alternative)alternative));
+
             Tabs = new ObservableCollection<ITab>();
             Tabs.CollectionChanged += TabsCollectionChanged;
             ShowTabCommand = new RelayCommand(tabViewModel => ShowTab((ITab) tabViewModel));
@@ -94,7 +91,6 @@ namespace UTA.ViewModels
 
         // TODO: remove property after using real rankings
         public Ranking Rankings { get; set; } = new Ranking();
-
         public Alternatives Alternatives { get; set; }
         public Criteria Criteria { get; set; }
         public ReferenceRanking ReferenceRanking { get; set; }
@@ -129,30 +125,7 @@ namespace UTA.ViewModels
             }
         }
 
-        public DataTable AlternativesTable
-        {
-            get => _alternativesTable;
-            set
-            {
-                if (_alternativesTable == value) return;
-                _alternativesTable = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public DataTable CriteriaTable
-        {
-            get => _criteriaTable;
-            set
-            {
-                if (_criteriaTable == value) return;
-                _criteriaTable = value;
-                OnPropertyChanged();
-            }
-        }
-
         public event PropertyChangedEventHandler PropertyChanged;
-
 
         public static T FindParent<T>(DependencyObject child) where T : DependencyObject
         {
@@ -160,19 +133,6 @@ namespace UTA.ViewModels
             if (parentObject == null) return null;
             if (parentObject is T parent) return parent;
             return FindParent<T>(parentObject);
-        }
-
-        public void ShowAddCriterionDialog()
-        {
-            var addCriterionViewModel = new AddCriterionViewModel {MainViewModel = this, Criteria = Criteria};
-            var addCriterionWindow = new AddCriterionView(addCriterionViewModel);
-            addCriterionWindow.ShowDialog();
-        }
-
-        public void AddAlternative(string name, string description)
-        {
-            var alternative = Alternatives.AddAlternative(name, description);
-            alternative.PropertyChanged += GenerateAlternativesTable;
         }
 
         private void TabsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -203,29 +163,17 @@ namespace UTA.ViewModels
             else Tabs.Add(tabModel);
         }
 
-        //todo not needed anymore?
-        public void GenerateAlternativesTable(object sender, PropertyChangedEventArgs e)
+        public RelayCommand RemoveAlternativeFromRankCommand { get; }
+        public void RemoveAlternativeFromRank(Alternative alternative)
         {
+            Console.WriteLine("Removing alternative " + alternative.Name + " from rank " + alternative.ReferenceRank);
+            Alternatives.RemoveAlternativeFromRank(alternative);
             //            GenerateAlternativesTable();
         }
-
-        public void AddAlternativeFromDataGrid(object sender, AddingNewItemEventArgs e)
+        public RelayCommand RemoveRankCommand { get; }
+        public void RemoveRank(int rank)
         {
-            var alternative = new Alternative("initName", "initDesc", Criteria.CriteriaCollection);
-            e.NewItem = alternative;
-        }
-
-        private void AlternativesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (e.NewItems == null) return;
-            foreach (Alternative alternative in e.NewItems)
-                Alternatives.HandleNewAlternativeRanking(alternative);
-        }
-
-        public void CriterionRenamed(object sender, PropertyChangedEventArgs e)
-        {
-            var eExtended = (PropertyChangedExtendedEventArgs<string>) e;
-            Alternatives.UpdateCriteriaValueName(eExtended.OldValue, eExtended.NewValue);
+            Alternatives.RemoveRank(rank);
         }
 
         [UsedImplicitly]
@@ -364,5 +312,6 @@ namespace UTA.ViewModels
                 Utility = utility;
             }
         }
+
     }
 }

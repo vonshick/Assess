@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace UTA.Models
+namespace UTA.ViewHelperClasses
 {
     public class BindingProxy : Freezable
     {

@@ -2,12 +2,12 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using UTA.Models;
+using UTA.Models.DataValidation;
 using UTA.ViewModels;
 
 namespace UTA.Views
 {
-    public partial class AddCriterionView : Window
+    public partial class AddCriterionView
     {
         public AddCriterionViewModel AddCriterionViewModel { get; set; }
 

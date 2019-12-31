@@ -5,12 +5,101 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:local="clr-namespace:UTA.Views"
+             xmlns:dragDropFramework="urn:gong-wpf-dragdrop"
              xmlns:mainViewModel="clr-namespace:UTA.ViewModels"
+             xmlns:viewHelperClasses="clr-namespace:UTA.ViewHelperClasses"
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="900"
              d:DataContext="{d:DesignInstance mainViewModel:MainViewModel}"
              DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type controls:MetroWindow}}}">
-  <Grid DataContext="{Binding ReferenceRankingTabViewModel}" Background="{StaticResource ColorInterface7}">
-    <TextBlock Text="Reference Ranking Tab" />
-  </Grid>
+  <UserControl.Resources>
+    <viewHelperClasses:AlternativeDropHandler x:Key="AlternativeDropHandler"/>
+  </UserControl.Resources>
+  <ScrollViewer>
+    <Grid DataContext="{Binding ReferenceRankingTabViewModel}" Background="{StaticResource ColorInterface7}">
+      <TextBlock Text="Reference Ranking Tab"  Margin="0,0,0,20" />
+
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="32" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="*" />
+          <RowDefinition Height="20" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition MinWidth="10" Width="1*" />
+          <ColumnDefinition Width="19*" />
+          <ColumnDefinition MinWidth="10" Width="1*" />
+        </Grid.ColumnDefinitions>
+
+        <ListView Grid.Row="1" Grid.Column="1" Name="AlternativesListView" ItemsSource="{Binding Alternatives.AlternativesNotRankedCollection}" Margin="60,0,58,0"
+                                    Height="Auto" MaxHeight="250"
+                                    dragDropFramework:DragDrop.IsDragSource="True"
+                                    dragDropFramework:DragDrop.IsDropTarget="True"
+                                    dragDropFramework:DragDrop.DropHandler="{StaticResource AlternativeDropHandler}">
+          <ListView.View>
+            <GridView>
+              <GridViewColumn Header="Name" Width="120" DisplayMemberBinding="{Binding Name}" />
+              <GridViewColumn Header="Description" Width="120"
+                                                      DisplayMemberBinding="{Binding Description}" />
+              <GridViewColumn Header="ReferenceRank" Width="120"
+                                                      DisplayMemberBinding="{Binding ReferenceRank}" />
+            </GridView>
+          </ListView.View>
+        </ListView>
+        <Button  Grid.Row="2" Grid.Column="1" Width="80" Click="AddRankButtonClicked">Add Rank</Button>
+        <ItemsControl  Grid.Row="3" Grid.Column="1" x:Name="RankingsItemsControl" ItemsSource="{Binding Alternatives.ReferenceRanking.RankingsCollection}" AlternationCount="10000" MinHeight="100">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <WrapPanel />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <StackPanel MinWidth="200" MinHeight="100" Orientation="Vertical" Margin="20" >
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="{Binding 
+                    Path=(ItemsControl.AlternationIndex), 
+                    RelativeSource={RelativeSource Mode=TemplatedParent}, 
+                    FallbackValue=FAIL, 
+                    StringFormat={}Rank {0}}" HorizontalAlignment="Center"></TextBlock>
+                  <Button Width="80" Margin="15,0"
+                          CommandParameter="{Binding 
+                    Path=(ItemsControl.AlternationIndex), 
+                    RelativeSource={RelativeSource Mode=TemplatedParent}, 
+                    FallbackValue=FAIL}"
+                          Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.RemoveRankCommand}">Remove</Button>
+                </StackPanel>
+                <ItemsControl ItemsSource="{Binding}"
+                                                        Padding="10" BorderBrush="Black" BorderThickness="2" Background="White" MinHeight="80" Height="Auto"
+                                                        dragDropFramework:DragDrop.IsDragSource="True"
+                                                        dragDropFramework:DragDrop.IsDropTarget="True"
+                                                        dragDropFramework:DragDrop.DropHandler="{StaticResource AlternativeDropHandler}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <Grid>
+                        <Grid.ColumnDefinitions>
+                          <ColumnDefinition Width="*" />
+                          <ColumnDefinition Width="*" />
+                          <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{Binding Name}" HorizontalAlignment="Center"/>
+                        <TextBlock Grid.Column="1" Text="{Binding ReferenceRank}" HorizontalAlignment="Center"/>
+                        <Button  Grid.Column="2" Width="80" Margin="15,0"
+                                                                   CommandParameter="{Binding}"
+                                                                   Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.RemoveAlternativeFromRankCommand}">Remove</Button>
+                      </Grid>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Rectangle Margin="5,5,5,5" RadiusX="8" RadiusY="8" StrokeThickness="1" Height="40" VerticalAlignment="Top" Stroke="{x:Null}" x:Name="rctHeader">
+                </Rectangle>
+              </StackPanel>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </Grid>
+    </Grid>
+  </ScrollViewer>
 </UserControl>

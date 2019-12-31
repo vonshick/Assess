@@ -1,4 +1,7 @@
-﻿namespace UTA.Models
+﻿using System.Windows.Controls;
+using System.Windows.Data;
+
+namespace UTA.Models.DataValidation
 {
     static class DataValidation
     {
