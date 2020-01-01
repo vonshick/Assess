@@ -36,6 +36,7 @@ namespace DataModel.Input
         private string _name;
         private string _description;
         private Dictionary<Criterion, float> _criteriaValues;
+        private int? _referenceRank;
 
         //todo make sure the order is same as in criteriaList
         public List<CriterionValue> CriteriaValuesList
@@ -83,7 +84,18 @@ namespace DataModel.Input
             }
         }
 
-        public int? ReferenceRank { get; set; }
+        public int? ReferenceRank
+        {
+            get => _referenceRank;
+            set
+            {
+                if (_referenceRank != value)
+                {
+                    _referenceRank = value;
+                    OnPropertyChanged("ReferenceRank");
+                }
+            }
+        }
 
         //TODO remove, CriteriaValuesList used now instead
         /// <summary> pairs: (criterion name, value) </summary>

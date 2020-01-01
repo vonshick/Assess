@@ -84,8 +84,8 @@
                           <ColumnDefinition Width="*" />
                           <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="{Binding Name}" HorizontalAlignment="Center"/>
-                        <TextBlock Grid.Column="1" Text="{Binding ReferenceRank}" HorizontalAlignment="Center"/>
+                        <TextBlock Grid.Column="0" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
+                        <TextBlock Grid.Column="1" Text="{Binding ReferenceRank, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" HorizontalAlignment="Center"/>
                         <Button  Grid.Column="2" Width="80" Margin="15,0"
                                                                    CommandParameter="{Binding}"
                                                                    Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.RemoveAlternativeFromRankCommand}">Remove</Button>
