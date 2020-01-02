@@ -1,22 +1,22 @@
-﻿using DataModel.Input;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
+using DataModel.Input;
 
 namespace UTA.Models.DataBase
 {
     public class Criteria
     {
-        public ObservableCollection<Criterion> CriteriaCollection { get; set; }
-
         public Criteria()
         {
             CriteriaCollection = new ObservableCollection<Criterion>();
         }
 
-        public Criterion Placeholder { get; set; } = null;
+        public ObservableCollection<Criterion> CriteriaCollection { get; set; }
+
+        public Criterion Placeholder { get; set; }
 
         public Criterion AddCriterion(string criterionName, string criterionDescription, string criterionDirection, int linearSegments)
         {
-            Criterion criterion = new Criterion(criterionName, criterionDescription, criterionDirection, linearSegments);
+            var criterion = new Criterion(criterionName, criterionDescription, criterionDirection, linearSegments);
             if (CriteriaCollection.Contains(criterion)) return null;
             CriteriaCollection.Add(criterion);
             return criterion;

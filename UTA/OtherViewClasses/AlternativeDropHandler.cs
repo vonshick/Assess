@@ -1,10 +1,9 @@
-﻿using DataModel.Input;
+﻿using System.Windows;
+using DataModel.Input;
 using GongSolutions.Wpf.DragDrop;
 using GongSolutions.Wpf.DragDrop.Utilities;
-using System.Collections;
-using System.Windows;
 
-namespace UTA.ViewHelperClasses
+namespace UTA.OtherViewClasses
 {
     public class AlternativeDropHandler : IDropTarget
     {
@@ -23,10 +22,10 @@ namespace UTA.ViewHelperClasses
 
             var sourceItem = (Alternative) dropInfo.Data;
 
-            IList sourceList = dropInfo.DragInfo.SourceCollection.TryGetList();
+            var sourceList = dropInfo.DragInfo.SourceCollection.TryGetList();
             sourceList.Remove(sourceItem);
 
-            IList targetList = dropInfo.TargetCollection.TryGetList();
+            var targetList = dropInfo.TargetCollection.TryGetList();
             targetList.Add(sourceItem);
         }
     }

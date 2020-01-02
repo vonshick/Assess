@@ -1,26 +1,21 @@
 ﻿using System.Windows.Media;
 
-namespace UTA.ViewHelperClasses
+namespace UTA.OtherViewClasses
 {
     public static class VisualChildHelper
     {
         public static T GetVisualChild<T>(Visual parent) where T : Visual
         {
-            T child = default(T);
-            int numVisuals = VisualTreeHelper.GetChildrenCount(parent);
-            for (int i = 0; i < numVisuals; i++)
+            T child = default;
+            var numVisuals = VisualTreeHelper.GetChildrenCount(parent);
+            for (var i = 0; i < numVisuals; i++)
             {
-                Visual v = (Visual)VisualTreeHelper.GetChild(parent, i);
+                var v = (Visual) VisualTreeHelper.GetChild(parent, i);
                 child = v as T;
-                if (child == null)
-                {
-                    child = GetVisualChild<T>(v);
-                }
-                if (child != null)
-                {
-                    break;
-                }
+                if (child == null) child = GetVisualChild<T>(v);
+                if (child != null) break;
             }
+
             return child;
         }
     }

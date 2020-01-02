@@ -36,7 +36,8 @@
         <Button Name="ButtonAddAlternative" Click="AddAlternative" Content="Add" Width="120" Margin="10, 0" />
       </StackPanel>
 
-      <Button Grid.Row="2" Grid.Column="1" x:Name="ButtonEditAlternatives" Click="EditAlternativesSwitchClicked" Content="Edit is off"
+      <Button Grid.Row="2" Grid.Column="1" x:Name="ButtonEditAlternatives" Click="EditAlternativesSwitchClicked"
+              Content="Edit is off"
               MaxWidth="90" Width="Auto" Margin="0, 5" />
 
       <DataGrid Grid.Row="3" Grid.Column="1"

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using DataModel.Input;
+﻿using System.ComponentModel;
 using DataModel.PropertyChangedExtended;
 using UTA.Models.DataBase;
 using UTA.Models.Tab;
@@ -24,7 +20,7 @@ namespace UTA.ViewModels
 
         public void CriterionRenamed(object sender, PropertyChangedEventArgs e)
         {
-            PropertyChangedExtendedEventArgs<string> eExtended = (PropertyChangedExtendedEventArgs<string>) e;
+            var eExtended = (PropertyChangedExtendedEventArgs<string>) e;
             Alternatives.UpdateCriteriaValueName(eExtended.OldValue, eExtended.NewValue);
         }
 
@@ -47,14 +43,6 @@ namespace UTA.ViewModels
         public void RemovePlaceholder()
         {
             Criteria.RemovePlaceholderFromCollection();
-        }
-
-        //todo remove
-        public void ShowAddCriterionDialog()
-        {
-            var addCriterionViewModel = new AddCriterionViewModel(Alternatives, Criteria);
-            var addCriterionWindow = new AddCriterionView(addCriterionViewModel);
-            addCriterionWindow.ShowDialog();
         }
     }
 }

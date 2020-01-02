@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
-using DataModel.Input;
 using MahApps.Metro.Controls.Dialogs;
-using UTA.Models;
 using UTA.ViewModels;
 
 // using ImportModule; // TODO vonshick REMOVE IT AFTER TESTING
@@ -44,7 +41,7 @@ namespace UTA.Views
                 if (e.PropertyName == nameof(_viewmodel.TabToSelect)) TabControl.SelectedItem = _viewmodel.TabToSelect;
             };
         }
-  
+
         private void TabsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Add) TabControl.SelectedIndex = _viewmodel.Tabs.Count - 1;

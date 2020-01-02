@@ -12,7 +12,7 @@
              d:DataContext="{d:DesignInstance mainViewModel:MainViewModel}"
              DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type controls:MetroWindow}}}">
   <Grid DataContext="{Binding CriteriaTabViewModel}" Background="{StaticResource ColorInterface7}">
-    <TextBlock Text="Criteria Tab"  Margin="0,0,0,20"  />
+    <TextBlock Text="Criteria Tab" Margin="0,0,0,20" />
     <Grid>
       <Grid.RowDefinitions>
         <RowDefinition Height="32" />
@@ -27,7 +27,8 @@
         <ColumnDefinition MinWidth="10" Width="1*" />
       </Grid.ColumnDefinitions>
 
-      <Button Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" x:Name="ButtonEditCriteria" Click="EditCriteriaSwitchClicked" Content="Edit is off"
+      <Button Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" x:Name="ButtonEditCriteria"
+              Click="EditCriteriaSwitchClicked" Content="Edit is off"
               MaxWidth="90" Width="Auto" Margin="0, 5" />
       <DataGrid Grid.Row="2" Grid.Column="1"
                 Name="EditCriteriaDataGrid" IsReadOnly="true"
@@ -52,18 +53,18 @@
               <Binding Path="Name" UpdateSourceTrigger="PropertyChanged" NotifyOnValidationError="True">
                 <Binding.ValidationRules>
                   <dataValidation:CriterionNameValidationRule CriteriaColl="{StaticResource CriteriaColl}"
-                                                                ValidationStep="CommittedValue" />
+                                                              ValidationStep="CommittedValue" />
                 </Binding.ValidationRules>
               </Binding>
             </DataGridTextColumn.Binding>
           </DataGridTextColumn>
 
           <DataGridTextColumn Header="Description" Width="5*"
-                            Binding="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                              Binding="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
           <DataGridComboBoxColumn x:Name="CriteriaDirectionComboBoxColumn" Header="Type" Width="2*"
                                   SelectedItemBinding="{Binding CriterionDirection, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
           <DataGridTextColumn Header="Linear Segments" Width="2*"
-                            Binding="{Binding LinearSegments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                              Binding="{Binding LinearSegments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         </DataGrid.Columns>
       </DataGrid>
 

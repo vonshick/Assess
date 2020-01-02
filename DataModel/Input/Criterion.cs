@@ -10,8 +10,7 @@ namespace DataModel.Input
         public enum CriterionDirectionTypes
         {
             Gain,
-            Cost,
-            Ordinal
+            Cost
         }
 
         public static double MinNumberOfLinearSegments = 1; // type double, because can't use other type in xaml

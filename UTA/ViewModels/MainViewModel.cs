@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Data;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using DataModel.Input;
-using DataModel.PropertyChangedExtended;
 using DataModel.Results;
 using MahApps.Metro.Controls.Dialogs;
 using UTA.Annotations;
@@ -26,7 +24,7 @@ namespace UTA.ViewModels
         public static Dictionary<string, string> CriterionDirectionTypes = new Dictionary<string, string>
         {
             {"g", "Gain"},
-            {"c", "Cost"},
+            {"c", "Cost"}
         };
 
         private readonly IDialogCoordinator _dialogCoordinator;
@@ -40,8 +38,8 @@ namespace UTA.ViewModels
             Alternatives = new Alternatives(Criteria);
             ReferenceRanking = new ReferenceRanking(0);
 
-            RemoveRankCommand = new RelayCommand(rank => RemoveRank((int)rank));
-            RemoveAlternativeFromRankCommand = new RelayCommand(alternative => RemoveAlternativeFromRank((Alternative)alternative));
+            RemoveRankCommand = new RelayCommand(rank => RemoveRank((int) rank));
+            RemoveAlternativeFromRankCommand = new RelayCommand(alternative => RemoveAlternativeFromRank((Alternative) alternative));
 
             Tabs = new ObservableCollection<ITab>();
             Tabs.CollectionChanged += TabsCollectionChanged;
@@ -88,16 +86,16 @@ namespace UTA.ViewModels
             }
         }
 
-
         // TODO: remove property after using real rankings
         public Ranking Rankings { get; set; } = new Ranking();
+
         public Alternatives Alternatives { get; set; }
         public Criteria Criteria { get; set; }
         public ReferenceRanking ReferenceRanking { get; set; }
-
+        public RelayCommand RemoveAlternativeFromRankCommand { get; }
+        public RelayCommand RemoveRankCommand { get; }
         public RelayCommand ShowTabCommand { get; }
         public ObservableCollection<ITab> Tabs { get; }
-
         public CriteriaTabViewModel CriteriaTabViewModel { get; }
         public AlternativesTabViewModel AlternativesTabViewModel { get; }
         public ReferenceRankingTabViewModel ReferenceRankingTabViewModel { get; }
@@ -163,14 +161,13 @@ namespace UTA.ViewModels
             else Tabs.Add(tabModel);
         }
 
-        public RelayCommand RemoveAlternativeFromRankCommand { get; }
         public void RemoveAlternativeFromRank(Alternative alternative)
         {
             Console.WriteLine("Removing alternative " + alternative.Name + " from rank " + alternative.ReferenceRank);
             Alternatives.RemoveAlternativeFromRank(alternative);
             //            GenerateAlternativesTable();
         }
-        public RelayCommand RemoveRankCommand { get; }
+
         public void RemoveRank(int rank)
         {
             Alternatives.RemoveRank(rank);
@@ -312,6 +309,5 @@ namespace UTA.ViewModels
                 Utility = utility;
             }
         }
-
     }
 }

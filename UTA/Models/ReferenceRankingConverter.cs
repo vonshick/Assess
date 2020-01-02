@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 
 namespace UTA.Models
 {
+    //todo delete if not used anymore
     public static class ReferenceRankingConverter
     {
         /*

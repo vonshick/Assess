@@ -14,8 +14,8 @@ namespace UTA.Interactivity
 
         public RelayCommand(Action<object> action, Predicate<object> predicate)
         {
-            this._action = action ?? throw new ArgumentNullException(nameof(action), @"You must specify an Action<T>.");
-            this._predicate = predicate;
+            _action = action ?? throw new ArgumentNullException(nameof(action), @"You must specify an Action<T>.");
+            _predicate = predicate;
         }
 
         public event EventHandler CanExecuteChanged

@@ -6,7 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using DataModel.Input;
-using UTA.ViewHelperClasses;
+using UTA.OtherViewClasses;
 using UTA.ViewModels;
 
 namespace UTA.Views
@@ -15,6 +15,8 @@ namespace UTA.Views
     {
         private CriteriaTabViewModel _viewmodel;
 
+        private int errorCount;
+
         public CriteriaTab()
         {
             Loaded += ViewLoaded;
@@ -22,9 +24,11 @@ namespace UTA.Views
             InitializeComponent();
         }
 
+        public List<string> CriteriaTypeList { get; set; }
+
         private void ViewLoaded(object sender, RoutedEventArgs e)
         {
-            _viewmodel = ((MainViewModel)DataContext).CriteriaTabViewModel;
+            _viewmodel = ((MainViewModel) DataContext).CriteriaTabViewModel;
             CriteriaDirectionComboBoxColumn.ItemsSource = CriteriaTypeList;
             ButtonEditCriteria.Content = "Editing is OFF";
             EditCriteriaDataGrid.Columns[0].Visibility = Visibility.Collapsed;
@@ -32,17 +36,15 @@ namespace UTA.Views
             EditCriteriaDataGrid.Unloaded += DataGridUnloaded;
         }
 
-        public List<string> CriteriaTypeList { get; set; }
-
-        void DataGridUnloaded(object sender, RoutedEventArgs e)
+        private void DataGridUnloaded(object sender, RoutedEventArgs e)
         {
-            var grid = (DataGrid)sender;
+            var grid = (DataGrid) sender;
             if (!grid.IsReadOnly)
                 _viewmodel.RemovePlaceholder();
             grid.CommitEdit(DataGridEditingUnit.Row, true);
         }
 
-        private int errorCount;
+        //todo could find better way for it if enough time
         private void OnErrorEvent(object sender, RoutedEventArgs e)
         {
             var validationEventArgs = e as ValidationErrorEventArgs;
@@ -52,29 +54,32 @@ namespace UTA.Views
             {
                 case ValidationErrorEventAction.Added:
                 {
-                    errorCount++; break;
+                    errorCount++;
+                    break;
                 }
                 case ValidationErrorEventAction.Removed:
                 {
-                    errorCount = 0; break;
+                    errorCount = 0;
+                    break;
                 }
                 default:
                 {
                     throw new Exception("Unknown action");
                 }
             }
+
             ButtonEditCriteria.IsEnabled = errorCount == 0;
         }
 
         private DataGridRow GetAlternativesDataGridRow(int index)
         {
-            DataGridRow row =
-                (DataGridRow)EditCriteriaDataGrid.ItemContainerGenerator.ContainerFromIndex(index);
+            var row =
+                (DataGridRow) EditCriteriaDataGrid.ItemContainerGenerator.ContainerFromIndex(index);
             if (row == null)
             {
                 EditCriteriaDataGrid.UpdateLayout();
                 EditCriteriaDataGrid.ScrollIntoView(EditCriteriaDataGrid.Items[index]);
-                row = (DataGridRow)EditCriteriaDataGrid.ItemContainerGenerator.ContainerFromIndex(index);
+                row = (DataGridRow) EditCriteriaDataGrid.ItemContainerGenerator.ContainerFromIndex(index);
             }
 
             return row;
@@ -82,20 +87,21 @@ namespace UTA.Views
 
         private DataGridCell GetAlternativesDataGridCell(DataGridRow row, int index)
         {
-            DataGridCellsPresenter presenter = VisualChildHelper.GetVisualChild<DataGridCellsPresenter>(row);
-            DataGridCell cell = (DataGridCell)presenter.ItemContainerGenerator.ContainerFromIndex(index);
+            var presenter = VisualChildHelper.GetVisualChild<DataGridCellsPresenter>(row);
+            var cell = (DataGridCell) presenter.ItemContainerGenerator.ContainerFromIndex(index);
             if (cell == null)
             {
                 //todo check if works
                 //                EditAlternativesDataGrid.ScrollIntoView(rowContainer, EditAlternativesDataGrid.Columns[column]);
                 EditCriteriaDataGrid.ScrollIntoView(row, EditCriteriaDataGrid.Columns[index]);
-                cell = (DataGridCell)presenter.ItemContainerGenerator.ContainerFromIndex(index);
+                cell = (DataGridCell) presenter.ItemContainerGenerator.ContainerFromIndex(index);
             }
 
             return cell;
         }
 
-        void NewRowCellFocusLost(object sender, EventArgs e)
+        //todo Piter sort it out
+        private void NewRowCellFocusLost(object sender, EventArgs e)
         {
 //            var cell = (DataGridCell)sender;
 //            if (cell.IsEditing)
@@ -114,12 +120,12 @@ namespace UTA.Views
 //            }
         }
 
-        void NewRowCellClicked(object sender, EventArgs e)
+        private void NewRowCellClicked(object sender, EventArgs e)
         {
-            var cell = (DataGridCell)sender;
+            var cell = (DataGridCell) sender;
             if (cell.IsEditing)
             {
-                var textBox = (TextBox)cell.Content;
+                var textBox = (TextBox) cell.Content;
                 if (cell.IsEditing && textBox.Text == "name" || textBox.Text == "description")
                     textBox.Text = "";
             }
@@ -136,7 +142,7 @@ namespace UTA.Views
                 == GeneratorStatus.ContainersGenerated && !EditCriteriaDataGrid.IsReadOnly)
             {
                 //todo: error, still can return null! happened with lot of criteria and when clicked cell in criteria column
-                DataGridRow row = GetAlternativesDataGridRow(EditCriteriaDataGrid.Items.Count - 1);
+                var row = GetAlternativesDataGridRow(EditCriteriaDataGrid.Items.Count - 1);
                 //                  Setter italic = new Setter(TextBlock.FontStyleProperty, FontStyles.Italic, null);
                 //                  Style newStyle = new Style(row.GetType());
                 //                  newStyle.Setters.Add(italic);
@@ -144,8 +150,8 @@ namespace UTA.Views
                 EditCriteriaDataGrid.ItemContainerGenerator.StatusChanged -=
                     ItemContainerGeneratorStatusChanged;
 
-                DataGridCell cell = GetAlternativesDataGridCell(row, 0);
-                Button btn = new Button();
+                var cell = GetAlternativesDataGridCell(row, 0);
+                var btn = new Button();
                 btn.Click += ButtonSaveCurrentPlaceholderClicked;
                 btn.Content = "Add";
                 cell.Content = btn;
@@ -182,18 +188,10 @@ namespace UTA.Views
                 _viewmodel.AddPlaceholder();
             }
         }
+
         private void RemoveCriteriaButtonClicked(object sender, RoutedEventArgs e)
         {
-            if (EditCriteriaDataGrid.SelectedItem is Criterion criterion)
-            {
-                _viewmodel.Criteria.RemoveCriterion(criterion);
-            }
-        }
-
-        //todo deprecated, remove window and related classes/methods
-        public void ShowAddCriterionDialog(object sender, RoutedEventArgs routedEventArgs)
-        {
-            _viewmodel.ShowAddCriterionDialog();
+            if (EditCriteriaDataGrid.SelectedItem is Criterion criterion) _viewmodel.Criteria.RemoveCriterion(criterion);
         }
     }
 }

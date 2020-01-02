@@ -33,7 +33,5 @@ namespace UTA.Views
         {
             _viewmodel.AddRank();
         }
-
     }
-
 }

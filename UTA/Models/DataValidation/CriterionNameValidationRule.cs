@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Windows.Controls;
 using System.Windows.Data;
 using DataModel.Input;
 
 namespace UTA.Models.DataValidation
 {
-    class CriterionNameValidationRule : ValidationRule
+    internal class CriterionNameValidationRule : ValidationRule
     {
         public CollectionViewSource CriteriaColl { get; set; }
 
         public override ValidationResult Validate(object value,
-            System.Globalization.CultureInfo cultureInfo)
+            CultureInfo cultureInfo)
         {
             var bindingExpression = (BindingExpression) value;
             var criterion = (Criterion) bindingExpression.ResolvedSource;
@@ -24,7 +25,6 @@ namespace UTA.Models.DataValidation
 
             var criteriaCollection = (ObservableCollection<Criterion>) CriteriaColl.Source;
             foreach (var criterion1 in criteriaCollection)
-            {
                 if (criterion1 != criterion && criterion1.Name == criterion.Name)
                 {
                     Console.WriteLine("validation FAIL - ALREADY EXISTS of " + criterion.Name);
@@ -32,13 +32,8 @@ namespace UTA.Models.DataValidation
                         "Criterion exists!");
                 }
 
-            }
-
             //todo not working?
-            foreach (var bE in bindingExpression.BindingGroup.BindingExpressions)
-            {
-                Validation.ClearInvalid(bE);
-            }
+            foreach (var bE in bindingExpression.BindingGroup.BindingExpressions) Validation.ClearInvalid(bE);
 
             Console.WriteLine("validation OK of " + criterion.Name);
             return ValidationResult.ValidResult;

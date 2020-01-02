@@ -23,9 +23,10 @@ namespace UTA.ViewModels
         {
             Alternatives.AddAlternative(name, description);
         }
+
         public void AddAlternativeFromDataGrid(object sender, AddingNewItemEventArgs e)
         {
-            Alternative alternative = new Alternative("initName", "initDesc", Criteria.CriteriaCollection);
+            var alternative = new Alternative("initName", "initDesc", Criteria.CriteriaCollection);
             e.NewItem = alternative;
         }
 
@@ -35,7 +36,6 @@ namespace UTA.ViewModels
             Alternatives.AlternativesCollection.CollectionChanged -= AlternativesCollectionChanged;
             Alternatives.AddPlaceholder();
             Alternatives.AlternativesCollection.CollectionChanged += AlternativesCollectionChanged;
-
         }
 
         public void SaveCurrentPlaceholder()
@@ -56,9 +56,7 @@ namespace UTA.ViewModels
         {
             if (e.NewItems != null)
                 foreach (Alternative alternative in e.NewItems)
-                {
                     Alternatives.HandleNewAlternativeRanking(alternative);
-                }
         }
     }
 }
