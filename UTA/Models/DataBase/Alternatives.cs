@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using DataModel.Input;
+using DataModel.Results;
 using UTA.Annotations;
 using System.Linq;
 using DataModel.Results;

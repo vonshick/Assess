@@ -3,9 +3,8 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using DataModel.Annotations;
 using DataModel.Input;
-using UTA.Annotations;
-//using referenceRankingStructs = DataModel.Results.ReferenceRanking;
 
 namespace DataModel.Results
 {
@@ -31,6 +30,7 @@ namespace DataModel.Results
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
 
         private void ExpandAvailableRanksNumber(int size)
         {

@@ -36,6 +36,7 @@ namespace DataModel.Input
         public bool IsEnum { get; set; } = false;
         public Dictionary<string, float> EnumDictionary { get; set; }
         public string Description { get; set; }
+
         public string CriterionDirection { get; set; }
 
         // TODO: update min and max values after value changes in alternative editor

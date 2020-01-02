@@ -7,7 +7,7 @@
                       xmlns:local="clr-namespace:UTA.Views"
                       mc:Ignorable="d"
                       Title="About" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
-                      WindowStartupLocation="CenterOwner">
+                      WindowStartupLocation="CenterOwner" Background="{StaticResource ColorInterface7}">
   <StackPanel Margin="20,8,20,20">
     <StackPanel.Resources>
       <Style TargetType="TextBlock">

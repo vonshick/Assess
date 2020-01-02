@@ -7,6 +7,6 @@
                       xmlns:local="clr-namespace:UTA.Views"
                       mc:Ignorable="d"
                       Title="Documentation" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
-                      WindowStartupLocation="CenterOwner">
+                      WindowStartupLocation="CenterOwner" Background="{StaticResource ColorInterface7}">
   <!--TODO: documentation-->
 </controls:MetroWindow>
