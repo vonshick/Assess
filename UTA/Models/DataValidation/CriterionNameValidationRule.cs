@@ -31,10 +31,6 @@ namespace UTA.Models.DataValidation
                     return new ValidationResult(false,
                         "Criterion exists!");
                 }
-
-            //todo not working?
-            foreach (var bE in bindingExpression.BindingGroup.BindingExpressions) Validation.ClearInvalid(bE);
-
             Console.WriteLine("validation OK of " + criterion.Name);
             return ValidationResult.ValidResult;
         }

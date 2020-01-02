@@ -24,27 +24,15 @@ namespace UTA.Views
             InitializeComponent();
         }
 
-        public string InputAlternativeName { get; set; }
-        public string InputAlternativeDescription { get; set; }
-
         private void ViewLoaded(object sender, RoutedEventArgs e)
         {
             _viewmodel = ((MainViewModel) DataContext).AlternativesTabViewModel;
-            SetBindings();
             EditAlternativesDataGrid.AddingNewItem += _viewmodel.AddAlternativeFromDataGrid;
             AddAlternativesDataGridCriteriaColumns();
             ButtonEditAlternatives.Content = "Editing is OFF";
             EditAlternativesDataGrid.Columns[0].Visibility = Visibility.Collapsed;
             AddHandler(Validation.ErrorEvent, new RoutedEventHandler(OnErrorEvent));
             EditAlternativesDataGrid.Unloaded += DataGridUnloaded;
-        }
-
-        private void SetBindings()
-        {
-            TextBoxAlternativeName.SetBinding(TextBox.TextProperty,
-                new Binding("InputAlternativeName") {Source = this});
-            TextBoxAlternativeDescription.SetBinding(TextBox.TextProperty,
-                new Binding("InputAlternativeDescription") {Source = this});
         }
 
         private void DataGridUnloaded(object sender, RoutedEventArgs e)
@@ -91,17 +79,6 @@ namespace UTA.Views
                     AddAlternativesDataGridColumn(criterion, index++);
         }
 
-        private void AddAlternative(object sender, RoutedEventArgs e)
-        {
-            if (DataValidation.StringsNotEmpty(InputAlternativeName, InputAlternativeDescription))
-                _viewmodel.AddAlternative(InputAlternativeName, InputAlternativeDescription);
-            //todo uncomment after tests
-//                TextBoxAlternativeName.Clear();
-//                TextBoxAlternativeDescription.Clear();
-//                InputAlternativeName = "";
-//                InputAlternativeDescription = "";
-        }
-
         private void RemoveAlternativeButtonClicked(object sender, RoutedEventArgs e)
         {
             if (EditAlternativesDataGrid.SelectedItem is Alternative alternative) _viewmodel.Alternatives.RemoveAlternative(alternative);
@@ -118,7 +95,7 @@ namespace UTA.Views
                 _viewmodel.RemovePlaceholder();
             }
             else
-            {
+            { 
                 ButtonEditAlternatives.Content = "Editing is ON";
                 EditAlternativesDataGrid.Columns[0].Visibility = Visibility.Visible;
                 EditAlternativesDataGrid.ItemContainerGenerator.StatusChanged += ItemContainerGeneratorStatusChanged;
@@ -164,20 +141,20 @@ namespace UTA.Views
             }
         }
 
-        public bool IsValid(DependencyObject parent)
-        {
-            if (Validation.GetHasError(parent))
-                return false;
-
-            // Validate all the bindings on the children
-            for (var i = 0; i != VisualTreeHelper.GetChildrenCount(parent); ++i)
-            {
-                var child = VisualTreeHelper.GetChild(parent, i);
-                if (!IsValid(child)) return false;
-            }
-
-            return true;
-        }
+//        public bool IsValid(DependencyObject parent)
+//        {
+//            if (Validation.GetHasError(parent))
+//                return false;
+//
+//            // Validate all the bindings on the children
+//            for (var i = 0; i != VisualTreeHelper.GetChildrenCount(parent); ++i)
+//            {
+//                var child = VisualTreeHelper.GetChild(parent, i);
+//                if (!IsValid(child)) return false;
+//            }
+//
+//            return true;
+//        }
 
         private DataGridRow GetAlternativesDataGridRow(int index)
         {
@@ -237,8 +214,6 @@ namespace UTA.Views
                 cell.Foreground = Brushes.Gray;
                 cell.GotFocus += NewRowCellClicked;
                 cell.LostFocus += NewRowCellFocusLost;
-
-                //                  EditAlternativesDataGrid.UpdateLayout();
             }
         }
 
