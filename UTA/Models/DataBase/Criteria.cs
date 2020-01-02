@@ -1,19 +1,35 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using DataModel.Input;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using UTA.Annotations;
 
 namespace UTA.Models.DataBase
 {
-    public class Criteria
+    public class Criteria : INotifyPropertyChanged
     {
+        private ObservableCollection<Criterion> _criteriaCollection;
+
         public Criteria()
         {
             CriteriaCollection = new ObservableCollection<Criterion>();
         }
 
-        public ObservableCollection<Criterion> CriteriaCollection { get; set; }
+        public ObservableCollection<Criterion> CriteriaCollection
+        {
+            get => _criteriaCollection;
+            set
+            {
+                if (Equals(value, _criteriaCollection)) return;
+                _criteriaCollection = value;
+                OnPropertyChanged(nameof(CriteriaCollection));
+            }
+        }
 
         public Criterion Placeholder { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public Criterion AddCriterion(string criterionName, string criterionDescription, string criterionDirection, int linearSegments)
         {
@@ -53,6 +69,12 @@ namespace UTA.Models.DataBase
         public void Reset()
         {
             CriteriaCollection.Clear();
+        }
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

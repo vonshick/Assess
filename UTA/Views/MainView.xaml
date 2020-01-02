@@ -17,7 +17,8 @@
                       xmlns:converters="clr-namespace:UTA.Converters"
                       x:Class="UTA.Views.MainView" mc:Ignorable="d"
                       d:DataContext="{d:DesignInstance viewModels:MainViewModel}" Title="UTA" WindowState="Maximized"
-                      Width="1300" Height="700" MinWidth="800" MinHeight="600" Left="12" Top="12" Closing="ApplicationClosing">
+                      Width="1300" Height="700" MinWidth="800" MinHeight="600" Left="12" Top="12"
+                      Closing="ApplicationClosing">
   <controls:MetroWindow.Resources>
     <!--values-->
     <sys:Double x:Key="ExpanderHeaderHeight">26</sys:Double>
@@ -29,7 +30,6 @@
                    VerticalAlignment="Center" Foreground="{StaticResource ColorFontDark}" />
       </Grid>
     </ItemContainerTemplate>
-
 
     <ItemContainerTemplate x:Key="ExpanderWithPlusButtonHeaderTemplate">
       <DockPanel
@@ -99,13 +99,16 @@
       <Menu.Resources>
         <Thickness x:Key="MenuItemTopMargin" Top="4" />
         <Thickness x:Key="MenuItemBottomMargin" Bottom="4" />
+
         <Style x:Key="MenuBarItem" TargetType="{x:Type MenuItem}">
           <Setter Property="Padding" Value="8,3" />
         </Style>
+
         <Style TargetType="{x:Type MenuItem}">
           <Setter Property="Padding" Value="0,4" />
         </Style>
       </Menu.Resources>
+
       <MenuItem Header="File" Style="{StaticResource MenuBarItem}">
         <MenuItem Margin="{StaticResource MenuItemTopMargin}" Header="New">
           <i:Interaction.Triggers>
@@ -114,17 +117,43 @@
             </i:EventTrigger>
           </i:Interaction.Triggers>
         </MenuItem>
-        <MenuItem Header="Open">
+        <Separator />
+        <MenuItem Header="Open File">
           <i:Interaction.Triggers>
             <i:EventTrigger EventName="Click">
-              <i:CallMethodAction TargetObject="{Binding}" MethodName="OpenMenuItemClicked" />
+              <i:CallMethodAction TargetObject="{Binding}" MethodName="OpenFileMenuItemClicked" />
+            </i:EventTrigger>
+          </i:Interaction.Triggers>
+        </MenuItem>
+        <MenuItem Header="Open XMCDA Directory">
+          <i:Interaction.Triggers>
+            <i:EventTrigger EventName="Click">
+              <i:CallMethodAction TargetObject="{Binding}" MethodName="OpenXMCDAMenuItemClicked" />
             </i:EventTrigger>
           </i:Interaction.Triggers>
         </MenuItem>
         <Separator />
-        <MenuItem Header="Save" />
-        <MenuItem Header="Save As..." />
-        <MenuItem Header="Save Results As..." />
+        <MenuItem Header="Save" IsEnabled="{Binding IsThereAnyApplicationProgress}">
+          <i:Interaction.Triggers>
+            <i:EventTrigger EventName="Click">
+              <i:CallMethodAction TargetObject="{Binding}" MethodName="SaveMenuItemClicked" />
+            </i:EventTrigger>
+          </i:Interaction.Triggers>
+        </MenuItem>
+        <MenuItem Header="Save As..." IsEnabled="{Binding IsThereAnyApplicationProgress}">
+          <i:Interaction.Triggers>
+            <i:EventTrigger EventName="Click">
+              <i:CallMethodAction TargetObject="{Binding}" MethodName="SaveAsMenuItemClicked" />
+            </i:EventTrigger>
+          </i:Interaction.Triggers>
+        </MenuItem>
+        <MenuItem Header="Save With Results As..." IsEnabled="{Binding IsThereAnyApplicationProgress}">
+          <i:Interaction.Triggers>
+            <i:EventTrigger EventName="Click">
+              <i:CallMethodAction TargetObject="{Binding}" MethodName="SaveWithResultsAsMenuItemClicked" />
+            </i:EventTrigger>
+          </i:Interaction.Triggers>
+        </MenuItem>
         <Separator />
         <MenuItem Header="Settings">
           <i:Interaction.Triggers>
@@ -135,7 +164,7 @@
           </i:Interaction.Triggers>
         </MenuItem>
         <Separator />
-        <MenuItem Margin="{StaticResource MenuItemBottomMargin}" Header="Exit" Click="ExitMenuItemClicked"/>
+        <MenuItem Margin="{StaticResource MenuItemBottomMargin}" Header="Exit" Click="ExitMenuItemClicked" />
       </MenuItem>
       <MenuItem Header="Solution" Style="{StaticResource MenuBarItem}">
         <MenuItem Margin="{StaticResource MenuItemTopMargin}" Header="Solve">
@@ -183,8 +212,8 @@
                   IsChecked="True" Click="MenuBarPanelViewToggled" />
       </MenuItem>
       <MenuItem Header="Help" Style="{StaticResource MenuBarItem}">
-        <MenuItem Margin="{StaticResource MenuItemTopMargin}" Header="Documentation" />
-        <MenuItem Margin="{StaticResource MenuItemBottomMargin}" Header="About" />
+        <MenuItem Margin="{StaticResource MenuItemTopMargin}" Header="Documentation" Click="ShowDocumentationDialog" />
+        <MenuItem Margin="{StaticResource MenuItemBottomMargin}" Header="About" Click="ShowAboutDialog" />
       </MenuItem>
     </Menu>
 
@@ -318,18 +347,22 @@
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="Background" Value="Transparent" />
               </Style>
+
+              <Style x:Key="LeftPanelListViewItemBaseStyle" TargetType="ListViewItem">
+                <Setter Property="Margin" Value="0" />
+              </Style>
             </Grid.Resources>
 
             <Expander Name="AlternativesExpander" Header="Alternatives"
                       Expanded="Expander_Toggled" Collapsed="Expander_Toggled"
                       HeaderTemplate="{StaticResource ExpanderWithPlusButtonHeaderTemplate}" IsExpanded="True">
               <Expander.Resources>
-                <Style TargetType="{x:Type ListViewItem}">
+                <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource LeftPanelListViewItemBaseStyle}">
                   <Setter Property="Template">
                     <Setter.Value>
                       <ControlTemplate TargetType="{x:Type ListViewItem}">
                         <Button Template="{StaticResource LeftPanelListViewItemTemplateButtonTemplate}"
-                                Style="{x:Null}" Click="InstancePanelListItemClicked">
+                                Style="{x:Null}" Click="InstancePanelListItemClicked" Padding="0">
                           <ContentPresenter Margin="12,4,8,4" ContentTemplate="{TemplateBinding ContentTemplate}"
                                             Content="{TemplateBinding Content}" />
                         </Button>
@@ -367,11 +400,12 @@
               <ListView ItemsSource="{Binding Source={StaticResource CriteriaViewSource}}"
                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListView.ItemContainerStyle>
-                  <Style TargetType="{x:Type ListViewItem}">
+                  <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource LeftPanelListViewItemBaseStyle}">
                     <Setter Property="Template">
                       <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ListViewItem}">
-                          <Button Template="{StaticResource LeftPanelListViewItemTemplateButtonTemplate}" Style="{x:Null}" Click="InstancePanelListItemClicked">
+                          <Button Template="{StaticResource LeftPanelListViewItemTemplateButtonTemplate}"
+                                  Style="{x:Null}" Click="InstancePanelListItemClicked">
                             <GridViewRowPresenter Margin="0,4" Content="{TemplateBinding Content}"
                                                   Columns="{TemplateBinding GridView.ColumnCollection}" />
                           </Button>
@@ -386,13 +420,13 @@
                     <GridViewColumn Header="Name" Width="150">
                       <GridViewColumn.HeaderContainerStyle>
                         <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource MetroGridViewColumnHeader}">
-                          <Setter Property="Padding" Value="10,0,0,0"></Setter>
+                          <Setter Property="Padding" Value="10,0,0,0" />
                         </Style>
                       </GridViewColumn.HeaderContainerStyle>
 
                       <GridViewColumn.CellTemplate>
                         <DataTemplate>
-                          <TextBlock Text="{Binding Name}" Margin="6,0,0,0"></TextBlock>
+                          <TextBlock Text="{Binding Name}" Margin="6,0,0,0" />
                         </DataTemplate>
                       </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -421,6 +455,7 @@
         </Grid.RowDefinitions>
 
         <TabControl Name="TabControl" ItemsSource="{Binding Tabs}" BorderThickness="0"
+                    SelectionChanged="TabControlSelectionChanged"
                     SizeChanged="TabControlHeaderSizeChanged" LayoutUpdated="TabControlHeaderSizeChanged">
           <TabControl.Template>
             <ControlTemplate TargetType="{x:Type TabControl}">
@@ -478,7 +513,7 @@
                   </ScrollViewer.Template>
 
                   <DockPanel LastChildFill="True">
-                    <StackPanel Orientation="Horizontal" IsItemsHost="True" />
+                    <StackPanel Name="TabStackPanel" Orientation="Horizontal" IsItemsHost="True" />
                     <Border Name="TabHeadersFiller" Background="{StaticResource ColorInterface5}"
                             BorderBrush="{StaticResource ColorBorders1}" BorderThickness="0,0,0,1" />
                   </DockPanel>
@@ -660,7 +695,7 @@
             <Expander Name="ReferenceRankingExpander" Header="Reference" Grid.Row="1" Collapsed="Expander_Toggled"
                       Expanded="Expander_Toggled" IsExpanded="True"
                       HeaderTemplate="{StaticResource ExpanderPlainHeaderTemplate}">
-              <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+              <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                 <ItemsControl ItemsSource="{Binding ReferenceRanking.RankingsCollection}"
                               AlternationCount="10000">
                   <ItemsControl.ItemTemplate>

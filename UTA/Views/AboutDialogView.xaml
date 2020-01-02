@@ -1,0 +1,31 @@
+﻿<controls:MetroWindow x:Class="UTA.Views.AboutDialogView"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:local="clr-namespace:UTA.Views"
+                      mc:Ignorable="d"
+                      Title="About" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
+                      WindowStartupLocation="CenterOwner">
+  <StackPanel Margin="20,8,20,20">
+    <StackPanel.Resources>
+      <Style TargetType="TextBlock">
+        <Setter Property="FontSize" Value="{StaticResource CommonFontSize1}" />
+      </Style>
+    </StackPanel.Resources>
+    <TextBlock Text="UTA 1.0" FontSize="32" />
+    <TextBlock Text="Copyright © 2020" />
+    <TextBlock Text="GNU General Public License" />
+    <TextBlock Text="Laboratory of Intelligent Decision Support Systems" Margin="0,0,0,12" />
+    <TextBlock Text="Authors:" />
+    <TextBlock Text="Piotr Hełminiak" Margin="12,0,0,0" />
+    <TextBlock Text="Tomasz Pućka" Margin="12,0,0,0" />
+    <TextBlock Text="Marcin Rochowiak" Margin="12,0,0,0" />
+    <TextBlock Text="Jakub Wąsik" Margin="12,0,0,12" />
+    <TextBlock Text="Supervisor:" />
+    <TextBlock Text="Bartłomiej Prędki, PhD" Margin="12,0,0,12" />
+    <TextBlock Text="Consultant:" />
+    <TextBlock Text="Irmina Masłowska, PhD" Margin="12,0,0,0" />
+  </StackPanel>
+</controls:MetroWindow>

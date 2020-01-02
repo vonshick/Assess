@@ -1,29 +1,45 @@
-﻿using DataModel.Input;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using DataModel.Input;
+using UTA.Annotations;
 //using referenceRankingStructs = DataModel.Results.ReferenceRanking;
 
 namespace DataModel.Results
 {
-    public class ReferenceRanking
+    public class ReferenceRanking : INotifyPropertyChanged
     {
+        private ObservableCollection<ObservableCollection<Alternative>> _rankingsCollection;
+
         public ReferenceRanking(int numOfRanksToInitialize)
         {
             RankingsCollection = new ObservableCollection<ObservableCollection<Alternative>>();
             ExpandAvailableRanksNumber(numOfRanksToInitialize);
         }
+
+        public ObservableCollection<ObservableCollection<Alternative>> RankingsCollection
+        {
+            get => _rankingsCollection;
+            set
+            {
+                if (Equals(value, _rankingsCollection)) return;
+                _rankingsCollection = value;
+                OnPropertyChanged(nameof(RankingsCollection));
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
         private void ExpandAvailableRanksNumber(int size)
         {
-            while (RankingsCollection.Count < size)
-            {
-                AddRank();
-            }
+            while (RankingsCollection.Count < size) AddRank();
         }
 
         public void AddRank()
         {
-            ObservableCollection<Alternative> rankingCollection = new ObservableCollection<Alternative>();
+            var rankingCollection = new ObservableCollection<Alternative>();
             rankingCollection.CollectionChanged += CollectionChanged;
             RankingsCollection.Add(rankingCollection);
         }
@@ -48,20 +64,13 @@ namespace DataModel.Results
             RankingsCollection.Clear();
         }
 
-        public ObservableCollection<ObservableCollection<Alternative>> RankingsCollection { get; set; }
-
-        //public referenceRankingStructs getRankingAsListOfStructs()
-        //{
-        //    return ReferenceRankingConverter.ListToStruct(this);
-        //}
-
         private void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
             {
                 var collection = (ObservableCollection<Alternative>) sender;
                 int collectionIndex = RankingsCollection.IndexOf(collection);
-                if (e.NewItems.Count == collection.Count &&  collectionIndex == RankingsCollection.Count - 1)   //add last empty rank tab
+                if (e.NewItems.Count == collection.Count && collectionIndex == RankingsCollection.Count - 1) //add last empty rank tab
                     AddRank();
                 foreach (Alternative alternative in e.NewItems)
                 {
@@ -80,6 +89,12 @@ namespace DataModel.Results
         {
             if (RankingsCollection.Count < rank) ExpandAvailableRanksNumber(rank);
             RankingsCollection[rank - 1].Add(alternative);
+        }
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

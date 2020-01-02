@@ -5,15 +5,18 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using DataModel.Input;
 using DataModel.Results;
 using DataModel.Structs;
+using ExportModule;
 using ImportModule;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Win32;
+using Ookii.Dialogs.Wpf;
 using UTA.Annotations;
 using UTA.Interactivity;
 using UTA.Models.DataBase;
@@ -27,6 +30,7 @@ namespace UTA.ViewModels
         private readonly IDialogCoordinator _dialogCoordinator;
         public readonly ObservableCollection<ChartTabViewModel> ChartTabViewModels;
         private bool _preserveKendallCoefficient = true;
+        private SaveData _saveData;
         private ITab _tabToSelect;
 
         public MainViewModel(IDialogCoordinator dialogCoordinator)
@@ -36,10 +40,12 @@ namespace UTA.ViewModels
             ReferenceRanking = new ReferenceRanking(0);
             Results = new Results();
 
+            _dialogCoordinator = dialogCoordinator;
+            _saveData = new SaveData(null, null);
+
             Tabs = new ObservableCollection<ITab>();
             Tabs.CollectionChanged += TabsCollectionChanged;
             ShowTabCommand = new RelayCommand(tabViewModel => ShowTab((ITab) tabViewModel));
-            _dialogCoordinator = dialogCoordinator;
 
             CriteriaTabViewModel = new CriteriaTabViewModel(Criteria, Alternatives);
             AlternativesTabViewModel = new AlternativesTabViewModel(Criteria, Alternatives);
@@ -47,6 +53,17 @@ namespace UTA.ViewModels
             SettingsTabViewModel = new SettingsTabViewModel();
             ChartTabViewModels = new ObservableCollection<ChartTabViewModel>();
 
+            Alternatives.AlternativesCollection.CollectionChanged += AlternativesCollectionChanged;
+
+            Criteria.CriteriaCollection.CollectionChanged += InstancePropertyChanged;
+            Alternatives.AlternativesCollection.CollectionChanged += InstancePropertyChanged;
+            ReferenceRanking.RankingsCollection.CollectionChanged += InstancePropertyChanged;
+            Results.FinalRanking.FinalRankingCollection.CollectionChanged += InstancePropertyChanged;
+            Criteria.PropertyChanged += InstancePropertyChanged;
+            Alternatives.PropertyChanged += InstancePropertyChanged;
+            ReferenceRanking.PropertyChanged += InstancePropertyChanged;
+            Results.FinalRanking.PropertyChanged += InstancePropertyChanged;
+            Results.PropertyChanged += InstancePropertyChanged;
 
             // TODO: remove. for testing purposes
             Criteria.AddCriterion("Power", "", "Gain", 8);
@@ -79,8 +96,9 @@ namespace UTA.ViewModels
         public ReferenceRanking ReferenceRanking { get; set; }
         public Results Results { get; set; }
 
-        public RelayCommand ShowTabCommand { get; }
         public ObservableCollection<ITab> Tabs { get; }
+        public RelayCommand ShowTabCommand { get; }
+
         public CriteriaTabViewModel CriteriaTabViewModel { get; }
         public AlternativesTabViewModel AlternativesTabViewModel { get; }
         public ReferenceRankingTabViewModel ReferenceRankingTabViewModel { get; }
@@ -107,6 +125,13 @@ namespace UTA.ViewModels
                 OnPropertyChanged(nameof(TabToSelect));
             }
         }
+
+        public bool IsThereAnyApplicationProgress =>
+            Results.FinalRanking.FinalRankingCollection.Count != 0
+            || Results.PartialUtilityFunctions.Count != 0
+            || ReferenceRanking.RankingsCollection.Count != 0
+            || Alternatives.AlternativesCollection.Count != 0
+            || Criteria.CriteriaCollection.Count != 0;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -176,7 +201,13 @@ namespace UTA.ViewModels
                 return;
             }
 
-            // TODO: ShowTab(refrank) if reference ranking has more than two levels filled
+            if (!(ReferenceRanking.RankingsCollection.Count >= 2
+                  && ReferenceRanking.RankingsCollection[0].Count != 0
+                  && ReferenceRanking.RankingsCollection[1].Count != 0))
+            {
+                ShowTab(ReferenceRankingTabViewModel);
+                return;
+            }
 
             if (ChartTabViewModels.Count == 0)
             {
@@ -185,14 +216,17 @@ namespace UTA.ViewModels
             else
             {
                 var dialogResult = await _dialogCoordinator.ShowMessageAsync(this, "Losing current progress.",
-                    "Your current partial utilities and final ranking data will be lost.\nDo you want to continue?",
+                    "Your current partial utilities and final ranking data will be lost.\n" +
+                    "If you accidentally closed some partial utility plots, you can show them again by using Show menu option.\n" +
+                    "Do you want to continue?",
                     MessageDialogStyle.AffirmativeAndNegative,
                     new MetroDialogSettings
                     {
                         AffirmativeButtonText = "Yes",
                         NegativeButtonText = "Cancel",
-                        AnimateShow = false, AnimateHide = false,
-                        DefaultButtonFocus = MessageDialogResult.Affirmative
+                        DefaultButtonFocus = MessageDialogResult.Affirmative,
+                        AnimateShow = false,
+                        AnimateHide = false
                     });
                 if (dialogResult == MessageDialogResult.Affirmative) ShowChartTabs();
             }
@@ -203,10 +237,38 @@ namespace UTA.ViewModels
             if (!Tabs.Contains(tab)) Tabs.Add(tab);
         }
 
-        private void ShowChartTabs()
+        private async void ShowChartTabs()
         {
             foreach (var viewModel in ChartTabViewModels) Tabs.Remove(viewModel);
             ChartTabViewModels.Clear();
+
+            var invalidCriteriaValuesNames = new List<string>();
+            foreach (var criterion in Criteria.CriteriaCollection)
+                if (Math.Abs(criterion.MaxValue - criterion.MinValue) < 0.000000001)
+                    invalidCriteriaValuesNames.Add(criterion.Name);
+
+            if (invalidCriteriaValuesNames.Count != 0)
+            {
+                ShowTab(AlternativesTabViewModel);
+
+                var warningMessage = "Alternatives values on the following criteria have too high precision or are the same:\n";
+                foreach (var criterionName in invalidCriteriaValuesNames) warningMessage += $"{criterionName},\n";
+                warningMessage +=
+                    "Please provide lower precision values or at least two unique values on a whole set of alternatives values.";
+                await _dialogCoordinator.ShowMessageAsync(this,
+                    "Invalid alternatives values.",
+                    warningMessage,
+                    MessageDialogStyle.Affirmative,
+                    new MetroDialogSettings
+                    {
+                        AffirmativeButtonText = "OK",
+                        DefaultButtonFocus = MessageDialogResult.Affirmative,
+                        AnimateShow = false,
+                        AnimateHide = false
+                    });
+                return;
+            }
+
             foreach (var criterion in Criteria.CriteriaCollection)
             {
                 var viewModel = new ChartTabViewModel(criterion, SettingsTabViewModel);
@@ -217,32 +279,35 @@ namespace UTA.ViewModels
             if (ChartTabViewModels.Count > 0) ShowTab(ChartTabViewModels[0]);
         }
 
-        public bool IsThereAnyApplicationProgress()
-        {
-            return Results.FinalRanking.FinalRankingCollection.Count != 0 || ReferenceRanking.RankingsCollection.Count != 0 ||
-                   Alternatives.AlternativesCollection.Count != 0 || Criteria.CriteriaCollection.Count != 0;
-        }
-
-        public void NewSolution()
-        {
-            NewSolution(null, null);
-        }
-
+        // xaml enforces void return type
+        [UsedImplicitly]
         public async void NewSolution(object sender, RoutedEventArgs e)
         {
-            if (!IsThereAnyApplicationProgress()) return;
+            await NewSolution();
+        }
 
-            var dialogResult = await _dialogCoordinator.ShowMessageAsync(this, "Losing current progress.",
-                "Your progress will be lost. Do you want to continue?",
-                MessageDialogStyle.AffirmativeAndNegative,
+        public async Task<bool> NewSolution()
+        {
+            if (!IsThereAnyApplicationProgress) return true;
+
+            var saveDialogResult = await _dialogCoordinator.ShowMessageAsync(this,
+                "Losing current progress.",
+                "Your progress will be lost. Would you like to save it before continuing?",
+                MessageDialogStyle.AffirmativeAndNegativeAndSingleAuxiliary,
                 new MetroDialogSettings
                 {
                     AffirmativeButtonText = "Yes",
-                    NegativeButtonText = "Cancel",
-                    AnimateShow = false, AnimateHide = false,
-                    DefaultButtonFocus = MessageDialogResult.Affirmative
+                    NegativeButtonText = "No",
+                    FirstAuxiliaryButtonText = "Cancel",
+                    DialogResultOnCancel = MessageDialogResult.FirstAuxiliary,
+                    DefaultButtonFocus = MessageDialogResult.Affirmative,
+                    AnimateShow = false,
+                    AnimateHide = false
                 });
-            if (dialogResult != MessageDialogResult.Affirmative) return;
+
+            if (saveDialogResult == MessageDialogResult.FirstAuxiliary) return false;
+            if (saveDialogResult == MessageDialogResult.Affirmative)
+                await SaveTypeChooserDialog();
 
             Results.Reset();
             ReferenceRanking.Reset();
@@ -251,52 +316,178 @@ namespace UTA.ViewModels
             foreach (var chartTabViewModel in ChartTabViewModels)
                 Tabs.Remove(chartTabViewModel);
             ChartTabViewModels.Clear();
+            _saveData.IsSavingWithResults = null;
+            _saveData.FilePath = null;
+            return true;
+        }
+
+        private async Task SaveTypeChooserDialog()
+        {
+            var saveFileWithResultsDialog = await _dialogCoordinator.ShowMessageAsync(this,
+                "Choose save type.",
+                "Would you like to save your progress with or without results?",
+                MessageDialogStyle.AffirmativeAndNegative,
+                new MetroDialogSettings
+                {
+                    AffirmativeButtonText = "Save With Results",
+                    NegativeButtonText = "Save Without Results",
+                    DefaultButtonFocus = MessageDialogResult.Affirmative,
+                    AnimateShow = false,
+                    AnimateHide = false
+                });
+
+            if (saveFileWithResultsDialog == MessageDialogResult.Affirmative) SaveWithResultsAsMenuItemClicked();
+            else SaveAsMenuItemClicked();
         }
 
         [UsedImplicitly]
-        public void OpenMenuItemClicked(object sender, RoutedEventArgs e)
+        public async void OpenFileMenuItemClicked(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog
             {
-                Filter = "UTA Files (*.xmcda; *.xml; *.csv; *.utx)|*.xmcda;*.xml;*.csv;*.utx",
+                Filter = "UTA Input Files (*.xml; *.csv; *.utx)|*.xml;*.csv;*.utx",
                 InitialDirectory = AppDomain.CurrentDomain.BaseDirectory
             };
             if (openFileDialog.ShowDialog() != true) return;
+
+            if (!await NewSolution()) return;
+
             var filePath = openFileDialog.FileName;
             try
             {
-                if (filePath.EndsWith(".xmcda"))
-                {
-                    var dataLoader = new XMCDALoader();
-                    dataLoader.LoadData(filePath);
-                }
-                else if (filePath.EndsWith(".xml"))
-                {
-                    var dataLoader = new XMLLoader();
-                    dataLoader.LoadData(filePath);
-                }
-                else if (filePath.EndsWith(".csv"))
-                {
-                    var dataLoader = new CSVLoader();
-                    dataLoader.LoadData(filePath);
-                }
-                else if (filePath.EndsWith(".utx"))
-                {
-                    var dataLoader = new UTXLoader();
-                    dataLoader.LoadData(filePath);
-                }
+                DataLoader dataLoader = null;
+                if (filePath.EndsWith(".xml")) dataLoader = new XMLLoader();
+                else if (filePath.EndsWith(".csv")) dataLoader = new CSVLoader();
+                else if (filePath.EndsWith(".utx")) dataLoader = new UTXLoader();
+
+                if (dataLoader == null) return;
+
+                dataLoader.LoadData(filePath);
+                Criteria.CriteriaCollection = new ObservableCollection<Criterion>(dataLoader.CriterionList);
+                Alternatives.AlternativesCollection = new ObservableCollection<Alternative>(dataLoader.AlternativeList);
             }
-            catch (ImproperFileStructureException exception)
+            catch (Exception exception)
             {
-                Console.WriteLine(exception);
-                throw;
+                await ShowLoadErrorDialog(exception);
             }
+        }
+
+        [UsedImplicitly]
+        public async void OpenXMCDAMenuItemClicked(object sender, RoutedEventArgs e)
+        {
+            var openDirectoryDialog = new VistaFolderBrowserDialog {ShowNewFolderButton = true};
+            if (openDirectoryDialog.ShowDialog() != true) return;
+
+            if (!await NewSolution()) return;
+
+            var filePath = openDirectoryDialog.SelectedPath;
+            try
+            {
+                var dataLoader = new XMCDALoader();
+                dataLoader.LoadData(filePath);
+                Criteria.CriteriaCollection = new ObservableCollection<Criterion>(dataLoader.CriterionList);
+                Alternatives.AlternativesCollection = new ObservableCollection<Alternative>(dataLoader.AlternativeList);
+                // TODO: get reference and final ranking, and partial utilities (vonshick needs to update his modules).
+            }
+            catch (Exception exception)
+            {
+                await ShowLoadErrorDialog(exception);
+            }
+        }
+
+        private async Task ShowLoadErrorDialog(Exception exception)
+        {
+            await _dialogCoordinator.ShowMessageAsync(this,
+                "Loading error.",
+                exception is ImproperFileStructureException ifsException && ifsException.Message != null
+                    ? $"Can't read this file. An error was encountered with a following message:\n\"{exception.Message}\""
+                    : "Can't read this file.",
+                MessageDialogStyle.Affirmative,
+                new MetroDialogSettings
+                {
+                    AffirmativeButtonText = "OK",
+                    AnimateShow = false,
+                    AnimateHide = false,
+                    DefaultButtonFocus = MessageDialogResult.Affirmative
+                });
+        }
+
+        public async void SaveMenuItemClicked(object sender = null, RoutedEventArgs e = null)
+        {
+            if (_saveData.IsSavingWithResults == null || _saveData.FilePath == null)
+            {
+                await SaveTypeChooserDialog();
+                return;
+            }
+
+            var dataSaver = new XMCDAExporter(_saveData.FilePath, new List<Criterion>(Criteria.CriteriaCollection),
+                new List<Alternative>(Alternatives.AlternativesCollection), Results);
+            if (_saveData.IsSavingWithResults == true) dataSaver.saveSession();
+            else dataSaver.saveInput();
+        }
+
+        public void SaveAsMenuItemClicked(object sender = null, RoutedEventArgs e = null)
+        {
+            var saveXMCDADialog = new VistaFolderBrowserDialog
+            {
+                ShowNewFolderButton = true,
+                UseDescriptionForTitle = true,
+                Description = "Select XMCDA Output Directory"
+            };
+            if (saveXMCDADialog.ShowDialog() != true) return;
+
+            var directoryPath = saveXMCDADialog.SelectedPath;
+            var dataSaver = new XMCDAExporter(directoryPath, new List<Criterion>(Criteria.CriteriaCollection),
+                new List<Alternative>(Alternatives.AlternativesCollection), Results);
+
+            // TODO: add force saving (in case of overwrite)
+            dataSaver.saveInput();
+            _saveData.IsSavingWithResults = false;
+            _saveData.FilePath = directoryPath;
+        }
+
+        public void SaveWithResultsAsMenuItemClicked(object sender = null, RoutedEventArgs e = null)
+        {
+            var saveXMCDADialog = new VistaFolderBrowserDialog
+            {
+                ShowNewFolderButton = true,
+                UseDescriptionForTitle = true,
+                Description = "Select XMCDA Output Directory"
+            };
+            if (saveXMCDADialog.ShowDialog() != true) return;
+
+            var directoryPath = saveXMCDADialog.SelectedPath;
+            var dataSaver = new XMCDAExporter(directoryPath, new List<Criterion>(Criteria.CriteriaCollection),
+                new List<Alternative>(Alternatives.AlternativesCollection), Results);
+
+            if (Results.FinalRanking.FinalRankingCollection.Count != 0 && Results.PartialUtilityFunctions.Count != 0)
+                dataSaver.saveInput();
+            else dataSaver.saveSession();
+            _saveData.IsSavingWithResults = true;
+            _saveData.FilePath = directoryPath;
+        }
+
+        private void InstancePropertyChanged(object sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(IsThereAnyApplicationProgress));
         }
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private struct SaveData
+        {
+            public bool? IsSavingWithResults;
+            [CanBeNull] public string FilePath;
+
+            public SaveData(bool? isSavingWithResults, [CanBeNull] string filePath)
+            {
+                IsSavingWithResults = isSavingWithResults;
+                FilePath = filePath;
+            }
         }
     }
 }

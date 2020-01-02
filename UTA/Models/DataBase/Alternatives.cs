@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Linq;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using DataModel.Input;
+using UTA.Annotations;
+using System.Linq;
 using DataModel.Results;
 
 namespace UTA.Models.DataBase
 {
-    public class Alternatives
+    public class Alternatives : INotifyPropertyChanged
     {
+        private ObservableCollection<Alternative> _alternativesCollection;
+        private ObservableCollection<Alternative> _alternativesNotRankedCollection;
+
         public Alternatives(Criteria criteria)
         {
             Criteria = criteria;
@@ -18,11 +24,34 @@ namespace UTA.Models.DataBase
             ReferenceRanking = new ReferenceRanking(1);
         }
 
-        public ObservableCollection<Alternative> AlternativesCollection { get; set; }
-        public ObservableCollection<Alternative> AlternativesNotRankedCollection { get; set; }
+
+        public ObservableCollection<Alternative> AlternativesCollection
+        {
+            get => _alternativesCollection;
+            set
+            {
+                if (Equals(value, _alternativesCollection)) return;
+                _alternativesCollection = value;
+                OnPropertyChanged(nameof(AlternativesCollection));
+            }
+        }
+
+        public ObservableCollection<Alternative> AlternativesNotRankedCollection
+        {
+            get => _alternativesNotRankedCollection;
+            set
+            {
+                if (Equals(value, _alternativesNotRankedCollection)) return;
+                _alternativesNotRankedCollection = value;
+                OnPropertyChanged(nameof(AlternativesNotRankedCollection));
+            }
+        }
+
         public ReferenceRanking ReferenceRanking { get; set; }
         public Criteria Criteria { get; set; }
         public Alternative Placeholder { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public Alternative AddAlternative(string name, string description)
         {
@@ -113,6 +142,12 @@ namespace UTA.Models.DataBase
             if (e.NewItems != null)
                 foreach (Alternative alternative in e.NewItems)
                     alternative.ReferenceRank = null;
+        }
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

@@ -23,6 +23,7 @@ namespace UTA.Views
         private RepeatButton _scrollLeftButton;
         private RepeatButton _scrollRightButton;
         private ScrollViewer _tabScrollViewer;
+        private StackPanel _tabStackPanel;
 
         public MainView()
         {
@@ -40,7 +41,11 @@ namespace UTA.Views
             _menuItemBottomMargin = (Thickness) ShowMenu.FindResource("MenuItemBottomMargin");
             _viewmodel.PropertyChanged += (s, e) =>
             {
-                if (e.PropertyName == nameof(_viewmodel.TabToSelect)) TabControl.SelectedItem = _viewmodel.TabToSelect;
+                if (e.PropertyName == nameof(_viewmodel.TabToSelect))
+                {
+                    if (TabControl.SelectedItem == _viewmodel.TabToSelect) BringCurrentTabIntoView();
+                    else TabControl.SelectedItem = _viewmodel.TabToSelect;
+                }
             };
         }
 
@@ -67,6 +72,19 @@ namespace UTA.Views
             else if (_tabScrollViewer.ScrollableWidth < _scrollLeftButton.ActualWidth + _scrollRightButton.ActualWidth &&
                      _scrollRightButton.Visibility == Visibility.Visible)
                 _scrollRightButton.Visibility = _scrollLeftButton.Visibility = Visibility.Collapsed;
+        }
+
+
+        private void TabControlSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count == 0) return;
+            BringCurrentTabIntoView();
+        }
+
+        private void BringCurrentTabIntoView()
+        {
+            if (_tabStackPanel == null) _tabStackPanel = (StackPanel) TabControl.Template.FindName("TabStackPanel", TabControl);
+            ((FrameworkElement) _tabStackPanel.Children[TabControl.SelectedIndex]).BringIntoView();
         }
 
         private void Expander_Toggled(object sender, RoutedEventArgs e)
@@ -151,7 +169,7 @@ namespace UTA.Views
             }
         }
 
-
+        // updates Show MenuItem with chart tabs and manages right panel expanders
         private void ChartTabsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Reset)
@@ -193,11 +211,12 @@ namespace UTA.Views
 
         private async void ApplicationClosing(object sender, CancelEventArgs e)
         {
-            if (!_viewmodel.IsThereAnyApplicationProgress()) return;
+            if (!_viewmodel.IsThereAnyApplicationProgress) return;
             // cancel exit, because application doesn't wait for async function and closes anyway
             e.Cancel = true;
 
-            var dialogResult = await this.ShowMessageAsync("Quitting application.",
+            var dialogResult = await this.ShowMessageAsync(
+                "Quitting application.",
                 "You have unsaved progress. Would you like to save it before leaving?",
                 MessageDialogStyle.AffirmativeAndNegativeAndSingleAuxiliary,
                 new MetroDialogSettings
@@ -205,16 +224,31 @@ namespace UTA.Views
                     AffirmativeButtonText = "Yes",
                     NegativeButtonText = "No",
                     FirstAuxiliaryButtonText = "Cancel",
-                    AnimateShow = false, AnimateHide = false,
-                    DefaultButtonFocus = MessageDialogResult.Affirmative
+                    DialogResultOnCancel = MessageDialogResult.FirstAuxiliary,
+                    DefaultButtonFocus = MessageDialogResult.Affirmative,
+                    AnimateShow = false,
+                    AnimateHide = false
                 });
 
             if (dialogResult == MessageDialogResult.Affirmative)
             {
-                // TODO: save file
+                _viewmodel.SaveMenuItemClicked();
                 Application.Current.Shutdown();
             }
-            else if (dialogResult == MessageDialogResult.Negative) Application.Current.Shutdown();
+            else if (dialogResult == MessageDialogResult.Negative)
+            {
+                Application.Current.Shutdown();
+            }
+        }
+
+        private void ShowDocumentationDialog(object sender, RoutedEventArgs e)
+        {
+            new DocumentationDialogView().ShowDialog();
+        }
+
+        private void ShowAboutDialog(object sender, RoutedEventArgs e)
+        {
+            new AboutDialogView().ShowDialog();
         }
     }
 }
