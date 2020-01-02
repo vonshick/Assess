@@ -74,7 +74,7 @@
                     Path=(ItemsControl.AlternationIndex), 
                     RelativeSource={RelativeSource Mode=TemplatedParent}, 
                     FallbackValue=FAIL}"
-                          Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.RemoveRankCommand}">
+                          Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}, Path=DataContext.RemoveRankCommand}">
                     Remove
                   </Button>
                 </StackPanel>
@@ -99,7 +99,7 @@
                                    HorizontalAlignment="Center" />
                         <Button Grid.Column="2" Width="80" Margin="15,0"
                                 CommandParameter="{Binding}"
-                                Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.RemoveAlternativeFromRankCommand}">
+                                Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}, AncestorLevel=2}, Path=DataContext.RemoveAlternativeFromRankCommand}">
                           Remove
                         </Button>
                       </Grid>

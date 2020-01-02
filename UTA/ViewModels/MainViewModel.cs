@@ -38,9 +38,6 @@ namespace UTA.ViewModels
             Alternatives = new Alternatives(Criteria);
             ReferenceRanking = new ReferenceRanking(0);
 
-            RemoveRankCommand = new RelayCommand(rank => RemoveRank((int) rank));
-            RemoveAlternativeFromRankCommand = new RelayCommand(alternative => RemoveAlternativeFromRank((Alternative) alternative));
-
             Tabs = new ObservableCollection<ITab>();
             Tabs.CollectionChanged += TabsCollectionChanged;
             ShowTabCommand = new RelayCommand(tabViewModel => ShowTab((ITab) tabViewModel));
@@ -92,8 +89,6 @@ namespace UTA.ViewModels
         public Alternatives Alternatives { get; set; }
         public Criteria Criteria { get; set; }
         public ReferenceRanking ReferenceRanking { get; set; }
-        public RelayCommand RemoveAlternativeFromRankCommand { get; }
-        public RelayCommand RemoveRankCommand { get; }
         public RelayCommand ShowTabCommand { get; }
         public ObservableCollection<ITab> Tabs { get; }
         public CriteriaTabViewModel CriteriaTabViewModel { get; }
@@ -159,18 +154,6 @@ namespace UTA.ViewModels
         {
             if (Tabs.Contains(tabModel)) TabToSelect = tabModel;
             else Tabs.Add(tabModel);
-        }
-
-        public void RemoveAlternativeFromRank(Alternative alternative)
-        {
-            Console.WriteLine("Removing alternative " + alternative.Name + " from rank " + alternative.ReferenceRank);
-            Alternatives.RemoveAlternativeFromRank(alternative);
-            //            GenerateAlternativesTable();
-        }
-
-        public void RemoveRank(int rank)
-        {
-            Alternatives.RemoveRank(rank);
         }
 
         [UsedImplicitly]
