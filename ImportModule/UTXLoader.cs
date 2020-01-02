@@ -87,9 +87,10 @@ namespace ImportModule
                                             saveCriterion = true;
                                         }
                                         break;
+                                    case "SEGMENTS":
+                                        break;
                                     default:
-                                        Console.WriteLine("Improper XML structure");
-                                        return;
+                                        throw new Exception("Attribute " + attributePart.Name + " is not compatible with application.");
                                 }
                             }
 
@@ -114,46 +115,53 @@ namespace ImportModule
                     {
                         foreach (XmlNode instance in xmlNode)
                         {
+                            // check if number of all child nodes (except INFO node - which isn't about criterion) is equal to criterionList.Count
+                            int alternativesCountValidation = 0;
                             Alternative alternative = new Alternative() { Name = checkAlternativesNamesUniqueness(instance.Attributes["ObjID"].Value) };
-
-                            if ((instance.ChildNodes.Count - 1) != criterionList.Count)
-                            {
-                                throw new ImproperFileStructureException(alternative.Name + ": there are provided " + (instance.ChildNodes.Count - 1) + " criteria values and required are " + criterionList.Count);
-                            }
-
                             List<CriterionValue> criteriaValuesList = new List<CriterionValue>();
+
 
                             foreach (XmlNode instancePart in instance)
                             {
-                                var value = instancePart.Attributes["Value"].Value;
-                                var attributeName = instancePart.Attributes["AttrID"].Value;
-
-                                if (attributeName == descriptionAttributeName)
+                                // we avoid RANK nodes
+                                if (instancePart.Name.Equals("VALUE")) 
                                 {
-                                    alternative.Description = value;
-                                }
-                                else
-                                {
-                                    Criterion criterion = criterionList.Find(element => element.Name == attributeName);
+                                    var value = instancePart.Attributes["Value"].Value;
+                                    var attributeName = instancePart.Attributes["AttrID"].Value;
 
-                                    if (criterion == null)
+                                    if (attributeName == descriptionAttributeName)
                                     {
-                                        throw new ImproperFileStructureException(alternative.Name + ": Criterion with name " + attributeName + " does not exist");
-                                    }
-
-                                    checkIfValueIsValid(value, criterion.Name, alternative.Name);
-
-                                    if (criterion.IsEnum)
-                                    {
-                                        float enumValue = criterion.EnumDictionary[value];
-                                        //so far we save only numerical value of enum in attribute
-                                        criteriaValuesList.Add(new CriterionValue(criterion.Name, enumValue));
+                                        alternative.Description = value;
                                     }
                                     else
                                     {
-                                        criteriaValuesList.Add(new CriterionValue(criterion.Name, float.Parse(value, CultureInfo.InvariantCulture)));
+                                        alternativesCountValidation++;
+                                        Criterion criterion = criterionList.Find(element => element.Name == attributeName);
+
+                                        if (criterion == null)
+                                        {
+                                            throw new ImproperFileStructureException(alternative.Name + ": Criterion with name " + attributeName + " does not exist");
+                                        }
+
+                                        checkIfValueIsValid(value, criterion.Name, alternative.Name);
+
+                                        if (criterion.IsEnum)
+                                        {
+                                            float enumValue = criterion.EnumDictionary[value];
+                                            //so far we save only numerical value of enum in attribute
+                                            criteriaValuesList.Add(new CriterionValue(criterion.Name, enumValue));
+                                        }
+                                        else
+                                        {
+                                            criteriaValuesList.Add(new CriterionValue(criterion.Name, float.Parse(value, CultureInfo.InvariantCulture)));
+                                        }
                                     }
                                 }
+                            }
+
+                            if (alternativesCountValidation != criterionList.Count)
+                            {
+                                throw new ImproperFileStructureException(alternative.Name + ": there are provided " + alternativesCountValidation + " criteria values and required are " + criterionList.Count);
                             }
 
                             alternative.CriteriaValuesList = criteriaValuesList;
