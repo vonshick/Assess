@@ -28,7 +28,7 @@ namespace ImportModule
             if (alternativeValues.Length != numberOfColumns)
             {
                 //TODO vonshick WARNINGS
-                throw new ImproperFileStructureException("Improper number of columns in line " + lineNumber.ToString() + " of CSV file");
+                throw new ImproperFileStructureException("Improper number of columns in line " + lineNumber.ToString() + " of CSV file.");
             }
 
             return (alternativeValues);
@@ -60,64 +60,38 @@ namespace ImportModule
             ValidateFilePath(filePath);
             ValidateFileExtension(filePath, ".csv");
 
-            try
+
+            using (var reader = new StreamReader(filePath, Encoding.UTF8))
             {
-                using (var reader = new StreamReader(filePath, Encoding.UTF8))
+
+                lineNumber++;
+                string firstLine = reader.ReadLine();
+                validateStructure(firstLine);
+
+                string[] criterionDirectionsArray = firstLine.Split(separator);
+
+                string[] criterionNamesArray = ReadNewLine(reader);
+                // iterating from 1 because first column is empty
+                for (int i = 1; i < criterionDirectionsArray.Length; i++)
                 {
-
-                    lineNumber++;
-                    string firstLine = reader.ReadLine();
-                    validateStructure(firstLine);
-
-                    string[] criterionDirectionsArray = firstLine.Split(separator);
-
-                    string[] criterionNamesArray = ReadNewLine(reader);
-                    // iterating from 1 because first column is empty
-                    for (int i = 1; i < criterionDirectionsArray.Length; i++)
-                    {
-                        // for CSV ID and Name are the same value
-                        criterionList.Add(new Criterion(checkCriteriaNamesUniqueness(criterionNamesArray[i]), criterionDirectionsArray[i]) { ID = checkCriteriaNamesUniqueness(criterionNamesArray[i]) });
-                    }
-
-                    while (!reader.EndOfStream)
-                    {
-                        var values = ReadNewLine(reader);
-
-                        Alternative alternative = new Alternative { Name = checkAlternativesNamesUniqueness(values[0]), CriteriaValuesList = new List<CriterionValue>() };
-
-                        for (int i = 0; i < criterionList.Count; i++)
-                        {
-                            checkIfValueIsValid(values[i + 1], criterionList[i].Name, alternative.Name);
-                            alternative.CriteriaValuesList.Add(new CriterionValue(criterionList[i].Name, float.Parse(values[i + 1], CultureInfo.InvariantCulture)));
-                        }
-
-                        alternativeList.Add(alternative);
-                    }
-                }
-            }
-            catch (Exception exception)
-            {
-                if (exception is ImproperFileStructureException)
-                {
-                    Trace.WriteLine(exception.Message);
-                }
-                else
-                {
-                    //TODO vonshick WARNINGS
-                    // if process failed while processing first line 
-                    // than it is possible that the structure of whole file is wrong
-                    if (lineNumber > 1)
-                    {
-                        Trace.WriteLine("The process failed while processing line " + lineNumber.ToString() + " of CSV file");
-                        Trace.WriteLine("Error: " + exception.Message);
-                    }
-                    else
-                    {
-                        Trace.WriteLine("Processing CSV file " + filePath + " failed.");
-                        Trace.WriteLine("Error: " + exception.Message);
-                    }
+                    // for CSV ID and Name are the same value
+                    criterionList.Add(new Criterion(checkCriteriaNamesUniqueness(criterionNamesArray[i]), criterionDirectionsArray[i]) { ID = checkCriteriaNamesUniqueness(criterionNamesArray[i]) });
                 }
 
+                while (!reader.EndOfStream)
+                {
+                    var values = ReadNewLine(reader);
+
+                    Alternative alternative = new Alternative { Name = checkAlternativesNamesUniqueness(values[0]), CriteriaValuesList = new List<CriterionValue>() };
+
+                    for (int i = 0; i < criterionList.Count; i++)
+                    {
+                        checkIfValueIsValid(values[i + 1], criterionList[i].Name, alternative.Name);
+                        alternative.CriteriaValuesList.Add(new CriterionValue(criterionList[i].Name, float.Parse(values[i + 1], CultureInfo.InvariantCulture)));
+                    }
+
+                    alternativeList.Add(alternative);
+                }
             }
         }
     }

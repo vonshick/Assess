@@ -51,7 +51,7 @@ namespace ImportModule
                     } 
                     else 
                     {
-                        throw new System.Exception("There was no criterion in alternative " + alternativeList[j].Name + " called " + criterionList[i].Name);
+                        throw new System.Exception("There was no criterion in alternative " + alternativeList[j].Name + " called " + criterionList[i].Name + ".");
                     }
                 }
 
@@ -65,7 +65,7 @@ namespace ImportModule
             if (!File.Exists(@path))
             {
                 //TODO vonshick WARNINGS
-                throw (new FileNotFoundException("File " + path + " does not exists!"));
+                throw new FileNotFoundException("File " + path + " does not exist.");
             }
         }
 
@@ -75,7 +75,7 @@ namespace ImportModule
             if (!Path.GetExtension(path).Equals(expectedExtension))
             {
                 //TODO vonshick WARNINGS
-                throw (new ImproperFileStructureException("Wrong extension of the file " + path + ". Expected extension: " + expectedExtension));
+                throw new ImproperFileStructureException("Wrong extension of the file " + path + ". Expected extension: " + expectedExtension + ".");
             }
 
         }
@@ -118,7 +118,7 @@ namespace ImportModule
         {
             if (id.Equals(""))
             {
-                throw new ImproperFileStructureException("Criterion ID can not be empty string!");
+                throw new ImproperFileStructureException("Criterion ID can not be an empty string.");
             }
 
             string[] usedIds = criterionList.Select(criterion => criterion.ID).ToArray();
@@ -126,7 +126,7 @@ namespace ImportModule
             {
                 if (id.Equals(usedId))
                 {
-                    throw new ImproperFileStructureException("Criterion ID '" + id + "' has been already used!");
+                    throw new ImproperFileStructureException("Criterion ID '" + id + "' has been already used.");
                 }
             }
 
@@ -137,13 +137,13 @@ namespace ImportModule
         {
             if (value.Equals(""))
             {
-                throw new ImproperFileStructureException("Value can not be empty. Alternative " + alternativeId + ", criterion " + criterionId);
+                throw new ImproperFileStructureException("Value can not be empty. Alternative " + alternativeId + ", criterion " + criterionId + ".");
             }
 
             float output = 0;
             if (!float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out output))
             {
-                throw new ImproperFileStructureException("Improper value format '" + value + "'. Value has to be floating point. Alternative " + alternativeId + ", criterion " + criterionId);
+                throw new ImproperFileStructureException("Improper value format '" + value + "'. Value has to be floating point. Alternative " + alternativeId + ", criterion " + criterionId + ".");
             }
         }
 
@@ -151,7 +151,7 @@ namespace ImportModule
         {
             if (newName.Equals(""))
             {
-                throw new ImproperFileStructureException("Criterion name can not be empty string!");
+                throw new ImproperFileStructureException("Criterion name can not be an empty string.");
             }
 
             string[] usedNames = criterionList.Select(criterion => criterion.Name).ToArray();
@@ -162,7 +162,7 @@ namespace ImportModule
         {
             if (newName.Equals(""))
             {
-                throw new ImproperFileStructureException("Alternative name can not be empty string!");
+                throw new ImproperFileStructureException("Alternative name can not be an empty string.");
             }
 
             string[] usedNames = alternativeList.Select(alternative => alternative.Name).ToArray();

@@ -79,7 +79,7 @@ namespace ImportModule
                 // one of children nodes is the name node  
                 if ((xmlNode.ChildNodes.Count - 1) != criterionList.Count)
                 {
-                    throw new ImproperFileStructureException("There are provided " + (xmlNode.ChildNodes.Count - 1) + " criteria values and required are " + criterionList.Count + ": node " + nodeCounter + " of alternativePerformances");
+                    throw new ImproperFileStructureException("There are provided " + (xmlNode.ChildNodes.Count - 1) + " criteria values and required are " + criterionList.Count + ": node " + nodeCounter + " of alternativePerformances.");
                 }
 
                 foreach (XmlNode performance in xmlNode.ChildNodes)
@@ -96,7 +96,7 @@ namespace ImportModule
 
                         if (matchingCriterion == null)
                         {
-                            throw new ImproperFileStructureException(alternative.Name + ": Criterion with ID " + criterionID + " does not exist");
+                            throw new ImproperFileStructureException("Error while processing alternative " + alternative.Name + ": criterion with ID " + criterionID + " does not exist.");
                         }
 
                         string value = performance.ChildNodes[1].FirstChild.InnerText;
@@ -188,24 +188,11 @@ namespace ImportModule
         override protected void ProcessFile(string xmcdaDirectory)
         {
             this.xmcdaDirectory = xmcdaDirectory;
-            try
-            {
-                LoadCriteria();
-                LoadCriteriaScales();
-                LoadPerformanceTable();
-                setMinAndMaxCriterionValues();
-            }
-            catch (Exception exception)
-            {
-                if (exception is ImproperFileStructureException)
-                {
-                    Trace.WriteLine(exception.Message);
-                }
-                else
-                {
-                    Trace.WriteLine("Loading XML " + currentlyProcessedFile + " failed! " + exception.Message);
-                }
-            }
+
+            LoadCriteria();
+            LoadCriteriaScales();
+            LoadPerformanceTable();
+            setMinAndMaxCriterionValues();
         }
 
         public void LoadResults()
