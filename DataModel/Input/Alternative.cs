@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
@@ -7,20 +6,17 @@ namespace DataModel.Input
 {
     public class Alternative : INotifyPropertyChanged
     {
+        private Dictionary<Criterion, float> _criteriaValues;
+        private string _description;
+
+        private string _name;
+        private int? _referenceRank;
+
         public Alternative()
         {
             CriteriaValues = new Dictionary<Criterion, float>();
             CriteriaValuesList = new List<CriterionValue>();
             ReferenceRank = null;
-        }
-
-        public void InitCriteriaValues(ObservableCollection<Criterion> criteriaCollection)
-        {
-            foreach (Criterion criterion in criteriaCollection)
-            {
-                CriterionValue criterionValue = new CriterionValue(criterion.Name, null);
-                AddCriterionValue(criterionValue);
-            }
         }
 
         public Alternative(string name, string description, ObservableCollection<Criterion> criteriaCollection)
@@ -33,30 +29,12 @@ namespace DataModel.Input
             InitCriteriaValues(criteriaCollection);
         }
 
-        private string _name;
-        private string _description;
-        private Dictionary<Criterion, float> _criteriaValues;
-        private int? _referenceRank;
-
         //todo make sure the order is same as in criteriaList
         public List<CriterionValue> CriteriaValuesList
         {
             //todo on change event like in CriteriaValues to update everything after adding alternative from datagrid's last row
-            get; set;
-        }
-
-        public void AddCriterionValue(CriterionValue criterionValue)
-        {
-            CriteriaValuesList.Add(criterionValue);
-//            Console.WriteLine("Added to alternative " + Name + " value (" + criterionValue.Name + "," + criterionValue.Value + ")");
-        }
-
-        public void UpdateCriterionValueName(string oldName, string newName)
-        {
-            //call it in criteria class when criteriaList changes. Event should be handled there
-            CriterionValue criterionValue = CriteriaValuesList.Find(c => c.Name == oldName);
-            criterionValue.Name = newName;
-//            Console.WriteLine("Updated alternative " + Name + ": set crit name from " + oldName + " to " + newName);
+            get;
+            set;
         }
 
         public string Name
@@ -71,6 +49,7 @@ namespace DataModel.Input
                 }
             }
         }
+
         public string Description
         {
             get => _description;
@@ -113,12 +92,30 @@ namespace DataModel.Input
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public void InitCriteriaValues(ObservableCollection<Criterion> criteriaCollection)
+        {
+            foreach (var criterion in criteriaCollection)
+            {
+                var criterionValue = new CriterionValue(criterion.Name, null);
+                AddCriterionValue(criterionValue);
+            }
+        }
+
+        public void AddCriterionValue(CriterionValue criterionValue)
+        {
+            CriteriaValuesList.Add(criterionValue);
+        }
+
+        public void UpdateCriterionValueName(string oldName, string newName)
+        {
+            var criterionValue = CriteriaValuesList.Find(c => c.Name == oldName);
+            criterionValue.Name = newName;
+        }
+
         private void OnPropertyChanged(string propname)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propname));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propname));
         }
     }
 }

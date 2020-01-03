@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel;
+using System.Windows;
+using System.Windows.Controls;
 using DataModel.PropertyChangedExtended;
 using UTA.Models.DataBase;
 using UTA.Models.Tab;
-using UTA.Views;
 
 namespace UTA.ViewModels
 {
@@ -22,6 +23,14 @@ namespace UTA.ViewModels
         {
             var eExtended = (PropertyChangedExtendedEventArgs<string>) e;
             Alternatives.UpdateCriteriaValueName(eExtended.OldValue, eExtended.NewValue);
+        }
+
+        public void DataGridUnloaded(object sender, RoutedEventArgs e)
+        {
+            var grid = (DataGrid) sender;
+            if (!grid.IsReadOnly)
+                RemovePlaceholder();
+            grid.CommitEdit(DataGridEditingUnit.Row, true);
         }
 
         public void AddPlaceholder()

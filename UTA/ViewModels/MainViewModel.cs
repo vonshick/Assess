@@ -20,13 +20,6 @@ namespace UTA.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        //todo delete if not used
-        public static Dictionary<string, string> CriterionDirectionTypes = new Dictionary<string, string>
-        {
-            {"g", "Gain"},
-            {"c", "Cost"}
-        };
-
         private readonly IDialogCoordinator _dialogCoordinator;
         public readonly ObservableCollection<ChartTabViewModel> ChartTabViewModels;
         private bool _preserveKendallCoefficient = true;

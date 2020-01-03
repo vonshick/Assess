@@ -5,7 +5,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Media;
 using DataModel.Input;
-using UTA.Models.DataValidation;
 using UTA.OtherViewClasses;
 using UTA.ViewModels;
 
@@ -13,9 +12,8 @@ namespace UTA.Views
 {
     public partial class AlternativesTab : UserControl
     {
-        private AlternativesTabViewModel _viewmodel;
-
         private int _errorCount;
+        private AlternativesTabViewModel _viewmodel;
 
         public AlternativesTab()
         {
@@ -27,20 +25,8 @@ namespace UTA.Views
         private void ViewLoaded(object sender, RoutedEventArgs e)
         {
             _viewmodel = ((MainViewModel) DataContext).AlternativesTabViewModel;
-            EditAlternativesDataGrid.AddingNewItem += _viewmodel.AddAlternativeFromDataGrid;
             AddAlternativesDataGridCriteriaColumns();
-            ButtonEditAlternatives.Content = "Editing is OFF";
-            EditAlternativesDataGrid.Columns[0].Visibility = Visibility.Collapsed;
             AddHandler(Validation.ErrorEvent, new RoutedEventHandler(OnErrorEvent));
-            EditAlternativesDataGrid.Unloaded += DataGridUnloaded;
-        }
-
-        private void DataGridUnloaded(object sender, RoutedEventArgs e)
-        {
-            var grid = (DataGrid) sender;
-            if (!grid.IsReadOnly)
-                _viewmodel.RemovePlaceholder();
-            grid.CommitEdit(DataGridEditingUnit.Row, true);
         }
 
         //todo could find better way for it if enough time
@@ -95,7 +81,7 @@ namespace UTA.Views
                 _viewmodel.RemovePlaceholder();
             }
             else
-            { 
+            {
                 ButtonEditAlternatives.Content = "Editing is ON";
                 EditAlternativesDataGrid.Columns[0].Visibility = Visibility.Visible;
                 EditAlternativesDataGrid.ItemContainerGenerator.StatusChanged += ItemContainerGeneratorStatusChanged;
@@ -106,18 +92,15 @@ namespace UTA.Views
         private void NewRowCellFocusLost(object sender, EventArgs e)
         {
             var cell = (DataGridCell) sender;
-            if (cell.IsEditing)
-                if (((TextBox) cell.Content).Text == "")
-                {
-                    if ((string) cell.Column.Header == "Name")
-                        _viewmodel.Alternatives
-                            .AlternativesCollection[_viewmodel.Alternatives.AlternativesCollection.Count - 1]
-                            .Name = "name";
-                    else
-                        _viewmodel.Alternatives
-                            .AlternativesCollection[_viewmodel.Alternatives.AlternativesCollection.Count - 1]
-                            .Description = "description";
-                }
+            if (cell.IsEditing && ((TextBox) cell.Content).Text == "")
+                if ((string) cell.Column.Header == "Name")
+                    _viewmodel.Alternatives
+                        .AlternativesCollection[_viewmodel.Alternatives.AlternativesCollection.Count - 1]
+                        .Name = "name";
+                else
+                    _viewmodel.Alternatives
+                        .AlternativesCollection[_viewmodel.Alternatives.AlternativesCollection.Count - 1]
+                        .Description = "description";
         }
 
         private void NewRowCellClicked(object sender, EventArgs e)
@@ -141,6 +124,7 @@ namespace UTA.Views
             }
         }
 
+        //todo validation, might be useful
 //        public bool IsValid(DependencyObject parent)
 //        {
 //            if (Validation.GetHasError(parent))
@@ -167,6 +151,8 @@ namespace UTA.Views
                 row = (DataGridRow) EditAlternativesDataGrid.ItemContainerGenerator.ContainerFromIndex(index);
             }
 
+            if (row == null)
+                Console.WriteLine("null cell: row: " + index);
             return row;
         }
 
@@ -176,29 +162,23 @@ namespace UTA.Views
             var cell = (DataGridCell) presenter.ItemContainerGenerator.ContainerFromIndex(index);
             if (cell == null)
             {
-                //todo check if works
                 EditAlternativesDataGrid.UpdateLayout();
                 EditAlternativesDataGrid.ScrollIntoView(row, EditAlternativesDataGrid.Columns[index]);
                 cell = (DataGridCell) presenter.ItemContainerGenerator.ContainerFromIndex(index);
             }
-            if(cell == null)
-                Console.WriteLine("null cell: rwo: " + row + " column: " + index);
+
+            if (cell == null)
+                Console.WriteLine("null cell: row: " + row + " column: " + index);
             return cell;
         }
 
-        private int c; 
         private void ItemContainerGeneratorStatusChanged(object sender, EventArgs e)
         {
             if (EditAlternativesDataGrid.ItemContainerGenerator.Status
                 == GeneratorStatus.ContainersGenerated && !EditAlternativesDataGrid.IsReadOnly)
             {
-                Console.WriteLine("ItemContainerGeneratorStatusChanged " + c++);
                 //todo: error, still can return null! happened with lot of criteria and when clicked cell in criteria column
                 var row = GetAlternativesDataGridRow(EditAlternativesDataGrid.Items.Count - 1);
-                //                  Setter italic = new Setter(TextBlock.FontStyleProperty, FontStyles.Italic, null);
-                //                  Style newStyle = new Style(row.GetType());
-                //                  newStyle.Setters.Add(italic);
-                //                  row.Style = newStyle;
                 EditAlternativesDataGrid.ItemContainerGenerator.StatusChanged -=
                     ItemContainerGeneratorStatusChanged;
 
@@ -236,8 +216,6 @@ namespace UTA.Views
 
             var critResName = "criterion[" + startingIndex + "]";
             EditAlternativesDataGrid.Resources.Add(critResName, bindingProxy);
-            //            textColumn.DataContext = (Criterion)header.Resources["criterion"];
-            //            textColumn.Header = new Binding() { Path = new PropertyPath("Name"), Source = (Criterion)EditAlternativesDataGrid.Resources[critResName] };
             var header = new TextBlock();
             header.SetBinding(TextBlock.TextProperty,
                 new Binding

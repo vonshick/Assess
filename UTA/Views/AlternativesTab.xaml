@@ -6,6 +6,7 @@
              xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:mainViewModel="clr-namespace:UTA.ViewModels"
              xmlns:dataValidation="clr-namespace:UTA.Models.DataValidation"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="900"
              d:DataContext="{d:DesignInstance mainViewModel:MainViewModel}"
@@ -28,7 +29,7 @@
       </Grid.ColumnDefinitions>
 
       <Button Grid.Row="1" Grid.Column="1" x:Name="ButtonEditAlternatives" Click="EditAlternativesSwitchClicked"
-              Content="Edit is off"
+              Content="Editing is OFF"
               MaxWidth="90" Width="Auto" Margin="0, 5" />
 
       <DataGrid Grid.Row="2" Grid.Column="1"
@@ -36,12 +37,19 @@
                 ItemsSource="{Binding Alternatives.AlternativesCollection}"
                 CanUserAddRows="False" AutoGenerateColumns="False"
                 BorderBrush="Gray" BorderThickness="3">
+
+        <i:Interaction.Triggers>
+          <i:EventTrigger EventName="Unloaded">
+            <i:CallMethodAction TargetObject="{Binding}" MethodName="DataGridUnloaded" />
+          </i:EventTrigger>
+        </i:Interaction.Triggers>
+
         <DataGrid.Resources>
           <CollectionViewSource x:Key="AlternativesColl" Source="{Binding Path=Alternatives.AlternativesCollection}" />
         </DataGrid.Resources>
 
         <DataGrid.Columns>
-          <DataGridTemplateColumn>
+          <DataGridTemplateColumn Visibility="Collapsed">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
                 <Button Click="RemoveAlternativeButtonClicked">Remove</Button>

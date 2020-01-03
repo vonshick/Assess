@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using UTA.ViewModels;
@@ -13,7 +14,7 @@ namespace UTA.Views
         {
             Loaded += ViewLoaded;
             InitializeComponent();
-            AlternativesListView.GiveFeedback += OnGiveFeedback;
+//            AlternativesListView.GiveFeedback += OnGiveFeedback;
         }
 
         private void ViewLoaded(object sender, RoutedEventArgs e)
@@ -21,8 +22,10 @@ namespace UTA.Views
             _viewmodel = ((MainViewModel) DataContext).ReferenceRankingTabViewModel;
         }
 
+        //todo not working yet, used in xaml with callmethodaction
         protected void OnGiveFeedback(object o, GiveFeedbackEventArgs e)
         {
+            Console.WriteLine("OnGiveFeedback");
             e.UseDefaultCursors = false;
             Mouse.SetCursor(Cursors.Hand);
             e.Handled = true;

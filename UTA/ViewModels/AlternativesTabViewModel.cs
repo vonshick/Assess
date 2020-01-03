@@ -1,4 +1,6 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Specialized;
+using System.Windows;
 using System.Windows.Controls;
 using DataModel.Input;
 using UTA.Models.DataBase;
@@ -19,15 +21,12 @@ namespace UTA.ViewModels
         public Criteria Criteria { get; }
         public Alternatives Alternatives { get; }
 
-        public void AddAlternative(string name, string description)
+        public void DataGridUnloaded(object sender, RoutedEventArgs e)
         {
-            Alternatives.AddAlternative(name, description);
-        }
-
-        public void AddAlternativeFromDataGrid(object sender, AddingNewItemEventArgs e)
-        {
-            var alternative = new Alternative("initName", "initDesc", Criteria.CriteriaCollection);
-            e.NewItem = alternative;
+            var grid = (DataGrid) sender;
+            if (!grid.IsReadOnly)
+                RemovePlaceholder();
+            grid.CommitEdit(DataGridEditingUnit.Row, true);
         }
 
         public void AddPlaceholder()

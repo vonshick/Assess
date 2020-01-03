@@ -8,6 +8,7 @@
              xmlns:dragDropFramework="urn:gong-wpf-dragdrop"
              xmlns:mainViewModel="clr-namespace:UTA.ViewModels"
              xmlns:otherViewClasses="clr-namespace:UTA.OtherViewClasses"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="900"
              d:DataContext="{d:DesignInstance mainViewModel:MainViewModel}"
@@ -39,6 +40,13 @@
                   dragDropFramework:DragDrop.IsDragSource="True"
                   dragDropFramework:DragDrop.IsDropTarget="True"
                   dragDropFramework:DragDrop.DropHandler="{StaticResource AlternativeDropHandler}">
+
+          <i:Interaction.Triggers>
+            <i:EventTrigger EventName="GiveFeedback">
+              <i:CallMethodAction TargetObject="{Binding}" MethodName="OnGiveFeedback" />
+            </i:EventTrigger>
+          </i:Interaction.Triggers>
+
           <ListView.View>
             <GridView>
               <GridViewColumn Header="Name" Width="120" DisplayMemberBinding="{Binding Name}" />
@@ -69,14 +77,12 @@
                     FallbackValue=FAIL, 
                     StringFormat={}Rank {0}}"
                     HorizontalAlignment="Center" />
-                  <Button Width="80" Margin="15,0"
+                  <Button Width="80" Margin="15,0" Content="Remove"
+                          Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}, Path=DataContext.RemoveRankCommand}"
                           CommandParameter="{Binding 
-                    Path=(ItemsControl.AlternationIndex), 
-                    RelativeSource={RelativeSource Mode=TemplatedParent}, 
-                    FallbackValue=FAIL}"
-                          Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}, Path=DataContext.RemoveRankCommand}">
-                    Remove
-                  </Button>
+                                                Path=(ItemsControl.AlternationIndex), 
+                                                RelativeSource={RelativeSource Mode=TemplatedParent}, 
+                                                FallbackValue=FAIL}" />
                 </StackPanel>
                 <ItemsControl ItemsSource="{Binding}"
                               Padding="10" BorderBrush="Black" BorderThickness="2" Background="White" MinHeight="80"

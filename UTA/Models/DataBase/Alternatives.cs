@@ -31,11 +31,6 @@ namespace UTA.Models.DataBase
             return alternative;
         }
 
-        public void AddAlternative(Alternative alternative)
-        {
-            AlternativesCollection.Add(alternative);
-        }
-
         public void AddNewCriterionToAlternatives(string name, float? value)
         {
             Console.WriteLine("Adding to alternatives value (" + name + "," + value + ")");
@@ -103,7 +98,7 @@ namespace UTA.Models.DataBase
 
         public void SaveCurrentPlaceholder()
         {
-            AddAlternative(Placeholder);
+            AlternativesCollection.Add(Placeholder);
         }
 
         private void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

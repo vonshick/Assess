@@ -7,6 +7,7 @@
              xmlns:local="clr-namespace:UTA.Views"
              xmlns:mainViewModel="clr-namespace:UTA.ViewModels"
              xmlns:dataValidation="clr-namespace:UTA.Models.DataValidation"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="900"
              d:DataContext="{d:DesignInstance mainViewModel:MainViewModel}"
@@ -28,7 +29,7 @@
       </Grid.ColumnDefinitions>
 
       <Button Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" x:Name="ButtonEditCriteria"
-              Click="EditCriteriaSwitchClicked" Content="Edit is off"
+              Click="EditCriteriaSwitchClicked" Content="Editing is OFF"
               MaxWidth="90" Width="Auto" Margin="0, 5" />
 
       <DataGrid Grid.Row="2" Grid.Column="1"
@@ -36,12 +37,19 @@
                 ItemsSource="{Binding Criteria.CriteriaCollection}"
                 CanUserAddRows="False" AutoGenerateColumns="False"
                 BorderBrush="Gray" BorderThickness="3">
+
+        <i:Interaction.Triggers>
+          <i:EventTrigger EventName="Unloaded">
+            <i:CallMethodAction TargetObject="{Binding}" MethodName="DataGridUnloaded" />
+          </i:EventTrigger>
+        </i:Interaction.Triggers>
+
         <DataGrid.Resources>
           <CollectionViewSource x:Key="CriteriaColl" Source="{Binding Path=Criteria.CriteriaCollection}" />
         </DataGrid.Resources>
 
         <DataGrid.Columns>
-          <DataGridTemplateColumn>
+          <DataGridTemplateColumn Visibility="Collapsed">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
                 <Button Click="RemoveCriteriaButtonClicked">Remove</Button>
@@ -54,7 +62,8 @@
               <Binding Path="Name" UpdateSourceTrigger="PropertyChanged" NotifyOnValidationError="True">
                 <Binding.ValidationRules>
                   <dataValidation:CriterionNameValidationRule CriteriaColl="{StaticResource CriteriaColl}"
-                                                              ValidationStep="CommittedValue" ValidatesOnTargetUpdated="True"/>
+                                                              ValidationStep="CommittedValue"
+                                                              ValidatesOnTargetUpdated="True" />
                 </Binding.ValidationRules>
               </Binding>
             </DataGridTextColumn.Binding>

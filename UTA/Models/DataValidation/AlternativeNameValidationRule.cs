@@ -15,27 +15,24 @@ namespace UTA.Models.DataValidation
             CultureInfo cultureInfo)
         {
             var bindingExpression = (BindingExpression) value;
-            var alternative = (Alternative) bindingExpression.ResolvedSource;
-            if (alternative.Name.Replace(" ", string.Empty) == "")
+            var validatedAlternative = (Alternative) bindingExpression.ResolvedSource;
+            if (validatedAlternative.Name.Replace(" ", string.Empty) == "")
             {
-                Console.WriteLine("validation FAIL - EMPTY of " + alternative.Name);
+                Console.WriteLine("validation FAILED - EMPTY name in " + validatedAlternative.Name);
                 return new ValidationResult(false,
                     "Alternative name cannot be empty!");
             }
 
             var alternativesCollection = (ObservableCollection<Alternative>) AlternativesColl.Source;
-            foreach (var alternative1 in alternativesCollection)
-                if (alternative1 != alternative && alternative1.Name == alternative.Name)
+            foreach (var alternativeFromCollection in alternativesCollection)
+                if (alternativeFromCollection != validatedAlternative && alternativeFromCollection.Name == validatedAlternative.Name)
                 {
-                    Console.WriteLine("validation FAIL - ALREADY EXISTS of " + alternative.Name);
+                    Console.WriteLine("validation FAILED: " + validatedAlternative.Name + " ALREADY EXISTS");
                     return new ValidationResult(false,
-                        "Alternative exists!");
+                        "Alternative already exists!");
                 }
 
-            //todo not working?
-            foreach (var bE in bindingExpression.BindingGroup.BindingExpressions) Validation.ClearInvalid(bE);
-
-            Console.WriteLine("validation OK of " + alternative.Name);
+            Console.WriteLine("validation OK of " + validatedAlternative.Name);
             return ValidationResult.ValidResult;
         }
     }

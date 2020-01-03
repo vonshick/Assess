@@ -30,15 +30,9 @@ namespace UTA.Models.DataBase
             CriteriaCollection.Remove(criterion);
         }
 
-        public void AddCriterion(Criterion criterion)
-        {
-            Console.WriteLine("Added criterion object " + criterion.Name);
-            CriteriaCollection.Add(criterion);
-        }
-
         public Criterion SaveCurrentPlaceholderToCollection()
         {
-            AddCriterion(Placeholder);
+            CriteriaCollection.Add(Placeholder);
             return Placeholder;
         }
 

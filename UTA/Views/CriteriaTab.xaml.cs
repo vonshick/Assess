@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -13,14 +12,13 @@ namespace UTA.Views
 {
     public partial class CriteriaTab : UserControl
     {
-        private CriteriaTabViewModel _viewmodel;
-
         private int _errorCount;
+        private CriteriaTabViewModel _viewmodel;
 
         public CriteriaTab()
         {
             Loaded += ViewLoaded;
-            CriteriaTypeList = Enum.GetNames(typeof(Criterion.CriterionDirectionTypes)).ToList();
+            CriteriaTypeList = Criterion.CriterionDirectionTypesList;
             InitializeComponent();
         }
 
@@ -30,18 +28,7 @@ namespace UTA.Views
         {
             _viewmodel = ((MainViewModel) DataContext).CriteriaTabViewModel;
             CriteriaDirectionComboBoxColumn.ItemsSource = CriteriaTypeList;
-            ButtonEditCriteria.Content = "Editing is OFF";
-            EditCriteriaDataGrid.Columns[0].Visibility = Visibility.Collapsed;
             AddHandler(Validation.ErrorEvent, new RoutedEventHandler(OnErrorEvent));
-            EditCriteriaDataGrid.Unloaded += DataGridUnloaded;
-        }
-
-        private void DataGridUnloaded(object sender, RoutedEventArgs e)
-        {
-            var grid = (DataGrid) sender;
-            if (!grid.IsReadOnly)
-                _viewmodel.RemovePlaceholder();
-            grid.CommitEdit(DataGridEditingUnit.Row, true);
         }
 
         //todo could find better way for it if enough time
@@ -67,6 +54,7 @@ namespace UTA.Views
                     throw new Exception("Unknown action");
                 }
             }
+
             ButtonEditCriteria.IsEnabled = _errorCount == 0;
         }
 
@@ -81,7 +69,7 @@ namespace UTA.Views
                 row = (DataGridRow) EditCriteriaDataGrid.ItemContainerGenerator.ContainerFromIndex(index);
             }
 
-            if(row == null)
+            if (row == null)
                 Console.WriteLine("Row null index " + index);
             return row;
         }
@@ -104,16 +92,13 @@ namespace UTA.Views
             return cell;
         }
 
-        private int c1;
         private void NewRowCellFocusLost(object sender, EventArgs e)
         {
-            Console.WriteLine("lost focus cell " + c1++);
-            var cell = (DataGridCell)sender;
+            var cell = (DataGridCell) sender;
             if (cell.IsEditing)
-            {
-                if (((TextBox)cell.Content).Text == "")
+                if (((TextBox) cell.Content).Text == "")
                 {
-                    if ((string)cell.Column.Header == "Name")
+                    if ((string) cell.Column.Header == "Name")
                         _viewmodel.Criteria
                             .CriteriaCollection[_viewmodel.Criteria.CriteriaCollection.Count - 1]
                             .Name = "name";
@@ -122,13 +107,10 @@ namespace UTA.Views
                             .CriteriaCollection[_viewmodel.Criteria.CriteriaCollection.Count - 1]
                             .Description = "description";
                 }
-            }
         }
 
-        private int c2;
         private void NewRowCellClicked(object sender, EventArgs e)
         {
-            Console.WriteLine("got focus cell " + c2++);
             var cell = (DataGridCell) sender;
             if (cell.IsEditing)
             {
@@ -147,15 +129,14 @@ namespace UTA.Views
             }
         }
 
-        private int c;
         private void ItemContainerGeneratorStatusChanged(object sender, EventArgs e)
         {
             if (EditCriteriaDataGrid.ItemContainerGenerator.Status
                 == GeneratorStatus.ContainersGenerated && !EditCriteriaDataGrid.IsReadOnly)
             {
-                Console.WriteLine("ItemContainerGeneratorStatusChanged " + c++);
                 //todo: error, still can return null! happened with lot of criteria and when clicked cell in criteria column
-                Console.WriteLine("Row idx (grid.items.count): " + (EditCriteriaDataGrid.Items.Count - 1) + ", gird.itemcontainergen.count: " + EditCriteriaDataGrid.ItemContainerGenerator.Items.Count);
+                Console.WriteLine("Row idx (grid.items.count): " + (EditCriteriaDataGrid.Items.Count - 1) +
+                                  ", gird.itemcontainergen.count: " + EditCriteriaDataGrid.ItemContainerGenerator.Items.Count);
                 var row = GetCriteriaDataGridRow(EditCriteriaDataGrid.Items.Count - 1);
                 //                  Setter italic = new Setter(TextBlock.FontStyleProperty, FontStyles.Italic, null);
                 //                  Style newStyle = new Style(row.GetType());
@@ -174,7 +155,7 @@ namespace UTA.Views
                 cell.Foreground = Brushes.Gray;
                 cell.GotFocus += NewRowCellClicked;
                 cell.LostFocus += NewRowCellFocusLost;
-                
+
                 cell = GetCriteriaDataGridCell(row, 2);
                 cell.Foreground = Brushes.Gray;
                 cell.GotFocus += NewRowCellClicked;
@@ -206,6 +187,7 @@ namespace UTA.Views
             Console.WriteLine("Remove btn clicked by " + name);
             if (EditCriteriaDataGrid.SelectedItem is Criterion criterion) _viewmodel.Criteria.RemoveCriterion(criterion);
         }
+
         private void RemoveCriteriaButtonClicked(object sender, RoutedEventArgs e)
         {
             Console.WriteLine("Remove btn clicked"); //by who?

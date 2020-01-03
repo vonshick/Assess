@@ -13,8 +13,8 @@ namespace UTA.ViewModels
             Name = "Reference Ranking";
             Criteria = criteria;
             Alternatives = alternatives;
-            RemoveRankCommand = new RelayCommand(rank => RemoveRank((int)rank));
-            RemoveAlternativeFromRankCommand = new RelayCommand(alternative => RemoveAlternativeFromRank((Alternative)alternative));
+            RemoveRankCommand = new RelayCommand(rank => RemoveRank((int) rank));
+            RemoveAlternativeFromRankCommand = new RelayCommand(alternative => RemoveAlternativeFromRank((Alternative) alternative));
         }
 
         private Criteria Criteria { get; }
@@ -38,6 +38,5 @@ namespace UTA.ViewModels
         {
             Alternatives.RemoveRank(rank);
         }
-
     }
 }
