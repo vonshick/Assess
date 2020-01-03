@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using DataModel.Input;
 
 namespace UTA.Models.DataBase
@@ -16,8 +17,9 @@ namespace UTA.Models.DataBase
 
         public Criterion AddCriterion(string criterionName, string criterionDescription, string criterionDirection, int linearSegments)
         {
+            Console.WriteLine("Added criterion params " + criterionName);
             var criterion = new Criterion(criterionName, criterionDescription, criterionDirection, linearSegments);
-            if (CriteriaCollection.Contains(criterion)) return null;
+//            if (CriteriaCollection.Contains(criterion)) return null;
             CriteriaCollection.Add(criterion);
             return criterion;
         }
@@ -30,6 +32,7 @@ namespace UTA.Models.DataBase
 
         public void AddCriterion(Criterion criterion)
         {
+            Console.WriteLine("Added criterion object " + criterion.Name);
             CriteriaCollection.Add(criterion);
         }
 
@@ -41,11 +44,13 @@ namespace UTA.Models.DataBase
 
         public void AddNewPlaceholderToCollection()
         {
-            Placeholder = AddCriterion("name", "description", "", 1);
+            Console.WriteLine("Added crit placeholder");
+            Placeholder = AddCriterion("name", "description", "Gain", 1);
         }
 
         public void RemovePlaceholderFromCollection()
         {
+            Console.WriteLine("Removed crit placeholder");
             CriteriaCollection.Remove(Placeholder);
         }
 

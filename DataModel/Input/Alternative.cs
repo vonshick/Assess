@@ -48,7 +48,7 @@ namespace DataModel.Input
         public void AddCriterionValue(CriterionValue criterionValue)
         {
             CriteriaValuesList.Add(criterionValue);
-            Console.WriteLine("Added to alternative " + Name + " value (" + criterionValue.Name + "," + criterionValue.Value + ")");
+//            Console.WriteLine("Added to alternative " + Name + " value (" + criterionValue.Name + "," + criterionValue.Value + ")");
         }
 
         public void UpdateCriterionValueName(string oldName, string newName)
@@ -56,7 +56,7 @@ namespace DataModel.Input
             //call it in criteria class when criteriaList changes. Event should be handled there
             CriterionValue criterionValue = CriteriaValuesList.Find(c => c.Name == oldName);
             criterionValue.Name = newName;
-            Console.WriteLine("Updated alternative " + Name + ": set crit name from " + oldName + " to " + newName);
+//            Console.WriteLine("Updated alternative " + Name + ": set crit name from " + oldName + " to " + newName);
         }
 
         public string Name

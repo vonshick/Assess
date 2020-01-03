@@ -15,7 +15,7 @@ namespace UTA.Views
     {
         private CriteriaTabViewModel _viewmodel;
 
-        private int errorCount;
+        private int _errorCount;
 
         public CriteriaTab()
         {
@@ -54,12 +54,12 @@ namespace UTA.Views
             {
                 case ValidationErrorEventAction.Added:
                 {
-                    errorCount++;
+                    _errorCount++;
                     break;
                 }
                 case ValidationErrorEventAction.Removed:
                 {
-                    errorCount = 0;
+                    _errorCount = 0;
                     break;
                 }
                 default:
@@ -67,11 +67,10 @@ namespace UTA.Views
                     throw new Exception("Unknown action");
                 }
             }
-
-            ButtonEditCriteria.IsEnabled = errorCount == 0;
+            ButtonEditCriteria.IsEnabled = _errorCount == 0;
         }
 
-        private DataGridRow GetAlternativesDataGridRow(int index)
+        private DataGridRow GetCriteriaDataGridRow(int index)
         {
             var row =
                 (DataGridRow) EditCriteriaDataGrid.ItemContainerGenerator.ContainerFromIndex(index);
@@ -82,10 +81,12 @@ namespace UTA.Views
                 row = (DataGridRow) EditCriteriaDataGrid.ItemContainerGenerator.ContainerFromIndex(index);
             }
 
+            if(row == null)
+                Console.WriteLine("Row null index " + index);
             return row;
         }
 
-        private DataGridCell GetAlternativesDataGridCell(DataGridRow row, int index)
+        private DataGridCell GetCriteriaDataGridCell(DataGridRow row, int index)
         {
             var presenter = VisualChildHelper.GetVisualChild<DataGridCellsPresenter>(row);
             var cell = (DataGridCell) presenter.ItemContainerGenerator.ContainerFromIndex(index);
@@ -93,10 +94,13 @@ namespace UTA.Views
             {
                 //todo check if works
                 //                EditAlternativesDataGrid.ScrollIntoView(rowContainer, EditAlternativesDataGrid.Columns[column]);
+                EditCriteriaDataGrid.UpdateLayout();
                 EditCriteriaDataGrid.ScrollIntoView(row, EditCriteriaDataGrid.Columns[index]);
                 cell = (DataGridCell) presenter.ItemContainerGenerator.ContainerFromIndex(index);
             }
 
+            if (cell == null)
+                Console.WriteLine("Cell null index " + index);
             return cell;
         }
 

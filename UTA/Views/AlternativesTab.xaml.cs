@@ -177,19 +177,22 @@ namespace UTA.Views
             if (cell == null)
             {
                 //todo check if works
-//                EditAlternativesDataGrid.ScrollIntoView(rowContainer, EditAlternativesDataGrid.Columns[column]);
+                EditAlternativesDataGrid.UpdateLayout();
                 EditAlternativesDataGrid.ScrollIntoView(row, EditAlternativesDataGrid.Columns[index]);
                 cell = (DataGridCell) presenter.ItemContainerGenerator.ContainerFromIndex(index);
             }
-
+            if(cell == null)
+                Console.WriteLine("null cell: rwo: " + row + " column: " + index);
             return cell;
         }
 
+        private int c; 
         private void ItemContainerGeneratorStatusChanged(object sender, EventArgs e)
         {
             if (EditAlternativesDataGrid.ItemContainerGenerator.Status
                 == GeneratorStatus.ContainersGenerated && !EditAlternativesDataGrid.IsReadOnly)
             {
+                Console.WriteLine("ItemContainerGeneratorStatusChanged " + c++);
                 //todo: error, still can return null! happened with lot of criteria and when clicked cell in criteria column
                 var row = GetAlternativesDataGridRow(EditAlternativesDataGrid.Items.Count - 1);
                 //                  Setter italic = new Setter(TextBlock.FontStyleProperty, FontStyles.Italic, null);

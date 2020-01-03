@@ -38,6 +38,7 @@ namespace UTA.Models.DataBase
 
         public void AddNewCriterionToAlternatives(string name, float? value)
         {
+            Console.WriteLine("Adding to alternatives value (" + name + "," + value + ")");
             foreach (var alternative in AlternativesCollection)
             {
                 var criterionValue = new CriterionValue(name, value);
@@ -86,6 +87,7 @@ namespace UTA.Models.DataBase
 
         public void UpdateCriteriaValueName(string oldName, string newName)
         {
+            Console.WriteLine("Updating alternatives: set crit name from " + oldName + " to " + newName);
             foreach (var alternative in AlternativesCollection) alternative.UpdateCriterionValueName(oldName, newName);
         }
 
