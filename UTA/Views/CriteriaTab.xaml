@@ -30,6 +30,7 @@
       <Button Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" x:Name="ButtonEditCriteria"
               Click="EditCriteriaSwitchClicked" Content="Edit is off"
               MaxWidth="90" Width="Auto" Margin="0, 5" />
+
       <DataGrid Grid.Row="2" Grid.Column="1"
                 Name="EditCriteriaDataGrid" IsReadOnly="true"
                 ItemsSource="{Binding Criteria.CriteriaCollection}"
@@ -53,18 +54,18 @@
               <Binding Path="Name" UpdateSourceTrigger="PropertyChanged" NotifyOnValidationError="True">
                 <Binding.ValidationRules>
                   <dataValidation:CriterionNameValidationRule CriteriaColl="{StaticResource CriteriaColl}"
-                                                              ValidationStep="CommittedValue" />
+                                                              ValidationStep="CommittedValue" ValidatesOnTargetUpdated="True"/>
                 </Binding.ValidationRules>
               </Binding>
             </DataGridTextColumn.Binding>
           </DataGridTextColumn>
 
           <DataGridTextColumn Header="Description" Width="5*"
-                              Binding="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                              Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}" />
           <DataGridComboBoxColumn x:Name="CriteriaDirectionComboBoxColumn" Header="Type" Width="2*"
-                                  SelectedItemBinding="{Binding CriterionDirection, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                  SelectedItemBinding="{Binding CriterionDirection, UpdateSourceTrigger=PropertyChanged}" />
           <DataGridTextColumn Header="Linear Segments" Width="2*"
-                              Binding="{Binding LinearSegments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                              Binding="{Binding LinearSegments, UpdateSourceTrigger=PropertyChanged}" />
         </DataGrid.Columns>
       </DataGrid>
 

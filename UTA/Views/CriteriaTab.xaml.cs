@@ -104,28 +104,31 @@ namespace UTA.Views
             return cell;
         }
 
-        //todo Piter sort it out
+        private int c1;
         private void NewRowCellFocusLost(object sender, EventArgs e)
         {
-//            var cell = (DataGridCell)sender;
-//            if (cell.IsEditing)
-//            {
-//                if (((TextBox)cell.Content).Text == "")
-//                {
-//                    if ((string)cell.Column.Header == "Name")
-//                        _viewmodel.Alternatives
-//                            .AlternativesCollection[_viewmodel.Alternatives.AlternativesCollection.Count - 1]
-//                            .Name = "name";
-//                    else
-//                        _viewmodel.Alternatives
-//                            .AlternativesCollection[_viewmodel.Alternatives.AlternativesCollection.Count - 1]
-//                            .Description = "description";
-//                }
-//            }
+            Console.WriteLine("lost focus cell " + c1++);
+            var cell = (DataGridCell)sender;
+            if (cell.IsEditing)
+            {
+                if (((TextBox)cell.Content).Text == "")
+                {
+                    if ((string)cell.Column.Header == "Name")
+                        _viewmodel.Criteria
+                            .CriteriaCollection[_viewmodel.Criteria.CriteriaCollection.Count - 1]
+                            .Name = "name";
+                    else
+                        _viewmodel.Criteria
+                            .CriteriaCollection[_viewmodel.Criteria.CriteriaCollection.Count - 1]
+                            .Description = "description";
+                }
+            }
         }
 
+        private int c2;
         private void NewRowCellClicked(object sender, EventArgs e)
         {
+            Console.WriteLine("got focus cell " + c2++);
             var cell = (DataGridCell) sender;
             if (cell.IsEditing)
             {
@@ -137,16 +140,23 @@ namespace UTA.Views
 
         private void ButtonSaveCurrentPlaceholderClicked(object sender, RoutedEventArgs e)
         {
-            _viewmodel.SaveCurrentPlaceholder();
+            if (_errorCount == 0)
+            {
+                EditCriteriaDataGrid.ItemContainerGenerator.StatusChanged += ItemContainerGeneratorStatusChanged;
+                _viewmodel.SaveCurrentPlaceholder();
+            }
         }
 
+        private int c;
         private void ItemContainerGeneratorStatusChanged(object sender, EventArgs e)
         {
             if (EditCriteriaDataGrid.ItemContainerGenerator.Status
                 == GeneratorStatus.ContainersGenerated && !EditCriteriaDataGrid.IsReadOnly)
             {
+                Console.WriteLine("ItemContainerGeneratorStatusChanged " + c++);
                 //todo: error, still can return null! happened with lot of criteria and when clicked cell in criteria column
-                var row = GetAlternativesDataGridRow(EditCriteriaDataGrid.Items.Count - 1);
+                Console.WriteLine("Row idx (grid.items.count): " + (EditCriteriaDataGrid.Items.Count - 1) + ", gird.itemcontainergen.count: " + EditCriteriaDataGrid.ItemContainerGenerator.Items.Count);
+                var row = GetCriteriaDataGridRow(EditCriteriaDataGrid.Items.Count - 1);
                 //                  Setter italic = new Setter(TextBlock.FontStyleProperty, FontStyles.Italic, null);
                 //                  Style newStyle = new Style(row.GetType());
                 //                  newStyle.Setters.Add(italic);
@@ -154,23 +164,21 @@ namespace UTA.Views
                 EditCriteriaDataGrid.ItemContainerGenerator.StatusChanged -=
                     ItemContainerGeneratorStatusChanged;
 
-                var cell = GetAlternativesDataGridCell(row, 0);
+                var cell = GetCriteriaDataGridCell(row, 0);
                 var btn = new Button();
                 btn.Click += ButtonSaveCurrentPlaceholderClicked;
                 btn.Content = "Add";
                 cell.Content = btn;
 
-                cell = GetAlternativesDataGridCell(row, 1);
+                cell = GetCriteriaDataGridCell(row, 1);
                 cell.Foreground = Brushes.Gray;
                 cell.GotFocus += NewRowCellClicked;
                 cell.LostFocus += NewRowCellFocusLost;
-
-                cell = GetAlternativesDataGridCell(row, 2);
+                
+                cell = GetCriteriaDataGridCell(row, 2);
                 cell.Foreground = Brushes.Gray;
                 cell.GotFocus += NewRowCellClicked;
                 cell.LostFocus += NewRowCellFocusLost;
-
-                //                  EditAlternativesDataGrid.UpdateLayout();
             }
         }
 
@@ -193,8 +201,15 @@ namespace UTA.Views
             }
         }
 
+        private void RemoveCriteriaButtonClicked(string name)
+        {
+            Console.WriteLine("Remove btn clicked by " + name);
+            if (EditCriteriaDataGrid.SelectedItem is Criterion criterion) _viewmodel.Criteria.RemoveCriterion(criterion);
+        }
         private void RemoveCriteriaButtonClicked(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("Remove btn clicked"); //by who?
+
             if (EditCriteriaDataGrid.SelectedItem is Criterion criterion) _viewmodel.Criteria.RemoveCriterion(criterion);
         }
     }
