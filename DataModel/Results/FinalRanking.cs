@@ -10,6 +10,7 @@ namespace DataModel.Results
     {
         private ObservableCollection<FinalRankingEntry> _finalRankingCollection;
 
+
         public FinalRanking()
         {
             FinalRankingCollection = new ObservableCollection<FinalRankingEntry>();
@@ -19,6 +20,7 @@ namespace DataModel.Results
         {
             FinalRankingCollection = finalRankingCollection;
         }
+
 
         public ObservableCollection<FinalRankingEntry> FinalRankingCollection
         {
@@ -32,6 +34,7 @@ namespace DataModel.Results
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

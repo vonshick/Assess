@@ -8,9 +8,9 @@ namespace DataModel.Input
     {
         private Dictionary<Criterion, float> _criteriaValues;
         private string _description;
-
         private string _name;
         private int? _referenceRank;
+
 
         public Alternative()
         {
@@ -28,6 +28,7 @@ namespace DataModel.Input
             CriteriaValuesList = new List<CriterionValue>();
             InitCriteriaValues(criteriaCollection);
         }
+
 
         //todo make sure the order is same as in criteriaList
         public List<CriterionValue> CriteriaValuesList
@@ -92,6 +93,7 @@ namespace DataModel.Input
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+        
 
         public void InitCriteriaValues(ObservableCollection<Criterion> criteriaCollection)
         {

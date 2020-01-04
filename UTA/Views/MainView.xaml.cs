@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -34,11 +33,13 @@ namespace UTA.Views
 
             InitializeComponent();
             DataContext = _viewmodel;
+
             _viewmodel.ChartTabViewModels.CollectionChanged += ChartTabsCollectionChanged;
             var tabViewSource = CollectionViewSource.GetDefaultView(TabControl.Items);
             tabViewSource.CollectionChanged += TabsCollectionChanged;
 
             _menuItemBottomMargin = (Thickness) ShowMenu.FindResource("MenuItemBottomMargin");
+
             _viewmodel.PropertyChanged += (s, e) =>
             {
                 if (e.PropertyName == nameof(_viewmodel.TabToSelect))
@@ -74,7 +75,7 @@ namespace UTA.Views
                 _scrollRightButton.Visibility = _scrollLeftButton.Visibility = Visibility.Collapsed;
         }
 
-
+        // TODO: check if needed
         private void TabControlSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.AddedItems.Count == 0) return;

@@ -2,12 +2,11 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using DataModel.Input;
 using DataModel.Results;
 using UTA.Annotations;
-using System.Linq;
-using DataModel.Results;
 
 namespace UTA.Models.DataBase
 {
@@ -16,13 +15,13 @@ namespace UTA.Models.DataBase
         private ObservableCollection<Alternative> _alternativesCollection;
         private ObservableCollection<Alternative> _alternativesNotRankedCollection;
 
-        public Alternatives(Criteria criteria)
+        public Alternatives(Criteria criteria, ReferenceRanking referenceRanking)
         {
             Criteria = criteria;
+            ReferenceRanking = referenceRanking;
             AlternativesCollection = new ObservableCollection<Alternative>();
             AlternativesNotRankedCollection = new ObservableCollection<Alternative>();
             AlternativesNotRankedCollection.CollectionChanged += CollectionChanged;
-            ReferenceRanking = new ReferenceRanking(1);
         }
 
 

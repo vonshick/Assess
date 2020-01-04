@@ -11,7 +11,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using DataModel.Input;
 using DataModel.Results;
-using DataModel.Structs;
 using ExportModule;
 using ImportModule;
 using MahApps.Metro.Controls.Dialogs;
@@ -21,7 +20,6 @@ using UTA.Annotations;
 using UTA.Interactivity;
 using UTA.Models.DataBase;
 using UTA.Models.Tab;
-using UTA.Views;
 
 namespace UTA.ViewModels
 {
@@ -36,8 +34,8 @@ namespace UTA.ViewModels
         public MainViewModel(IDialogCoordinator dialogCoordinator)
         {
             Criteria = new Criteria();
-            Alternatives = new Alternatives(Criteria);
             ReferenceRanking = new ReferenceRanking(0);
+            Alternatives = new Alternatives(Criteria, ReferenceRanking);
             Results = new Results();
 
             _dialogCoordinator = dialogCoordinator;
@@ -53,8 +51,6 @@ namespace UTA.ViewModels
             SettingsTabViewModel = new SettingsTabViewModel();
             ChartTabViewModels = new ObservableCollection<ChartTabViewModel>();
 
-            Alternatives.AlternativesCollection.CollectionChanged += AlternativesCollectionChanged;
-
             Criteria.CriteriaCollection.CollectionChanged += InstancePropertyChanged;
             Alternatives.AlternativesCollection.CollectionChanged += InstancePropertyChanged;
             ReferenceRanking.RankingsCollection.CollectionChanged += InstancePropertyChanged;
@@ -66,28 +62,28 @@ namespace UTA.ViewModels
             Results.PropertyChanged += InstancePropertyChanged;
 
             // TODO: remove. for testing purposes
-            Criteria.AddCriterion("Power", "", "Gain", 8);
-            Criteria.AddCriterion("0-100 km/h", "", "Cost", 5);
-            Criteria.CriteriaCollection[0].MinValue = Criteria.CriteriaCollection[1].MinValue = 0;
-            Criteria.CriteriaCollection[0].MaxValue = Criteria.CriteriaCollection[1].MaxValue = 1;
-            for (var i = 0; i < 20; i++) Alternatives.AddAlternative("Alternative X", "");
+            //Criteria.AddCriterion("Power", "", "Gain", 8);
+            //Criteria.AddCriterion("0-100 km/h", "", "Cost", 5);
+            //Criteria.CriteriaCollection[0].MinValue = Criteria.CriteriaCollection[1].MinValue = 0;
+            //Criteria.CriteriaCollection[0].MaxValue = Criteria.CriteriaCollection[1].MaxValue = 1;
+            //for (var i = 0; i < 20; i++) Alternatives.AddAlternative("Alternative X", "");
 
-            for (var i = 0; i < Alternatives.AlternativesCollection.Count; i++)
-                foreach (var criterionValue in Alternatives.AlternativesCollection[i].CriteriaValuesList)
-                    criterionValue.Value = i * 0.1f;
+            //for (var i = 0; i < Alternatives.AlternativesCollection.Count; i++)
+            //    foreach (var criterionValue in Alternatives.AlternativesCollection[i].CriteriaValuesList)
+            //        criterionValue.Value = i * 0.1f;
 
-            for (var i = 1; i < 20; i++)
-            {
-                ReferenceRanking.AddAlternativeToRank(new Alternative {Name = "Reference X"}, i);
-                if (i % 2 == 0)
-                    ReferenceRanking.AddAlternativeToRank(new Alternative {Name = "Reference XX"}, i);
-                if (i % 3 == 0)
-                    ReferenceRanking.AddAlternativeToRank(new Alternative {Name = "Reference XXX"}, i);
-            }
+            //for (var i = 1; i < 20; i++)
+            //{
+            //    ReferenceRanking.AddAlternativeToRank(new Alternative {Name = "Reference X"}, i);
+            //    if (i % 2 == 0)
+            //        ReferenceRanking.AddAlternativeToRank(new Alternative {Name = "Reference XX"}, i);
+            //    if (i % 3 == 0)
+            //        ReferenceRanking.AddAlternativeToRank(new Alternative {Name = "Reference XXX"}, i);
+            //}
 
-            for (var i = 1; i <= Alternatives.AlternativesCollection.Count; i++)
-                Results.FinalRanking.FinalRankingCollection.Add(new FinalRankingEntry(i, new Alternative {Name = "Final X"},
-                    Alternatives.AlternativesCollection.Count - i));
+            //for (var i = 1; i <= Alternatives.AlternativesCollection.Count; i++)
+            //    Results.FinalRanking.FinalRankingCollection.Add(new FinalRankingEntry(i, new Alternative {Name = "Final X"},
+            //        Alternatives.AlternativesCollection.Count - i));
         }
 
 

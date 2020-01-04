@@ -5,19 +5,21 @@ using DataModel.Annotations;
 
 namespace DataModel.Results
 {
-    //very general class concept for now
     public class Results : INotifyPropertyChanged
     {
         private List<PartialUtility> _partialUtilityFunctions;
+
 
         public Results()
         {
             FinalRanking = new FinalRanking();
             PartialUtilityFunctions = new List<PartialUtility>();
+            KendallCoefficient = null;
         }
 
 
         public FinalRanking FinalRanking { get; set; }
+        public float? KendallCoefficient { get; set; }
 
         public List<PartialUtility> PartialUtilityFunctions
         {
@@ -29,8 +31,6 @@ namespace DataModel.Results
                 OnPropertyChanged(nameof(PartialUtilityFunctions));
             }
         }
-
-        public float KendallCoefficient { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

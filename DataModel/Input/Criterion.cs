@@ -8,11 +8,11 @@ namespace DataModel.Input
     public class Criterion : INotifyPropertyChangedExtended<string>, INotifyPropertyChanged
     {
         public static readonly List<string> CriterionDirectionTypesList = new List<string> {"Gain", "Cost"};
-
         public static double MinNumberOfLinearSegments = 1; // type double, because can't use other type in xaml
         public static double MaxNumberOfLinearSegments = 99;
         private int _linearSegments;
         private string _name;
+
 
         public Criterion()
         {
@@ -32,13 +32,12 @@ namespace DataModel.Input
             LinearSegments = linearSegments;
         }
 
+
         public string ID { get; set; }
         public bool IsEnum { get; set; } = false;
         public Dictionary<string, float> EnumDictionary { get; set; }
         public string Description { get; set; }
-
         public string CriterionDirection { get; set; }
-
         // TODO: update min and max values after value changes in alternative editor
         public float MinValue { get; set; }
         public float MaxValue { get; set; }
@@ -68,6 +67,7 @@ namespace DataModel.Input
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
 
         protected bool Equals(Criterion other)
         {

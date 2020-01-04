@@ -12,11 +12,13 @@ namespace DataModel.Results
     {
         private ObservableCollection<ObservableCollection<Alternative>> _rankingsCollection;
 
+
         public ReferenceRanking(int numOfRanksToInitialize)
         {
             RankingsCollection = new ObservableCollection<ObservableCollection<Alternative>>();
             ExpandAvailableRanksNumber(numOfRanksToInitialize);
         }
+
 
         public ObservableCollection<ObservableCollection<Alternative>> RankingsCollection
         {
@@ -48,9 +50,9 @@ namespace DataModel.Results
         {
             Console.WriteLine("Removing rank collection " + rank);
             RankingsCollection.RemoveAt(rank);
-            for (int i = rank; i < RankingsCollection.Count; i++)
+            for (var i = rank; i < RankingsCollection.Count; i++)
             {
-                Console.WriteLine("Updating new collection rank " + i + " was " + (i+1));
+                Console.WriteLine("Updating new collection rank " + i + " was " + (i + 1));
                 foreach (var alternative in RankingsCollection[i])
                 {
                     alternative.ReferenceRank -= 1;
@@ -69,7 +71,7 @@ namespace DataModel.Results
             if (e.NewItems != null)
             {
                 var collection = (ObservableCollection<Alternative>) sender;
-                int collectionIndex = RankingsCollection.IndexOf(collection);
+                var collectionIndex = RankingsCollection.IndexOf(collection);
                 if (e.NewItems.Count == collection.Count && collectionIndex == RankingsCollection.Count - 1) //add last empty rank tab
                     AddRank();
                 foreach (Alternative alternative in e.NewItems)

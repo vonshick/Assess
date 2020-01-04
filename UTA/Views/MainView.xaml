@@ -448,12 +448,6 @@
 
       <!--tabs - workspace-->
       <Grid Grid.Row="1" Grid.Column="2" Background="{StaticResource ColorInterface7}">
-        <!--TODO: remove these row definitions. tabcontrol should be the only child.-->
-        <Grid.RowDefinitions>
-          <RowDefinition />
-          <RowDefinition Height="0" />
-        </Grid.RowDefinitions>
-
         <TabControl Name="TabControl" ItemsSource="{Binding Tabs}" BorderThickness="0"
                     SelectionChanged="TabControlSelectionChanged"
                     SizeChanged="TabControlHeaderSizeChanged" LayoutUpdated="TabControlHeaderSizeChanged">
@@ -695,8 +689,13 @@
             <Expander Name="ReferenceRankingExpander" Header="Reference" Grid.Row="1" Collapsed="Expander_Toggled"
                       Expanded="Expander_Toggled" IsExpanded="True"
                       HeaderTemplate="{StaticResource ExpanderPlainHeaderTemplate}">
+              <Expander.Resources>
+                <CollectionViewSource x:Key="ReferenceRankingViewSource"
+                                      Source="{Binding ReferenceRanking.RankingsCollection}" />
+              </Expander.Resources>
+
               <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{Binding ReferenceRanking.RankingsCollection}"
+                <ItemsControl ItemsSource="{Binding Source={StaticResource ReferenceRankingViewSource}}"
                               AlternationCount="10000">
                   <ItemsControl.ItemTemplate>
                     <DataTemplate>

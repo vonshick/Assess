@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using DataModel.Input;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using DataModel.Input;
 using UTA.Annotations;
 
 namespace UTA.Models.DataBase
@@ -11,10 +11,12 @@ namespace UTA.Models.DataBase
     {
         private ObservableCollection<Criterion> _criteriaCollection;
 
+
         public Criteria()
         {
             CriteriaCollection = new ObservableCollection<Criterion>();
         }
+
 
         public ObservableCollection<Criterion> CriteriaCollection
         {
@@ -30,6 +32,7 @@ namespace UTA.Models.DataBase
         public Criterion Placeholder { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
 
         public Criterion AddCriterion(string criterionName, string criterionDescription, string criterionDirection, int linearSegments)
         {
