@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using CalculationsEngine;
 using DataModel.Input;
 using DataModel.Results;
 using ExportModule;
@@ -265,14 +266,23 @@ namespace UTA.ViewModels
                 return;
             }
 
-            foreach (var criterion in Criteria.CriteriaCollection)
+            var solver = new Solver(ReferenceRanking, new List<Criterion>(Criteria.CriteriaCollection),
+                new List<Alternative>(Alternatives.AlternativesCollection), Results);
+            solver.Calculate();
+            foreach (var partialUtility in Results.PartialUtilityFunctions)
             {
-                var viewModel = new ChartTabViewModel(criterion, SettingsTabViewModel);
+                var viewModel = new ChartTabViewModel(solver, partialUtility, SettingsTabViewModel, RefreshCharts);
                 ChartTabViewModels.Add(viewModel);
                 Tabs.Add(viewModel);
             }
 
             if (ChartTabViewModels.Count > 0) ShowTab(ChartTabViewModels[0]);
+        }
+
+        private void RefreshCharts()
+        {
+            // TODO: optional. consider using faster method than GenerateChartData
+            foreach (var chartTabViewModel in ChartTabViewModels) chartTabViewModel.GenerateChartData();
         }
 
         // xaml enforces void return type

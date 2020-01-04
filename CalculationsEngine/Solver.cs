@@ -8,7 +8,7 @@ using DataModel.Structs;
 
 namespace CalculationsEngine
 {
-    internal class Solver
+    public class Solver
     {
         private readonly List<Alternative> arternativesList;
         private readonly List<int> equals;
@@ -21,7 +21,7 @@ namespace CalculationsEngine
         private double[,] transientMatrix;
 
 
-        public Solver(ReferenceRanking referenceRanking, List<Alternative> otherAlternatives, Results results)
+        public Solver(ReferenceRanking referenceRanking, List<Criterion> criteriaList, List<Alternative> otherAlternatives, Results results)
         {
             Result = results;
             this.referenceRanking = referenceRanking;

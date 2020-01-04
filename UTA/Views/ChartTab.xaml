@@ -16,17 +16,8 @@
       <RowDefinition />
     </Grid.RowDefinitions>
 
-    <DockPanel LastChildFill="False" Margin="8,8,12,8">
-      <TextBlock DockPanel.Dock="Left" Text="{Binding Title}" FontSize="18" />
-      <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-        <TextBlock Text="Number of linear segments" VerticalAlignment="Center" Margin="0,0,8,0" />
-        <!--TODO: discuss about maximal number of linear segments-->
-        <controls:NumericUpDown Value="{Binding Criterion.LinearSegments, UpdateSourceTrigger=LostFocus}" MinWidth="70"
-                                MaxWidth="80" Minimum="{x:Static criterion:Criterion.MinNumberOfLinearSegments}"
-                                Maximum="{x:Static criterion:Criterion.MaxNumberOfLinearSegments}"
-                                HorizontalContentAlignment="Left" />
-      </StackPanel>
-    </DockPanel>
+    <TextBlock Text="{Binding Title}" FontSize="18" Margin="8,8,12,8"/>
+
     <oxy:PlotView Grid.Row="1" Name="PlotView" Model="{Binding PlotModel}" Background="Transparent" Margin="0,0,13,0">
       <oxy:PlotView.DefaultTrackerTemplate>
         <ControlTemplate>

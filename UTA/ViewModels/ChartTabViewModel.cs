@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Input;
+using CalculationsEngine;
 using DataModel.Input;
+using DataModel.Results;
 using OxyPlot;
 using OxyPlot.Annotations;
 using OxyPlot.Axes;
@@ -19,30 +21,29 @@ namespace UTA.ViewModels
         private readonly OxyColor _draggablePointTooltipFillColor = OxyColor.FromArgb(208, 252, 252, 252); // ColorInterface7
         private readonly OxyColor _draggablePointTooltipStrokeColor = OxyColor.FromRgb(170, 170, 170); // ColorBorders1
         private readonly OxyColor _gridColor = OxyColor.FromRgb(240, 240, 240); // ColorInterface5
-
         private readonly LineSeries _line;
         private readonly OxyColor _lineColor = OxyColor.FromRgb(110, 110, 110); // ColorSecondary
+        private readonly PartialUtility _partialUtility;
+        private readonly List<PartialUtilityValues> _pointsValues;
         private readonly Dictionary<float, LineAnnotation> _ranges;
         private readonly OxyColor _rangesColor = OxyColor.FromRgb(210, 210, 210); // ColorInterface2
+        private readonly Action _refreshCharts;
         private readonly SettingsTabViewModel _settings;
+        private readonly Solver _solver;
 
-        public ChartTabViewModel(Criterion criterion, SettingsTabViewModel settingsTabViewModel)
+        public ChartTabViewModel(Solver solver, PartialUtility partialUtility, SettingsTabViewModel settingsTabViewModel,
+            Action refreshCharts)
         {
-            Name = $"Utility - {criterion.Name}";
-            Title = $"{criterion.Name} - Partial Utility Function";
-            Criterion = criterion;
+            _solver = solver;
+            _partialUtility = partialUtility;
+            Criterion = _partialUtility.Criterion;
+            _pointsValues = new List<PartialUtilityValues>(_partialUtility.PointsValues);
             _settings = settingsTabViewModel;
+            _refreshCharts = refreshCharts;
+            Name = $"Utility - {Criterion.Name}";
+            Title = $"{Criterion.Name} - Partial Utility Function";
             _ranges = new Dictionary<float, LineAnnotation>();
             _draggablePoints = new Dictionary<float, PointAnnotation>();
-
-            Criterion.PropertyChanged += (s, e) =>
-            {
-                if (e.PropertyName == nameof(Criterion.LinearSegments)) GenerateChartData();
-            };
-            _settings.PropertyChanged += (s, e) =>
-            {
-                if (e.PropertyName == nameof(_settings.PlotsPartialUtilityDecimalPlaces)) GenerateChartData();
-            };
 
             _line = new LineSeries
             {
@@ -103,7 +104,7 @@ namespace UTA.ViewModels
         public string Title { get; }
 
 
-        private void GenerateChartData()
+        public void GenerateChartData()
         {
             _ranges.Clear();
             _draggablePoints.Clear();
@@ -116,27 +117,22 @@ namespace UTA.ViewModels
             PlotModel.Axes[1].Minimum = Criterion.MinValue - extraSpace;
             PlotModel.Axes[1].Maximum = Criterion.MaxValue + extraSpace;
 
-            var draggablePointsXCoords = Linspace(Criterion.MinValue, Criterion.MaxValue, Criterion.LinearSegments);
-            // TODO: run solver here. get initial partial utilities for xCoords from solver.
-            for (var i = 0; i < draggablePointsXCoords.Length; i++)
+            foreach (var pointValues in _pointsValues)
             {
-                var x = draggablePointsXCoords[i];
-                var y = draggablePointsXCoords[i];
-                // TODO: get second datapoint value from solver
-                var point = new DataPoint(x, y);
+                var point = new DataPoint(pointValues.X, pointValues.Y);
                 _line.Points.Add(point);
 
                 var range = new LineAnnotation
                 {
                     Type = LineAnnotationType.Vertical,
-                    X = x,
-                    MinimumY = y - 0.1, // TODO: get solver value here
-                    MaximumY = y + 0.3, // TODO: get solver value here
+                    X = pointValues.X,
+                    MinimumY = pointValues.MinValue,
+                    MaximumY = pointValues.MaxValue,
                     StrokeThickness = 4,
                     Color = _rangesColor,
                     LineStyle = LineStyle.Solid
                 };
-                _ranges.Add(x, range);
+                _ranges.Add(pointValues.X, range);
                 range.MouseDown += AnnotationOnMouseDown;
                 range.MouseMove += AnnotationOnMouseMove;
                 range.MouseUp += AnnotationOnMouseUp;
@@ -144,12 +140,12 @@ namespace UTA.ViewModels
 
                 var draggablePoint = new PointAnnotation
                 {
-                    X = x,
-                    Y = y,
+                    X = pointValues.X,
+                    Y = pointValues.Y,
                     Size = 8,
                     Fill = _colorPrimary
                 };
-                _draggablePoints.Add(x, draggablePoint);
+                _draggablePoints.Add(pointValues.X, draggablePoint);
                 draggablePoint.MouseDown += AnnotationOnMouseDown;
                 draggablePoint.MouseMove += AnnotationOnMouseMove;
                 draggablePoint.MouseUp += AnnotationOnMouseUp;
@@ -158,17 +154,6 @@ namespace UTA.ViewModels
 
             PlotModel.Annotations.Add(_draggablePointTooltip);
             PlotModel.InvalidatePlot(false);
-        }
-
-        private float[] Linspace(float start, float stop, int num)
-        {
-            var linspace = new float[num + 1];
-            linspace[0] = start;
-            linspace[num] = stop;
-            var step = (stop - start) / num;
-            for (var i = 1; i < num; i++)
-                linspace[i] = start + (float) Math.Round(step * i, 9);
-            return linspace;
         }
 
         private void AnnotationOnMouseDown(object sender, OxyMouseDownEventArgs e)
@@ -205,12 +190,13 @@ namespace UTA.ViewModels
 
         private void AnnotationOnMouseUp(object sender, OxyMouseEventArgs e)
         {
-            // TODO: run solver. set changed linePoints, draggablePoints and ranges here.
             GetLineAndPointAnnotation(sender, out _, out var pointAnnotation);
             Mouse.OverrideCursor = null;
             pointAnnotation.Fill = _colorPrimary;
             _draggablePointTooltip.TextPosition = DataPoint.Undefined;
             PlotEventHandler(e);
+            _solver.ChangeValue((float) pointAnnotation.Y, _partialUtility, (float) pointAnnotation.X);
+            _refreshCharts();
         }
 
         private void GenerateDraggablePointTooltip(PointAnnotation pointAnnotation)
