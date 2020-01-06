@@ -121,26 +121,25 @@ namespace ImportModule
                             var value = instancePart.Attributes["Value"].Value;
                             var attributeID = instancePart.Attributes["AttrID"].Value;
 
-                            if (attributeID == descriptionAttributeId)
-                            {
-                                alternative.Description = value;
-                            }
-                            else if (attributeID == nameAttributeId)
+                            if (attributeID == nameAttributeId)
                             {
                                 alternative.Name = checkAlternativesNamesUniqueness(value);
                             }
                             else
                             {
-                                Criterion criterion = criterionList.Find(element => element.ID == attributeID);
-
-                                if (criterion == null)
+                                if(attributeID != descriptionAttributeId)
                                 {
-                                    throw new ImproperFileStructureException("Error while processing alternative " + alternative.Name + ": criterion with ID " + attributeID + " does not exist.");
+                                    Criterion criterion = criterionList.Find(element => element.ID == attributeID);
+
+                                    if (criterion == null)
+                                    {
+                                        throw new ImproperFileStructureException("Error while processing alternative " + alternative.Name + ": criterion with ID " + attributeID + " does not exist.");
+                                    }
+
+                                    checkIfValueIsValid(value, criterion.Name, nodeCounter.ToString());
+
+                                    criteriaValuesList.Add(new CriterionValue(criterion.Name, float.Parse(value, CultureInfo.InvariantCulture)));
                                 }
-
-                                checkIfValueIsValid(value, criterion.Name, nodeCounter.ToString());
-
-                                criteriaValuesList.Add(new CriterionValue(criterion.Name, float.Parse(value, CultureInfo.InvariantCulture)));
                             }
                         }
 

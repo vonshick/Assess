@@ -10,8 +10,8 @@ using System.Windows.Input;
 using MahApps.Metro.Controls.Dialogs;
 using UTA.ViewModels;
 
-// using ImportModule; // TODO vonshick REMOVE IT AFTER TESTING
-// using ExportModule; // TODO vonshick REMOVE IT AFTER TESTING
+using ImportModule; // TODO vonshick REMOVE IT AFTER TESTING
+using ExportModule; // TODO vonshick REMOVE IT AFTER TESTING
 
 namespace UTA.Views
 {
@@ -27,9 +27,9 @@ namespace UTA.Views
         public MainView()
         {
             //         TODO vonshick REMOVE IT AFTER TESTING
-            //         string dataDirectoryPath = "C:\\Data";
-            //         DataLoader dataLoader = SampleImport.ProcessSampleData(dataDirectoryPath); // csv
-            //         SampleExport.exportXMCDA(dataDirectoryPath, dataLoader.CriterionList, dataLoader.AlternativeList);
+                    string dataDirectoryPath = "D:\\Data";
+                    DataLoader dataLoader = SampleImport.ProcessSampleData(dataDirectoryPath); // csv
+                    SampleExport.exportXMCDA(dataDirectoryPath, dataLoader.CriterionList, dataLoader.AlternativeList);
 
             InitializeComponent();
             DataContext = _viewmodel;

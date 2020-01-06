@@ -69,6 +69,29 @@ namespace ExportModule
             xmcdaWriter.Close();
         }
 
+        private void saveAlternatives()
+        {
+            initializeWriter(Path.Combine(outputDirectory, "alternatives.xml"));
+            xmcdaWriter.WriteStartElement("alternatives");
+
+            foreach (Alternative alternative in alternativeList)
+            {
+                xmcdaWriter.WriteStartElement("alternative");
+                xmcdaWriter.WriteAttributeString("id", alternative.Name);
+                xmcdaWriter.WriteStartElement("type");
+                xmcdaWriter.WriteString("real");
+                xmcdaWriter.WriteEndElement();
+                xmcdaWriter.WriteStartElement("active");
+                xmcdaWriter.WriteString("true");
+                xmcdaWriter.WriteEndElement();
+                xmcdaWriter.WriteEndElement();
+            }
+
+            xmcdaWriter.WriteEndElement();
+            xmcdaWriter.WriteEndDocument();
+            xmcdaWriter.Close();
+        }
+
         private void saveCriterionScales()
         {
 
@@ -229,6 +252,7 @@ namespace ExportModule
         public void saveInput()
         {
             saveCriterions();
+            saveAlternatives();
             saveCriterionScales();
             savePerformanceTable();
         }

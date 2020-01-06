@@ -14,6 +14,21 @@ namespace ImportModule
 
         }
 
+        private void checkEnumValue(string criterionName, string enumID, string enumValue)
+        {
+            if (enumValue.Equals(""))
+            {
+                throw new ImproperFileStructureException("Enum type value can not be empty. Criterion " + criterionName + ", EnumID: " + enumID + ".");
+            }
+
+            float output = 0;
+            if (!float.TryParse(enumValue, NumberStyles.Any, CultureInfo.InvariantCulture, out output))
+            {
+                throw new ImproperFileStructureException("Improper value format '" + enumValue + "'. Value has to be floating point. Criterion " + criterionName + ", EnumID: " + enumID + ".");
+            }
+        }
+
+
         override protected void ProcessFile(string filePath)
         {
             ValidateFilePath(filePath);
@@ -64,6 +79,7 @@ namespace ImportModule
                                     {
                                         foreach (XmlNode enumValue in attributePart)
                                         {
+                                            checkEnumValue(criterion.Name, enumValue.Attributes["EnumID"].Value, enumValue.Attributes["Value"].Value);
                                             enumIdsValuesDictionary.Add(enumValue.Attributes["EnumID"].Value, float.Parse(enumValue.Attributes["Value"].Value, CultureInfo.InvariantCulture));
                                         }
                                         criterion.CriterionDirection = "c";
@@ -129,11 +145,7 @@ namespace ImportModule
                                 var value = instancePart.Attributes["Value"].Value;
                                 var attributeName = instancePart.Attributes["AttrID"].Value;
 
-                                if (attributeName == descriptionAttributeName)
-                                {
-                                    alternative.Description = value;
-                                }
-                                else
+                                if (attributeName != descriptionAttributeName)
                                 {
                                     alternativesCountValidation++;
                                     Criterion criterion = criterionList.Find(element => element.Name == attributeName);
@@ -143,16 +155,14 @@ namespace ImportModule
                                         throw new ImproperFileStructureException("Error while processing alternative " + alternative.Name + ": criterion named " + attributeName + " does not exist.");
                                     }
 
-                                    checkIfValueIsValid(value, criterion.Name, alternative.Name);
 
                                     if (criterion.IsEnum)
                                     {
-                                        float enumValue = criterion.EnumDictionary[value];
-                                        //so far we save only numerical value of enum in attribute
-                                        criteriaValuesList.Add(new CriterionValue(criterion.Name, enumValue));
+                                        criteriaValuesList.Add(new CriterionValue(criterion.Name, criterion.EnumDictionary[value]));
                                     }
                                     else
                                     {
+                                        checkIfValueIsValid(value, criterion.Name, alternative.Name);
                                         criteriaValuesList.Add(new CriterionValue(criterion.Name, float.Parse(value, CultureInfo.InvariantCulture)));
                                     }
                                 }
