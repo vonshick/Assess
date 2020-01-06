@@ -15,12 +15,14 @@ namespace ExportModule
         private Results results;
         private string outputDirectory;
         private XmlTextWriter xmcdaWriter;
-        //TODO vonshick change two resultsList and partialUtilityList into Results object
+        public bool OverwriteFile;
+
         public XMCDAExporter(string outputDirectory,
                              List<Criterion> criterionList,
                              List<Alternative> alternativeList,
                              Results results)
         {
+            this.OverwriteFile = false;
             this.outputDirectory = outputDirectory;
             this.criterionList = criterionList;
             this.alternativeList = alternativeList;
@@ -31,9 +33,18 @@ namespace ExportModule
                              List<Criterion> criterionList,
                              List<Alternative> alternativeList)
         {
+            this.OverwriteFile = false;
             this.outputDirectory = outputDirectory;
             this.criterionList = criterionList;
             this.alternativeList = alternativeList;
+        }
+
+        private void checkIfFileAlreadyExists(string path)
+        {
+            if(File.Exists(@path)) 
+            {
+                throw new XmcdaFileExistsException("File " + path + " already exists. Would you like to overwrite it?");
+            }
         }
 
         private void initializeWriter(string filePath)
@@ -50,7 +61,7 @@ namespace ExportModule
 
         private void saveCriterions()
         {
-
+            checkIfFileAlreadyExists(Path.Combine(outputDirectory, "criteria.xml"));
             initializeWriter(Path.Combine(outputDirectory, "criteria.xml"));
             xmcdaWriter.WriteStartElement("criteria");
 
@@ -95,7 +106,7 @@ namespace ExportModule
 
         private void saveCriterionScales()
         {
-
+            checkIfFileAlreadyExists(Path.Combine(outputDirectory, "criteria_scales.xml"));
             initializeWriter(Path.Combine(outputDirectory, "criteria_scales.xml"));
             xmcdaWriter.WriteStartElement("criteriaScales");
 
@@ -124,7 +135,7 @@ namespace ExportModule
 
         private void savePerformanceTable()
         {
-
+            checkIfFileAlreadyExists(Path.Combine(outputDirectory, "performance_table.xml"));
             initializeWriter(Path.Combine(outputDirectory, "performance_table.xml"));
             xmcdaWriter.WriteStartElement("performanceTable");
             xmcdaWriter.WriteAttributeString("mcdaConcept", "REAL");
@@ -161,6 +172,7 @@ namespace ExportModule
 
         private void saveRanking()
         {
+            checkIfFileAlreadyExists(Path.Combine(outputDirectory, "alternatives_ranks.xml"));
             initializeWriter(Path.Combine(outputDirectory, "alternatives_ranks.xml"));
             xmcdaWriter.WriteStartElement("alternativesValues");
 
@@ -185,6 +197,7 @@ namespace ExportModule
 
         public void saveCriteriaSegments()
         {
+            checkIfFileAlreadyExists(Path.Combine(outputDirectory, "criteria_segments.xml"));
             initializeWriter(Path.Combine(outputDirectory, "criteria_segments.xml"));
             xmcdaWriter.WriteStartElement("criteriaValues");
 
@@ -209,6 +222,7 @@ namespace ExportModule
 
         private void saveValueFunctions()
         {
+            checkIfFileAlreadyExists(Path.Combine(outputDirectory, "value_functions.xml"));
             initializeWriter(Path.Combine(outputDirectory, "value_functions.xml"));
             xmcdaWriter.WriteStartElement("criteria");
             xmcdaWriter.WriteAttributeString("mcdaConcept", "criteria");
