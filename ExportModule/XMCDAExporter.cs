@@ -2,6 +2,7 @@
 using DataModel.Results;
 using DataModel.Structs;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Xml;
 
@@ -134,16 +135,16 @@ namespace ExportModule
                 xmcdaWriter.WriteString(alternative.Name);
                 xmcdaWriter.WriteEndElement();
 
-                foreach (KeyValuePair<Criterion, float> criterionValuePair in alternative.CriteriaValues)
+                foreach (CriterionValue criterionValue in alternative.CriteriaValuesList)
                 {
                     xmcdaWriter.WriteStartElement("performance");
                     xmcdaWriter.WriteStartElement("criterionID");
-                    xmcdaWriter.WriteString(criterionValuePair.Key.ID);
+                    xmcdaWriter.WriteString(criterionValue.Name);
                     xmcdaWriter.WriteEndElement();
                     xmcdaWriter.WriteStartElement("values");
                     xmcdaWriter.WriteStartElement("value");
                     xmcdaWriter.WriteStartElement("real");
-                    xmcdaWriter.WriteString(criterionValuePair.Value.ToString());
+                    xmcdaWriter.WriteString(((float)criterionValue.Value).ToString("G", CultureInfo.InvariantCulture));
                     xmcdaWriter.WriteEndElement();
                     xmcdaWriter.WriteEndElement();
                     xmcdaWriter.WriteEndElement();
@@ -226,13 +227,13 @@ namespace ExportModule
 
                     xmcdaWriter.WriteStartElement("abscissa");
                     xmcdaWriter.WriteStartElement("real");
-                    xmcdaWriter.WriteString(pointValue.X.ToString());
+                    xmcdaWriter.WriteString(pointValue.X.ToString("G", CultureInfo.InvariantCulture));
                     xmcdaWriter.WriteEndElement();
                     xmcdaWriter.WriteEndElement();
 
                     xmcdaWriter.WriteStartElement("ordinate");
                     xmcdaWriter.WriteStartElement("real");
-                    xmcdaWriter.WriteString(pointValue.Y.ToString());
+                    xmcdaWriter.WriteString(pointValue.Y.ToString("G", CultureInfo.InvariantCulture));
                     xmcdaWriter.WriteEndElement();
                     xmcdaWriter.WriteEndElement();
 
