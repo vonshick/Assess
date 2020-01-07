@@ -172,24 +172,27 @@ namespace ExportModule
 
         }
 
-        private void saveRanking()
+        private void saveReferenceRanking()
         {
             checkIfFileAlreadyExists(Path.Combine(outputDirectory, "alternatives_ranks.xml"));
             initializeWriter(Path.Combine(outputDirectory, "alternatives_ranks.xml"));
             xmcdaWriter.WriteStartElement("alternativesValues");
 
-            foreach (FinalRankingEntry finalRankingEntry in results.FinalRanking.FinalRankingCollection)
+            foreach (Alternative alternative in alternativeList)
             {
-                xmcdaWriter.WriteStartElement("alternativeValue");
-                xmcdaWriter.WriteStartElement("alternativeID");
-                xmcdaWriter.WriteString(finalRankingEntry.Alternative.Name);
-                xmcdaWriter.WriteEndElement();
-                xmcdaWriter.WriteStartElement("value");
-                xmcdaWriter.WriteStartElement("integer");
-                xmcdaWriter.WriteString(finalRankingEntry.Position.ToString());
-                xmcdaWriter.WriteEndElement();
-                xmcdaWriter.WriteEndElement();
-                xmcdaWriter.WriteEndElement();
+                if(alternative.ReferenceRank != null) 
+                {
+                    xmcdaWriter.WriteStartElement("alternativeValue");
+                    xmcdaWriter.WriteStartElement("alternativeID");
+                    xmcdaWriter.WriteString(alternative.ID != null ? alternative.ID : alternative.Name);
+                    xmcdaWriter.WriteEndElement();
+                    xmcdaWriter.WriteStartElement("value");
+                    xmcdaWriter.WriteStartElement("integer");
+                    xmcdaWriter.WriteString(alternative.ReferenceRank.ToString());
+                    xmcdaWriter.WriteEndElement();
+                    xmcdaWriter.WriteEndElement();
+                    xmcdaWriter.WriteEndElement();
+                }
             }
 
             xmcdaWriter.WriteEndElement();
@@ -277,7 +280,7 @@ namespace ExportModule
         public void saveResults()
         {
             if(results != null) {
-                saveRanking();
+                saveReferenceRanking();
                 saveCriteriaSegments();
                 saveValueFunctions();
             }

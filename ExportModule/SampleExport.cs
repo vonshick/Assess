@@ -41,7 +41,7 @@ namespace ExportModule
         {
             var results = new Results();
             results.PartialUtilityFunctions = createSamplePartialUtilities(criterionList);
-            results.FinalRanking = createSampleFinalRanking(alternativeList);
+            // results.FinalRanking = createSampleFinalRanking(alternativeList);
 
             string xmcdaOutputDirectory = Path.Combine(dataDirectoryPath, "xmcda_output");
             XMCDAExporter xmcdaExporter = new XMCDAExporter(xmcdaOutputDirectory,
