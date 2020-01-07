@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Xml;
+using DataModel.Structs;
 
 namespace ImportModule
 {
@@ -15,8 +16,6 @@ namespace ImportModule
         private string currentlyProcessedFile;
         private string currentlyProcessedAlternativeId;
 
-        private List<KeyValuePair<Alternative, int>> alternativesRanking;
-        private List<PartialUtility> partialUtilityList;
 
         private void checkIfIdProvided(XmlAttributeCollection attributesCollection, string elementType)
         {
@@ -50,8 +49,6 @@ namespace ImportModule
 
         public XMCDALoader() : base()
         {
-            alternativesRanking = new List<KeyValuePair<Alternative, int>>();
-            partialUtilityList = new List<PartialUtility>();
         }
 
         private XmlDocument loadFile(string fileName)
@@ -179,20 +176,18 @@ namespace ImportModule
 
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
             {
-                string alternativeName = "";
-
                 foreach (XmlNode alternativeResult in xmlNode.ChildNodes)
                 {
                     // first node containts alternative ID
                     if (alternativeResult.Name == "alternativeID")
                     {
-                        alternativeName = alternativeResult.InnerText;
+                        currentlyProcessedAlternativeId = alternativeResult.InnerText;
                     }
                     else
                     {
                         int rank = int.Parse(alternativeResult.ChildNodes[0].InnerText);
-                        Alternative matchingAlternative = alternativeList.Find(alternative => alternative.Name == alternativeName);
-                        alternativesRanking.Add(new KeyValuePair<Alternative, int>(matchingAlternative, rank));
+                        int alternativeIndex = alternativeList.FindIndex(compareAlternativeIds);
+                        alternativeList[alternativeIndex].ReferenceRank = rank;
                     }
                 }
             }
@@ -241,7 +236,7 @@ namespace ImportModule
                         }
 
                         var matchingCriterion = criterionList.Find(criterion => criterion.ID == criterionID);
-                        partialUtilityList.Add(new PartialUtility(matchingCriterion, argumentsValues));
+                        results.PartialUtilityFunctions.Add(new PartialUtility(matchingCriterion, argumentsValues));
                     }
                 }
             }
@@ -258,8 +253,10 @@ namespace ImportModule
             setMinAndMaxCriterionValues();
         }
 
-        public void LoadResults()
+        public void LoadResults(string xmcdaDirectory)
         {
+            ProcessFile(xmcdaDirectory);
+            results = new Results();
             LoadAlternativesRanks();
             LoadValueFunctions();
         }

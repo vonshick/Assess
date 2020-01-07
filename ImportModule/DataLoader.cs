@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using DataModel.Results;
 
 namespace ImportModule
 {
@@ -10,6 +11,7 @@ namespace ImportModule
     {
         protected List<Criterion> criterionList;
         protected List<Alternative> alternativeList;
+        protected Results results;
 
         public List<Criterion> CriterionList
         {
@@ -19,6 +21,11 @@ namespace ImportModule
         public List<Alternative> AlternativeList
         {
             get { return alternativeList; }
+        }
+
+        public Results Results
+        {
+            get { return results; }
         }
 
         public DataLoader()
