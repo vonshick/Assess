@@ -134,8 +134,9 @@ namespace ImportModule
                         // check if number of all child nodes (except INFO node - which isn't about criterion) is equal to criterionList.Count
                         int alternativesCountValidation = 0;
                         Alternative alternative = new Alternative() { Name = checkAlternativesNamesUniqueness(instance.Attributes["ObjID"].Value) };
-                        List<CriterionValue> criteriaValuesList = new List<CriterionValue>();
+                        alternative.ID = alternative.Name;
 
+                        List<CriterionValue> criteriaValuesList = new List<CriterionValue>();
 
                         foreach (XmlNode instancePart in instance)
                         {

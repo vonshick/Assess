@@ -83,6 +83,7 @@ namespace ImportModule
                     var values = ReadNewLine(reader);
 
                     Alternative alternative = new Alternative { Name = checkAlternativesNamesUniqueness(values[0]), CriteriaValuesList = new List<CriterionValue>() };
+                    alternative.ID = alternative.Name;
 
                     for (int i = 0; i < criterionList.Count; i++)
                     {

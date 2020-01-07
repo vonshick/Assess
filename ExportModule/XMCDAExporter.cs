@@ -89,7 +89,8 @@ namespace ExportModule
             foreach (Alternative alternative in alternativeList)
             {
                 xmcdaWriter.WriteStartElement("alternative");
-                xmcdaWriter.WriteAttributeString("id", alternative.Name);
+                xmcdaWriter.WriteAttributeString("id", alternative.ID);
+                xmcdaWriter.WriteAttributeString("name", alternative.Name);
                 xmcdaWriter.WriteStartElement("type");
                 xmcdaWriter.WriteString("real");
                 xmcdaWriter.WriteEndElement();
@@ -143,7 +144,7 @@ namespace ExportModule
             {
                 xmcdaWriter.WriteStartElement("alternativePerformances");
                 xmcdaWriter.WriteStartElement("alternativeID");
-                xmcdaWriter.WriteString(alternative.Name);
+                xmcdaWriter.WriteString(alternative.ID);
                 xmcdaWriter.WriteEndElement();
 
                 foreach (CriterionValue criterionValue in alternative.CriteriaValuesList)
