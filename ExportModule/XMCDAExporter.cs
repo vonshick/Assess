@@ -68,7 +68,7 @@ namespace ExportModule
             foreach (Criterion criterion in criterionList)
             {
                 xmcdaWriter.WriteStartElement("criterion");
-                xmcdaWriter.WriteAttributeString("id", criterion.ID);
+                xmcdaWriter.WriteAttributeString("id",  criterion.ID != null ? criterion.ID : criterion.Name);
                 xmcdaWriter.WriteAttributeString("name", criterion.Name);
                 xmcdaWriter.WriteStartElement("active");
                 xmcdaWriter.WriteString("true");
@@ -89,7 +89,7 @@ namespace ExportModule
             foreach (Alternative alternative in alternativeList)
             {
                 xmcdaWriter.WriteStartElement("alternative");
-                xmcdaWriter.WriteAttributeString("id", alternative.ID);
+                xmcdaWriter.WriteAttributeString("id", alternative.ID != null ? alternative.ID : alternative.Name);
                 xmcdaWriter.WriteAttributeString("name", alternative.Name);
                 xmcdaWriter.WriteStartElement("type");
                 xmcdaWriter.WriteString("real");
@@ -115,7 +115,7 @@ namespace ExportModule
             {
                 xmcdaWriter.WriteStartElement("criterionScale");
                 xmcdaWriter.WriteStartElement("criterionID");
-                xmcdaWriter.WriteString(criterion.ID);
+                xmcdaWriter.WriteString(criterion.ID != null ? criterion.ID : criterion.Name);
                 xmcdaWriter.WriteEndElement();
                 xmcdaWriter.WriteStartElement("scales");
                 xmcdaWriter.WriteStartElement("scale");
@@ -144,14 +144,15 @@ namespace ExportModule
             {
                 xmcdaWriter.WriteStartElement("alternativePerformances");
                 xmcdaWriter.WriteStartElement("alternativeID");
-                xmcdaWriter.WriteString(alternative.ID);
+                xmcdaWriter.WriteString(alternative.ID != null ? alternative.ID : alternative.Name);
                 xmcdaWriter.WriteEndElement();
 
                 foreach (CriterionValue criterionValue in alternative.CriteriaValuesList)
                 {
                     xmcdaWriter.WriteStartElement("performance");
                     xmcdaWriter.WriteStartElement("criterionID");
-                    xmcdaWriter.WriteString(criterionList.Find(criterion => criterion.Name == criterionValue.Name).ID);
+                    Criterion matchingCriterion = criterionList.Find(criterion => criterion.Name == criterionValue.Name);
+                    xmcdaWriter.WriteString(matchingCriterion.ID != null ? matchingCriterion.ID : matchingCriterion.Name);
                     xmcdaWriter.WriteEndElement();
                     xmcdaWriter.WriteStartElement("values");
                     xmcdaWriter.WriteStartElement("value");
