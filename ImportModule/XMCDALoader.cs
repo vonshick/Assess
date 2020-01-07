@@ -13,9 +13,40 @@ namespace ImportModule
     {
         private string xmcdaDirectory;
         private string currentlyProcessedFile;
+        private string currentlyProcessedAlternativeId;
 
         private List<KeyValuePair<Alternative, int>> alternativesRanking;
         private List<PartialUtility> partialUtilityList;
+
+        private void checkIfIdProvided(XmlAttributeCollection attributesCollection, string elementType)
+        {
+            if (attributesCollection["id"] == null)
+                throw new ImproperFileStructureException("Attribute 'id' must be provided for each  " + elementType + ".");
+        }
+
+        private string checkIfAlternativeNameProvided(XmlAttributeCollection attributesCollection)
+        {
+            if (attributesCollection["name"] != null)
+            {
+                return checkAlternativesNamesUniqueness(attributesCollection["name"].Value);
+            }
+            else
+            {
+                return checkAlternativesNamesUniqueness(attributesCollection["id"].Value);
+            }
+        }
+
+        private string checkIfCriterionNameProvided(XmlAttributeCollection attributesCollection)
+        {
+            if (attributesCollection["name"] != null)
+            {
+                return checkCriteriaNamesUniqueness(attributesCollection["name"].Value);
+            }
+            else
+            {
+                return checkCriteriaNamesUniqueness(attributesCollection["id"].Value);
+            }
+        }
 
         public XMCDALoader() : base()
         {
@@ -41,11 +72,13 @@ namespace ImportModule
             // this file contains only one main block - <criteria>
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
             {
+                checkIfIdProvided(xmlNode.Attributes, "criterion");
                 Criterion criterion = new Criterion()
                 {
-                    Name = checkCriteriaNamesUniqueness(xmlNode.Attributes["name"].Value),
                     ID = checkCriteriaIdsUniqueness(xmlNode.Attributes["id"].Value)
                 };
+
+                criterion.Name = checkIfCriterionNameProvided(xmlNode.Attributes);
 
                 criterionList.Add(criterion);
             }
@@ -66,16 +99,44 @@ namespace ImportModule
             }
         }
 
+        private void LoadAlternatives()
+        {
+            XmlDocument xmlDocument = loadFile("alternatives.xml");
+
+            // this file contains only one main block - <criteria>
+            foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
+            {
+                checkIfIdProvided(xmlNode.Attributes, "alternative");
+                Alternative alternative = new Alternative()
+                {
+                    ID = checkAlternativesIdsUniqueness(xmlNode.Attributes["id"].Value),
+                    CriteriaValuesList = new List<CriterionValue>()
+                };
+
+                alternative.Name = checkIfAlternativeNameProvided(xmlNode.Attributes);
+
+                alternativeList.Add(alternative);
+            }
+        }
+
+        private bool compareAlternativeIds(Alternative alternative)
+        {
+            return alternative.ID.Equals(currentlyProcessedAlternativeId);
+        }
+
         private void LoadPerformanceTable()
         {
             XmlDocument xmlDocument = loadFile("performance_table.xml");
             int nodeCounter = 1;
 
+            if (xmlDocument.DocumentElement.ChildNodes[0].ChildNodes.Count != alternativeList.Count)
+            {
+                throw new ImproperFileStructureException("There are provided " + (xmlDocument.DocumentElement.ChildNodes[0].ChildNodes.Count) + " alternative performances and required are " + alternativeList.Count+ ".");
+            }
+
             // this file contains only one main block - <criteriaScales>
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
             {
-                Alternative alternative = new Alternative { CriteriaValues = new Dictionary<Criterion, float>() };
-
                 // one of children nodes is the name node  
                 if ((xmlNode.ChildNodes.Count - 1) != criterionList.Count)
                 {
@@ -87,7 +148,7 @@ namespace ImportModule
                     // first node containts alternative ID
                     if (performance.Name == "alternativeID")
                     {
-                        alternative.Name = checkAlternativesNamesUniqueness(performance.InnerText);
+                        currentlyProcessedAlternativeId = performance.InnerText;
                     }
                     else
                     {
@@ -96,17 +157,18 @@ namespace ImportModule
 
                         if (matchingCriterion == null)
                         {
-                            throw new ImproperFileStructureException("Error while processing alternative " + alternative.Name + ": criterion with ID " + criterionID + " does not exist.");
+                            throw new ImproperFileStructureException("Error while processing alternative " + currentlyProcessedAlternativeId + ": criterion with ID " + criterionID + " does not exist.");
                         }
 
                         string value = performance.ChildNodes[1].FirstChild.InnerText;
-                        checkIfValueIsValid(value, criterionID, alternative.Name);
+                        checkIfValueIsValid(value, criterionID, currentlyProcessedAlternativeId);
 
-                        alternative.CriteriaValuesList.Add(new CriterionValue(matchingCriterion.Name, float.Parse(value, CultureInfo.InvariantCulture)));
+                        int alternativeIndex = alternativeList.FindIndex(compareAlternativeIds);
+
+                        alternativeList[alternativeIndex].CriteriaValuesList.Add(new CriterionValue(matchingCriterion.Name, float.Parse(value, CultureInfo.InvariantCulture)));
                     }
                 }
 
-                alternativeList.Add(alternative);
                 nodeCounter++;
             }
         }
@@ -191,6 +253,7 @@ namespace ImportModule
 
             LoadCriteria();
             LoadCriteriaScales();
+            LoadAlternatives();
             LoadPerformanceTable();
             setMinAndMaxCriterionValues();
         }

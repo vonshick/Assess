@@ -43,7 +43,7 @@ namespace ExportModule
         {
             if(File.Exists(@path)) 
             {
-                throw new XmcdaFileExistsException("File " + path + " already exists. Would you like to overwrite it?");
+               throw new XmcdaFileExistsException("File " + path + " already exists. Would you like to overwrite it?");
             }
         }
 
@@ -150,7 +150,7 @@ namespace ExportModule
                 {
                     xmcdaWriter.WriteStartElement("performance");
                     xmcdaWriter.WriteStartElement("criterionID");
-                    xmcdaWriter.WriteString(criterionValue.Name);
+                    xmcdaWriter.WriteString(criterionList.Find(criterion => criterion.Name == criterionValue.Name).ID);
                     xmcdaWriter.WriteEndElement();
                     xmcdaWriter.WriteStartElement("values");
                     xmcdaWriter.WriteStartElement("value");

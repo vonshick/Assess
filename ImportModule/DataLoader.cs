@@ -133,6 +133,26 @@ namespace ImportModule
             return id;
         }
 
+        
+        protected string checkAlternativesIdsUniqueness(string id)
+        {
+            if (id.Equals(""))
+            {
+                throw new ImproperFileStructureException("Alternative ID can not be an empty string.");
+            }
+
+            string[] usedIds = alternativeList.Select(alternative => alternative.ID).ToArray();
+            foreach (string usedId in usedIds)
+            {
+                if (id.Equals(usedId))
+                {
+                    throw new ImproperFileStructureException("Alternative ID '" + id + "' has been already used.");
+                }
+            }
+
+            return id;
+        }
+
         protected void checkIfValueIsValid(string value, string criterionId, string alternativeId)
         {
             if (value.Equals(""))
