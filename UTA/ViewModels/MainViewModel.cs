@@ -48,6 +48,7 @@ namespace UTA.ViewModels
             AlternativesTabViewModel = new AlternativesTabViewModel(Criteria, Alternatives);
             ReferenceRankingTabViewModel = new ReferenceRankingTabViewModel(ReferenceRanking, Alternatives);
             SettingsTabViewModel = new SettingsTabViewModel();
+            WelcomeTabViewModel = new WelcomeTabViewModel();
 
             Criteria.CriteriaCollection.CollectionChanged += InstancePropertyChanged;
             Alternatives.AlternativesCollection.CollectionChanged += InstancePropertyChanged;
@@ -79,6 +80,12 @@ namespace UTA.ViewModels
                 Results.FinalRanking.FinalRankingCollection.CollectionChanged += InstancePropertyChanged;
             };
 
+
+            Criteria.PropertyChanged += InstancePropertyChanged;
+            Alternatives.PropertyChanged += InstancePropertyChanged;
+            ReferenceRanking.PropertyChanged += InstancePropertyChanged;
+            Results.FinalRanking.PropertyChanged += InstancePropertyChanged;
+            Results.PropertyChanged += InstancePropertyChanged;
 
             // TODO: remove. for testing purposes
             // WARNING: using these crashes application at some point
@@ -130,6 +137,7 @@ namespace UTA.ViewModels
         public AlternativesTabViewModel AlternativesTabViewModel { get; }
         public ReferenceRankingTabViewModel ReferenceRankingTabViewModel { get; }
         public SettingsTabViewModel SettingsTabViewModel { get; }
+        public WelcomeTabViewModel WelcomeTabViewModel { get; }
 
 
         public bool PreserveKendallCoefficient

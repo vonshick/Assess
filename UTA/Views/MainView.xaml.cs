@@ -24,6 +24,7 @@ namespace UTA.Views
 
         public MainView()
         {
+            Loaded += ViewLoaded;
             InitializeComponent();
             DataContext = _viewmodel;
 
@@ -41,6 +42,11 @@ namespace UTA.Views
                     else TabControl.SelectedItem = _viewmodel.TabToSelect;
                 }
             };
+        }
+
+        private void ViewLoaded(object sender, RoutedEventArgs e)
+        {
+            _viewmodel.ShowTab(_viewmodel.WelcomeTabViewModel);
         }
 
         private void TabsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

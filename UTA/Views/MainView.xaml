@@ -182,7 +182,15 @@
                   IsCheckable="True" IsChecked="{Binding PreserveKendallCoefficient, UpdateSourceTrigger=PropertyChanged}" />
       </MenuItem>
       <MenuItem Name="ShowMenu" Header="Show" Style="{StaticResource MenuBarItem}">
-        <MenuItem Margin="{StaticResource MenuItemTopMargin}" Header="Criteria">
+        <MenuItem Margin="{StaticResource MenuItemTopMargin}" Header="Welcome!">
+          <i:Interaction.Triggers>
+            <i:EventTrigger EventName="Click">
+              <i:InvokeCommandAction Command="{Binding ShowTabCommand}"
+                                     CommandParameter="{Binding WelcomeTabViewModel}" />
+            </i:EventTrigger>
+          </i:Interaction.Triggers>
+        </MenuItem>
+        <MenuItem Header="Criteria">
           <i:Interaction.Triggers>
             <i:EventTrigger EventName="Click">
               <i:InvokeCommandAction Command="{Binding ShowTabCommand}"
@@ -543,6 +551,9 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewModels:SettingsTabViewModel}">
               <views:SettingsTab />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModels:WelcomeTabViewModel}">
+              <views:WelcomeTab />
             </DataTemplate>
           </TabControl.Resources>
 
