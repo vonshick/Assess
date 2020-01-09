@@ -7,9 +7,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
 using CalculationsEngine;
+using DataModel.Annotations;
 using DataModel.Input;
 using DataModel.Results;
 using ExportModule;
@@ -17,7 +16,6 @@ using ImportModule;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Win32;
 using Ookii.Dialogs.Wpf;
-using UTA.Annotations;
 using UTA.Interactivity;
 using UTA.Models.DataBase;
 using UTA.Models.Tab;
@@ -27,7 +25,6 @@ namespace UTA.ViewModels
     public class MainViewModel : INotifyPropertyChanged
     {
         private readonly IDialogCoordinator _dialogCoordinator;
-        public readonly ObservableCollection<ChartTabViewModel> ChartTabViewModels;
         private bool _preserveKendallCoefficient = true;
         private SaveData _saveData;
         private ITab _tabToSelect;
@@ -35,7 +32,7 @@ namespace UTA.ViewModels
         public MainViewModel(IDialogCoordinator dialogCoordinator)
         {
             Criteria = new Criteria();
-            ReferenceRanking = new ReferenceRanking(0);
+            ReferenceRanking = new ReferenceRanking();
             Alternatives = new Alternatives(Criteria, ReferenceRanking);
             Results = new Results();
 
@@ -44,49 +41,74 @@ namespace UTA.ViewModels
 
             Tabs = new ObservableCollection<ITab>();
             Tabs.CollectionChanged += TabsCollectionChanged;
+            ChartTabViewModels = new ObservableCollection<ChartTabViewModel>();
             ShowTabCommand = new RelayCommand(tabViewModel => ShowTab((ITab) tabViewModel));
 
-            CriteriaTabViewModel = new CriteriaTabViewModel(Criteria, Alternatives);
+            CriteriaTabViewModel = new CriteriaTabViewModel(Criteria);
             AlternativesTabViewModel = new AlternativesTabViewModel(Criteria, Alternatives);
-            ReferenceRankingTabViewModel = new ReferenceRankingTabViewModel(Criteria, Alternatives);
+            ReferenceRankingTabViewModel = new ReferenceRankingTabViewModel(ReferenceRanking, Alternatives);
             SettingsTabViewModel = new SettingsTabViewModel();
-            ChartTabViewModels = new ObservableCollection<ChartTabViewModel>();
 
             Criteria.CriteriaCollection.CollectionChanged += InstancePropertyChanged;
             Alternatives.AlternativesCollection.CollectionChanged += InstancePropertyChanged;
             ReferenceRanking.RankingsCollection.CollectionChanged += InstancePropertyChanged;
             Results.FinalRanking.FinalRankingCollection.CollectionChanged += InstancePropertyChanged;
-            Criteria.PropertyChanged += InstancePropertyChanged;
-            Alternatives.PropertyChanged += InstancePropertyChanged;
-            ReferenceRanking.PropertyChanged += InstancePropertyChanged;
-            Results.FinalRanking.PropertyChanged += InstancePropertyChanged;
-            Results.PropertyChanged += InstancePropertyChanged;
+
+            Criteria.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName != nameof(Criteria.CriteriaCollection)) return;
+                InstancePropertyChanged();
+                Criteria.CriteriaCollection.CollectionChanged += InstancePropertyChanged;
+            };
+            Alternatives.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName != nameof(Alternatives.AlternativesCollection)) return;
+                InstancePropertyChanged();
+                Alternatives.AlternativesCollection.CollectionChanged += InstancePropertyChanged;
+            };
+            ReferenceRanking.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName != nameof(ReferenceRanking.RankingsCollection)) return;
+                InstancePropertyChanged();
+                ReferenceRanking.RankingsCollection.CollectionChanged += InstancePropertyChanged;
+            };
+            Results.FinalRanking.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName != nameof(Results.FinalRanking.FinalRankingCollection)) return;
+                InstancePropertyChanged();
+                Results.FinalRanking.FinalRankingCollection.CollectionChanged += InstancePropertyChanged;
+            };
+
 
             // TODO: remove. for testing purposes
-            //Criteria.AddCriterion("Power", "", "Gain", 8);
-            //Criteria.AddCriterion("0-100 km/h", "", "Cost", 5);
+            //Criteria.CriteriaCollection.Add(new Criterion("A", "ABC", "Gain", 8));
+            //Criteria.CriteriaCollection.Add(new Criterion("B", "ABC", "Gain", 8));
+            //Criteria.CriteriaCollection.Add(new Criterion("C", "ABC", "Gain", 8));
+            //Criteria.CriteriaCollection.Add(new Criterion("D", "ABC", "Gain", 8));
+            //Criteria.CriteriaCollection.Add(new Criterion("E", "ABC", "Gain", 8));
+            //Criteria.CriteriaCollection.Add(new Criterion("F", "ABC", "Gain", 8));
             //Criteria.CriteriaCollection[0].MinValue = Criteria.CriteriaCollection[1].MinValue = 0;
             //Criteria.CriteriaCollection[0].MaxValue = Criteria.CriteriaCollection[1].MaxValue = 1;
-            //for (var i = 0; i < 20; i++) Alternatives.AddAlternative("Alternative X", "");
+            //for (var i = 0; i < 20; i++)
+            //    Alternatives.AlternativesCollection.Add(new Alternative($"Alternative X{i}", new ObservableCollection<Criterion>()));
 
             //for (var i = 0; i < Alternatives.AlternativesCollection.Count; i++)
             //    foreach (var criterionValue in Alternatives.AlternativesCollection[i].CriteriaValuesList)
             //        criterionValue.Value = i * 0.1f;
 
-            //for (var i = 1; i < 20; i++)
+            //for (var i = 0; i < 20; i++)
             //{
-            //    ReferenceRanking.AddAlternativeToRank(new Alternative {Name = "Reference X"}, i);
+            //    ReferenceRanking.AddAlternativeToRank(new Alternative { Name = "Reference X" }, i);
             //    if (i % 2 == 0)
-            //        ReferenceRanking.AddAlternativeToRank(new Alternative {Name = "Reference XX"}, i);
+            //        ReferenceRanking.AddAlternativeToRank(new Alternative { Name = "Reference XX" }, i);
             //    if (i % 3 == 0)
-            //        ReferenceRanking.AddAlternativeToRank(new Alternative {Name = "Reference XXX"}, i);
+            //        ReferenceRanking.AddAlternativeToRank(new Alternative { Name = "Reference XXX" }, i);
             //}
 
-            //for (var i = 1; i <= Alternatives.AlternativesCollection.Count; i++)
-            //    Results.FinalRanking.FinalRankingCollection.Add(new FinalRankingEntry(i, new Alternative {Name = "Final X"},
-            //        Alternatives.AlternativesCollection.Count - i));
+            //for (var i = 0; i < Alternatives.AlternativesCollection.Count; i++)
+            //    Results.FinalRanking.FinalRankingCollection.Add(new FinalRankingEntry(i, Alternatives.AlternativesCollection[i],
+            //        0.191919f));
 
-            
             // TODO vonshick REMOVE IT AFTER TESTING
             // string dataDirectoryPath = "D:\\Data";
             // DataLoader dataLoader = SampleImport.ProcessSampleData(dataDirectoryPath); // csv
@@ -100,6 +122,7 @@ namespace UTA.ViewModels
         public Results Results { get; set; }
 
         public ObservableCollection<ITab> Tabs { get; }
+        public ObservableCollection<ChartTabViewModel> ChartTabViewModels { get; }
         public RelayCommand ShowTabCommand { get; }
 
         public CriteriaTabViewModel CriteriaTabViewModel { get; }
@@ -139,14 +162,6 @@ namespace UTA.ViewModels
         public event PropertyChangedEventHandler PropertyChanged;
 
 
-        public static T FindParent<T>(DependencyObject child) where T : DependencyObject
-        {
-            var parentObject = VisualTreeHelper.GetParent(child);
-            if (parentObject == null) return null;
-            if (parentObject is T parent) return parent;
-            return FindParent<T>(parentObject);
-        }
-
         private void TabsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
@@ -160,27 +175,18 @@ namespace UTA.ViewModels
             Tabs.Remove((ITab) sender);
         }
 
-        [UsedImplicitly]
-        public void InstancePanelAddButtonClicked(object sender, RoutedEventArgs e)
-        {
-            // TODO: navigate to new alternative / criterion editor on tab open
-            var parentExpanderName = FindParent<Expander>(sender as UIElement).Name;
-            if (parentExpanderName == "AlternativesExpander") ShowTab(AlternativesTabViewModel);
-            else if (parentExpanderName == "CriteriaExpander") ShowTab(CriteriaTabViewModel);
-        }
-
         public void ShowTab(ITab tabModel)
         {
             if (Tabs.Contains(tabModel)) TabToSelect = tabModel;
             else Tabs.Add(tabModel);
         }
 
-        [UsedImplicitly]
-        public async void SolveButtonClicked(object sender, RoutedEventArgs e)
+        [Annotations.UsedImplicitly]
+        public async void CalculateButtonClicked(object sender, RoutedEventArgs e)
         {
-            // TODO: use flyouts maybe to inform user what to do, to begin calculations
             if (Criteria.CriteriaCollection.Count == 0)
             {
+                ShowSolveErrorDialog("It's required to provide at least 1 criterion to begin UTA calculations.");
                 AddTabIfNeeded(CriteriaTabViewModel);
                 AddTabIfNeeded(AlternativesTabViewModel);
                 AddTabIfNeeded(ReferenceRankingTabViewModel);
@@ -190,6 +196,7 @@ namespace UTA.ViewModels
 
             if (Alternatives.AlternativesCollection.Count <= 1)
             {
+                ShowSolveErrorDialog("It's required to provide at least 2 alternatives to begin UTA calculations.");
                 AddTabIfNeeded(AlternativesTabViewModel);
                 AddTabIfNeeded(ReferenceRankingTabViewModel);
                 ShowTab(AlternativesTabViewModel);
@@ -200,14 +207,17 @@ namespace UTA.ViewModels
                 alternative.CriteriaValuesList.Any(criterionValue => criterionValue.Value == null));
             if (isAnyCriterionValueNull)
             {
+                ShowSolveErrorDialog(
+                    "It's required to provide data to every criterion value to all alternatives to begin UTA calculations.");
                 ShowTab(AlternativesTabViewModel);
                 return;
             }
 
             if (!(ReferenceRanking.RankingsCollection.Count >= 2
-                  && ReferenceRanking.RankingsCollection[0].Count != 0
-                  && ReferenceRanking.RankingsCollection[1].Count != 0))
+                  && ReferenceRanking.RankingsCollection.All(rank => rank.Count != 0)))
             {
+                ShowSolveErrorDialog(
+                    "It's required to provide at least 2 ranks in Reference Ranking filled with at least 1 alternative\nto begin UTA calculations.");
                 ShowTab(ReferenceRankingTabViewModel);
                 return;
             }
@@ -291,8 +301,23 @@ namespace UTA.ViewModels
             foreach (var chartTabViewModel in ChartTabViewModels) chartTabViewModel.GenerateChartData();
         }
 
+        private async void ShowSolveErrorDialog(string message)
+        {
+            await _dialogCoordinator.ShowMessageAsync(this,
+                "Invalid instance data.",
+                message,
+                MessageDialogStyle.Affirmative,
+                new MetroDialogSettings
+                {
+                    AffirmativeButtonText = "OK",
+                    DefaultButtonFocus = MessageDialogResult.Affirmative,
+                    AnimateShow = false,
+                    AnimateHide = false
+                });
+        }
+
         // xaml enforces void return type
-        [UsedImplicitly]
+        [Annotations.UsedImplicitly]
         public async void NewSolution(object sender, RoutedEventArgs e)
         {
             await NewSolution();
@@ -337,11 +362,11 @@ namespace UTA.ViewModels
         {
             var saveFileWithResultsDialog = await _dialogCoordinator.ShowMessageAsync(this,
                 "Choose save type.",
-                "Would you like to save your progress with or without results?",
+                "Would you like to save your progress with (XMCDA) or without results?",
                 MessageDialogStyle.AffirmativeAndNegative,
                 new MetroDialogSettings
                 {
-                    AffirmativeButtonText = "Save With Results",
+                    AffirmativeButtonText = "Save With Results (XMCDA)",
                     NegativeButtonText = "Save Without Results",
                     DefaultButtonFocus = MessageDialogResult.Affirmative,
                     AnimateShow = false,
@@ -352,7 +377,7 @@ namespace UTA.ViewModels
             else SaveAsMenuItemClicked();
         }
 
-        [UsedImplicitly]
+        [Annotations.UsedImplicitly]
         public async void OpenFileMenuItemClicked(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog
@@ -384,7 +409,7 @@ namespace UTA.ViewModels
             }
         }
 
-        [UsedImplicitly]
+        [Annotations.UsedImplicitly]
         public async void OpenXMCDAMenuItemClicked(object sender, RoutedEventArgs e)
         {
             var openDirectoryDialog = new VistaFolderBrowserDialog {ShowNewFolderButton = true};
@@ -398,6 +423,7 @@ namespace UTA.ViewModels
                 var dataLoader = new XMCDALoader();
                 dataLoader.LoadData(filePath);
                 Criteria.CriteriaCollection = new ObservableCollection<Criterion>(dataLoader.CriterionList);
+                // works assuming that CriteriaValuesList and ReferenceRank property are initialized properly
                 Alternatives.AlternativesCollection = new ObservableCollection<Alternative>(dataLoader.AlternativeList);
                 // TODO: get reference and final ranking, and partial utilities (vonshick needs to update his modules).
             }
@@ -424,7 +450,13 @@ namespace UTA.ViewModels
                 });
         }
 
-        public async void SaveMenuItemClicked(object sender = null, RoutedEventArgs e = null)
+        [UsedImplicitly]
+        public async void SaveMenuItemClicked(object sender, RoutedEventArgs e)
+        {
+            await SaveMenuItemClicked();
+        }
+
+        public async Task SaveMenuItemClicked()
         {
             if (_saveData.IsSavingWithResults == null || _saveData.FilePath == null)
             {
@@ -479,12 +511,12 @@ namespace UTA.ViewModels
             _saveData.FilePath = directoryPath;
         }
 
-        private void InstancePropertyChanged(object sender, EventArgs e)
+        private void InstancePropertyChanged(object sender = null, EventArgs e = null)
         {
             OnPropertyChanged(nameof(IsThereAnyApplicationProgress));
         }
 
-        [NotifyPropertyChangedInvocator]
+        [Annotations.NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -493,9 +525,9 @@ namespace UTA.ViewModels
         private struct SaveData
         {
             public bool? IsSavingWithResults;
-            [CanBeNull] public string FilePath;
+            [Annotations.CanBeNull] public string FilePath;
 
-            public SaveData(bool? isSavingWithResults, [CanBeNull] string filePath)
+            public SaveData(bool? isSavingWithResults, [Annotations.CanBeNull] string filePath)
             {
                 IsSavingWithResults = isSavingWithResults;
                 FilePath = filePath;

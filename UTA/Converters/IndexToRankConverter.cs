@@ -8,12 +8,12 @@ namespace UTA.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (int) value + 1;
+            return value is int index ? index + 1 : (object) null;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (int) value - 1;
+            return value is int index ? index - 1 : (object) null;
         }
     }
 }

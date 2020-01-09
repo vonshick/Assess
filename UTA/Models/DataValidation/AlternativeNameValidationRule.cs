@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Data;
 using DataModel.Input;
@@ -9,30 +9,19 @@ namespace UTA.Models.DataValidation
 {
     public class AlternativeNameValidationRule : ValidationRule
     {
-        public CollectionViewSource AlternativesColl { get; set; }
+        public CollectionViewSource AlternativesCollectionViewSource { get; set; }
 
-        public override ValidationResult Validate(object value,
-            CultureInfo cultureInfo)
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
-            var bindingExpression = (BindingExpression) value;
-            var validatedAlternative = (Alternative) bindingExpression.ResolvedSource;
-            if (validatedAlternative.Name.Replace(" ", string.Empty) == "")
-            {
-                Console.WriteLine("validation FAILED - EMPTY name in " + validatedAlternative.Name);
-                return new ValidationResult(false,
-                    "Alternative name cannot be empty!");
-            }
+            var name = (string) value;
+            name = name?.Trim(' ');
+            if (name == null || name.Trim(' ') == "")
+                return new ValidationResult(false, "Alternative name cannot be empty!");
 
-            var alternativesCollection = (ObservableCollection<Alternative>) AlternativesColl.Source;
-            foreach (var alternativeFromCollection in alternativesCollection)
-                if (alternativeFromCollection != validatedAlternative && alternativeFromCollection.Name == validatedAlternative.Name)
-                {
-                    Console.WriteLine("validation FAILED: " + validatedAlternative.Name + " ALREADY EXISTS");
-                    return new ValidationResult(false,
-                        "Alternative already exists!");
-                }
+            var criteriaCollection = (ObservableCollection<Alternative>)AlternativesCollectionViewSource.Source;
+            if (criteriaCollection.Any(criterion => criterion.Name == name))
+                return new ValidationResult(false, "Alternative already exists!");
 
-            Console.WriteLine("validation OK of " + validatedAlternative.Name);
             return ValidationResult.ValidResult;
         }
     }

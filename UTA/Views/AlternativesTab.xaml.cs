@@ -1,229 +1,118 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Data;
-using System.Windows.Media;
+using System.Windows.Input;
 using DataModel.Input;
-using UTA.OtherViewClasses;
 using UTA.ViewModels;
 
 namespace UTA.Views
 {
     public partial class AlternativesTab : UserControl
     {
-        private int _errorCount;
+        private readonly Style _criterionValueCellStyle;
+        private readonly Style _criterionValueHeaderStyle;
+        private readonly List<DataGridTextColumn> _criterionValuesColumns;
+        private int _lastDataGridSelectedItem = -1;
         private AlternativesTabViewModel _viewmodel;
+
 
         public AlternativesTab()
         {
-            Console.WriteLine("AltTab init");
-            Loaded += ViewLoaded;
             InitializeComponent();
+            _criterionValuesColumns = new List<DataGridTextColumn>();
+            _criterionValueHeaderStyle = (Style) FindResource("CenteredDataGridColumnHeader");
+            _criterionValueCellStyle = (Style) FindResource("CenteredDataGridCell");
+
+            Loaded += ViewLoaded;
         }
 
         private void ViewLoaded(object sender, RoutedEventArgs e)
         {
-            _viewmodel = ((MainViewModel) DataContext).AlternativesTabViewModel;
-            AddAlternativesDataGridCriteriaColumns();
-            AddHandler(Validation.ErrorEvent, new RoutedEventHandler(OnErrorEvent));
-        }
+            _viewmodel = (AlternativesTabViewModel) DataContext;
 
-        //todo could find better way for it if enough time
-        private void OnErrorEvent(object sender, RoutedEventArgs e)
-        {
-            var validationEventArgs = e as ValidationErrorEventArgs;
-            if (validationEventArgs == null)
-                throw new Exception("Unexpected event args");
-            switch (validationEventArgs.Action)
+            _viewmodel.Criteria.PropertyChanged += (s, args) =>
             {
-                case ValidationErrorEventAction.Added:
-                {
-                    _errorCount++;
-                    break;
-                }
-                case ValidationErrorEventAction.Removed:
-                {
-                    _errorCount = 0;
-                    break;
-                }
-                default:
-                {
-                    throw new Exception("Unknown action");
-                }
-            }
+                if (args.PropertyName != nameof(_viewmodel.Criteria.CriteriaCollection)) return;
+                GenerateCriterionValuesColumns();
+            };
 
-            ButtonEditAlternatives.IsEnabled = _errorCount == 0;
-        }
-
-        private void AddAlternativesDataGridCriteriaColumns()
-        {
-            var index = 0;
-            //adding criteria columns
-            foreach (var criterion in _viewmodel.Criteria.CriteriaCollection)
-                if (criterion != _viewmodel.Criteria.Placeholder)
-                    AddAlternativesDataGridColumn(criterion, index++);
-        }
-
-        private void RemoveAlternativeButtonClicked(object sender, RoutedEventArgs e)
-        {
-            if (EditAlternativesDataGrid.SelectedItem is Alternative alternative) _viewmodel.Alternatives.RemoveAlternative(alternative);
-        }
-
-        private void EditAlternativesSwitchClicked(object sender, RoutedEventArgs e)
-        {
-            EditAlternativesDataGrid.IsReadOnly = !EditAlternativesDataGrid.IsReadOnly;
-            if (EditAlternativesDataGrid.IsReadOnly)
+            _viewmodel.PropertyChanged += (s, args) =>
             {
-                ButtonEditAlternatives.Content = "Editing is OFF";
-                EditAlternativesDataGrid.Columns[0].Visibility = Visibility.Collapsed;
-                EditAlternativesDataGrid.ItemContainerGenerator.StatusChanged -= ItemContainerGeneratorStatusChanged;
-                _viewmodel.RemovePlaceholder();
+                if (args.PropertyName == nameof(_viewmodel.NameTextBoxFocusTrigger))
+                {
+                    NameTextBox.Focus();
+                }
+                else if (args.PropertyName == nameof(_viewmodel.AlternativeIndexToShow))
+                {
+                    AlternativesDataGrid.SelectedIndex = _viewmodel.AlternativeIndexToShow;
+                    if (AlternativesDataGrid.SelectedItem == null) return;
+                    AlternativesDataGrid.ScrollIntoView(AlternativesDataGrid.SelectedItem);
+                }
+            };
+
+            if (_viewmodel.AlternativeIndexToShow != -1)
+            {
+                AlternativesDataGrid.SelectedIndex = _viewmodel.AlternativeIndexToShow;
+                if (AlternativesDataGrid.SelectedItem != null) AlternativesDataGrid.ScrollIntoView(AlternativesDataGrid.SelectedItem);
             }
             else
             {
-                ButtonEditAlternatives.Content = "Editing is ON";
-                EditAlternativesDataGrid.Columns[0].Visibility = Visibility.Visible;
-                EditAlternativesDataGrid.ItemContainerGenerator.StatusChanged += ItemContainerGeneratorStatusChanged;
-                _viewmodel.AddPlaceholder();
-            }
-        }
-
-        private void NewRowCellFocusLost(object sender, EventArgs e)
-        {
-            var cell = (DataGridCell) sender;
-            if (cell.IsEditing && ((TextBox) cell.Content).Text == "")
-                if ((string) cell.Column.Header == "Name")
-                    _viewmodel.Alternatives
-                        .AlternativesCollection[_viewmodel.Alternatives.AlternativesCollection.Count - 1]
-                        .Name = "name";
-                else
-                    _viewmodel.Alternatives
-                        .AlternativesCollection[_viewmodel.Alternatives.AlternativesCollection.Count - 1]
-                        .Description = "description";
-        }
-
-        private void NewRowCellClicked(object sender, EventArgs e)
-        {
-            var cell = (DataGridCell) sender;
-            if (cell.IsEditing)
-            {
-                var textBox = (TextBox) cell.Content;
-                if (cell.IsEditing && textBox.Text == "name" || textBox.Text == "description")
-                    textBox.Text = "";
-            }
-        }
-
-        private void ButtonSaveCurrentPlaceholderClicked(object sender, RoutedEventArgs e)
-        {
-            Console.WriteLine(_errorCount);
-            if (_errorCount == 0)
-            {
-                EditAlternativesDataGrid.ItemContainerGenerator.StatusChanged += ItemContainerGeneratorStatusChanged;
-                _viewmodel.SaveCurrentPlaceholder();
-            }
-        }
-
-        //todo validation, might be useful
-//        public bool IsValid(DependencyObject parent)
-//        {
-//            if (Validation.GetHasError(parent))
-//                return false;
-//
-//            // Validate all the bindings on the children
-//            for (var i = 0; i != VisualTreeHelper.GetChildrenCount(parent); ++i)
-//            {
-//                var child = VisualTreeHelper.GetChild(parent, i);
-//                if (!IsValid(child)) return false;
-//            }
-//
-//            return true;
-//        }
-
-        private DataGridRow GetAlternativesDataGridRow(int index)
-        {
-            var row =
-                (DataGridRow) EditAlternativesDataGrid.ItemContainerGenerator.ContainerFromIndex(index);
-            if (row == null)
-            {
-                EditAlternativesDataGrid.UpdateLayout();
-                EditAlternativesDataGrid.ScrollIntoView(EditAlternativesDataGrid.Items[index]);
-                row = (DataGridRow) EditAlternativesDataGrid.ItemContainerGenerator.ContainerFromIndex(index);
+                AlternativesDataGrid.SelectedItem = null;
             }
 
-            if (row == null)
-                Console.WriteLine("null cell: row: " + index);
-            return row;
+            NameTextBox.Focus();
+            GenerateCriterionValuesColumns();
         }
 
-        private DataGridCell GetAlternativesDataGridCell(DataGridRow row, int index)
+
+        private void GenerateCriterionValuesColumns()
         {
-            var presenter = VisualChildHelper.GetVisualChild<DataGridCellsPresenter>(row);
-            var cell = (DataGridCell) presenter.ItemContainerGenerator.ContainerFromIndex(index);
-            if (cell == null)
+            foreach (var criterionValuesColumn in _criterionValuesColumns) AlternativesDataGrid.Columns.Remove(criterionValuesColumn);
+            _criterionValuesColumns.Clear();
+
+            for (var i = 0; i < _viewmodel.Criteria.CriteriaCollection.Count; i++)
             {
-                EditAlternativesDataGrid.UpdateLayout();
-                EditAlternativesDataGrid.ScrollIntoView(row, EditAlternativesDataGrid.Columns[index]);
-                cell = (DataGridCell) presenter.ItemContainerGenerator.ContainerFromIndex(index);
-            }
-
-            if (cell == null)
-                Console.WriteLine("null cell: row: " + row + " column: " + index);
-            return cell;
-        }
-
-        private void ItemContainerGeneratorStatusChanged(object sender, EventArgs e)
-        {
-            if (EditAlternativesDataGrid.ItemContainerGenerator.Status
-                == GeneratorStatus.ContainersGenerated && !EditAlternativesDataGrid.IsReadOnly)
-            {
-                //todo: error, still can return null! happened with lot of criteria and when clicked cell in criteria column
-                var row = GetAlternativesDataGridRow(EditAlternativesDataGrid.Items.Count - 1);
-                EditAlternativesDataGrid.ItemContainerGenerator.StatusChanged -=
-                    ItemContainerGeneratorStatusChanged;
-
-                var cell = GetAlternativesDataGridCell(row, 0);
-                var btn = new Button();
-                btn.Click += ButtonSaveCurrentPlaceholderClicked;
-                btn.Content = "Add";
-                cell.Content = btn;
-
-                cell = GetAlternativesDataGridCell(row, 1);
-                cell.Foreground = Brushes.Gray;
-                cell.GotFocus += NewRowCellClicked;
-                cell.LostFocus += NewRowCellFocusLost;
-
-                cell = GetAlternativesDataGridCell(row, 2);
-                cell.Foreground = Brushes.Gray;
-                cell.GotFocus += NewRowCellClicked;
-                cell.LostFocus += NewRowCellFocusLost;
-            }
-        }
-
-        private void AddAlternativesDataGridColumn(Criterion criterion, int startingIndex)
-        {
-            var textColumn = new DataGridTextColumn
-            {
-                Binding = new Binding
+                var criterionValueColumn = new DataGridTextColumn
                 {
-                    Path = new PropertyPath("CriteriaValuesList[" + startingIndex + "].Value"),
-                    Mode = BindingMode.TwoWay
-                }
-            };
-            EditAlternativesDataGrid.Columns.Add(textColumn);
+                    Binding = new Binding
+                    {
+                        Path = new PropertyPath($"CriteriaValuesList[{i}].Value"),
+                        UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                    },
+                    Header = _viewmodel.Criteria.CriteriaCollection[i].Name,
+                    HeaderStyle = _criterionValueHeaderStyle,
+                    CellStyle = _criterionValueCellStyle,
+                    MinWidth = 113
+                };
 
-            var bindingProxy = new BindingProxy {Data = criterion};
+                _criterionValuesColumns.Add(criterionValueColumn);
+                AlternativesDataGrid.Columns.Add(criterionValueColumn);
+            }
+        }
 
-            var critResName = "criterion[" + startingIndex + "]";
-            EditAlternativesDataGrid.Resources.Add(critResName, bindingProxy);
-            var header = new TextBlock();
-            header.SetBinding(TextBlock.TextProperty,
-                new Binding
-                {
-                    Path = new PropertyPath("Data.Name"),
-                    Source = (BindingProxy) EditAlternativesDataGrid.Resources[critResName]
-                });
-            textColumn.Header = header;
+        private void CriteriaDataGridPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter) e.Handled = true;
+        }
+
+        private void DataGridRowClicked(object sender, DataGridRowDetailsEventArgs e)
+        {
+            var alternativesList = (IList<Alternative>) ((DataGrid) sender).ItemsSource;
+            var selectedAlternative = (Alternative) e.Row.Item;
+            _lastDataGridSelectedItem = alternativesList.IndexOf(selectedAlternative);
+        }
+
+        private void TabUnloaded(object sender, RoutedEventArgs e)
+        {
+            if (_lastDataGridSelectedItem < _viewmodel.Alternatives.AlternativesCollection.Count)
+                _viewmodel.AlternativeIndexToShow = _lastDataGridSelectedItem;
+        }
+
+        // focus when alternative is added
+        private void NameTextBoxTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (((TextBox) sender).Text == "") NameTextBox.Focus();
         }
     }
 }

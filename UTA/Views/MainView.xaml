@@ -11,13 +11,9 @@
                       xmlns:viewModels="clr-namespace:UTA.ViewModels"
                       xmlns:views="clr-namespace:UTA.Views"
                       xmlns:tabModel="clr-namespace:UTA.Models.Tab"
-                      xmlns:dragDropFramework="urn:gong-wpf-dragdrop"
-                      xmlns:models="clr-namespace:UTA.Models"
-                      xmlns:dataValidation="clr-namespace:UTA.Models.DataValidation"
-                      xmlns:converters="clr-namespace:UTA.Converters"
                       x:Class="UTA.Views.MainView" mc:Ignorable="d"
                       d:DataContext="{d:DesignInstance viewModels:MainViewModel}" Title="UTA" WindowState="Maximized"
-                      Width="1300" Height="700" MinWidth="800" MinHeight="600" Left="12" Top="12"
+                      Width="1300" Height="700" MinWidth="840" MinHeight="600" Left="12" Top="12"
                       Closing="ApplicationClosing">
   <controls:MetroWindow.Resources>
     <!--values-->
@@ -37,12 +33,8 @@
         Name="ExpanderWrapper" LastChildFill="False" Height="{StaticResource ExpanderHeaderHeight}">
         <TextBlock Text="{TemplateBinding Content}" DockPanel.Dock="Left" FontSize="{StaticResource CommonFontSize2}"
                    VerticalAlignment="Center" Foreground="{StaticResource ColorFontDark}" FontWeight="Medium" />
-        <Button DockPanel.Dock="Right" Margin="0,0,4,0" Template="{StaticResource TransparentButtonTemplateInterface2}">
-          <i:Interaction.Triggers>
-            <i:EventTrigger EventName="Click">
-              <i:CallMethodAction TargetObject="{Binding}" MethodName="InstancePanelAddButtonClicked" />
-            </i:EventTrigger>
-          </i:Interaction.Triggers>
+        <Button DockPanel.Dock="Right" Margin="0,0,4,0" Template="{StaticResource TransparentButtonTemplateInterface2}"
+                Click="InstancePanelAddButtonClicked">
           <icons:PackIconMaterial Kind="Plus" Width="10" Height="10" Foreground="{StaticResource ColorFontDark}" />
         </Button>
       </DockPanel>
@@ -147,7 +139,7 @@
             </i:EventTrigger>
           </i:Interaction.Triggers>
         </MenuItem>
-        <MenuItem Header="Save With Results As..." IsEnabled="{Binding IsThereAnyApplicationProgress}">
+        <MenuItem Header="Save With Results (XMCDA) As..." IsEnabled="{Binding IsThereAnyApplicationProgress}">
           <i:Interaction.Triggers>
             <i:EventTrigger EventName="Click">
               <i:CallMethodAction TargetObject="{Binding}" MethodName="SaveWithResultsAsMenuItemClicked" />
@@ -167,10 +159,21 @@
         <MenuItem Margin="{StaticResource MenuItemBottomMargin}" Header="Exit" Click="ExitMenuItemClicked" />
       </MenuItem>
       <MenuItem Header="Solution" Style="{StaticResource MenuBarItem}">
-        <MenuItem Margin="{StaticResource MenuItemTopMargin}" Header="Solve">
+        <MenuItem Margin="{StaticResource MenuItemTopMargin}">
+          <MenuItem.Style>
+            <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
+              <Style.Triggers>
+                <DataTrigger Binding="{Binding ChartTabViewModels.Count}" Value="0">
+                  <Setter Property="Header" Value="Calculate" />
+                </DataTrigger>
+              </Style.Triggers>
+              <Setter Property="Header" Value="Recalculate" /> <!--TODO: check if it's working-->
+            </Style>
+          </MenuItem.Style>
+
           <i:Interaction.Triggers>
             <i:EventTrigger EventName="Click">
-              <i:CallMethodAction TargetObject="{Binding}" MethodName="SolveButtonClicked" />
+              <i:CallMethodAction TargetObject="{Binding}" MethodName="CalculateButtonClicked" />
             </i:EventTrigger>
           </i:Interaction.Triggers>
         </MenuItem>
@@ -223,8 +226,8 @@
       <Grid.Resources>
         <GridLength x:Key="LeftPanelWidth">192</GridLength>
         <sys:Double x:Key="LeftPanelMinWidth">130</sys:Double>
-        <GridLength x:Key="RightPanelWidth">248</GridLength>
-        <sys:Double x:Key="RightPanelMinWidth">200</sys:Double>
+        <GridLength x:Key="RightPanelWidth">290</GridLength>
+        <sys:Double x:Key="RightPanelMinWidth">180</sys:Double>
       </Grid.Resources>
 
       <Grid.RowDefinitions>
@@ -233,24 +236,32 @@
       </Grid.RowDefinitions>
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="{StaticResource LeftPanelWidth}" MinWidth="{StaticResource LeftPanelMinWidth}" />
-        <!--TODO: check if provided widths are enough with sample data-->
         <ColumnDefinition Width="Auto" />
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="Auto" />
         <ColumnDefinition Width="{StaticResource RightPanelWidth}" MinWidth="{StaticResource RightPanelMinWidth}" />
-        <!--TODO: check if provided widths are enough with sample data-->
       </Grid.ColumnDefinitions>
 
       <!--top bar-->
       <Border Height="36" Grid.ColumnSpan="5" Background="{StaticResource ColorInterface4}" BorderThickness="1,0,1,1"
               BorderBrush="{StaticResource ColorBorders1}" Padding="12,0,12,0">
         <DockPanel Height="28" LastChildFill="False">
-          <Button Content="Solve" Style="{StaticResource PrimaryRoundButton}"
-                  FontSize="{StaticResource CommonFontSize1}" Margin="0,0,8,0" Padding="20,0,20,1"
+          <Button FontSize="{StaticResource CommonFontSize1}" Margin="0,0,8,0" Padding="20,0,20,1"
                   DockPanel.Dock="Left">
+            <Button.Style>
+              <Style TargetType="{x:Type Button}" BasedOn="{StaticResource PrimaryRoundButton}">
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding ChartTabViewModels.Count}" Value="0">
+                    <Setter Property="Content" Value="Calculate" />
+                  </DataTrigger>
+                </Style.Triggers>
+                <Setter Property="Content" Value="Recalculate" /> <!--TODO: check if it's working-->
+              </Style>
+            </Button.Style>
+
             <i:Interaction.Triggers>
               <i:EventTrigger EventName="Click">
-                <i:CallMethodAction TargetObject="{Binding}" MethodName="SolveButtonClicked" />
+                <i:CallMethodAction TargetObject="{Binding}" MethodName="CalculateButtonClicked" />
               </i:EventTrigger>
             </i:Interaction.Triggers>
           </Button>
@@ -370,12 +381,9 @@
                     </Setter.Value>
                   </Setter>
                 </Style>
-
-                <CollectionViewSource x:Key="AlternativesViewSource"
-                                      Source="{Binding Alternatives.AlternativesCollection}" />
               </Expander.Resources>
 
-              <ListView ItemsSource="{Binding Source={StaticResource AlternativesViewSource}}"
+              <ListView Name="AlternativesListView" ItemsSource="{Binding Alternatives.AlternativesCollection}"
                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListView.ItemTemplate>
                   <DataTemplate>
@@ -393,11 +401,9 @@
                 <Style TargetType="{x:Type ScrollViewer}">
                   <Setter Property="Background" Value="{StaticResource ColorInterface5}" />
                 </Style>
-
-                <CollectionViewSource x:Key="CriteriaViewSource" Source="{Binding Criteria.CriteriaCollection}" />
               </Expander.Resources>
 
-              <ListView ItemsSource="{Binding Source={StaticResource CriteriaViewSource}}"
+              <ListView Name="CriterionListView" ItemsSource="{Binding Criteria.CriteriaCollection}"
                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListView.ItemContainerStyle>
                   <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource LeftPanelListViewItemBaseStyle}">
@@ -417,7 +423,7 @@
 
                 <ListView.View>
                   <GridView AllowsColumnReorder="False">
-                    <GridViewColumn Header="Name" Width="150">
+                    <GridViewColumn Header="Name" Width="140">
                       <GridViewColumn.HeaderContainerStyle>
                         <Style TargetType="GridViewColumnHeader" BasedOn="{StaticResource MetroGridViewColumnHeader}">
                           <Setter Property="Padding" Value="10,0,0,0" />
@@ -669,16 +675,16 @@
                     </Setter.Value>
                   </Setter>
                 </Style>
-
-                <CollectionViewSource x:Key="FinalRankingViewSource"
-                                      Source="{Binding Results.FinalRanking.FinalRankingCollection}" />
               </Expander.Resources>
 
-              <ListView ItemsSource="{Binding Source={StaticResource FinalRankingViewSource}}"
+              <ListView ItemsSource="{Binding Results.FinalRanking.FinalRankingCollection}"
                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListView.View>
                   <GridView AllowsColumnReorder="False">
                     <GridViewColumn Header="#" DisplayMemberBinding="{Binding Position}" Width="32" />
+                    <GridViewColumn Header="Rank"
+                                    DisplayMemberBinding="{Binding Alternative.ReferenceRank, Converter={StaticResource IndexToRankConverter}}"
+                                    Width="41" />
                     <GridViewColumn Header="Alternative" DisplayMemberBinding="{Binding Alternative.Name}" Width="146" />
                     <GridViewColumn Header="Utility" DisplayMemberBinding="{Binding Utility}" Width="9999" />
                   </GridView>
@@ -689,20 +695,12 @@
             <Expander Name="ReferenceRankingExpander" Header="Reference" Grid.Row="1" Collapsed="Expander_Toggled"
                       Expanded="Expander_Toggled" IsExpanded="True"
                       HeaderTemplate="{StaticResource ExpanderPlainHeaderTemplate}">
-              <Expander.Resources>
-                <CollectionViewSource x:Key="ReferenceRankingViewSource"
-                                      Source="{Binding ReferenceRanking.RankingsCollection}" />
-              </Expander.Resources>
-
               <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{Binding Source={StaticResource ReferenceRankingViewSource}}"
-                              AlternationCount="10000">
+                <ItemsControl ItemsSource="{Binding ReferenceRanking.RankingsCollection}" Focusable="False"
+                              AlternationCount="100000">
                   <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                      <ItemsControl ItemsSource="{Binding}">
-                        <ItemsControl.Resources>
-                          <converters:IndexToRankConverter x:Key="IndexToRankConverter" />
-                        </ItemsControl.Resources>
+                      <ItemsControl ItemsSource="{Binding}" Focusable="False">
                         <ItemsControl.Template>
                           <ControlTemplate TargetType="ItemsControl">
                             <StackPanel Margin="12,0,12,10">

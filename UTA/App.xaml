@@ -5,6 +5,7 @@
              xmlns:icons="clr-namespace:MahApps.Metro.IconPacks;assembly=MahApps.Metro.IconPacks.Material"
              xmlns:local="clr-namespace:UTA"
              xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+             xmlns:converters="clr-namespace:UTA.Converters"
              StartupUri="Views/MainView.xaml">
   <Application.Resources>
     <ResourceDictionary>
@@ -16,6 +17,8 @@
         <ResourceDictionary
           Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
       </ResourceDictionary.MergedDictionaries>
+
+      <converters:IndexToRankConverter x:Key="IndexToRankConverter"/>
 
       <!--Cobalt color: #3373F2-->
 
@@ -40,11 +43,13 @@
       <SolidColorBrush x:Key="ColorPrimary" Color="#3373f2" />
       <SolidColorBrush x:Key="ColorSecondary" Color="#6E6E6E" />
       <SolidColorBrush x:Key="ColorTertiary" Color="#8C8C8C" />
+      <SolidColorBrush x:Key="ColorDanger" Color="#DC000C" />
 
       <SolidColorBrush x:Key="ColorPrimaryHover" Color="#4680f2" />
       <SolidColorBrush x:Key="ColorSecondaryHover" Color="#7C7C7C" />
       <SolidColorBrush x:Key="ColorTertiaryHover" Color="#9A9A9A" />
-
+      <SolidColorBrush x:Key="ColorDangerHover" Color="#dc3b44" />
+      
       <SolidColorBrush x:Key="ColorBorders1" Color="#AAAAAA" />
       <SolidColorBrush x:Key="ColorBorders2" Color="#B9B9B9" />
       <SolidColorBrush x:Key="ColorBorders3" Color="#E6E6E6" />
@@ -123,6 +128,38 @@
           </Trigger>
         </Style.Triggers>
       </Style>
+
+      <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource MetroDataGridColumnHeader}"
+             x:Key="CenteredDataGridColumnHeader">
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+      </Style>
+
+      <Style TargetType="{x:Type DataGridCell}" x:Key="CenteredDataGridCell">
+        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type DataGridCell}">
+              <Grid Background="Transparent">
+                <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+              </Grid>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+      <Style TargetType="{x:Type DataGridCell}" x:Key="LeftSidedDataGridCell">
+        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type DataGridCell}">
+              <Grid Background="Transparent">
+                <ContentPresenter VerticalAlignment="Center"/>
+              </Grid>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
 
       <!--keyed templates-->
       <ControlTemplate x:Key="TransparentButtonTemplateInterface0" TargetType="{x:Type ButtonBase}">

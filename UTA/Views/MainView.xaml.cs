@@ -7,9 +7,9 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using DataModel.Input;
 using MahApps.Metro.Controls.Dialogs;
 using UTA.ViewModels;
-
 
 namespace UTA.Views
 {
@@ -24,7 +24,6 @@ namespace UTA.Views
 
         public MainView()
         {
-
             InitializeComponent();
             DataContext = _viewmodel;
 
@@ -69,7 +68,7 @@ namespace UTA.Views
                 _scrollRightButton.Visibility = _scrollLeftButton.Visibility = Visibility.Collapsed;
         }
 
-        // TODO: check if needed
+        // used when tab is selected but only part of it is visible
         private void TabControlSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.AddedItems.Count == 0) return;
@@ -104,20 +103,36 @@ namespace UTA.Views
                     scrollViewer.LineLeft();
         }
 
-        private void InstancePanelListItemClicked(object sender, RoutedEventArgs e)
+        private void InstancePanelAddButtonClicked(object sender, RoutedEventArgs e)
         {
-            var selectedListViewItem = MainViewModel.FindParent<ListViewItem>((DependencyObject) sender);
-            if (FindName("AlternativesExpander") is Expander alternativesExpander &&
-                selectedListViewItem.IsDescendantOf(alternativesExpander))
+            var clickedElement = (FrameworkElement) sender;
+            if (clickedElement.IsDescendantOf(AlternativesExpander))
             {
                 _viewmodel.ShowTab(_viewmodel.AlternativesTabViewModel);
-                // TODO: navigate to selected item after tab open
-                return;
+                _viewmodel.AlternativesTabViewModel.NameTextBoxFocusTrigger = !_viewmodel.AlternativesTabViewModel.NameTextBoxFocusTrigger;
             }
-
-            if (FindName("CriteriaExpander") is Expander criteriaExpander && selectedListViewItem.IsDescendantOf(criteriaExpander))
+            else if (clickedElement.IsDescendantOf(CriteriaExpander))
+            {
                 _viewmodel.ShowTab(_viewmodel.CriteriaTabViewModel);
-            // TODO: navigate to selected item after tab open
+                _viewmodel.CriteriaTabViewModel.NameTextBoxFocusTrigger = !_viewmodel.CriteriaTabViewModel.NameTextBoxFocusTrigger;
+            }
+        }
+
+        private void InstancePanelListItemClicked(object sender, RoutedEventArgs e)
+        {
+            var selectedElement = (FrameworkElement) sender;
+            if (selectedElement.IsDescendantOf(AlternativesExpander))
+            {
+                var selectedAlternative = (Alternative) selectedElement.DataContext;
+                _viewmodel.AlternativesTabViewModel.AlternativeIndexToShow = AlternativesListView.Items.IndexOf(selectedAlternative);
+                _viewmodel.ShowTab(_viewmodel.AlternativesTabViewModel);
+            }
+            else if (selectedElement.IsDescendantOf(CriteriaExpander))
+            {
+                var selectedCriterion = (Criterion) selectedElement.DataContext;
+                _viewmodel.CriteriaTabViewModel.CriterionIndexToShow = CriterionListView.Items.IndexOf(selectedCriterion);
+                _viewmodel.ShowTab(_viewmodel.CriteriaTabViewModel);
+            }
         }
 
         private void MenuBarTopbarViewToggled(object sender, RoutedEventArgs e)
@@ -227,7 +242,7 @@ namespace UTA.Views
 
             if (dialogResult == MessageDialogResult.Affirmative)
             {
-                _viewmodel.SaveMenuItemClicked();
+                await _viewmodel.SaveMenuItemClicked();
                 Application.Current.Shutdown();
             }
             else if (dialogResult == MessageDialogResult.Negative)

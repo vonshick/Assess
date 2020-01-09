@@ -74,6 +74,7 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="UIAutomationProvider" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -122,8 +123,6 @@
     <Compile Include="Models\DataValidation\AlternativeNameValidationRule.cs" />
     <Compile Include="Models\DataValidation\CriterionNameValidationRule.cs" />
     <Compile Include="Converters\IndexToRankConverter.cs" />
-    <Compile Include="Models\ReferenceRankingConverter.cs" />
-    <Compile Include="OtherViewClasses\VisualChildHelper.cs" />
     <Compile Include="ViewModels\AlternativesTabViewModel.cs" />
     <Compile Include="ViewModels\ChartTabViewModel.cs" />
     <Compile Include="ViewModels\CriteriaTabViewModel.cs" />
@@ -141,7 +140,6 @@
     <Compile Include="Views\CriteriaTab.xaml.cs">
       <DependentUpon>CriteriaTab.xaml</DependentUpon>
     </Compile>
-    <Compile Include="OtherViewClasses\BindingProxy.cs" />
     <Compile Include="Models\DataBase\Alternatives.cs" />
     <Compile Include="Models\DataBase\Criteria.cs" />
     <Compile Include="Interactivity\RelayCommand.cs" />
@@ -157,8 +155,7 @@
     <Compile Include="Views\SettingsTab.xaml.cs">
       <DependentUpon>SettingsTab.xaml</DependentUpon>
     </Compile>
-    <Compile Include="OtherViewClasses\AlternativeDropHandler.cs" />
-    <Compile Include="Models\DataValidation\DataValidation.cs" />
+    <Compile Include="Helpers\AlternativeDropHandler.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>

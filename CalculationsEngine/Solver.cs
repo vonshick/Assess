@@ -116,7 +116,7 @@ namespace CalculationsEngine
             var count = 0;
             var index = -1;
             for (var numOfCriterion = 0; numOfCriterion < Result.PartialUtilityFunctions.Count; numOfCriterion++)
-                if (Result.PartialUtilityFunctions[numOfCriterion].Criterion.Equals(partialUtility.Criterion))
+                if (Result.PartialUtilityFunctions[numOfCriterion].Criterion.Name == partialUtility.Criterion.Name)
                 {
                     index = numOfCriterion;
                     break;

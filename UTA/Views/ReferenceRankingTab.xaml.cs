@@ -1,7 +1,7 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
+using DataModel.Input;
 using UTA.ViewModels;
 
 namespace UTA.Views
@@ -14,27 +14,16 @@ namespace UTA.Views
         {
             Loaded += ViewLoaded;
             InitializeComponent();
-//            AlternativesListView.GiveFeedback += OnGiveFeedback;
         }
 
         private void ViewLoaded(object sender, RoutedEventArgs e)
         {
-            _viewmodel = ((MainViewModel) DataContext).ReferenceRankingTabViewModel;
+            _viewmodel = (ReferenceRankingTabViewModel) DataContext;
         }
 
-        //todo not working yet, used in xaml with callmethodaction
-        protected void OnGiveFeedback(object o, GiveFeedbackEventArgs e)
+        private void AlternativeDroppedOnNewRank(object sender, DragEventArgs dragEventArgs)
         {
-            Console.WriteLine("OnGiveFeedback");
-            e.UseDefaultCursors = false;
-            Mouse.SetCursor(Cursors.Hand);
-            e.Handled = true;
-        }
-
-        //todo RELYCOMMAND
-        private void AddRankButtonClicked(object sender, RoutedEventArgs e)
-        {
-            _viewmodel.AddRank();
+            ((ICollection<Alternative>) ((ItemsControl) sender).ItemsSource).Clear();
         }
     }
 }

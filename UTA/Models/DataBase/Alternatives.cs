@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using DataModel.Input;
+using DataModel.PropertyChangedExtended;
 using DataModel.Results;
 using UTA.Annotations;
 
@@ -13,15 +14,23 @@ namespace UTA.Models.DataBase
     public class Alternatives : INotifyPropertyChanged
     {
         private ObservableCollection<Alternative> _alternativesCollection;
-        private ObservableCollection<Alternative> _alternativesNotRankedCollection;
+
 
         public Alternatives(Criteria criteria, ReferenceRanking referenceRanking)
         {
             Criteria = criteria;
             ReferenceRanking = referenceRanking;
             AlternativesCollection = new ObservableCollection<Alternative>();
-            AlternativesNotRankedCollection = new ObservableCollection<Alternative>();
-            AlternativesNotRankedCollection.CollectionChanged += CollectionChanged;
+
+            PropertyChanged += InitializeCriteriaMinMaxUpdaterWatcher;
+            Criteria.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName != nameof(Criteria.CriteriaCollection)) return;
+                InitializeCriterionValueNameUpdaterWatcher();
+            };
+
+            InitializeCriterionValueNameUpdaterWatcher();
+            InitializeCriteriaMinMaxUpdaterWatcher();
         }
 
 
@@ -36,112 +45,99 @@ namespace UTA.Models.DataBase
             }
         }
 
-        public ObservableCollection<Alternative> AlternativesNotRankedCollection
-        {
-            get => _alternativesNotRankedCollection;
-            set
-            {
-                if (Equals(value, _alternativesNotRankedCollection)) return;
-                _alternativesNotRankedCollection = value;
-                OnPropertyChanged(nameof(AlternativesNotRankedCollection));
-            }
-        }
-
         public ReferenceRanking ReferenceRanking { get; set; }
         public Criteria Criteria { get; set; }
-        public Alternative Placeholder { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public Alternative AddAlternative(string name, string description)
-        {
-            var alternative = new Alternative(name, description, Criteria.CriteriaCollection);
-            AlternativesCollection.Add(alternative);
-            return alternative;
-        }
 
-        public void AddNewCriterionToAlternatives(string name, float? value)
+        public void InitializeCriterionValueNameUpdaterWatcher()
         {
-            Console.WriteLine("Adding to alternatives value (" + name + "," + value + ")");
-            foreach (var alternative in AlternativesCollection)
+            foreach (var criterion in Criteria.CriteriaCollection)
+                AddCriterionNamePropertyChangedHandler(criterion);
+
+            Criteria.CriteriaCollection.CollectionChanged += (sender, args) =>
             {
-                var criterionValue = new CriterionValue(name, value);
-                alternative.AddCriterionValue(criterionValue);
-            }
+                if (args.Action == NotifyCollectionChangedAction.Add)
+                {
+                    var addedCriterion = (Criterion) args.NewItems[0];
+                    foreach (var alternative in AlternativesCollection)
+                        alternative.AddCriterionValue(new CriterionValue(addedCriterion.Name, null));
+                    AddCriterionNamePropertyChangedHandler(addedCriterion);
+                }
+                else if (args.Action == NotifyCollectionChangedAction.Remove)
+                {
+                    var removedCriterion = (Criterion) args.OldItems[0];
+                    foreach (var alternative in AlternativesCollection)
+                        alternative.RemoveCriterionValue(removedCriterion.Name);
+                }
+            };
         }
 
-        public void HandleNewAlternativeRanking(Alternative alternative)
+        private void AddCriterionNamePropertyChangedHandler(Criterion criterion)
         {
-            if (alternative.ReferenceRank != null)
-                ReferenceRanking.AddAlternativeToRank(alternative, alternative.ReferenceRank.Value);
-            else
-                AlternativesNotRankedCollection.Add(alternative);
-        }
-
-        public void RemoveAlternative(Alternative alternative)
-        {
-            var rank = alternative.ReferenceRank;
-            if (rank != null)
+            criterion.PropertyChanged += (sender, e) =>
             {
-                Console.WriteLine("Removing ranked alternative " + alternative.Name);
-                ReferenceRanking.RemoveAlternativeFromRank(alternative, rank.Value);
-            }
-            else
+                if (e.PropertyName != nameof(criterion.Name)) return;
+                var extendedArgs = (PropertyChangedExtendedEventArgs<string>) e;
+                foreach (var alternative in AlternativesCollection)
+                {
+                    var criterionValueToUpdate =
+                        alternative.CriteriaValuesList.Find(criterionValue => criterionValue.Name == extendedArgs.OldValue);
+                    criterionValueToUpdate.Name = extendedArgs.NewValue;
+                }
+            };
+        }
+
+        public void InitializeCriteriaMinMaxUpdaterWatcher(object o = null, PropertyChangedEventArgs propertyChangedEventArgs = null)
+        {
+            AlternativesCollection.CollectionChanged += (sender, e) =>
             {
-                Console.WriteLine("Removing  NOT ranked alternative " + alternative.Name);
-                AlternativesNotRankedCollection.Remove(alternative);
-            }
-
-            AlternativesCollection.Remove(alternative);
-        }
-
-        public void RemoveAlternativeFromRank(Alternative alternative)
-        {
-            Console.WriteLine("Removing alt " + alternative.Name + " from rank " + alternative.ReferenceRank + " and adding to NotRanked");
-            ReferenceRanking.RemoveAlternativeFromRank(alternative, alternative.ReferenceRank.Value);
-            AlternativesNotRankedCollection.Add(alternative);
-        }
-
-        public void RemoveRank(int rank)
-        {
-            var rankAlternativesList = ReferenceRanking.RankingsCollection[rank].ToList();
-            foreach (var alternative in rankAlternativesList) RemoveAlternativeFromRank(alternative);
-            ReferenceRanking.RemoveRank(rank);
-        }
-
-        public void UpdateCriteriaValueName(string oldName, string newName)
-        {
-            Console.WriteLine("Updating alternatives: set crit name from " + oldName + " to " + newName);
-            foreach (var alternative in AlternativesCollection) alternative.UpdateCriterionValueName(oldName, newName);
-        }
-
-        public void AddPlaceholder()
-        {
-            Placeholder = AddAlternative("name", "description");
-        }
-
-        public void RemovePlaceholder()
-        {
-            AlternativesCollection.Remove(Placeholder);
-        }
-
-        public void SaveCurrentPlaceholder()
-        {
-            AlternativesCollection.Add(Placeholder);
+                if (e.Action == NotifyCollectionChangedAction.Add)
+                {
+                    var addedAlternative = (Alternative) e.NewItems[0];
+                    foreach (var criterionValue in addedAlternative.CriteriaValuesList)
+                    {
+                        if (criterionValue.Value == null) return;
+                        var associatedCriterion = Criteria.CriteriaCollection.First(criterion => criterion.Name == criterionValue.Name);
+                        associatedCriterion.MinValue = Math.Min(associatedCriterion.MinValue, (float) criterionValue.Value);
+                        associatedCriterion.MaxValue = Math.Max(associatedCriterion.MaxValue, (float) criterionValue.Value);
+                    }
+                }
+                else if (e.Action == NotifyCollectionChangedAction.Remove)
+                {
+                    var removedAlternative = (Alternative) e.OldItems[0];
+                    for (var i = 0; i < removedAlternative.CriteriaValuesList.Count; i++)
+                    {
+                        var criterionValue = removedAlternative.CriteriaValuesList[i];
+                        if (criterionValue.Value == null) return;
+                        var associatedCriterion = Criteria.CriteriaCollection[i];
+                        if (AlternativesCollection.Count == 0)
+                        {
+                            associatedCriterion.MinValue = float.MaxValue;
+                            associatedCriterion.MaxValue = float.MinValue;
+                        }
+                        else
+                        {
+                            if (criterionValue.Value == associatedCriterion.MinValue)
+                                associatedCriterion.MinValue = AlternativesCollection.Select(alternative =>
+                                    alternative.CriteriaValuesList[i].Value is float alternativeCriterionValue
+                                        ? alternativeCriterionValue
+                                        : float.MaxValue).Min();
+                            else if (criterionValue.Value == associatedCriterion.MaxValue)
+                                associatedCriterion.MaxValue = AlternativesCollection.Select(alternative =>
+                                    alternative.CriteriaValuesList[i].Value is float alternativeCriterionValue
+                                        ? alternativeCriterionValue
+                                        : float.MinValue).Max();
+                        }
+                    }
+                }
+            };
         }
 
         public void Reset()
         {
             AlternativesCollection.Clear();
-            AlternativesNotRankedCollection.Clear();
-        }
-
-        private void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            Console.WriteLine("alt coll changed");
-            if (e.NewItems != null)
-                foreach (Alternative alternative in e.NewItems)
-                    alternative.ReferenceRank = null;
         }
 
         [NotifyPropertyChangedInvocator]

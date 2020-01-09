@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -13,10 +12,11 @@ namespace DataModel.Results
         private ObservableCollection<ObservableCollection<Alternative>> _rankingsCollection;
 
 
-        public ReferenceRanking(int numOfRanksToInitialize)
+        public ReferenceRanking()
         {
             RankingsCollection = new ObservableCollection<ObservableCollection<Alternative>>();
-            ExpandAvailableRanksNumber(numOfRanksToInitialize);
+            PropertyChanged += InitializeAlternativeReferenceRankUpdaterWatcher;
+            InitializeAlternativeReferenceRankUpdaterWatcher();
         }
 
 
@@ -34,52 +34,54 @@ namespace DataModel.Results
         public event PropertyChangedEventHandler PropertyChanged;
 
 
-        private void ExpandAvailableRanksNumber(int size)
+        public void InitializeAlternativeReferenceRankUpdaterWatcher(object o = null,
+            PropertyChangedEventArgs propertyChangedEventArgs = null)
         {
-            while (RankingsCollection.Count < size) AddRank();
-        }
+            foreach (var referenceRanking in RankingsCollection)
+                referenceRanking.CollectionChanged += UpdateAlternativeReferenceRankingIndex;
 
-        public void AddRank()
-        {
-            var rankingCollection = new ObservableCollection<Alternative>();
-            rankingCollection.CollectionChanged += CollectionChanged;
-            RankingsCollection.Add(rankingCollection);
-        }
-
-        public void RemoveRank(int rank)
-        {
-            Console.WriteLine("Removing rank collection " + rank);
-            RankingsCollection.RemoveAt(rank);
-            for (var i = rank; i < RankingsCollection.Count; i++)
+            RankingsCollection.CollectionChanged += (sender, args) =>
             {
-                Console.WriteLine("Updating new collection rank " + i + " was " + (i + 1));
-                foreach (var alternative in RankingsCollection[i])
+                if (args.Action == NotifyCollectionChangedAction.Add)
                 {
-                    alternative.ReferenceRank -= 1;
-                    Console.WriteLine("updating alternative " + alternative.Name + " new rank is " + alternative.ReferenceRank);
+                    var addedRank = (ObservableCollection<Alternative>) args.NewItems[0];
+                    addedRank.CollectionChanged += UpdateAlternativeReferenceRankingIndex;
                 }
+                else if (args.Action == NotifyCollectionChangedAction.Remove)
+                {
+                    var removedRank = (ObservableCollection<Alternative>) args.OldItems[0];
+                    foreach (var alternative in removedRank)
+                        alternative.ReferenceRank = null;
+
+                    for (var i = args.OldStartingIndex; i < RankingsCollection.Count; i++)
+                        foreach (var alternative in RankingsCollection[i])
+                            alternative.ReferenceRank = i;
+                }
+            };
+        }
+
+        private void UpdateAlternativeReferenceRankingIndex(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                var rank = (ObservableCollection<Alternative>) sender;
+                var rankIndex = RankingsCollection.IndexOf(rank);
+                var addedAlternative = (Alternative) e.NewItems[0];
+                addedAlternative.ReferenceRank = rankIndex;
+            }
+            else if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                var removedAlternative = (Alternative) e.OldItems[0];
+                removedAlternative.ReferenceRank = null;
             }
         }
 
-        public void Reset()
+        public void AddAlternativeToRank(Alternative alternative, int rank)
         {
-            RankingsCollection.Clear();
-        }
-
-        private void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (e.NewItems != null)
-            {
-                var collection = (ObservableCollection<Alternative>) sender;
-                var collectionIndex = RankingsCollection.IndexOf(collection);
-                if (e.NewItems.Count == collection.Count && collectionIndex == RankingsCollection.Count - 1) //add last empty rank tab
+            if (RankingsCollection.Count <= rank)
+                while (RankingsCollection.Count <= rank)
                     AddRank();
-                foreach (Alternative alternative in e.NewItems)
-                {
-                    alternative.ReferenceRank = collectionIndex;
-                    Console.WriteLine("Alternative added to rank " + alternative.ReferenceRank);
-                }
-            }
+            RankingsCollection[rank].Add(alternative);
         }
 
         public void RemoveAlternativeFromRank(Alternative alternative, int rank)
@@ -87,10 +89,22 @@ namespace DataModel.Results
             RankingsCollection[rank].Remove(alternative);
         }
 
-        public void AddAlternativeToRank(Alternative alternative, int rank)
+        public void AddRank()
         {
-            if (RankingsCollection.Count < rank) ExpandAvailableRanksNumber(rank);
-            RankingsCollection[rank - 1].Add(alternative);
+            RankingsCollection.Add(new ObservableCollection<Alternative>());
+        }
+
+        public void RemoveRank(int rank)
+        {
+            RankingsCollection.RemoveAt(rank);
+        }
+
+        public void Reset()
+        {
+            foreach (var referenceRanking in RankingsCollection)
+            foreach (var alternative in referenceRanking)
+                alternative.ReferenceRank = null;
+            RankingsCollection.Clear();
         }
 
         [NotifyPropertyChangedInvocator]

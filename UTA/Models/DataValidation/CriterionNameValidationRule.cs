@@ -1,37 +1,27 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Data;
 using DataModel.Input;
 
 namespace UTA.Models.DataValidation
 {
-    internal class CriterionNameValidationRule : ValidationRule
+    public class CriterionNameValidationRule : ValidationRule
     {
-        public CollectionViewSource CriteriaColl { get; set; }
+        public CollectionViewSource CriteriaCollectionViewSource { get; set; }
 
-        public override ValidationResult Validate(object value,
-            CultureInfo cultureInfo)
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
-            var bindingExpression = (BindingExpression) value;
-            var criterion = (Criterion) bindingExpression.ResolvedSource;
-            if (criterion.Name.Replace(" ", string.Empty) == "")
-            {
-                Console.WriteLine("validation FAIL - EMPTY of " + criterion.Name);
-                return new ValidationResult(false,
-                    "Criterion name cannot be empty!");
-            }
+            var name = (string) value;
+            name = name?.Trim(' ');
+            if (name == null || name.Trim(' ') == "")
+                return new ValidationResult(false, "Criterion name cannot be empty!");
 
-            var criteriaCollection = (ObservableCollection<Criterion>) CriteriaColl.Source;
-            foreach (var criterion1 in criteriaCollection)
-                if (criterion1 != criterion && criterion1.Name == criterion.Name)
-                {
-                    Console.WriteLine("validation FAIL - ALREADY EXISTS of " + criterion.Name);
-                    return new ValidationResult(false,
-                        "Criterion exists!");
-                }
-            Console.WriteLine("validation OK of " + criterion.Name);
+            var criteriaCollection = (ObservableCollection<Criterion>) CriteriaCollectionViewSource.Source;
+            if (criteriaCollection.Any(criterion => criterion.Name == name))
+                return new ValidationResult(false, "Criterion already exists!");
+
             return ValidationResult.ValidResult;
         }
     }

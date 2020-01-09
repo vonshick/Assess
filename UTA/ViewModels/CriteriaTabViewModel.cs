@@ -1,57 +1,104 @@
 ﻿using System.ComponentModel;
-using System.Windows;
-using System.Windows.Controls;
-using DataModel.PropertyChangedExtended;
+using System.Runtime.CompilerServices;
+using System.Windows.Data;
+using DataModel.Annotations;
+using DataModel.Input;
+using UTA.Interactivity;
 using UTA.Models.DataBase;
 using UTA.Models.Tab;
 
 namespace UTA.ViewModels
 {
-    public class CriteriaTabViewModel : Tab
+    public class CriteriaTabViewModel : Tab, INotifyPropertyChanged
     {
-        public CriteriaTabViewModel(Criteria criteria, Alternatives alternatives)
+        private int _criterionIndexToShow = -1;
+        private bool _nameTextBoxFocusTrigger;
+        private Criterion _newCriterion;
+
+
+        public CriteriaTabViewModel(Criteria criteria)
         {
             Name = "Criteria";
             Criteria = criteria;
-            Alternatives = alternatives;
+
+            Criteria.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName != nameof(Criteria.CriteriaCollection)) return;
+                InitializeCriterionIndexToShowWatcher();
+            };
+            InitializeCriterionIndexToShowWatcher();
+
+            InitializeNewCriterion();
+
+            RemoveCriterionCommand = new RelayCommand(criterion => Criteria.CriteriaCollection.Remove((Criterion) criterion));
+            AddCriterionCommand = new RelayCommand(_ =>
+            {
+                NewCriterion.Name = NewCriterion.Name.Trim(' ');
+                NewCriterion.Description = NewCriterion.Description.Trim(' ');
+                Criteria.CriteriaCollection.Add(NewCriterion);
+                InitializeNewCriterion();
+            }, bindingGroup => !((BindingGroup) bindingGroup).HasValidationError && NewCriterion.Name != "");
         }
+
 
         public Criteria Criteria { get; }
-        private Alternatives Alternatives { get; }
+        public RelayCommand RemoveCriterionCommand { get; }
+        public RelayCommand AddCriterionCommand { get; }
 
-        public void CriterionRenamed(object sender, PropertyChangedEventArgs e)
+        public Criterion NewCriterion
         {
-            var eExtended = (PropertyChangedExtendedEventArgs<string>) e;
-            Alternatives.UpdateCriteriaValueName(eExtended.OldValue, eExtended.NewValue);
+            get => _newCriterion;
+            set
+            {
+                if (_newCriterion != null && value.Name == _newCriterion.Name) return;
+                _newCriterion = value;
+                OnPropertyChanged(nameof(NewCriterion));
+            }
         }
 
-        public void DataGridUnloaded(object sender, RoutedEventArgs e)
+        public bool NameTextBoxFocusTrigger
         {
-            var grid = (DataGrid) sender;
-            if (!grid.IsReadOnly)
-                RemovePlaceholder();
-            grid.CommitEdit(DataGridEditingUnit.Row, true);
+            get => _nameTextBoxFocusTrigger;
+            set
+            {
+                if (value == _nameTextBoxFocusTrigger) return;
+                _nameTextBoxFocusTrigger = value;
+                OnPropertyChanged(nameof(NameTextBoxFocusTrigger));
+            }
         }
 
-        public void AddPlaceholder()
+        public int CriterionIndexToShow
         {
-            Criteria.AddNewPlaceholderToCollection();
+            get => _criterionIndexToShow;
+            set
+            {
+                _criterionIndexToShow = value;
+                OnPropertyChanged(nameof(CriterionIndexToShow));
+            }
         }
 
-        public void SaveCurrentPlaceholder()
+        public event PropertyChangedEventHandler PropertyChanged;
+
+
+        private void InitializeCriterionIndexToShowWatcher()
         {
-            //remove and save again will regenearte row and remove it's styling as placeholder
-            RemovePlaceholder();
-            var savedCriterion = Criteria.SaveCurrentPlaceholderToCollection();
-            Alternatives.AddNewCriterionToAlternatives(savedCriterion.Name, null); //add crit values
-            savedCriterion.PropertyChanged += CriterionRenamed;
-            //add new placeholder
-            AddPlaceholder();
+            if (Criteria.CriteriaCollection.Count == 0) CriterionIndexToShow = -1;
+
+            Criteria.CriteriaCollection.CollectionChanged += (sender, args) =>
+            {
+                if (Criteria.CriteriaCollection.Count == 0) CriterionIndexToShow = -1;
+            };
         }
 
-        public void RemovePlaceholder()
+        private void InitializeNewCriterion()
         {
-            Criteria.RemovePlaceholderFromCollection();
+            NewCriterion = new Criterion("", "", Criterion.CriterionDirectionTypesList[0], 1);
+        }
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

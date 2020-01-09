@@ -4,77 +4,197 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-             xmlns:mainViewModel="clr-namespace:UTA.ViewModels"
-             xmlns:dataValidation="clr-namespace:UTA.Models.DataValidation"
+             xmlns:icons="clr-namespace:MahApps.Metro.IconPacks;assembly=MahApps.Metro.IconPacks.Material"
+             xmlns:validation="clr-namespace:UTA.Models.DataValidation"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d"
-             d:DesignHeight="700" d:DesignWidth="900"
-             d:DataContext="{d:DesignInstance mainViewModel:MainViewModel}"
-             DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type controls:MetroWindow}}}">
-  <Grid DataContext="{Binding AlternativesTabViewModel}" Background="{StaticResource ColorInterface7}">
+             d:DesignHeight="700" d:DesignWidth="900">
+  <Grid Margin="12,8" Background="{StaticResource ColorInterface7}" Unloaded="TabUnloaded">
+    <Grid.Resources>
+      <CollectionViewSource x:Key="AlternativesCollectionViewSource"
+                            Source="{Binding Alternatives.AlternativesCollection}" />
+    </Grid.Resources>
 
-    <TextBlock Text="Alternatives Tab" Margin="0,0,0,20" />
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
 
-    <Grid>
-      <Grid.RowDefinitions>
-        <RowDefinition Height="32" />
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="*" />
-        <RowDefinition Height="20" />
-      </Grid.RowDefinitions>
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition MinWidth="10" Width="1*" />
-        <ColumnDefinition Width="19*" />
-        <ColumnDefinition MinWidth="10" Width="1*" />
-      </Grid.ColumnDefinitions>
+    <StackPanel>
+      <TextBlock Text="Add Alternative" FontSize="{StaticResource CommonFontSize1}" Margin="0,0,0,8" />
 
-      <Button Grid.Row="1" Grid.Column="1" x:Name="ButtonEditAlternatives" Click="EditAlternativesSwitchClicked"
-              Content="Editing is OFF"
-              MaxWidth="90" Width="Auto" Margin="0, 5" />
-
-      <DataGrid Grid.Row="2" Grid.Column="1"
-                Name="EditAlternativesDataGrid" IsReadOnly="True"
-                ItemsSource="{Binding Alternatives.AlternativesCollection}"
-                CanUserAddRows="False" AutoGenerateColumns="False"
-                BorderBrush="Gray" BorderThickness="3">
+      <StackPanel Name="AddAlternativeContainer" DataContext="{Binding NewAlternative}"
+                  Margin="0,0,0,8" Validation.ErrorTemplate="{x:Null}">
+        <StackPanel.BindingGroup>
+          <BindingGroup Name="NewAlternativeBindingGroup" />
+        </StackPanel.BindingGroup>
 
         <i:Interaction.Triggers>
-          <i:EventTrigger EventName="Unloaded">
-            <i:CallMethodAction TargetObject="{Binding}" MethodName="DataGridUnloaded" />
-          </i:EventTrigger>
+          <i:KeyTrigger Key="Enter" FiredOn="KeyUp">
+            <i:InvokeCommandAction
+              Command="{Binding ElementName=AlternativesDataGrid, Path=DataContext.AddAlternativeCommand}"
+              CommandParameter="{Binding ElementName=AddAlternativeContainer, Path=BindingGroup}" />
+          </i:KeyTrigger>
         </i:Interaction.Triggers>
 
-        <DataGrid.Resources>
-          <CollectionViewSource x:Key="AlternativesColl" Source="{Binding Path=Alternatives.AlternativesCollection}" />
-        </DataGrid.Resources>
+        <StackPanel Margin="0,0,0,8">
+          <TextBlock Text="Name" Margin="0,0,0,2" />
+          <TextBox Name="NameTextBox" MinWidth="300" HorizontalAlignment="Left" TextChanged="NameTextBoxTextChanged">
+            <Binding Path="Name" UpdateSourceTrigger="PropertyChanged">
+              <Binding.ValidationRules>
+                <validation:AlternativeNameValidationRule
+                  AlternativesCollectionViewSource="{StaticResource AlternativesCollectionViewSource}"
+                  ValidationStep="RawProposedValue" />
+              </Binding.ValidationRules>
+            </Binding>
+          </TextBox>
+        </StackPanel>
 
-        <DataGrid.Columns>
-          <DataGridTemplateColumn Visibility="Collapsed">
-            <DataGridTemplateColumn.CellTemplate>
+        <TextBlock Text="Criteria Values" FontSize="{StaticResource CommonFontSize1}" Margin="0,0,0,4" />
+
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Focusable="False">
+          <ItemsControl ItemsSource="{Binding CriteriaValuesList}" Margin="0,0,0,4" Focusable="False">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <VirtualizingStackPanel Orientation="Horizontal" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemTemplate>
               <DataTemplate>
-                <Button Click="RemoveAlternativeButtonClicked">Remove</Button>
+                <StackPanel Margin="0,0,16,0" MinWidth="120">
+                  <TextBlock Text="{Binding Name}" Margin="0,0,0,2" />
+                  <controls:NumericUpDown
+                    Value="{Binding Value, UpdateSourceTrigger=PropertyChanged, BindingGroupName=NewAlternativeBindingGroup, ValidatesOnExceptions=True}"
+                    NumericInputMode="All" StringFormat="G7" Minimum="-3.402823E+38" Maximum="3.402823E+38" />
+                </StackPanel>
               </DataTemplate>
-            </DataGridTemplateColumn.CellTemplate>
-          </DataGridTemplateColumn>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+      </StackPanel>
 
-          <DataGridTextColumn Header="Name">
-            <DataGridTextColumn.Binding>
-              <Binding Path="Name" UpdateSourceTrigger="PropertyChanged" NotifyOnValidationError="True">
-                <Binding.ValidationRules>
-                  <dataValidation:AlternativeNameValidationRule AlternativesColl="{StaticResource AlternativesColl}"
-                                                                ValidationStep="CommittedValue" />
-                </Binding.ValidationRules>
-              </Binding>
-            </DataGridTextColumn.Binding>
-          </DataGridTextColumn>
+      <Button Name="AddButton" Content="Add Alternative"
+              Command="{Binding ElementName=AlternativesDataGrid, Path=DataContext.AddAlternativeCommand}"
+              CommandParameter="{Binding ElementName=AddAlternativeContainer, Path=BindingGroup}" />
 
-          <DataGridTextColumn Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
-                              Header="Description" />
-          <!-- TODO remove ReferenceRank column -->
-          <DataGridTextColumn Binding="{Binding ReferenceRank, UpdateSourceTrigger=PropertyChanged}"
-                              Header="Reference Rank" />
-        </DataGrid.Columns>
-      </DataGrid>
-    </Grid>
+      <Rectangle Focusable="False" Margin="-4,20,-4,8" Height="1" Fill="{StaticResource ColorBorders1}" />
+
+      <TextBlock Text="Alternatives Editor" FontSize="{StaticResource CommonFontSize1}" Margin="0,0,0,4" />
+    </StackPanel>
+
+
+    <DataGrid Name="AlternativesDataGrid" Grid.Row="1" ItemsSource="{Binding Alternatives.AlternativesCollection}"
+              AutoGenerateColumns="False" SelectionMode="Single" EnableRowVirtualization="True"
+              BorderBrush="{StaticResource ColorBorders1}" BorderThickness="1" IsReadOnly="True" CanUserAddRows="False"
+              CanUserReorderColumns="False" CanUserResizeRows="False" IsSynchronizedWithCurrentItem="True"
+              PreviewKeyDown="CriteriaDataGridPreviewKeyDown" LoadingRowDetails="DataGridRowClicked">
+      <DataGrid.RowStyle>
+        <Style TargetType="DataGridRow">
+          <Setter Property="Background" Value="White" />
+          <Setter Property="BorderThickness" Value="0,0,0,1" />
+          <Setter Property="BorderBrush" Value="{StaticResource ColorInterface3}" />
+          <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter Property="Background" Value="{StaticResource ColorInterface6}" />
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+              <Setter Property="Background" Value="{StaticResource ColorInterface6}" />
+            </Trigger>
+          </Style.Triggers>
+        </Style>
+      </DataGrid.RowStyle>
+
+      <DataGrid.RowDetailsTemplate>
+        <DataTemplate>
+          <StackPanel Orientation="Horizontal" DataContext="{Binding}" Margin="32,8,12,8">
+            <StackPanel.Resources>
+              <Style TargetType="{x:Type StackPanel}">
+                <Setter Property="Margin" Value="0,0,12,0" />
+              </Style>
+            </StackPanel.Resources>
+
+            <StackPanel>
+              <TextBlock Text="Name" Margin="0,0,0,2" />
+              <TextBox MinWidth="200">
+                <Binding Path="Name" UpdateSourceTrigger="PropertyChanged">
+                  <Binding.ValidationRules>
+                    <validation:AlternativeNameValidationRule
+                      AlternativesCollectionViewSource="{StaticResource AlternativesCollectionViewSource}"
+                      ValidationStep="RawProposedValue" />
+                  </Binding.ValidationRules>
+                </Binding>
+              </TextBox>
+            </StackPanel>
+
+            <ItemsControl ItemsSource="{Binding CriteriaValuesList}" Focusable="False">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <VirtualizingStackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <StackPanel Margin="0,0,13,0" MinWidth="100">
+                    <TextBlock Text="{Binding Name}" Margin="0,0,0,2" />
+                    <controls:NumericUpDown
+                      Value="{Binding Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                      NumericInputMode="All" StringFormat="G7" Minimum="-3.402823E+38" Maximum="3.402823E+38" />
+                  </StackPanel>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </DataTemplate>
+      </DataGrid.RowDetailsTemplate>
+
+      <DataGrid.Columns>
+        <DataGridTemplateColumn CanUserResize="False" MinWidth="0">
+          <DataGridTemplateColumn.CellTemplate>
+            <ItemContainerTemplate>
+              <Button Command="{Binding ElementName=AlternativesDataGrid, Path=DataContext.RemoveAlternativeCommand}"
+                      CommandParameter="{Binding}">
+                <Button.Template>
+                  <ControlTemplate TargetType="{x:Type ButtonBase}">
+                    <Border Name="Border" BorderThickness="1" BorderBrush="{StaticResource ColorDanger}" Padding="4"
+                            Margin="2,2,8,2"
+                            Background="Transparent" CornerRadius="2" VerticalAlignment="Center"
+                            HorizontalAlignment="Left">
+                      <icons:PackIconMaterial Name="Icon" Kind="Delete" Width="18" Height="18"
+                                              HorizontalAlignment="Center" VerticalAlignment="Center"
+                                              Foreground="{StaticResource ColorDanger}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                      <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" TargetName="Border" Value="{StaticResource ColorDanger}" />
+                        <Setter Property="Foreground" TargetName="Icon" Value="White" />
+                      </Trigger>
+                    </ControlTemplate.Triggers>
+                  </ControlTemplate>
+                </Button.Template>
+
+                <i:Interaction.Triggers>
+                  <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                    <i:InvokeCommandAction
+                      Command="{Binding ElementName=AlternativesDataGrid, Path=DataContext.RemoveAlternativeCommand}"
+                      CommandParameter="{Binding}" />
+                  </i:EventTrigger>
+                </i:Interaction.Triggers>
+              </Button>
+            </ItemContainerTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+
+        <DataGridTextColumn Header="Name" Binding="{Binding Name}" MinWidth="200"
+                            CellStyle="{StaticResource LeftSidedDataGridCell}">
+          <DataGridTextColumn.HeaderStyle>
+            <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource MetroDataGridColumnHeader}">
+              <Setter Property="Margin" Value="-8,0,0,0" />
+            </Style>
+          </DataGridTextColumn.HeaderStyle>
+        </DataGridTextColumn>
+      </DataGrid.Columns>
+    </DataGrid>
   </Grid>
 </UserControl>
