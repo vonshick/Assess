@@ -56,7 +56,7 @@ namespace ImportModule
                                 case "CRITERION":
                                     if (value == "Cost" || value == "Gain")
                                     {
-                                        criterion.CriterionDirection = value == "Cost" ? "c" : "g";
+                                        criterion.CriterionDirection = value == "Cost" ? "Cost" : "Gain";
                                     }
                                     else
                                     {
@@ -65,7 +65,7 @@ namespace ImportModule
                                         // to serve it some way 
                                         // probably dialog with user will be necessary
                                         // so far set is as gain
-                                        criterion.CriterionDirection = "c";
+                                        criterion.CriterionDirection = "Cost";
                                     }
 
                                     break;

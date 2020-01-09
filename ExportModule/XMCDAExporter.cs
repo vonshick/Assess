@@ -137,7 +137,7 @@ namespace ExportModule
                 xmcdaWriter.WriteStartElement("scale");
                 xmcdaWriter.WriteStartElement("quantitative");
                 xmcdaWriter.WriteStartElement("preferenceDirection");
-                xmcdaWriter.WriteString(criterion.CriterionDirection == "c" ? "min" : "max");
+                xmcdaWriter.WriteString(criterion.CriterionDirection == "Cost" ? "min" : "max");
                 xmcdaWriter.WriteEndElement();
                 xmcdaWriter.WriteEndElement();
                 xmcdaWriter.WriteEndElement();

@@ -92,7 +92,7 @@ namespace ImportModule
                 string criterionDirection = xmlNode.ChildNodes[1].FirstChild.FirstChild.FirstChild.InnerText;
 
                 var index = criterionList.FindIndex(criterion => criterion.ID == criterionID);
-                criterionList[index].CriterionDirection = criterionDirection == "max" ? "g" : "c";
+                criterionList[index].CriterionDirection = criterionDirection == "max" ? "Gain" : "Cost";
             }
         }
 

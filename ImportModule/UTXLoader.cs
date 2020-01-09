@@ -82,12 +82,12 @@ namespace ImportModule
                                             checkEnumValue(criterion.Name, enumValue.Attributes["EnumID"].Value, enumValue.Attributes["Value"].Value);
                                             enumIdsValuesDictionary.Add(enumValue.Attributes["EnumID"].Value, float.Parse(enumValue.Attributes["Value"].Value, CultureInfo.InvariantCulture));
                                         }
-                                        criterion.CriterionDirection = "c";
+                                        criterion.CriterionDirection = "Cost";
                                     }
                                     else
                                     {
                                         // "Cost" or "Gain"
-                                        criterion.CriterionDirection = value == "Cost" ? "c" : "g";
+                                        criterion.CriterionDirection = value == "Cost" ? "Cost" : "Gain";
                                     }
                                     break;
                                 case "ROLE":

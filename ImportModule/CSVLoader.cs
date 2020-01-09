@@ -55,6 +55,32 @@ namespace ImportModule
             }
         }
 
+        private string[] renameDirectionString(string[] directionStringArray)
+        {
+            var renamedDirectionStringList = new List<string>();
+            foreach(string directionString in directionStringArray)
+            {
+                if (directionString.Equals(""))
+                {
+                }
+                else if(directionString.Equals("c"))
+                {
+                    renamedDirectionStringList.Add("Cost");
+                }
+                else if(directionString.Equals("g"))
+                {
+                    renamedDirectionStringList.Add("Gain");
+                }
+                else
+                {
+                    throw new ImproperFileStructureException(
+                        "Improper criteria directions row - it should contain only 'c', 'g' and separator (e.g. ',', ';') characters.");
+                }
+            }
+
+            return renamedDirectionStringList.ToArray();
+        }
+
         override protected void ProcessFile(string filePath)
         {
             ValidateFilePath(filePath);
@@ -68,7 +94,7 @@ namespace ImportModule
                 string firstLine = reader.ReadLine();
                 validateStructure(firstLine);
 
-                string[] criterionDirectionsArray = firstLine.Split(separator);
+                string[] criterionDirectionsArray = renameDirectionString(firstLine.Split(separator));
 
                 string[] criterionNamesArray = ReadNewLine(reader);
                 // iterating from 1 because first column is empty
