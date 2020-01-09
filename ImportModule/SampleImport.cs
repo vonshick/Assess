@@ -10,18 +10,19 @@ namespace ImportModule
 
         public static DataLoader ProcessSampleData(string dataDirectoryPath)
         {
-            XMLLoader dataLoader = new XMLLoader();
-            dataLoader.LoadData(Path.Combine(dataDirectoryPath, "sample.xml"));
+            // XMLLoader dataLoader = new XMLLoader();
+            // dataLoader.LoadData(Path.Combine(dataDirectoryPath, "sample.xml"));
 
             // UTXLoader dataLoader = new UTXLoader();
             // dataLoader.LoadData(Path.Combine(dataDirectoryPath, "utx_with_enum.utx"));
 
             // CSVLoader dataLoader = new CSVLoader();
             // dataLoader.LoadData(Path.Combine(dataDirectoryPath, "Zeszyt1.csv"));
-            //            dataLoader.LoadData(Path.Combine(dataDirectoryPath, "Lab7_bus.csv"));
+            // dataLoader.LoadData(Path.Combine(dataDirectoryPath, "Lab7_bus.csv"));
 
-            // XMCDALoader dataLoader = new XMCDALoader();
-            // dataLoader.LoadData(Path.Combine(dataDirectoryPath, "xmcda"));
+            //example with results
+            XMCDALoader dataLoader = new XMCDALoader();
+            dataLoader.LoadResults(Path.Combine(dataDirectoryPath, "xmcda"));
 
             Trace.WriteLine("### ### ### ### ### ### ### ### ### ###");
             Trace.WriteLine("Criteria:");

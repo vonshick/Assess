@@ -19,125 +19,121 @@ namespace ImportModule
             ValidateFilePath(filePath);
             ValidateFileExtension(filePath, ".xml");
 
-            try
+            //load XML
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.Load(filePath);
+
+            string nameAttributeId = "";
+            string descriptionAttributeId = "";
+
+            // iterate on its nodes
+            foreach (XmlNode xmlNode in xmlDoc.DocumentElement.ChildNodes)
             {
-                //load XML
-                XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.Load(filePath);
-
-                string nameAttributeId = "";
-                string descriptionAttributeId = "";
-
-                // iterate on its nodes
-                foreach (XmlNode xmlNode in xmlDoc.DocumentElement.ChildNodes)
+                // first group of nodes are attributes
+                // second - Electre meta data
+                // third - objects
+                if (xmlNode.Name == "ATTRIBUTES")
                 {
-                    // first group of nodes are attributes
-                    // second - Electre meta data
-                    // third - objects
-                    if (xmlNode.Name == "ATTRIBUTES")
+                    foreach (XmlNode attribute in xmlNode)
                     {
-                        foreach (XmlNode attribute in xmlNode)
+                        Criterion criterion = new Criterion() { ID = checkCriteriaIdsUniqueness(attribute.Attributes["AttrID"].Value) };
+                        // two specific groups of nodes may appear in attributes - name and description
+                        // we don't want to save it as criterion
+                        bool saveCriterion = true;
+
+                        foreach (XmlNode attributePart in attribute)
                         {
-                            Criterion criterion = new Criterion() { ID = checkCriteriaIdsUniqueness(attribute.Attributes["AttrID"].Value) };
-                            // two specific groups of nodes may appear in attributes - name and description
-                            // we don't want to save it as criterion
-                            bool saveCriterion = true;
+                            var value = attributePart.Attributes["Value"].Value;
 
-                            foreach (XmlNode attributePart in attribute)
+                            switch (attributePart.Name)
                             {
-                                var value = attributePart.Attributes["Value"].Value;
+                                case "NAME":
+                                    criterion.Name = checkCriteriaNamesUniqueness(value);
+                                    break;
+                                case "DESCRIPTION":
+                                    criterion.Description = value;
+                                    break;
+                                case "CRITERION":
+                                    if (value == "Cost" || value == "Gain")
+                                    {
+                                        criterion.CriterionDirection = value == "Cost" ? "c" : "g";
+                                    }
+                                    else
+                                    {
+                                        //TODO
+                                        // 'Rank' case 
+                                        // to serve it some way 
+                                        // probably dialog with user will be necessary
+                                        // so far set is as gain
+                                        criterion.CriterionDirection = "c";
+                                    }
 
-                                switch (attributePart.Name)
-                                {
-                                    case "NAME":
-                                        criterion.Name = checkCriteriaNamesUniqueness(value);
-                                        break;
-                                    case "DESCRIPTION":
-                                        criterion.Description = value;
-                                        break;
-                                    case "CRITERION":
-                                        if (value == "Cost" || value == "Gain")
-                                        {
-                                            criterion.CriterionDirection = value == "Cost" ? "c" : "g";
-                                        }
-                                        else
-                                        {
-                                            //TODO
-                                            // 'Rank' case 
-                                            // to serve it some way 
-                                            // probably dialog with user will be necessary
-                                            // so far set is as gain
-                                            criterion.CriterionDirection = "c";
-                                        }
+                                    break;
+                                case "ROLE":
+                                    if (value == "Name")
+                                    {
+                                        saveCriterion = false;
+                                        nameAttributeId = criterion.ID;
+                                    }
+                                    else if (value == "Description")
+                                    {
+                                        saveCriterion = false;
+                                        descriptionAttributeId = criterion.ID;
+                                    }
+                                    else
+                                    {
+                                        saveCriterion = true;
+                                    }
 
-                                        break;
-                                    case "ROLE":
-                                        if (value == "Name")
-                                        {
-                                            saveCriterion = false;
-                                            nameAttributeId = criterion.ID;
-                                        }
-                                        else if (value == "Description")
-                                        {
-                                            saveCriterion = false;
-                                            descriptionAttributeId = criterion.ID;
-                                        }
-                                        else
-                                        {
-                                            saveCriterion = true;
-                                        }
-
-                                        break;
-                                    case "TYPE":
-                                        break;
-                                    default:
-                                        Console.WriteLine("Improper XML structure");
-                                        return;
-                                }
-                            }
-
-                            if (saveCriterion)
-                            {
-                                criterionList.Add(criterion);
+                                    break;
+                                case "TYPE":
+                                    break;
+                                default:
+                                    Console.WriteLine("Improper XML structure");
+                                    return;
                             }
                         }
-                    }
-                    else if (xmlNode.Name == "OBJECTS")
-                    {
-                        int nodeCounter = 1;
 
-                        foreach (XmlNode instance in xmlNode)
+                        if (saveCriterion)
                         {
+                            criterionList.Add(criterion);
+                        }
+                    }
+                }
+                else if (xmlNode.Name == "OBJECTS")
+                {
+                    int nodeCounter = 1;
 
-                            Alternative alternative = new Alternative();
+                    foreach (XmlNode instance in xmlNode)
+                    {
+                        Alternative alternative = new Alternative();
+                        alternative.ID = checkAlternativesIdsUniqueness(instance.Attributes["ObjID"].Value);
+                        
+                        if ((instance.ChildNodes.Count - 2) != criterionList.Count)
+                        {
+                            throw new ImproperFileStructureException("There are provided " + (instance.ChildNodes.Count - 2) + " criteria values and required are " + criterionList.Count + ".");
+                        }
 
-                            if ((instance.ChildNodes.Count - 2) != criterionList.Count)
+                        List<CriterionValue> criteriaValuesList = new List<CriterionValue>();
+
+                        foreach (XmlNode instancePart in instance)
+                        {
+                            var value = instancePart.Attributes["Value"].Value;
+                            var attributeID = instancePart.Attributes["AttrID"].Value;
+
+                            if (attributeID == nameAttributeId)
                             {
-                                throw new ImproperFileStructureException("There are provided " + (instance.ChildNodes.Count - 2) + " criteria values and required are " + criterionList.Count);
+                                alternative.Name = checkAlternativesNamesUniqueness(value);
                             }
-
-                            List<CriterionValue> criteriaValuesList = new List<CriterionValue>();
-
-                            foreach (XmlNode instancePart in instance)
+                            else
                             {
-                                var value = instancePart.Attributes["Value"].Value;
-                                var attributeID = instancePart.Attributes["AttrID"].Value;
-
-                                if (attributeID == descriptionAttributeId)
-                                {
-                                    alternative.Description = value;
-                                }
-                                else if (attributeID == nameAttributeId)
-                                {
-                                    alternative.Name = checkAlternativesNamesUniqueness(value);
-                                }
-                                else
+                                if(attributeID != descriptionAttributeId)
                                 {
                                     Criterion criterion = criterionList.Find(element => element.ID == attributeID);
 
                                     if (criterion == null)
                                     {
-                                        throw new ImproperFileStructureException(alternative.Name + ": Criterion with ID " + attributeID + " does not exist");
+                                        throw new ImproperFileStructureException("Error while processing alternative " + alternative.Name + ": criterion with ID " + attributeID + " does not exist.");
                                     }
 
                                     checkIfValueIsValid(value, criterion.Name, nodeCounter.ToString());
@@ -145,23 +141,12 @@ namespace ImportModule
                                     criteriaValuesList.Add(new CriterionValue(criterion.Name, float.Parse(value, CultureInfo.InvariantCulture)));
                                 }
                             }
-
-                            alternative.CriteriaValuesList = criteriaValuesList;
-                            alternativeList.Add(alternative);
-                            nodeCounter++;
                         }
+
+                        alternative.CriteriaValuesList = criteriaValuesList;
+                        alternativeList.Add(alternative);
+                        nodeCounter++;
                     }
-                }
-            }
-            catch (Exception exception)
-            {
-                if (exception is ImproperFileStructureException)
-                {
-                    Trace.WriteLine(exception.Message);
-                }
-                else
-                {
-                    Trace.WriteLine("Loading XML " + filePath + " failed! " + exception.Message);
                 }
             }
         }

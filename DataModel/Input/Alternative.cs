@@ -10,7 +10,7 @@ namespace DataModel.Input
         private string _description;
         private string _name;
         private int? _referenceRank;
-
+        public string ID;
 
         public Alternative()
         {

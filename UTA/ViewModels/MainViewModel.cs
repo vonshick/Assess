@@ -85,6 +85,12 @@ namespace UTA.ViewModels
             //for (var i = 1; i <= Alternatives.AlternativesCollection.Count; i++)
             //    Results.FinalRanking.FinalRankingCollection.Add(new FinalRankingEntry(i, new Alternative {Name = "Final X"},
             //        Alternatives.AlternativesCollection.Count - i));
+
+            
+            // TODO vonshick REMOVE IT AFTER TESTING
+            // string dataDirectoryPath = "D:\\Data";
+            // DataLoader dataLoader = SampleImport.ProcessSampleData(dataDirectoryPath); // csv
+            // SampleExport.exportXMCDA(dataDirectoryPath, dataLoader.CriterionList, dataLoader.AlternativeList);
         }
 
 
