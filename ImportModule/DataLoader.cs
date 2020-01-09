@@ -58,7 +58,7 @@ namespace ImportModule
                     } 
                     else 
                     {
-                        throw new System.Exception("There was no criterion in alternative " + alternativeList[j].Name + " called " + criterionList[i].Name + ".");
+                        throw new System.Exception("There was no value for criterion " + criterionList[i].Name + " in alternative " + alternativeList[j].Name + ".");
                     }
                 }
 
@@ -72,7 +72,7 @@ namespace ImportModule
             if (!File.Exists(@path))
             {
                 //TODO vonshick WARNINGS
-                throw new FileNotFoundException("File " + path + " does not exist.");
+                throw new FileNotFoundException("File " + Path.GetFileName(path) + " does not exist.");
             }
         }
 
@@ -82,7 +82,7 @@ namespace ImportModule
             if (!Path.GetExtension(path).Equals(expectedExtension))
             {
                 //TODO vonshick WARNINGS
-                throw new ImproperFileStructureException("Wrong extension of the file " + path + ". Expected extension: " + expectedExtension + ".");
+                throw new ImproperFileStructureException("Wrong extension of the file " + Path.GetFileName(path) + ". Expected extension: " + expectedExtension + ".");
             }
 
         }

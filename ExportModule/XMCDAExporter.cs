@@ -39,12 +39,30 @@ namespace ExportModule
             this.alternativeList = alternativeList;
         }
 
-        private void checkIfFileAlreadyExists(string path)
+        private void checkIfFileExists(string path)
         {
-            if(File.Exists(@path)) 
+            if(!OverwriteFile)
             {
-               throw new XmcdaFileExistsException("File " + path + " already exists. Would you like to overwrite it?");
+                if(File.Exists(@path)) 
+                {
+                    throw new XmcdaFileExistsException("File " + Path.GetFileName(path) + " already exists. Would you like to overwrite it?");
+                }
             }
+        }
+
+        private void checkIfInputFilesExists()
+        {
+            checkIfFileExists(Path.Combine(outputDirectory, "criteria.xml"));
+            checkIfFileExists(Path.Combine(outputDirectory, "alternatives.xml"));
+            checkIfFileExists(Path.Combine(outputDirectory, "performance_table.xml"));
+            checkIfFileExists(Path.Combine(outputDirectory, "criteria_scales.xml"));
+        }
+
+        private void checkIfResultFilesExists()
+        {
+            checkIfFileExists(Path.Combine(outputDirectory, "alternatives_ranks.xml"));
+            checkIfFileExists(Path.Combine(outputDirectory, "criteria_segments.xml"));
+            checkIfFileExists(Path.Combine(outputDirectory, "value_functions.xml"));
         }
 
         private void initializeWriter(string filePath)
@@ -61,7 +79,6 @@ namespace ExportModule
 
         private void saveCriterions()
         {
-            checkIfFileAlreadyExists(Path.Combine(outputDirectory, "criteria.xml"));
             initializeWriter(Path.Combine(outputDirectory, "criteria.xml"));
             xmcdaWriter.WriteStartElement("criteria");
 
@@ -107,7 +124,6 @@ namespace ExportModule
 
         private void saveCriterionScales()
         {
-            checkIfFileAlreadyExists(Path.Combine(outputDirectory, "criteria_scales.xml"));
             initializeWriter(Path.Combine(outputDirectory, "criteria_scales.xml"));
             xmcdaWriter.WriteStartElement("criteriaScales");
 
@@ -136,7 +152,6 @@ namespace ExportModule
 
         private void savePerformanceTable()
         {
-            checkIfFileAlreadyExists(Path.Combine(outputDirectory, "performance_table.xml"));
             initializeWriter(Path.Combine(outputDirectory, "performance_table.xml"));
             xmcdaWriter.WriteStartElement("performanceTable");
             xmcdaWriter.WriteAttributeString("mcdaConcept", "REAL");
@@ -174,7 +189,6 @@ namespace ExportModule
 
         private void saveReferenceRanking()
         {
-            checkIfFileAlreadyExists(Path.Combine(outputDirectory, "alternatives_ranks.xml"));
             initializeWriter(Path.Combine(outputDirectory, "alternatives_ranks.xml"));
             xmcdaWriter.WriteStartElement("alternativesValues");
 
@@ -202,7 +216,6 @@ namespace ExportModule
 
         public void saveCriteriaSegments()
         {
-            checkIfFileAlreadyExists(Path.Combine(outputDirectory, "criteria_segments.xml"));
             initializeWriter(Path.Combine(outputDirectory, "criteria_segments.xml"));
             xmcdaWriter.WriteStartElement("criteriaValues");
 
@@ -227,7 +240,6 @@ namespace ExportModule
 
         private void saveValueFunctions()
         {
-            checkIfFileAlreadyExists(Path.Combine(outputDirectory, "value_functions.xml"));
             initializeWriter(Path.Combine(outputDirectory, "value_functions.xml"));
             xmcdaWriter.WriteStartElement("criteria");
             xmcdaWriter.WriteAttributeString("mcdaConcept", "criteria");
@@ -271,6 +283,7 @@ namespace ExportModule
 
         public void saveInput()
         {
+            checkIfInputFilesExists();
             saveCriterions();
             saveAlternatives();
             saveCriterionScales();
@@ -279,6 +292,7 @@ namespace ExportModule
 
         public void saveResults()
         {
+            checkIfResultFilesExists();
             if(results != null) {
                 saveReferenceRanking();
                 saveCriteriaSegments();
