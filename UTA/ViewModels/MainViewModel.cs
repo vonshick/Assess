@@ -81,12 +81,6 @@ namespace UTA.ViewModels
             };
 
 
-            Criteria.PropertyChanged += InstancePropertyChanged;
-            Alternatives.PropertyChanged += InstancePropertyChanged;
-            ReferenceRanking.PropertyChanged += InstancePropertyChanged;
-            Results.FinalRanking.PropertyChanged += InstancePropertyChanged;
-            Results.PropertyChanged += InstancePropertyChanged;
-
             // TODO: remove. for testing purposes
             // WARNING: using these crashes application at some point
             //Criteria.CriteriaCollection.Add(new Criterion("A", "ABC", "Gain", 8));
