@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -22,7 +23,7 @@ namespace UTA.Models.DataBase
             ReferenceRanking = referenceRanking;
             AlternativesCollection = new ObservableCollection<Alternative>();
 
-            PropertyChanged += InitializeCriteriaMinMaxUpdaterWatcher;
+            PropertyChanged += InitializeWatchers;
             Criteria.PropertyChanged += (sender, args) =>
             {
                 if (args.PropertyName != nameof(Criteria.CriteriaCollection)) return;
@@ -50,8 +51,25 @@ namespace UTA.Models.DataBase
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private void InitializeWatchers(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            InitializeReferenceRankingUsingReferenceRankAlternativeProperty();
+            InitializeCriteriaMinMaxUpdaterWatcher();
+        }
 
-        public void InitializeCriterionValueNameUpdaterWatcher()
+        private void InitializeReferenceRankingUsingReferenceRankAlternativeProperty()
+        {
+            var maxRank = AlternativesCollection.Select(alternative => alternative.ReferenceRank).Max();
+            if (maxRank == null) return; 
+            var referenceRanking = new ObservableCollection<ObservableCollection<Alternative>>();
+            for (var i = 0; i <= maxRank; i++) referenceRanking.Add(new ObservableCollection<Alternative>());
+            foreach (var alternative in AlternativesCollection)
+                if (alternative.ReferenceRank != null)
+                    referenceRanking[(int) alternative.ReferenceRank].Add(alternative);
+            ReferenceRanking.RankingsCollection = referenceRanking;
+        }
+
+        private void InitializeCriterionValueNameUpdaterWatcher()
         {
             foreach (var criterion in Criteria.CriteriaCollection)
                 AddCriterionNamePropertyChangedHandler(criterion);
@@ -89,7 +107,7 @@ namespace UTA.Models.DataBase
             };
         }
 
-        public void InitializeCriteriaMinMaxUpdaterWatcher(object o = null, PropertyChangedEventArgs propertyChangedEventArgs = null)
+        private void InitializeCriteriaMinMaxUpdaterWatcher(object o = null, PropertyChangedEventArgs propertyChangedEventArgs = null)
         {
             AlternativesCollection.CollectionChanged += (sender, e) =>
             {

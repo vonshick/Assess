@@ -34,7 +34,7 @@ namespace DataModel.Results
         public event PropertyChangedEventHandler PropertyChanged;
 
 
-        public void InitializeAlternativeReferenceRankUpdaterWatcher(object o = null,
+        private void InitializeAlternativeReferenceRankUpdaterWatcher(object o = null,
             PropertyChangedEventArgs propertyChangedEventArgs = null)
         {
             foreach (var referenceRanking in RankingsCollection)

@@ -8,7 +8,6 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using CalculationsEngine;
-using DataModel.Annotations;
 using DataModel.Input;
 using DataModel.Results;
 using ExportModule;
@@ -19,6 +18,7 @@ using Ookii.Dialogs.Wpf;
 using UTA.Interactivity;
 using UTA.Models.DataBase;
 using UTA.Models.Tab;
+using UTA.Annotations;
 
 namespace UTA.ViewModels
 {
@@ -81,6 +81,7 @@ namespace UTA.ViewModels
 
 
             // TODO: remove. for testing purposes
+            // WARNING: using these crashes application at some point
             //Criteria.CriteriaCollection.Add(new Criterion("A", "ABC", "Gain", 8));
             //Criteria.CriteriaCollection.Add(new Criterion("B", "ABC", "Gain", 8));
             //Criteria.CriteriaCollection.Add(new Criterion("C", "ABC", "Gain", 8));
@@ -181,7 +182,7 @@ namespace UTA.ViewModels
             else Tabs.Add(tabModel);
         }
 
-        [Annotations.UsedImplicitly]
+        [UsedImplicitly]
         public async void CalculateButtonClicked(object sender, RoutedEventArgs e)
         {
             if (Criteria.CriteriaCollection.Count == 0)
@@ -317,7 +318,7 @@ namespace UTA.ViewModels
         }
 
         // xaml enforces void return type
-        [Annotations.UsedImplicitly]
+        [UsedImplicitly]
         public async void NewSolution(object sender, RoutedEventArgs e)
         {
             await NewSolution();
@@ -362,11 +363,11 @@ namespace UTA.ViewModels
         {
             var saveFileWithResultsDialog = await _dialogCoordinator.ShowMessageAsync(this,
                 "Choose save type.",
-                "Would you like to save your progress with (XMCDA) or without results?",
+                "Would you like to save your progress with or without results?",
                 MessageDialogStyle.AffirmativeAndNegative,
                 new MetroDialogSettings
                 {
-                    AffirmativeButtonText = "Save With Results (XMCDA)",
+                    AffirmativeButtonText = "Save With Results",
                     NegativeButtonText = "Save Without Results",
                     DefaultButtonFocus = MessageDialogResult.Affirmative,
                     AnimateShow = false,
@@ -377,7 +378,7 @@ namespace UTA.ViewModels
             else SaveAsMenuItemClicked();
         }
 
-        [Annotations.UsedImplicitly]
+        [UsedImplicitly]
         public async void OpenFileMenuItemClicked(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog
@@ -405,11 +406,11 @@ namespace UTA.ViewModels
             }
             catch (Exception exception)
             {
-                await ShowLoadErrorDialog(exception);
+                ShowLoadErrorDialog(exception);
             }
         }
 
-        [Annotations.UsedImplicitly]
+        [UsedImplicitly]
         public async void OpenXMCDAMenuItemClicked(object sender, RoutedEventArgs e)
         {
             var openDirectoryDialog = new VistaFolderBrowserDialog {ShowNewFolderButton = true};
@@ -422,22 +423,25 @@ namespace UTA.ViewModels
             {
                 var dataLoader = new XMCDALoader();
                 dataLoader.LoadData(filePath);
+                // TODO: check if everything works (vonshick)
                 Criteria.CriteriaCollection = new ObservableCollection<Criterion>(dataLoader.CriterionList);
                 // works assuming that CriteriaValuesList and ReferenceRank property are initialized properly
                 Alternatives.AlternativesCollection = new ObservableCollection<Alternative>(dataLoader.AlternativeList);
-                // TODO: get reference and final ranking, and partial utilities (vonshick needs to update his modules).
+                Results.KendallCoefficient = dataLoader.Results.KendallCoefficient;
+                Results.PartialUtilityFunctions = dataLoader.Results.PartialUtilityFunctions;
+                Results.FinalRanking.FinalRankingCollection = dataLoader.Results.FinalRanking.FinalRankingCollection;
             }
             catch (Exception exception)
             {
-                await ShowLoadErrorDialog(exception);
+                ShowLoadErrorDialog(exception);
             }
         }
 
-        private async Task ShowLoadErrorDialog(Exception exception)
+        private async void ShowLoadErrorDialog(Exception exception)
         {
             await _dialogCoordinator.ShowMessageAsync(this,
                 "Loading error.",
-                exception is ImproperFileStructureException ifsException && ifsException.Message != null
+                exception.Message != null
                     ? $"Can't read this file. An error was encountered with a following message:\n\"{exception.Message}\""
                     : "Can't read this file.",
                 MessageDialogStyle.Affirmative,
@@ -465,12 +469,36 @@ namespace UTA.ViewModels
             }
 
             var dataSaver = new XMCDAExporter(_saveData.FilePath, new List<Criterion>(Criteria.CriteriaCollection),
-                new List<Alternative>(Alternatives.AlternativesCollection), Results);
-            if (_saveData.IsSavingWithResults == true) dataSaver.saveSession();
-            else dataSaver.saveInput();
+                new List<Alternative>(Alternatives.AlternativesCollection), Results) { OverwriteFile = true };
+            try
+            {
+                if (_saveData.IsSavingWithResults == true) dataSaver.saveSession();
+                else dataSaver.saveInput();
+            }
+            catch (Exception exception)
+            {
+                ShowSaveErrorDialog(exception);
+            }
         }
 
-        public void SaveAsMenuItemClicked(object sender = null, RoutedEventArgs e = null)
+        public async void SaveAsMenuItemClicked(object sender = null, RoutedEventArgs e = null)
+        {
+            var saveXMCDADialog = new VistaFolderBrowserDialog
+            {
+                ShowNewFolderButton = true,
+                UseDescriptionForTitle = true,
+                Description = "Select XMCDA Output Directory"
+            };
+            if (saveXMCDADialog.ShowDialog() != true) return;
+
+            var directoryPath = saveXMCDADialog.SelectedPath;
+            var dataSaver = new XMCDAExporter(directoryPath, new List<Criterion>(Criteria.CriteriaCollection),
+                new List<Alternative>(Alternatives.AlternativesCollection), Results);
+            
+            await TryToSave(false, dataSaver, directoryPath);
+        }
+
+        public async void SaveWithResultsAsMenuItemClicked(object sender = null, RoutedEventArgs e = null)
         {
             var saveXMCDADialog = new VistaFolderBrowserDialog
             {
@@ -484,31 +512,65 @@ namespace UTA.ViewModels
             var dataSaver = new XMCDAExporter(directoryPath, new List<Criterion>(Criteria.CriteriaCollection),
                 new List<Alternative>(Alternatives.AlternativesCollection), Results);
 
-            // TODO: add force saving (in case of overwrite)
-            dataSaver.saveInput();
-            _saveData.IsSavingWithResults = false;
-            _saveData.FilePath = directoryPath;
+            await TryToSave(true, dataSaver, directoryPath);
         }
 
-        public void SaveWithResultsAsMenuItemClicked(object sender = null, RoutedEventArgs e = null)
+        private async Task TryToSave(bool shouldSaveWithResults, XMCDAExporter dataSaver, string directoryPath)
         {
-            var saveXMCDADialog = new VistaFolderBrowserDialog
+            try
             {
-                ShowNewFolderButton = true,
-                UseDescriptionForTitle = true,
-                Description = "Select XMCDA Output Directory"
-            };
-            if (saveXMCDADialog.ShowDialog() != true) return;
+                if (shouldSaveWithResults) dataSaver.saveSession();
+                else dataSaver.saveInput();
+                _saveData.IsSavingWithResults = shouldSaveWithResults;
+                _saveData.FilePath = directoryPath;
+            }
+            catch (XmcdaFileExistsException)
+            {
+                var dialogResult = await _dialogCoordinator.ShowMessageAsync(this,
+                    "Overwriting files.",
+                    "Some XMCDA files already exist in this directory. Would you like to overwrite them?",
+                    MessageDialogStyle.AffirmativeAndNegative,
+                    new MetroDialogSettings
+                    {
+                        AffirmativeButtonText = "Yes",
+                        NegativeButtonText = "Cancel",
+                        DefaultButtonFocus = MessageDialogResult.Negative,
+                        AnimateShow = false,
+                        AnimateHide = false
+                    });
+                if (dialogResult == MessageDialogResult.Affirmative)
+                {
+                    dataSaver.OverwriteFile = true;
+                    try
+                    {
+                        if (shouldSaveWithResults) dataSaver.saveSession();
+                        else dataSaver.saveInput();
+                        _saveData.IsSavingWithResults = shouldSaveWithResults;
+                        _saveData.FilePath = directoryPath;
+                    }
+                    catch (Exception exception)
+                    {
+                        ShowSaveErrorDialog(exception);
+                    }
+                }
+            }
+        }
 
-            var directoryPath = saveXMCDADialog.SelectedPath;
-            var dataSaver = new XMCDAExporter(directoryPath, new List<Criterion>(Criteria.CriteriaCollection),
-                new List<Alternative>(Alternatives.AlternativesCollection), Results);
-
-            if (Results.FinalRanking.FinalRankingCollection.Count != 0 && Results.PartialUtilityFunctions.Count != 0)
-                dataSaver.saveInput();
-            else dataSaver.saveSession();
-            _saveData.IsSavingWithResults = true;
-            _saveData.FilePath = directoryPath;
+        private async void ShowSaveErrorDialog(Exception exception)
+        {
+            await _dialogCoordinator.ShowMessageAsync(this,
+                "Saving error.",
+                exception.Message != null
+                    ? $"Can't save files. An error was encountered with a following message:\n\"{exception.Message}\""
+                    : "Can't save files.",
+                MessageDialogStyle.Affirmative,
+                new MetroDialogSettings
+                {
+                    AffirmativeButtonText = "OK",
+                    AnimateShow = false,
+                    AnimateHide = false,
+                    DefaultButtonFocus = MessageDialogResult.Affirmative
+                });
         }
 
         private void InstancePropertyChanged(object sender = null, EventArgs e = null)
@@ -516,7 +578,7 @@ namespace UTA.ViewModels
             OnPropertyChanged(nameof(IsThereAnyApplicationProgress));
         }
 
-        [Annotations.NotifyPropertyChangedInvocator]
+        [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -525,9 +587,9 @@ namespace UTA.ViewModels
         private struct SaveData
         {
             public bool? IsSavingWithResults;
-            [Annotations.CanBeNull] public string FilePath;
+            [CanBeNull] public string FilePath;
 
-            public SaveData(bool? isSavingWithResults, [Annotations.CanBeNull] string filePath)
+            public SaveData(bool? isSavingWithResults, [CanBeNull] string filePath)
             {
                 IsSavingWithResults = isSavingWithResults;
                 FilePath = filePath;

@@ -139,7 +139,7 @@
             </i:EventTrigger>
           </i:Interaction.Triggers>
         </MenuItem>
-        <MenuItem Header="Save With Results (XMCDA) As..." IsEnabled="{Binding IsThereAnyApplicationProgress}">
+        <MenuItem Header="Save With Results As..." IsEnabled="{Binding IsThereAnyApplicationProgress}">
           <i:Interaction.Triggers>
             <i:EventTrigger EventName="Click">
               <i:CallMethodAction TargetObject="{Binding}" MethodName="SaveWithResultsAsMenuItemClicked" />
