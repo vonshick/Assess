@@ -29,6 +29,7 @@ namespace UTA.ViewModels
             Criteria.PropertyChanged += (sender, args) =>
             {
                 if (args.PropertyName != nameof(Criteria.CriteriaCollection)) return;
+                InitializeNewAlternative();
                 InitializeNewAlternativeCriterionValuesUpdaterWatcher();
             };
 

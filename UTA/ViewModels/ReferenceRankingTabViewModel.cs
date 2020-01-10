@@ -21,9 +21,11 @@ namespace UTA.ViewModels
             ReferenceRanking.PropertyChanged += (sender, args) =>
             {
                 if (args.PropertyName != nameof(ReferenceRanking.RankingsCollection)) return;
+                RefreshFilter();
                 InitializeReferenceRankFilterWatchers();
             };
 
+            RefreshFilter();
             InitializeReferenceRankFilterWatchers();
 
             AlternativesWithoutRanksCollectionView = new ListCollectionView(Alternatives.AlternativesCollection)
