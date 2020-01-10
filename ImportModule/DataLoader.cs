@@ -32,6 +32,7 @@ namespace ImportModule
         {
             criterionList = new List<Criterion>();
             alternativeList = new List<Alternative>();
+            results = new Results();
         }
 
         protected void setMinAndMaxCriterionValues()

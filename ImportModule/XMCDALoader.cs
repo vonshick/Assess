@@ -17,6 +17,26 @@ namespace ImportModule
         private string currentlyProcessedFile;
         private string currentlyProcessedAlternativeId;
 
+        public XMCDALoader() : base()
+        {
+        }
+
+        private void validateInputFilesSet()
+        {
+            ValidateFilePath(Path.Combine(xmcdaDirectory, "criteria.xml"));
+            ValidateFilePath(Path.Combine(xmcdaDirectory, "alternatives.xml"));
+            ValidateFilePath(Path.Combine(xmcdaDirectory, "criteria_scales.xml"));
+            ValidateFilePath(Path.Combine(xmcdaDirectory, "performance_table.xml"));
+        }
+
+        private bool checkIfResultsAvailable()
+        {
+            if (!File.Exists(Path.Combine(xmcdaDirectory, "alternatives_ranks.xml")) ||
+                    !File.Exists(Path.Combine(xmcdaDirectory, "value_functions.xml")))
+                return false;
+
+            return true;
+        }
 
         private void checkIfIdProvided(XmlAttributeCollection attributesCollection, string elementType)
         {
@@ -46,10 +66,6 @@ namespace ImportModule
             {
                 return checkCriteriaNamesUniqueness(attributesCollection["id"].Value);
             }
-        }
-
-        public XMCDALoader() : base()
-        {
         }
 
         private XmlDocument loadFile(string fileName)
@@ -220,11 +236,11 @@ namespace ImportModule
 
                                 if (coordinate.Name == "abscissa")
                                 {
-                                    argument = float.Parse(coordinate.FirstChild.InnerText);
+                                    argument = float.Parse(coordinate.FirstChild.InnerText, CultureInfo.InvariantCulture);
                                 }
                                 else
                                 {
-                                    value = float.Parse(coordinate.FirstChild.InnerText);
+                                    value = float.Parse(coordinate.FirstChild.InnerText, CultureInfo.InvariantCulture);
                                     if (argument == float.PositiveInfinity || value == float.PositiveInfinity)
                                     {
                                         Trace.WriteLine("Format of value_functions.xml file is not valid");
@@ -247,20 +263,19 @@ namespace ImportModule
         {
             this.xmcdaDirectory = xmcdaDirectory;
 
+            validateInputFilesSet();
+
             LoadCriteria();
             LoadCriteriaScales();
             LoadAlternatives();
             LoadPerformanceTable();
             setMinAndMaxCriterionValues();
+            
+            if(checkIfResultsAvailable())
+            {
+                LoadAlternativesRanks();
+                LoadValueFunctions();
+            }
         }
-
-        public void LoadResults(string xmcdaDirectory)
-        {
-            ProcessFile(xmcdaDirectory);
-            results = new Results();
-            LoadAlternativesRanks();
-            LoadValueFunctions();
-        }
-
     }
 }

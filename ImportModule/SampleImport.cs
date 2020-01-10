@@ -23,7 +23,7 @@ namespace ImportModule
 
             //example with results
             XMCDALoader dataLoader = new XMCDALoader();
-            dataLoader.LoadResults(Path.Combine(dataDirectoryPath, "xmcda"));
+            dataLoader.LoadData(Path.Combine(dataDirectoryPath, "xmcda"));
 
             Trace.WriteLine("### ### ### ### ### ### ### ### ### ###");
             Trace.WriteLine("Criteria:");
