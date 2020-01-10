@@ -89,6 +89,56 @@ namespace UTA.ViewModels
             //Criteria.CriteriaCollection.Add(new Criterion("D", "ABC", "Gain", 8));
             //Criteria.CriteriaCollection.Add(new Criterion("E", "ABC", "Gain", 8));
             //Criteria.CriteriaCollection.Add(new Criterion("F", "ABC", "Gain", 8));
+            /*
+            Criteria.AddCriterion("Price", "", "Cost", 2);
+            Criteria.AddCriterion("Time", "", "Cost", 3);
+            Criteria.AddCriterion("Comfort", "", "Gain", 3);
+
+            Criteria.CriteriaCollection[0].MinValue = 2;
+            Criteria.CriteriaCollection[0].MaxValue = 30;
+            Criteria.CriteriaCollection[1].MinValue = 10;
+            Criteria.CriteriaCollection[1].MaxValue = 40;
+            Criteria.CriteriaCollection[2].MinValue = 0;
+            Criteria.CriteriaCollection[2].MaxValue = 3;
+
+            Alternatives.AddAlternative("RER", "");
+            Alternatives.AddAlternative("METRO (1)", "");
+            Alternatives.AddAlternative("METRO (2)", "");
+            Alternatives.AddAlternative("BUS", "");
+            Alternatives.AddAlternative("TAXI", "");
+            Alternatives.AddAlternative("Other1", "");
+            Alternatives.AddAlternative("Other2", "");
+
+            Alternatives.AlternativesCollection[0].CriteriaValuesList[0].Value = 3;
+            Alternatives.AlternativesCollection[0].CriteriaValuesList[1].Value = 10;
+            Alternatives.AlternativesCollection[0].CriteriaValuesList[2].Value = 1;
+            Alternatives.AlternativesCollection[1].CriteriaValuesList[0].Value = 4;
+            Alternatives.AlternativesCollection[1].CriteriaValuesList[1].Value = 20;
+            Alternatives.AlternativesCollection[1].CriteriaValuesList[2].Value = 2;
+            Alternatives.AlternativesCollection[2].CriteriaValuesList[0].Value = 2;
+            Alternatives.AlternativesCollection[2].CriteriaValuesList[1].Value = 20;
+            Alternatives.AlternativesCollection[2].CriteriaValuesList[2].Value = 0;
+            Alternatives.AlternativesCollection[3].CriteriaValuesList[0].Value = 6;
+            Alternatives.AlternativesCollection[3].CriteriaValuesList[1].Value = 40;
+            Alternatives.AlternativesCollection[3].CriteriaValuesList[2].Value = 0;
+            Alternatives.AlternativesCollection[4].CriteriaValuesList[0].Value = 30;
+            Alternatives.AlternativesCollection[4].CriteriaValuesList[1].Value = 30;
+            Alternatives.AlternativesCollection[4].CriteriaValuesList[2].Value = 3;
+            Alternatives.AlternativesCollection[5].CriteriaValuesList[0].Value = 8;
+            Alternatives.AlternativesCollection[5].CriteriaValuesList[1].Value = 24;
+            Alternatives.AlternativesCollection[5].CriteriaValuesList[2].Value = 2;
+            Alternatives.AlternativesCollection[6].CriteriaValuesList[0].Value = 16;
+            Alternatives.AlternativesCollection[6].CriteriaValuesList[1].Value = 36;
+            Alternatives.AlternativesCollection[6].CriteriaValuesList[2].Value = 3;
+
+            ReferenceRanking.AddAlternativeToRank(Alternatives.AlternativesCollection[0], 1);
+            ReferenceRanking.AddAlternativeToRank(Alternatives.AlternativesCollection[1], 2);
+            ReferenceRanking.AddAlternativeToRank(Alternatives.AlternativesCollection[2], 2);
+            ReferenceRanking.AddAlternativeToRank(Alternatives.AlternativesCollection[3], 3);
+            ReferenceRanking.AddAlternativeToRank(Alternatives.AlternativesCollection[4], 4);
+            */
+
+            //Criteria.AddCriterion("0-100 km/h", "", "Cost", 5);
             //Criteria.CriteriaCollection[0].MinValue = Criteria.CriteriaCollection[1].MinValue = 0;
             //Criteria.CriteriaCollection[0].MaxValue = Criteria.CriteriaCollection[1].MaxValue = 1;
             //for (var i = 0; i < 20; i++)
@@ -285,10 +335,13 @@ namespace UTA.ViewModels
                     });
                 return;
             }
-
+            List<Alternative> notRankedAlternatives = Alternatives.AlternativesCollection.Where(x => !x.ReferenceRank.HasValue).ToList();
             var solver = new Solver(ReferenceRanking, new List<Criterion>(Criteria.CriteriaCollection),
-                new List<Alternative>(Alternatives.AlternativesCollection), Results);
+                notRankedAlternatives, Results);
             solver.Calculate();
+            // TODO: remove. for testing purposes
+            //solver.ChangeValue(0.04f, solver.Result.PartialUtilityFunctions[1], 1);
+
             foreach (var partialUtility in Results.PartialUtilityFunctions)
             {
                 var viewModel = new ChartTabViewModel(solver, partialUtility, SettingsTabViewModel, RefreshCharts);
