@@ -1,4 +1,4 @@
-﻿namespace Assess
+﻿namespace CalculationsEngine.Assess.Assess
 {
     public class CriterionCoefficient
     {

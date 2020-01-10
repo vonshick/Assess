@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Assess
+namespace CalculationsEngine.Assess.Assess
 {
     public class VariableProbability : Dialog
     {
@@ -9,7 +9,7 @@ namespace Assess
         {
         }
 
-        protected override string displayDialog()
+        public override string displayDialog()
         {
             Console.WriteLine("Wpisz '1' jeśli wolisz LOTERIĘ:");
             Console.WriteLine(DisplayObject.Lottery.UpperUtilityValue.X + " z prawdopodobienstwem " +
@@ -21,7 +21,7 @@ namespace Assess
             Console.WriteLine("Wpisz '3' jeśli loteria i równoważnik pewności są dla Ciebie nierozróżnialne\n");
             Console.WriteLine("'1', '2' lub '3' :\n");
 
-            return Console.ReadLine();
+            return "";
         }
         protected override void setInitialValues()
         {

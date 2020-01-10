@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Assess
+namespace CalculationsEngine.Assess.Assess
 {
     public class DialogController
     {
@@ -62,12 +62,13 @@ namespace Assess
         }
 
         // firstPoint and secondPoint are edges of chosen utility function segment
-        public void TriggerDialog(Point firstPoint, Point secondPoint)
+        public Dialog TriggerDialog(Point firstPoint, Point secondPoint)
         {
+            Dialog dialog = null;
             switch (_methodId)
             {
                 case 1:
-                    triggerConstantProbabilityDialog(firstPoint, secondPoint);
+                    dialog = triggerConstantProbabilityDialog(firstPoint, secondPoint);
                     break;
                 case 2:
                     triggerVariableProbabilityDialog(firstPoint, secondPoint);
@@ -81,6 +82,8 @@ namespace Assess
                 default:
                     throw new System.Exception("Assess error: wrong dialog method chosen.");
             }
+
+            return dialog;
         }
 
 
@@ -106,10 +109,11 @@ namespace Assess
             LotteriesComparison = new LotteriesComparison(_zeroUtilityPoint.U, DisplayObject.P, DisplayObject);
         }
 
-        public void triggerLotteriesComparisonDialog(Point firstPoint, Point secondPoint)
+        public Dialog triggerLotteriesComparisonDialog(Point firstPoint, Point secondPoint)
         {
             setLotteriesComparisonInput(firstPoint, secondPoint);
-            LotteriesComparison.ProcessDialog();
+            return LotteriesComparison;
+//            LotteriesComparison.ProcessDialog();
         }
 
 
@@ -129,10 +133,11 @@ namespace Assess
             ProbabilityComparison = new ProbabilityComparison(_zeroUtilityPoint.U, _oneUtilityPoint.U, DisplayObject);
         }
 
-        public void triggerProbabilityComparisonDialog(Point firstPoint, Point secondPoint)
+        public Dialog triggerProbabilityComparisonDialog(Point firstPoint, Point secondPoint)
         {
             setProbabilityComparisonInput(firstPoint, secondPoint);
-            ProbabilityComparison.ProcessDialog();
+            return ProbabilityComparison;
+//            ProbabilityComparison.ProcessDialog();
         }
 
 
@@ -152,10 +157,11 @@ namespace Assess
             ConstantProbability = new ConstantProbability(_zeroUtilityPoint.X, _oneUtilityPoint.X, DisplayObject);
         }
 
-        public void triggerConstantProbabilityDialog(Point firstPoint, Point secondPoint)
+        public Dialog triggerConstantProbabilityDialog(Point firstPoint, Point secondPoint)
         {
             setConstantProbabilityInput(firstPoint, secondPoint);
-            ConstantProbability.ProcessDialog();
+            return ConstantProbability;
+//            ConstantProbability.ProcessDialog();
         }
 
 
@@ -175,10 +181,11 @@ namespace Assess
             VariableProbability = new VariableProbability(_zeroUtilityPoint.X, _oneUtilityPoint.X, DisplayObject);
         }
 
-        public void triggerVariableProbabilityDialog(Point firstPoint, Point secondPoint)
+        public Dialog triggerVariableProbabilityDialog(Point firstPoint, Point secondPoint)
         {
             setVariableProbabilityInput(firstPoint, secondPoint);
-            VariableProbability.ProcessDialog();
+            return VariableProbability;
+//            VariableProbability.ProcessDialog();
         }
     }
 }

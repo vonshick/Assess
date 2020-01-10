@@ -1,4 +1,5 @@
-﻿namespace Assess
+﻿
+namespace CalculationsEngine.Assess.Assess
 {
     public class Dialog
     {
@@ -38,25 +39,25 @@
 
         }
 
-        protected virtual string displayDialog()
+        public virtual string displayDialog()
         {
             return "";
         }
 
-        public void ProcessDialog()
+        public void ProcessDialog(string choice)
         {
             setInitialValues();
-            string choice = displayDialog();
+//            string choice = displayDialog();
 
             if (choice.Equals("1"))
             {
                 setValuesIfSureChosen();
-                ProcessDialog();
+//                ProcessDialog();
             }
             else if (choice.Equals("2"))
             {
                 setValuesIfLotteryChosen();
-                ProcessDialog();
+//                ProcessDialog();
             }
             else if (choice.Equals("3"))
             {

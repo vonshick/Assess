@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Assess
+namespace CalculationsEngine.Assess.Assess
 {
-    public class CoefficientsDisplayObject
+    public class LotteryCoefficients
     {
-        public CoefficientsDisplayObject(List<Criterion> criterionList, float[] valuesToCompare, float p)
+        public LotteryCoefficients(List<Criterion> criterionList, float[] valuesToCompare, float p)
         {
             ValuesToCompare = valuesToCompare;
             WorstValues = criterionList.Select(criterion => criterion.MinValue).ToArray();

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Assess
+namespace CalculationsEngine.Assess.Assess
 {
     public class LotteriesComparison : Dialog
     {
@@ -9,7 +9,7 @@ namespace Assess
 
         }
 
-        protected override string displayDialog()
+        public override string displayDialog()
         {
             Console.WriteLine("Wpisz '1' jeśli wolisz loterię:");
             Console.WriteLine(DisplayObject.ComparisonLottery.UpperUtilityValue.X + " z prawdopodobienstwem " + DisplayObject.ComparisonLottery.P);
@@ -23,7 +23,7 @@ namespace Assess
             Console.WriteLine("Wpisz '3' jeśli loterie są dla Ciebie nierozróżnialne\n");
             Console.WriteLine("'1', '2' lub '3' :\n");
 
-            return Console.ReadLine();
+            return "";
         }
         protected override void setInitialValues()
         {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace Assess
+namespace CalculationsEngine.Assess.Assess
 {
     public class AssessDialog
     {

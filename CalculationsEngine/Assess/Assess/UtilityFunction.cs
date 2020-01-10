@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Assess
+namespace CalculationsEngine.Assess.Assess
 {
     public class UtilityFunction
     {
