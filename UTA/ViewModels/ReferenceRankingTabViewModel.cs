@@ -1,5 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows.Data;
 using DataModel.Input;
 using DataModel.Results;
@@ -10,13 +12,20 @@ using UTA.Models.Tab;
 
 namespace UTA.ViewModels
 {
-    public class ReferenceRankingTabViewModel : Tab
+    public class ReferenceRankingTabViewModel : Tab, INotifyPropertyChanged
     {
+        private ListCollectionView _alternativesWithoutRanksCollectionView;
+
         public ReferenceRankingTabViewModel(ReferenceRanking referenceRanking, Alternatives alternatives)
         {
             Name = "Reference Ranking";
             ReferenceRanking = referenceRanking;
             Alternatives = alternatives;
+
+            AlternativesWithoutRanksCollectionView = new ListCollectionView(Alternatives.AlternativesCollection)
+            {
+                Filter = o => ((Alternative)o).ReferenceRank == null
+            };
 
             ReferenceRanking.PropertyChanged += (sender, args) =>
             {
@@ -24,14 +33,16 @@ namespace UTA.ViewModels
                 RefreshFilter();
                 InitializeReferenceRankFilterWatchers();
             };
-
-            RefreshFilter();
-            InitializeReferenceRankFilterWatchers();
-
-            AlternativesWithoutRanksCollectionView = new ListCollectionView(Alternatives.AlternativesCollection)
+            Alternatives.PropertyChanged += (sender, args) =>
             {
-                Filter = o => ((Alternative) o).ReferenceRank == null
+                if (args.PropertyName != nameof(Alternatives.AlternativesCollection)) return;
+                AlternativesWithoutRanksCollectionView = new ListCollectionView(Alternatives.AlternativesCollection)
+                {
+                    Filter = o => ((Alternative)o).ReferenceRank == null
+                };
             };
+
+            InitializeReferenceRankFilterWatchers();
 
             NewRank = new ObservableCollection<Alternative>();
             NewRank.CollectionChanged += (sender, args) =>
@@ -53,7 +64,17 @@ namespace UTA.ViewModels
 
         public ReferenceRanking ReferenceRanking { get; }
         public Alternatives Alternatives { get; }
-        public ListCollectionView AlternativesWithoutRanksCollectionView { get; }
+
+        public ListCollectionView AlternativesWithoutRanksCollectionView
+        {
+            get => _alternativesWithoutRanksCollectionView;
+            set
+            {
+                _alternativesWithoutRanksCollectionView = value;
+                OnPropertyChanged(nameof(AlternativesWithoutRanksCollectionView));
+            }
+        }
+
         public ObservableCollection<Alternative> NewRank { get; set; }
         public RelayCommand RemoveAlternativeFromRankCommand { get; }
         public RelayCommand RemoveRankCommand { get; }
@@ -89,6 +110,14 @@ namespace UTA.ViewModels
         private void RefreshFilter(object sender = null, NotifyCollectionChangedEventArgs e = null)
         {
             AlternativesWithoutRanksCollectionView.Refresh();
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

@@ -15,7 +15,12 @@ namespace DataModel.Results
         public ReferenceRanking()
         {
             RankingsCollection = new ObservableCollection<ObservableCollection<Alternative>>();
-            PropertyChanged += InitializeAlternativeReferenceRankUpdaterWatcher;
+            PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName != nameof(RankingsCollection)) return;
+                InitializeAlternativeReferenceRankUpdaterWatcher();
+            };
+
             InitializeAlternativeReferenceRankUpdaterWatcher();
         }
 

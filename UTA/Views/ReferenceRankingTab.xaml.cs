@@ -8,17 +8,9 @@ namespace UTA.Views
 {
     public partial class ReferenceRankingTab : UserControl
     {
-        private ReferenceRankingTabViewModel _viewmodel;
-
         public ReferenceRankingTab()
         {
-            Loaded += ViewLoaded;
             InitializeComponent();
-        }
-
-        private void ViewLoaded(object sender, RoutedEventArgs e)
-        {
-            _viewmodel = (ReferenceRankingTabViewModel) DataContext;
         }
 
         private void AlternativeDroppedOnNewRank(object sender, DragEventArgs dragEventArgs)

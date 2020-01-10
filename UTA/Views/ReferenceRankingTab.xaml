@@ -38,7 +38,7 @@
 
 
     <ListView Name="AlternativesListView" Grid.Row="1" Grid.RowSpan="2" Grid.Column="0"
-              ItemsSource="{Binding AlternativesWithoutRanksCollectionView}"
+              ItemsSource="{Binding AlternativesWithoutRanksCollectionView, UpdateSourceTrigger=PropertyChanged}"
               Tag="Alternatives"
               dd:DragDrop.IsDragSource="True"
               dd:DragDrop.IsDropTarget="True"
@@ -47,13 +47,13 @@
               dd:DragDrop.DropHandler="{StaticResource AlternativeDropHandler}">
       <ListView.View>
         <GridView>
-          <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
+          <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
           <GridViewColumn Header="Description"
-                          DisplayMemberBinding="{Binding Description}" />
+                          DisplayMemberBinding="{Binding Description, UpdateSourceTrigger=PropertyChanged}" />
 
           <!-- TODO Remove column -->
           <GridViewColumn Header="ReferenceRank" Width="120"
-                          DisplayMemberBinding="{Binding ReferenceRank}" />
+                          DisplayMemberBinding="{Binding ReferenceRank, UpdateSourceTrigger=PropertyChanged}" />
         </GridView>
       </ListView.View>
     </ListView>
@@ -63,7 +63,7 @@
                   HorizontalScrollBarVisibility="Disabled">
       <StackPanel>
         <ItemsControl Name="RanksItemsControl" Focusable="False"
-                      ItemsSource="{Binding Alternatives.ReferenceRanking.RankingsCollection}"
+                      ItemsSource="{Binding ReferenceRanking.RankingsCollection, UpdateSourceTrigger=PropertyChanged}"
                       AlternationCount="100000">
           <ItemsControl.ItemTemplate>
             <DataTemplate>
@@ -117,7 +117,7 @@
                                  Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
 
                       <TextBlock Grid.Column="2" Margin="10,0"
-                                 Text="{Binding ReferenceRank, StringFormat={}Rank {0},Converter={StaticResource IndexToRankConverter}}" />
+                                 Text="{Binding ReferenceRank, UpdateSourceTrigger=PropertyChanged, StringFormat={}Rank {0},Converter={StaticResource IndexToRankConverter}}" />
                     </Grid>
                   </DataTemplate>
                 </ItemsControl.ItemTemplate>
