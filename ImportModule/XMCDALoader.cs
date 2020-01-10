@@ -1,25 +1,19 @@
-﻿using DataModel.Input;
-using DataModel.Results;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Xml;
-using DataModel.Structs;
+using DataModel.Input;
+using DataModel.Results;
 
 namespace ImportModule
 {
     public class XMCDALoader : DataLoader
     {
-        private string xmcdaDirectory;
-        private string currentlyProcessedFile;
         private string currentlyProcessedAlternativeId;
-
-        public XMCDALoader() : base()
-        {
-        }
+        private string currentlyProcessedFile;
+        private string xmcdaDirectory;
 
         private void validateInputFilesSet()
         {
@@ -32,7 +26,7 @@ namespace ImportModule
         private bool checkIfResultsAvailable()
         {
             if (!File.Exists(Path.Combine(xmcdaDirectory, "alternatives_ranks.xml")) ||
-                    !File.Exists(Path.Combine(xmcdaDirectory, "value_functions.xml")))
+                !File.Exists(Path.Combine(xmcdaDirectory, "value_functions.xml")))
                 return false;
 
             return true;
@@ -47,25 +41,15 @@ namespace ImportModule
         private string checkIfAlternativeNameProvided(XmlAttributeCollection attributesCollection)
         {
             if (attributesCollection["name"] != null)
-            {
                 return checkAlternativesNamesUniqueness(attributesCollection["name"].Value);
-            }
-            else
-            {
-                return checkAlternativesNamesUniqueness(attributesCollection["id"].Value);
-            }
+            return checkAlternativesNamesUniqueness(attributesCollection["id"].Value);
         }
 
         private string checkIfCriterionNameProvided(XmlAttributeCollection attributesCollection)
         {
             if (attributesCollection["name"] != null)
-            {
                 return checkCriteriaNamesUniqueness(attributesCollection["name"].Value);
-            }
-            else
-            {
-                return checkCriteriaNamesUniqueness(attributesCollection["id"].Value);
-            }
+            return checkCriteriaNamesUniqueness(attributesCollection["id"].Value);
         }
 
         private XmlDocument loadFile(string fileName)
@@ -73,7 +57,7 @@ namespace ImportModule
             currentlyProcessedFile = Path.Combine(xmcdaDirectory, fileName);
             ValidateFilePath(currentlyProcessedFile);
 
-            XmlDocument xmlDocument = new XmlDocument();
+            var xmlDocument = new XmlDocument();
             xmlDocument.Load(currentlyProcessedFile);
 
             return xmlDocument;
@@ -81,13 +65,13 @@ namespace ImportModule
 
         private void LoadCriteria()
         {
-            XmlDocument xmlDocument = loadFile("criteria.xml");
+            var xmlDocument = loadFile("criteria.xml");
 
             // this file contains only one main block - <criteria>
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
             {
                 checkIfIdProvided(xmlNode.Attributes, "criterion");
-                Criterion criterion = new Criterion()
+                var criterion = new Criterion
                 {
                     ID = checkCriteriaIdsUniqueness(xmlNode.Attributes["id"].Value)
                 };
@@ -100,13 +84,13 @@ namespace ImportModule
 
         private void LoadCriteriaScales()
         {
-            XmlDocument xmlDocument = loadFile("criteria_scales.xml");
+            var xmlDocument = loadFile("criteria_scales.xml");
 
             // this file contains only one main block - <criteriaScales>
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
             {
-                string criterionID = xmlNode.ChildNodes[0].InnerText;
-                string criterionDirection = xmlNode.ChildNodes[1].FirstChild.FirstChild.FirstChild.InnerText;
+                var criterionID = xmlNode.ChildNodes[0].InnerText;
+                var criterionDirection = xmlNode.ChildNodes[1].FirstChild.FirstChild.FirstChild.InnerText;
 
                 var index = criterionList.FindIndex(criterion => criterion.ID == criterionID);
                 criterionList[index].CriterionDirection = criterionDirection == "max" ? "Gain" : "Cost";
@@ -115,13 +99,13 @@ namespace ImportModule
 
         private void LoadAlternatives()
         {
-            XmlDocument xmlDocument = loadFile("alternatives.xml");
+            var xmlDocument = loadFile("alternatives.xml");
 
             // this file contains only one main block - <criteria>
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
             {
                 checkIfIdProvided(xmlNode.Attributes, "alternative");
-                Alternative alternative = new Alternative()
+                var alternative = new Alternative
                 {
                     ID = checkAlternativesIdsUniqueness(xmlNode.Attributes["id"].Value),
                     CriteriaValuesList = new ObservableCollection<CriterionValue>()
@@ -140,25 +124,24 @@ namespace ImportModule
 
         private void LoadPerformanceTable()
         {
-            XmlDocument xmlDocument = loadFile("performance_table.xml");
-            int nodeCounter = 1;
+            var xmlDocument = loadFile("performance_table.xml");
+            var nodeCounter = 1;
 
             if (xmlDocument.DocumentElement.ChildNodes[0].ChildNodes.Count != alternativeList.Count)
-            {
-                throw new ImproperFileStructureException("There are provided " + (xmlDocument.DocumentElement.ChildNodes[0].ChildNodes.Count) + " alternative performances and required are " + alternativeList.Count+ ".");
-            }
+                throw new ImproperFileStructureException("There are provided " +
+                                                         xmlDocument.DocumentElement.ChildNodes[0].ChildNodes.Count +
+                                                         " alternative performances and required are " + alternativeList.Count + ".");
 
             // this file contains only one main block - <criteriaScales>
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
             {
                 // one of children nodes is the name node  
-                if ((xmlNode.ChildNodes.Count - 1) != criterionList.Count)
-                {
-                    throw new ImproperFileStructureException("There are provided " + (xmlNode.ChildNodes.Count - 1) + " criteria values and required are " + criterionList.Count + ": node " + nodeCounter + " of alternativePerformances.");
-                }
+                if (xmlNode.ChildNodes.Count - 1 != criterionList.Count)
+                    throw new ImproperFileStructureException("There are provided " + (xmlNode.ChildNodes.Count - 1) +
+                                                             " criteria values and required are " + criterionList.Count + ": node " +
+                                                             nodeCounter + " of alternativePerformances.");
 
                 foreach (XmlNode performance in xmlNode.ChildNodes)
-                {
                     // first node containts alternative ID
                     if (performance.Name == "alternativeID")
                     {
@@ -166,22 +149,22 @@ namespace ImportModule
                     }
                     else
                     {
-                        string criterionID = performance.ChildNodes[0].InnerText;
-                        Criterion matchingCriterion = criterionList.Find(criterion => criterion.ID == criterionID);
+                        var criterionID = performance.ChildNodes[0].InnerText;
+                        var matchingCriterion = criterionList.Find(criterion => criterion.ID == criterionID);
 
                         if (matchingCriterion == null)
-                        {
-                            throw new ImproperFileStructureException("Error while processing alternative " + currentlyProcessedAlternativeId + ": criterion with ID " + criterionID + " does not exist.");
-                        }
+                            throw new ImproperFileStructureException("Error while processing alternative " +
+                                                                     currentlyProcessedAlternativeId + ": criterion with ID " +
+                                                                     criterionID + " does not exist.");
 
-                        string value = performance.ChildNodes[1].FirstChild.InnerText;
+                        var value = performance.ChildNodes[1].FirstChild.InnerText;
                         checkIfValueIsValid(value, criterionID, currentlyProcessedAlternativeId);
 
-                        int alternativeIndex = alternativeList.FindIndex(compareAlternativeIds);
+                        var alternativeIndex = alternativeList.FindIndex(compareAlternativeIds);
 
-                        alternativeList[alternativeIndex].CriteriaValuesList.Add(new CriterionValue(matchingCriterion.Name, float.Parse(value, CultureInfo.InvariantCulture)));
+                        alternativeList[alternativeIndex].CriteriaValuesList.Add(new CriterionValue(matchingCriterion.Name,
+                            float.Parse(value, CultureInfo.InvariantCulture)));
                     }
-                }
 
                 nodeCounter++;
             }
@@ -189,37 +172,32 @@ namespace ImportModule
 
         private void LoadAlternativesRanks()
         {
-            XmlDocument xmlDocument = loadFile("alternatives_ranks.xml");
+            var xmlDocument = loadFile("alternatives_ranks.xml");
 
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
-            {
-                foreach (XmlNode alternativeResult in xmlNode.ChildNodes)
+            foreach (XmlNode alternativeResult in xmlNode.ChildNodes)
+                // first node containts alternative ID
+                if (alternativeResult.Name == "alternativeID")
                 {
-                    // first node containts alternative ID
-                    if (alternativeResult.Name == "alternativeID")
-                    {
-                        currentlyProcessedAlternativeId = alternativeResult.InnerText;
-                    }
-                    else
-                    {
-                        int rank = int.Parse(alternativeResult.ChildNodes[0].InnerText);
-                        int alternativeIndex = alternativeList.FindIndex(compareAlternativeIds);
-                        alternativeList[alternativeIndex].ReferenceRank = rank;
-                    }
+                    currentlyProcessedAlternativeId = alternativeResult.InnerText;
                 }
-            }
+                else
+                {
+                    var rank = int.Parse(alternativeResult.ChildNodes[0].InnerText);
+                    var alternativeIndex = alternativeList.FindIndex(compareAlternativeIds);
+                    alternativeList[alternativeIndex].ReferenceRank = rank;
+                }
         }
 
         private void LoadValueFunctions()
         {
-            XmlDocument xmlDocument = loadFile("value_functions.xml");
+            var xmlDocument = loadFile("value_functions.xml");
 
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
             {
-                string criterionID = "";
-                List<PartialUtilityValues> argumentsValues = new List<PartialUtilityValues>();
+                var criterionID = "";
+                var argumentsValues = new List<PartialUtilityValues>();
                 foreach (XmlNode criterionFunction in xmlNode.ChildNodes)
-                {
                     if (criterionFunction.Name == "criterionID")
                     {
                         criterionID = criterionFunction.InnerText;
@@ -228,12 +206,10 @@ namespace ImportModule
                     {
                         foreach (XmlNode point in criterionFunction.FirstChild.ChildNodes)
                         {
-                            float argument = float.PositiveInfinity;
-                            float value = float.PositiveInfinity;
+                            var argument = float.PositiveInfinity;
+                            var value = float.PositiveInfinity;
 
                             foreach (XmlNode coordinate in point.ChildNodes)
-                            {
-
                                 if (coordinate.Name == "abscissa")
                                 {
                                     argument = float.Parse(coordinate.FirstChild.InnerText, CultureInfo.InvariantCulture);
@@ -249,17 +225,15 @@ namespace ImportModule
 
                                     argumentsValues.Add(new PartialUtilityValues(argument, value));
                                 }
-                            }
                         }
 
                         var matchingCriterion = criterionList.Find(criterion => criterion.ID == criterionID);
                         results.PartialUtilityFunctions.Add(new PartialUtility(matchingCriterion, argumentsValues));
                     }
-                }
             }
         }
 
-        override protected void ProcessFile(string xmcdaDirectory)
+        protected override void ProcessFile(string xmcdaDirectory)
         {
             this.xmcdaDirectory = xmcdaDirectory;
 
@@ -270,8 +244,8 @@ namespace ImportModule
             LoadAlternatives();
             LoadPerformanceTable();
             setMinAndMaxCriterionValues();
-            
-            if(checkIfResultsAvailable())
+
+            if (checkIfResultsAvailable())
             {
                 LoadAlternativesRanks();
                 LoadValueFunctions();
