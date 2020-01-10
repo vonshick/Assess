@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -33,6 +34,7 @@ namespace UTA.Views
             };
 
             _viewmodel.ChartTabViewModels.CollectionChanged += ChartTabsCollectionChanged;
+            _viewmodel.UserDialogueTabViewModels.CollectionChanged += UserDialogueTabsCollectionChanged;
             var tabViewSource = CollectionViewSource.GetDefaultView(TabControl.Items);
             tabViewSource.CollectionChanged += (sender, args) =>
             {
@@ -175,6 +177,34 @@ namespace UTA.Views
                 MainViewGrid.ColumnDefinitions[panelColumnIndex].MinWidth = 0;
                 MainViewGrid.ColumnDefinitions[panelColumnIndex].Width = new GridLength(0);
                 columnsGridSplitter.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        // updates Show MenuItem with dialogue tabs
+        private void UserDialogueTabsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                if (ShowMenu.Items[ShowMenu.Items.Count - 1] is MenuItem lastMenuItem)
+                {
+                    lastMenuItem.Margin = new Thickness(0);
+                    if ((string)lastMenuItem.Tag != "Dialogue") ShowMenu.Items.Add(new Separator());
+                }
+
+                var newUserDialogueTabViewModel = (UserDialogueTabViewModel) e.NewItems[0];
+                var newMenuItem = new MenuItem { Header = newUserDialogueTabViewModel.Name, Margin = _menuItemBottomMargin, Tag = "Dialogue" };
+                newMenuItem.Click += (s, args) => _viewmodel.ShowTab(newUserDialogueTabViewModel);
+                ShowMenu.Items.Add(newMenuItem);
+
+            }
+            else if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                var removedUserDialogueTabViewModel = (UserDialogueTabViewModel) e.OldItems[0];
+                var menuItemToRemove = ShowMenu.Items.OfType<MenuItem>().First(menuItem => menuItem.Header == removedUserDialogueTabViewModel.Name);
+                ShowMenu.Items.Remove(menuItemToRemove);
+
+                if (ShowMenu.Items[ShowMenu.Items.Count - 1] is Separator separator) ShowMenu.Items.Remove(separator);
+                ((MenuItem)ShowMenu.Items[ShowMenu.Items.Count - 1]).Margin = _menuItemBottomMargin;
             }
         }
 

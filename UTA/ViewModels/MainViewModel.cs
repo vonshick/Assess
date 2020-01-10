@@ -44,6 +44,7 @@ namespace UTA.ViewModels
             Tabs.CollectionChanged += TabsCollectionChanged;
             ChartTabViewModels = new ObservableCollection<ChartTabViewModel>();
             ShowTabCommand = new RelayCommand(tabViewModel => ShowTab((ITab) tabViewModel));
+            UserDialogueTabViewModels = new ObservableCollection<UserDialogueTabViewModel>();
 
             CriteriaTabViewModel = new CriteriaTabViewModel(Criteria);
             AlternativesTabViewModel = new AlternativesTabViewModel(Criteria, Alternatives);
@@ -51,6 +52,7 @@ namespace UTA.ViewModels
             SettingsTabViewModel = new SettingsTabViewModel();
             WelcomeTabViewModel = new WelcomeTabViewModel();
 
+            Criteria.CriteriaCollection.CollectionChanged += UpdateDialogueTabs;
             Criteria.CriteriaCollection.CollectionChanged += InstancePropertyChanged;
             Alternatives.AlternativesCollection.CollectionChanged += InstancePropertyChanged;
             ReferenceRanking.RankingsCollection.CollectionChanged += InstancePropertyChanged;
@@ -169,6 +171,24 @@ namespace UTA.ViewModels
             // SampleExport.exportXMCDA(dataDirectoryPath, dataLoader.CriterionList, dataLoader.AlternativeList);
         }
 
+        private void UpdateDialogueTabs(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                Console.WriteLine("Adding UserDialogueTabViewModels tab for " + ((Criterion)e.NewItems[0]).Name);
+                UserDialogueTabViewModels.Add(new UserDialogueTabViewModel((Criterion) e.NewItems[0]));
+            }
+            else if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                var removedCriterion = (Criterion) e.OldItems[0];
+                Console.WriteLine("Removing UserDialogueTabViewModels tab for " + removedCriterion.Name);
+                var associatedUserDialogueTabViewModel = UserDialogueTabViewModels.First(tabViewModel => tabViewModel.Criterion.Name == removedCriterion.Name);
+                var tabToClose = Tabs.First(tab => tab.Name == associatedUserDialogueTabViewModel.Name);
+                tabToClose.CloseCommand.Execute(null);
+                UserDialogueTabViewModels.Remove(associatedUserDialogueTabViewModel);
+            }
+        }
+
 
         public Alternatives Alternatives { get; set; }
         public Criteria Criteria { get; set; }
@@ -177,6 +197,7 @@ namespace UTA.ViewModels
 
         public ObservableCollection<ITab> Tabs { get; }
         public ObservableCollection<ChartTabViewModel> ChartTabViewModels { get; }
+        public ObservableCollection<UserDialogueTabViewModel> UserDialogueTabViewModels { get; }
         public RelayCommand ShowTabCommand { get; }
 
         public CriteriaTabViewModel CriteriaTabViewModel { get; }

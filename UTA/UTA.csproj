@@ -92,6 +92,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\UserDialogueTab.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\ChartTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -132,12 +136,16 @@
     <Compile Include="ViewModels\CriteriaTabViewModel.cs" />
     <Compile Include="ViewModels\ReferenceRankingTabViewModel.cs" />
     <Compile Include="ViewModels\WelcomeTabViewModel.cs" />
+    <Compile Include="ViewModels\UserDialogueTabViewModel.cs" />
     <Compile Include="ViewModels\SettingsTabViewModel.cs" />
     <Compile Include="Views\AboutDialogView.xaml.cs">
       <DependentUpon>AboutDialogView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\AlternativesTab.xaml.cs">
       <DependentUpon>AlternativesTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserDialogueTab.xaml.cs">
+      <DependentUpon>UserDialogueTab.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ChartTab.xaml.cs">
       <DependentUpon>ChartTab.xaml</DependentUpon>
