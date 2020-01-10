@@ -10,7 +10,7 @@ namespace DataModel.Input
     public class Criterion : INotifyPropertyChanged, INotifyPropertyChangedExtended<string>
     {
         public static double MinNumberOfLinearSegments = 1; // type double, because can't use other type in xaml
-        public static double MaxNumberOfLinearSegments = 99;
+        public static double MaxNumberOfLinearSegments = 99; // TODO: change this value according to app performance
         private string _criterionDirection;
         private string _description;
         private int _linearSegments;

@@ -125,21 +125,21 @@
           </i:Interaction.Triggers>
         </MenuItem>
         <Separator />
-        <MenuItem Header="Save" IsEnabled="{Binding IsThereAnyApplicationProgress}">
+        <MenuItem Header="Save" IsEnabled="{Binding IsThereAnyApplicationProgress, UpdateSourceTrigger=PropertyChanged}">
           <i:Interaction.Triggers>
             <i:EventTrigger EventName="Click">
               <i:CallMethodAction TargetObject="{Binding}" MethodName="SaveMenuItemClicked" />
             </i:EventTrigger>
           </i:Interaction.Triggers>
         </MenuItem>
-        <MenuItem Header="Save As..." IsEnabled="{Binding IsThereAnyApplicationProgress}">
+        <MenuItem Header="Save As..." IsEnabled="{Binding IsThereAnyApplicationProgress, UpdateSourceTrigger=PropertyChanged}">
           <i:Interaction.Triggers>
             <i:EventTrigger EventName="Click">
               <i:CallMethodAction TargetObject="{Binding}" MethodName="SaveAsMenuItemClicked" />
             </i:EventTrigger>
           </i:Interaction.Triggers>
         </MenuItem>
-        <MenuItem Header="Save With Results As..." IsEnabled="{Binding IsThereAnyApplicationProgress}">
+        <MenuItem Header="Save With Results As..." IsEnabled="{Binding IsThereAnyApplicationProgress, UpdateSourceTrigger=PropertyChanged}">
           <i:Interaction.Triggers>
             <i:EventTrigger EventName="Click">
               <i:CallMethodAction TargetObject="{Binding}" MethodName="SaveWithResultsAsMenuItemClicked" />
@@ -163,7 +163,7 @@
           <MenuItem.Style>
             <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
               <Style.Triggers>
-                <DataTrigger Binding="{Binding ChartTabViewModels.Count}" Value="0">
+                <DataTrigger Binding="{Binding ChartTabViewModels.Count, UpdateSourceTrigger=PropertyChanged}" Value="0">
                   <Setter Property="Header" Value="Calculate" />
                 </DataTrigger>
               </Style.Triggers>
@@ -179,7 +179,7 @@
         </MenuItem>
         <Separator />
         <MenuItem Margin="{StaticResource MenuItemBottomMargin}" Header="Preserve Kendall's Coefficient"
-                  IsCheckable="True" IsChecked="{Binding PreserveKendallCoefficient}" />
+                  IsCheckable="True" IsChecked="{Binding PreserveKendallCoefficient, UpdateSourceTrigger=PropertyChanged}" />
       </MenuItem>
       <MenuItem Name="ShowMenu" Header="Show" Style="{StaticResource MenuBarItem}">
         <MenuItem Margin="{StaticResource MenuItemTopMargin}" Header="Criteria">
@@ -251,7 +251,7 @@
             <Button.Style>
               <Style TargetType="{x:Type Button}" BasedOn="{StaticResource PrimaryRoundButton}">
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding ChartTabViewModels.Count}" Value="0">
+                  <DataTrigger Binding="{Binding ChartTabViewModels.Count, UpdateSourceTrigger=PropertyChanged}" Value="0">
                     <Setter Property="Content" Value="Calculate" />
                   </DataTrigger>
                 </Style.Triggers>
@@ -305,7 +305,7 @@
           <Rectangle Focusable="False" Margin="0,0,8,0" Width="1" Fill="{StaticResource ColorSeparator}"
                      DockPanel.Dock="Left" />
 
-          <CheckBox Margin="0,0,8,0" IsChecked="{Binding PreserveKendallCoefficient}">
+          <CheckBox Margin="0,0,8,0" IsChecked="{Binding PreserveKendallCoefficient, UpdateSourceTrigger=PropertyChanged}">
             <TextBlock Text="Preserve Kendall's Coefficient" FontSize="{StaticResource CommonFontSize2}" />
           </CheckBox>
 
@@ -383,11 +383,11 @@
                 </Style>
               </Expander.Resources>
 
-              <ListView Name="AlternativesListView" ItemsSource="{Binding Alternatives.AlternativesCollection}"
+              <ListView Name="AlternativesListView" ItemsSource="{Binding Alternatives.AlternativesCollection, UpdateSourceTrigger=PropertyChanged}"
                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListView.ItemTemplate>
                   <DataTemplate>
-                    <TextBlock Text="{Binding Name}" />
+                    <TextBlock Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
                   </DataTemplate>
                 </ListView.ItemTemplate>
               </ListView>
@@ -403,7 +403,7 @@
                 </Style>
               </Expander.Resources>
 
-              <ListView Name="CriterionListView" ItemsSource="{Binding Criteria.CriteriaCollection}"
+              <ListView Name="CriterionListView" ItemsSource="{Binding Criteria.CriteriaCollection, UpdateSourceTrigger=PropertyChanged}"
                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListView.ItemContainerStyle>
                   <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource LeftPanelListViewItemBaseStyle}">
@@ -432,12 +432,12 @@
 
                       <GridViewColumn.CellTemplate>
                         <DataTemplate>
-                          <TextBlock Text="{Binding Name}" Margin="6,0,0,0" />
+                          <TextBlock Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="6,0,0,0" />
                         </DataTemplate>
                       </GridViewColumn.CellTemplate>
                     </GridViewColumn>
 
-                    <GridViewColumn Header="Type" DisplayMemberBinding="{Binding CriterionDirection}" Width="9999" />
+                    <GridViewColumn Header="Type" DisplayMemberBinding="{Binding CriterionDirection, UpdateSourceTrigger=PropertyChanged}" Width="9999" />
                   </GridView>
                 </ListView.View>
               </ListView>
@@ -606,7 +606,7 @@
                     <ColumnDefinition />
                     <ColumnDefinition Width="Auto" />
                   </Grid.ColumnDefinitions>
-                  <TextBlock Text="{Binding Name}" FontSize="{StaticResource CommonFontSize2}"
+                  <TextBlock Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" FontSize="{StaticResource CommonFontSize2}"
                              Foreground="{StaticResource ColorFontDark}" VerticalAlignment="Center" Margin="8,0,8,1" />
                   <Button Grid.Column="1" DockPanel.Dock="Right" Command="{Binding CloseCommand}" Margin="0,0,4,0">
                     <icons:PackIconMaterial Kind="Close" Width="10" Height="10"
@@ -677,15 +677,15 @@
                 </Style>
               </Expander.Resources>
 
-              <ListView ItemsSource="{Binding Results.FinalRanking.FinalRankingCollection}"
+              <ListView ItemsSource="{Binding Results.FinalRanking.FinalRankingCollection, UpdateSourceTrigger=PropertyChanged}"
                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListView.View>
                   <GridView AllowsColumnReorder="False">
                     <GridViewColumn Header="#" DisplayMemberBinding="{Binding Position}" Width="32" />
                     <GridViewColumn Header="Rank"
-                                    DisplayMemberBinding="{Binding Alternative.ReferenceRank, Converter={StaticResource IndexToRankConverter}}"
+                                    DisplayMemberBinding="{Binding Alternative.ReferenceRank, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource IndexToRankConverter}}"
                                     Width="41" />
-                    <GridViewColumn Header="Alternative" DisplayMemberBinding="{Binding Alternative.Name}" Width="146" />
+                    <GridViewColumn Header="Alternative" DisplayMemberBinding="{Binding Alternative.Name, UpdateSourceTrigger=PropertyChanged}" Width="146" />
                     <GridViewColumn Header="Utility" DisplayMemberBinding="{Binding Utility}" Width="9999" />
                   </GridView>
                 </ListView.View>
@@ -696,7 +696,7 @@
                       Expanded="Expander_Toggled" IsExpanded="True"
                       HeaderTemplate="{StaticResource ExpanderPlainHeaderTemplate}">
               <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{Binding ReferenceRanking.RankingsCollection}" Focusable="False"
+                <ItemsControl ItemsSource="{Binding ReferenceRanking.RankingsCollection, UpdateSourceTrigger=PropertyChanged}" Focusable="False"
                               AlternationCount="100000">
                   <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -720,7 +720,7 @@
 
                         <ItemsControl.ItemTemplate>
                           <DataTemplate>
-                            <TextBlock Text="{Binding Name}" Margin="4,2,0,2" />
+                            <TextBlock Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="4,2,0,2" />
                           </DataTemplate>
                         </ItemsControl.ItemTemplate>
                       </ItemsControl>

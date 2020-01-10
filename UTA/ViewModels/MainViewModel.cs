@@ -187,7 +187,7 @@ namespace UTA.ViewModels
         {
             if (Criteria.CriteriaCollection.Count == 0)
             {
-                ShowSolveErrorDialog("It's required to provide at least 1 criterion to begin UTA calculations.");
+                ShowCalculateErrorDialog("It's required to provide at least 1 criterion to begin UTA calculations.");
                 AddTabIfNeeded(CriteriaTabViewModel);
                 AddTabIfNeeded(AlternativesTabViewModel);
                 AddTabIfNeeded(ReferenceRankingTabViewModel);
@@ -197,7 +197,7 @@ namespace UTA.ViewModels
 
             if (Alternatives.AlternativesCollection.Count <= 1)
             {
-                ShowSolveErrorDialog("It's required to provide at least 2 alternatives to begin UTA calculations.");
+                ShowCalculateErrorDialog("It's required to provide at least 2 alternatives to begin UTA calculations.");
                 AddTabIfNeeded(AlternativesTabViewModel);
                 AddTabIfNeeded(ReferenceRankingTabViewModel);
                 ShowTab(AlternativesTabViewModel);
@@ -208,7 +208,7 @@ namespace UTA.ViewModels
                 alternative.CriteriaValuesList.Any(criterionValue => criterionValue.Value == null));
             if (isAnyCriterionValueNull)
             {
-                ShowSolveErrorDialog(
+                ShowCalculateErrorDialog(
                     "It's required to provide data to every criterion value to all alternatives to begin UTA calculations.");
                 ShowTab(AlternativesTabViewModel);
                 return;
@@ -217,7 +217,7 @@ namespace UTA.ViewModels
             if (!(ReferenceRanking.RankingsCollection.Count >= 2
                   && ReferenceRanking.RankingsCollection.All(rank => rank.Count != 0)))
             {
-                ShowSolveErrorDialog(
+                ShowCalculateErrorDialog(
                     "It's required to provide at least 2 ranks in Reference Ranking filled with at least 1 alternative\nto begin UTA calculations.");
                 ShowTab(ReferenceRankingTabViewModel);
                 return;
@@ -302,7 +302,7 @@ namespace UTA.ViewModels
             foreach (var chartTabViewModel in ChartTabViewModels) chartTabViewModel.GenerateChartData();
         }
 
-        private async void ShowSolveErrorDialog(string message)
+        private async void ShowCalculateErrorDialog(string message)
         {
             await _dialogCoordinator.ShowMessageAsync(this,
                 "Invalid instance data.",

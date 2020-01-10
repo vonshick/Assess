@@ -50,7 +50,6 @@ namespace UTA.ViewModels
             get => _newCriterion;
             set
             {
-                if (_newCriterion != null && value.Name == _newCriterion.Name) return;
                 _newCriterion = value;
                 OnPropertyChanged(nameof(NewCriterion));
             }

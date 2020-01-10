@@ -2,6 +2,7 @@
 using DataModel.Results;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -107,7 +108,7 @@ namespace ImportModule
                 Alternative alternative = new Alternative()
                 {
                     ID = checkAlternativesIdsUniqueness(xmlNode.Attributes["id"].Value),
-                    CriteriaValuesList = new List<CriterionValue>()
+                    CriteriaValuesList = new ObservableCollection<CriterionValue>()
                 };
 
                 alternative.Name = checkIfAlternativeNameProvided(xmlNode.Attributes);

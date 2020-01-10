@@ -1,5 +1,6 @@
 ﻿using DataModel.Input;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 
@@ -40,7 +41,7 @@ namespace ImportModule
             for (int i = 0; i < dataLoader.AlternativeList.Count; i++)
             {
                 Trace.WriteLine(dataLoader.AlternativeList[i].Name);
-                List<CriterionValue> criteriaValuesList = dataLoader.AlternativeList[i].CriteriaValuesList;
+                ObservableCollection<CriterionValue> criteriaValuesList = dataLoader.AlternativeList[i].CriteriaValuesList;
                 foreach (CriterionValue criterionValue in criteriaValuesList)
                 {
                     Trace.WriteLine(criterionValue.Name + " = " + criterionValue.Value);

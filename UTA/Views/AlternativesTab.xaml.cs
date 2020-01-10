@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -34,8 +35,10 @@ namespace UTA.Views
             _viewmodel.Criteria.PropertyChanged += (s, args) =>
             {
                 if (args.PropertyName != nameof(_viewmodel.Criteria.CriteriaCollection)) return;
+                InitializeCriterionValueColumnsGenerator();
                 GenerateCriterionValuesColumns();
             };
+            InitializeCriterionValueColumnsGenerator();
 
             _viewmodel.PropertyChanged += (s, args) =>
             {
@@ -65,6 +68,14 @@ namespace UTA.Views
             GenerateCriterionValuesColumns();
         }
 
+        private void InitializeCriterionValueColumnsGenerator()
+        {
+            _viewmodel.Criteria.CriteriaCollection.CollectionChanged += (sender, args) =>
+            {
+                if (args.Action == NotifyCollectionChangedAction.Reset)
+                    GenerateCriterionValuesColumns();
+            };
+        }
 
         private void GenerateCriterionValuesColumns()
         {

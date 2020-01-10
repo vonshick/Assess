@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using DataModel.Annotations;
 
@@ -7,21 +9,23 @@ namespace DataModel.Input
 {
     public class Alternative : INotifyPropertyChanged
     {
+        private ObservableCollection<CriterionValue> _criteriaValuesList;
         private string _name;
         private int? _referenceRank;
         public string ID;
 
+
         public Alternative()
         {
             ReferenceRank = null;
-            CriteriaValuesList = new List<CriterionValue>();
+            CriteriaValuesList = new ObservableCollection<CriterionValue>();
         }
 
         public Alternative(string name, IEnumerable<Criterion> criteriaCollection)
         {
             Name = name;
             ReferenceRank = null;
-            CriteriaValuesList = new List<CriterionValue>();
+            CriteriaValuesList = new ObservableCollection<CriterionValue>();
             foreach (var criterion in criteriaCollection) AddCriterionValue(new CriterionValue(criterion.Name, null));
         }
 
@@ -48,7 +52,15 @@ namespace DataModel.Input
             }
         }
 
-        public List<CriterionValue> CriteriaValuesList { get; set; }
+        public ObservableCollection<CriterionValue> CriteriaValuesList
+        {
+            get => _criteriaValuesList;
+            set
+            {
+                _criteriaValuesList = value;
+                OnPropertyChanged(nameof(CriteriaValuesList));
+            }
+        }
 
         //TODO remove, CriteriaValuesList used now instead
         public Dictionary<Criterion, float> CriteriaValues { get; set; }
@@ -63,7 +75,8 @@ namespace DataModel.Input
 
         public void RemoveCriterionValue(string criterionName)
         {
-            CriteriaValuesList.RemoveAll(criterionValue => criterionValue.Name == criterionName);
+            var criterionValueToRemove = CriteriaValuesList.First(criterionValue => criterionValue.Name == criterionName);
+            CriteriaValuesList.Remove(criterionValueToRemove);
         }
 
         [NotifyPropertyChangedInvocator]

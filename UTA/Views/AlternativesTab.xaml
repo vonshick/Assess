@@ -12,7 +12,7 @@
   <Grid Margin="12,8" Background="{StaticResource ColorInterface7}" Unloaded="TabUnloaded">
     <Grid.Resources>
       <CollectionViewSource x:Key="AlternativesCollectionViewSource"
-                            Source="{Binding Alternatives.AlternativesCollection}" />
+                            Source="{Binding Alternatives.AlternativesCollection, UpdateSourceTrigger=PropertyChanged}" />
     </Grid.Resources>
 
     <Grid.RowDefinitions>
@@ -23,7 +23,7 @@
     <StackPanel>
       <TextBlock Text="Add Alternative" FontSize="{StaticResource CommonFontSize1}" Margin="0,0,0,8" />
 
-      <StackPanel Name="AddAlternativeContainer" DataContext="{Binding NewAlternative}"
+      <StackPanel Name="AddAlternativeContainer" DataContext="{Binding NewAlternative, UpdateSourceTrigger=PropertyChanged}"
                   Margin="0,0,0,8" Validation.ErrorTemplate="{x:Null}">
         <StackPanel.BindingGroup>
           <BindingGroup Name="NewAlternativeBindingGroup" />
@@ -39,7 +39,7 @@
 
         <StackPanel Margin="0,0,0,8">
           <TextBlock Text="Name" Margin="0,0,0,2" />
-          <TextBox Name="NameTextBox" MinWidth="300" HorizontalAlignment="Left" TextChanged="NameTextBoxTextChanged">
+          <TextBox Name="NameTextBox" MinWidth="250" HorizontalAlignment="Left" TextChanged="NameTextBoxTextChanged">
             <Binding Path="Name" UpdateSourceTrigger="PropertyChanged">
               <Binding.ValidationRules>
                 <validation:AlternativeNameValidationRule
@@ -50,10 +50,17 @@
           </TextBox>
         </StackPanel>
 
-        <TextBlock Text="Criteria Values" FontSize="{StaticResource CommonFontSize1}" Margin="0,0,0,4" />
-
         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Focusable="False">
-          <ItemsControl ItemsSource="{Binding CriteriaValuesList}" Margin="0,0,0,4" Focusable="False">
+          <ItemsControl ItemsSource="{Binding CriteriaValuesList, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,4" Focusable="False">
+            <ItemsControl.Template>
+              <ControlTemplate TargetType="{x:Type ItemsControl}">
+                <StackPanel>
+                  <TextBlock Text="Criteria Values" FontSize="{StaticResource CommonFontSize1}" Margin="0,0,0,4" />
+                  <ItemsPresenter/>
+                </StackPanel>
+              </ControlTemplate>
+            </ItemsControl.Template>
+
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
                 <VirtualizingStackPanel Orientation="Horizontal" />
@@ -63,7 +70,7 @@
             <ItemsControl.ItemTemplate>
               <DataTemplate>
                 <StackPanel Margin="0,0,16,0" MinWidth="120">
-                  <TextBlock Text="{Binding Name}" Margin="0,0,0,2" />
+                  <TextBlock Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,2" />
                   <controls:NumericUpDown
                     Value="{Binding Value, UpdateSourceTrigger=PropertyChanged, BindingGroupName=NewAlternativeBindingGroup, ValidatesOnExceptions=True}"
                     NumericInputMode="All" StringFormat="G7" Minimum="-3.402823E+38" Maximum="3.402823E+38" />
@@ -127,7 +134,7 @@
               </TextBox>
             </StackPanel>
 
-            <ItemsControl ItemsSource="{Binding CriteriaValuesList}" Focusable="False">
+            <ItemsControl ItemsSource="{Binding CriteriaValuesList, UpdateSourceTrigger=PropertyChanged}" Focusable="False">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                   <VirtualizingStackPanel Orientation="Horizontal" />
@@ -137,7 +144,7 @@
               <ItemsControl.ItemTemplate>
                 <DataTemplate>
                   <StackPanel Margin="0,0,13,0" MinWidth="100">
-                    <TextBlock Text="{Binding Name}" Margin="0,0,0,2" />
+                    <TextBlock Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,2" />
                     <controls:NumericUpDown
                       Value="{Binding Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                       NumericInputMode="All" StringFormat="G7" Minimum="-3.402823E+38" Maximum="3.402823E+38" />
@@ -186,7 +193,7 @@
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
 
-        <DataGridTextColumn Header="Name" Binding="{Binding Name}" MinWidth="200"
+        <DataGridTextColumn Header="Name" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}" MinWidth="200"
                             CellStyle="{StaticResource LeftSidedDataGridCell}">
           <DataGridTextColumn.HeaderStyle>
             <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource MetroDataGridColumnHeader}">

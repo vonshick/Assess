@@ -1,6 +1,7 @@
 using DataModel.Input;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Xml;
@@ -136,7 +137,7 @@ namespace ImportModule
                         Alternative alternative = new Alternative() { Name = checkAlternativesNamesUniqueness(instance.Attributes["ObjID"].Value) };
                         alternative.ID = alternative.Name;
 
-                        List<CriterionValue> criteriaValuesList = new List<CriterionValue>();
+                        var criteriaValuesList = new ObservableCollection<CriterionValue>();
 
                         foreach (XmlNode instancePart in instance)
                         {

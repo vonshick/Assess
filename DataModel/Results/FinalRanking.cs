@@ -27,7 +27,6 @@ namespace DataModel.Results
             get => _finalRankingCollection;
             set
             {
-                if (Equals(value, _finalRankingCollection)) return;
                 _finalRankingCollection = value;
                 OnPropertyChanged(nameof(FinalRankingCollection));
             }

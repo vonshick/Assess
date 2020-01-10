@@ -23,15 +23,20 @@ namespace UTA.Models.DataBase
             ReferenceRanking = referenceRanking;
             AlternativesCollection = new ObservableCollection<Alternative>();
 
-            PropertyChanged += InitializeWatchers;
+            PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName != nameof(AlternativesCollection)) return;
+                InitializeWatchers();
+            };
+
             Criteria.PropertyChanged += (sender, args) =>
             {
                 if (args.PropertyName != nameof(Criteria.CriteriaCollection)) return;
                 InitializeCriterionValueNameUpdaterWatcher();
             };
 
+            InitializeWatchers();
             InitializeCriterionValueNameUpdaterWatcher();
-            InitializeCriteriaMinMaxUpdaterWatcher();
         }
 
 
@@ -40,7 +45,6 @@ namespace UTA.Models.DataBase
             get => _alternativesCollection;
             set
             {
-                if (Equals(value, _alternativesCollection)) return;
                 _alternativesCollection = value;
                 OnPropertyChanged(nameof(AlternativesCollection));
             }
@@ -51,7 +55,7 @@ namespace UTA.Models.DataBase
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void InitializeWatchers(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        private void InitializeWatchers(object sender = null, PropertyChangedEventArgs propertyChangedEventArgs = null)
         {
             InitializeReferenceRankingUsingReferenceRankAlternativeProperty();
             InitializeCriteriaMinMaxUpdaterWatcher();
@@ -89,6 +93,10 @@ namespace UTA.Models.DataBase
                     foreach (var alternative in AlternativesCollection)
                         alternative.RemoveCriterionValue(removedCriterion.Name);
                 }
+                else if (args.Action == NotifyCollectionChangedAction.Reset)
+                {
+                    foreach (var alternative in AlternativesCollection) alternative.CriteriaValuesList.Clear();
+                }
             };
         }
 
@@ -101,13 +109,13 @@ namespace UTA.Models.DataBase
                 foreach (var alternative in AlternativesCollection)
                 {
                     var criterionValueToUpdate =
-                        alternative.CriteriaValuesList.Find(criterionValue => criterionValue.Name == extendedArgs.OldValue);
+                        alternative.CriteriaValuesList.First(criterionValue => criterionValue.Name == extendedArgs.OldValue);
                     criterionValueToUpdate.Name = extendedArgs.NewValue;
                 }
             };
         }
 
-        private void InitializeCriteriaMinMaxUpdaterWatcher(object o = null, PropertyChangedEventArgs propertyChangedEventArgs = null)
+        private void InitializeCriteriaMinMaxUpdaterWatcher()
         {
             AlternativesCollection.CollectionChanged += (sender, e) =>
             {

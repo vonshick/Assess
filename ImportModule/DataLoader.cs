@@ -43,7 +43,7 @@ namespace ImportModule
                 for (int j = 0; j < alternativeList.Count; j++)
                 {
 
-                    CriterionValue matchingCriterionValue = alternativeList[j].CriteriaValuesList.Find(criterionValue => criterionValue.Name == criterionList[i].Name);
+                    CriterionValue matchingCriterionValue = alternativeList[j].CriteriaValuesList.First(criterionValue => criterionValue.Name == criterionList[i].Name);
                     if(matchingCriterionValue != null) {
                         float value = (float) matchingCriterionValue.Value;
 

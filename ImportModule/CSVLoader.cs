@@ -1,6 +1,7 @@
 using DataModel.Input;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -82,7 +83,7 @@ namespace ImportModule
                 {
                     var values = ReadNewLine(reader);
 
-                    Alternative alternative = new Alternative { Name = checkAlternativesNamesUniqueness(values[0]), CriteriaValuesList = new List<CriterionValue>() };
+                    Alternative alternative = new Alternative { Name = checkAlternativesNamesUniqueness(values[0]), CriteriaValuesList = new ObservableCollection<CriterionValue>() };
                     alternative.ID = alternative.Name;
 
                     for (int i = 0; i < criterionList.Count; i++)

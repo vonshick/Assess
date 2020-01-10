@@ -12,7 +12,7 @@
              d:DesignHeight="700" d:DesignWidth="900" Unloaded="TabUnloaded">
   <Grid Margin="12" Background="{StaticResource ColorInterface7}">
     <Grid.Resources>
-      <CollectionViewSource x:Key="CriteriaCollectionViewSource" Source="{Binding Criteria.CriteriaCollection}" />
+      <CollectionViewSource x:Key="CriteriaCollectionViewSource" Source="{Binding Criteria.CriteriaCollection, UpdateSourceTrigger=PropertyChanged}" />
     </Grid.Resources>
 
     <Grid.RowDefinitions>
@@ -21,7 +21,7 @@
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
 
-    <StackPanel Name="AddCriterionContainer" DataContext="{Binding NewCriterion}" Orientation="Horizontal"
+    <StackPanel Name="AddCriterionContainer" DataContext="{Binding NewCriterion, UpdateSourceTrigger=PropertyChanged}" Orientation="Horizontal"
                 Margin="0,0,0,8"
                 Validation.ErrorTemplate="{x:Null}">
       <StackPanel.BindingGroup>
@@ -78,7 +78,7 @@
             Command="{Binding ElementName=CriteriaDataGrid, Path=DataContext.AddCriterionCommand}"
             CommandParameter="{Binding ElementName=AddCriterionContainer, Path=BindingGroup}" />
 
-    <DataGrid Name="CriteriaDataGrid" Grid.Row="2" ItemsSource="{Binding Criteria.CriteriaCollection}"
+    <DataGrid Name="CriteriaDataGrid" Grid.Row="2" ItemsSource="{Binding Criteria.CriteriaCollection, UpdateSourceTrigger=PropertyChanged}"
               AutoGenerateColumns="False" SelectionMode="Single"
               BorderBrush="Gray" BorderThickness="1" IsReadOnly="True" CanUserAddRows="False"
               CanUserReorderColumns="False" CanUserResizeRows="False" IsSynchronizedWithCurrentItem="True"
@@ -187,10 +187,10 @@
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
 
-        <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
-        <DataGridTextColumn Header="Type" Binding="{Binding CriterionDirection}" />
-        <DataGridTextColumn Header="Linear Segments" Binding="{Binding LinearSegments}" />
-        <DataGridTextColumn Header="Description" Binding="{Binding Description}" />
+        <DataGridTextColumn Header="Name" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+        <DataGridTextColumn Header="Type" Binding="{Binding CriterionDirection, UpdateSourceTrigger=PropertyChanged}" />
+        <DataGridTextColumn Header="Linear Segments" Binding="{Binding LinearSegments, UpdateSourceTrigger=PropertyChanged}" />
+        <DataGridTextColumn Header="Description" Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}" />
       </DataGrid.Columns>
     </DataGrid>
   </Grid>

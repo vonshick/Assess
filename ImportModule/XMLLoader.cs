@@ -1,6 +1,7 @@
 using DataModel.Input;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Xml;
@@ -114,7 +115,7 @@ namespace ImportModule
                             throw new ImproperFileStructureException("There are provided " + (instance.ChildNodes.Count - 2) + " criteria values and required are " + criterionList.Count + ".");
                         }
 
-                        List<CriterionValue> criteriaValuesList = new List<CriterionValue>();
+                        var criteriaValuesList = new ObservableCollection<CriterionValue>();
 
                         foreach (XmlNode instancePart in instance)
                         {

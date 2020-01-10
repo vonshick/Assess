@@ -1,9 +1,12 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Data;
 using DataModel.Annotations;
 using DataModel.Input;
+using DataModel.PropertyChangedExtended;
 using UTA.Interactivity;
 using UTA.Models.DataBase;
 using UTA.Models.Tab;
@@ -47,7 +50,7 @@ namespace UTA.ViewModels
                 Alternatives.AlternativesCollection.Add(NewAlternative);
                 InitializeNewAlternative();
             }, bindingGroup => !((BindingGroup) bindingGroup).HasValidationError && NewAlternative.Name != "" &&
-                               NewAlternative.CriteriaValuesList.TrueForAll(criterionValue => criterionValue.Value != null));
+                               NewAlternative.CriteriaValuesList.All(criterionValue => criterionValue.Value != null));
         }
 
 
@@ -61,7 +64,6 @@ namespace UTA.ViewModels
             get => _newAlternative;
             set
             {
-                if (_newAlternative != null && value.Name == _newAlternative.Name) return;
                 _newAlternative = value;
                 OnPropertyChanged(nameof(NewAlternative));
             }
@@ -103,14 +105,32 @@ namespace UTA.ViewModels
 
         public void InitializeNewAlternativeCriterionValuesUpdaterWatcher()
         {
+            foreach (var criterion in Criteria.CriteriaCollection)
+                AddCriterionNamePropertyChangedHandler(criterion);
+
             Criteria.CriteriaCollection.CollectionChanged += (sender, args) =>
             {
                 if (args.Action == NotifyCollectionChangedAction.Add)
-                    NewAlternative.AddCriterionValue(new CriterionValue(((Criterion) args.NewItems[0]).Name, null));
+                {
+                    var addedCriterion = (Criterion)args.NewItems[0];
+                    NewAlternative.AddCriterionValue(new CriterionValue(addedCriterion.Name, null));
+                    AddCriterionNamePropertyChangedHandler(addedCriterion);
+                }
                 else if (args.Action == NotifyCollectionChangedAction.Remove)
                     NewAlternative.RemoveCriterionValue(((Criterion) args.OldItems[0]).Name);
                 else if (args.Action == NotifyCollectionChangedAction.Reset)
                     InitializeNewAlternative();
+            };
+        }
+
+        private void AddCriterionNamePropertyChangedHandler(Criterion criterion)
+        {
+            criterion.PropertyChanged += (sender, e) =>
+            {
+                if (e.PropertyName != nameof(criterion.Name)) return;
+                var extendedArgs = (PropertyChangedExtendedEventArgs<string>)e;
+                var criterionValueToUpdate = NewAlternative.CriteriaValuesList.First(criterionValue => criterionValue.Name == extendedArgs.OldValue);
+                criterionValueToUpdate.Name = extendedArgs.NewValue;
             };
         }
 

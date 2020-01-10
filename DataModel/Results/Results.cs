@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using DataModel.Annotations;
@@ -7,6 +8,7 @@ namespace DataModel.Results
 {
     public class Results : INotifyPropertyChanged
     {
+        private float? _kendallCoefficient;
         private List<PartialUtility> _partialUtilityFunctions;
 
 
@@ -19,14 +21,23 @@ namespace DataModel.Results
 
 
         public FinalRanking FinalRanking { get; set; }
-        public float? KendallCoefficient { get; set; }
+
+        public float? KendallCoefficient
+        {
+            get => _kendallCoefficient;
+            set
+            {
+                if (Nullable.Equals(value, _kendallCoefficient)) return;
+                _kendallCoefficient = value;
+                OnPropertyChanged();
+            }
+        }
 
         public List<PartialUtility> PartialUtilityFunctions
         {
             get => _partialUtilityFunctions;
             set
             {
-                if (Equals(value, _partialUtilityFunctions)) return;
                 _partialUtilityFunctions = value;
                 OnPropertyChanged(nameof(PartialUtilityFunctions));
             }
