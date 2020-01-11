@@ -2,9 +2,9 @@
 
 namespace CalculationsEngine.Assess.Assess
 {
-    public class ProbabilityComparison : Dialog
+    public class ProbabilityComparisonDialog : Dialog
     {
-        public ProbabilityComparison(float lowerUtilityBoundary, float upperUtilityBoundary, DisplayObject displayObject) : base(lowerUtilityBoundary, upperUtilityBoundary, displayObject)
+        public ProbabilityComparisonDialog(float lowerUtilityBoundary, float upperUtilityBoundary, DisplayObject displayObject) : base(lowerUtilityBoundary, upperUtilityBoundary, displayObject)
         {
         }
 
@@ -20,24 +20,24 @@ namespace CalculationsEngine.Assess.Assess
 
             return "";
         }
-        public override void setInitialValues()
+        public override void SetInitialValues()
         {
             DisplayObject.X = (DisplayObject.Lottery.LowerUtilityValue.X + DisplayObject.Lottery.UpperUtilityValue.X) / 2;
         }
 
-        protected override void setValuesIfLotteryChosen()
+        protected override void SetValuesIfLotteryChosen()
         {
-            upperUtilityBoundary = DisplayObject.Lottery.P;
-            DisplayObject.Lottery.P = (lowerUtilityBoundary + upperUtilityBoundary) / 2;
+            UpperUtilityBoundary = DisplayObject.Lottery.P;
+            DisplayObject.Lottery.P = (LowerUtilityBoundary + UpperUtilityBoundary) / 2;
         }
 
-        protected override void setValuesIfSureChosen()
+        protected override void SetValuesIfSureChosen()
         {
-            lowerUtilityBoundary = DisplayObject.Lottery.P;
-            DisplayObject.Lottery.P = (lowerUtilityBoundary + upperUtilityBoundary) / 2;
+            LowerUtilityBoundary = DisplayObject.Lottery.P;
+            DisplayObject.Lottery.P = (LowerUtilityBoundary + UpperUtilityBoundary) / 2;
         }
 
-        protected override void setValuesIfEqualChosen()
+        protected override void SetValuesIfEqualChosen()
         {
             DisplayObject.PointsList.Add(new Point(DisplayObject.X, DisplayObject.Lottery.NewPointUtility()));
             DisplayObject.PointsList.Sort((first, second) => first.X.CompareTo(second.X));

@@ -2,9 +2,9 @@
 
 namespace CalculationsEngine.Assess.Assess
 {
-    public class ConstantProbability : Dialog
+    public class ConstantProbabilityDialog : Dialog
     {
-        public ConstantProbability(float lowerUtilityBoundary, float upperUtilityBoundary, DisplayObject displayObject) : base(lowerUtilityBoundary, upperUtilityBoundary, displayObject)
+        public ConstantProbabilityDialog(float lowerUtilityBoundary, float upperUtilityBoundary, DisplayObject displayObject) : base(lowerUtilityBoundary, upperUtilityBoundary, displayObject)
         {
 
         }
@@ -24,22 +24,22 @@ namespace CalculationsEngine.Assess.Assess
             return "";
         }
 
-        public override void setInitialValues()
+        public override void SetInitialValues()
         {
-            DisplayObject.X = lowerUtilityBoundary + (upperUtilityBoundary - lowerUtilityBoundary) * DisplayObject.Lottery.P;
+            DisplayObject.X = LowerUtilityBoundary + (UpperUtilityBoundary - LowerUtilityBoundary) * DisplayObject.Lottery.P;
         }
 
-        protected override void setValuesIfLotteryChosen()
+        protected override void SetValuesIfLotteryChosen()
         {
-            lowerUtilityBoundary = DisplayObject.X;
+            LowerUtilityBoundary = DisplayObject.X;
         }
 
-        protected override void setValuesIfSureChosen()
+        protected override void SetValuesIfSureChosen()
         {
-            upperUtilityBoundary = DisplayObject.X;
+            UpperUtilityBoundary = DisplayObject.X;
         }
 
-        protected override void setValuesIfEqualChosen()
+        protected override void SetValuesIfEqualChosen()
         {
             DisplayObject.PointsList.Add(new Point(DisplayObject.X, DisplayObject.Lottery.NewPointUtility()));
             DisplayObject.PointsList.Sort((first, second) => first.X.CompareTo(second.X));

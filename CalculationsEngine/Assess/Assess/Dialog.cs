@@ -1,44 +1,46 @@
-﻿
+﻿using System;
+
 namespace CalculationsEngine.Assess.Assess
 {
     public class Dialog
     {
+        public DisplayObject DisplayObject;
+        protected float LowerUtilityBoundary;
+        protected float UpperUtilityBoundary;
+
         public Dialog(DisplayObject displayObject)
         {
             DisplayObject = displayObject;
         }
 
-        public Dialog(float lowerUtilityBoundary, float upperUtlityBoundary, DisplayObject displayObject)
+        public Dialog(float lowerUtilityBoundary, float upperUtilityBoundary, DisplayObject displayObject)
         {
-            this.lowerUtilityBoundary = lowerUtilityBoundary;
-            this.upperUtilityBoundary = upperUtlityBoundary;
+            LowerUtilityBoundary = lowerUtilityBoundary;
+            UpperUtilityBoundary = upperUtilityBoundary;
             DisplayObject = displayObject;
         }
 
-        public DisplayObject DisplayObject;
-        protected float lowerUtilityBoundary;
-        protected float upperUtilityBoundary;
-
-        public virtual void setInitialValues()
+        protected Dialog()
         {
-
         }
 
-        protected virtual void setValuesIfLotteryChosen()
+        public virtual void SetInitialValues()
         {
-
         }
 
-        protected virtual void setValuesIfSureChosen()
+        protected virtual void SetValuesIfLotteryChosen()
         {
-
         }
 
-        protected virtual void setValuesIfEqualChosen()
+        protected virtual void SetValuesIfSureChosen()
         {
-
         }
 
+        protected virtual void SetValuesIfEqualChosen()
+        {
+        }
+
+        //todo remove
         public virtual string displayDialog()
         {
             return "";
@@ -47,27 +49,16 @@ namespace CalculationsEngine.Assess.Assess
         public void ProcessDialog(int choice)
         {
             if (choice == 1)
-            {
-                setValuesIfSureChosen();
-            }
+                SetValuesIfSureChosen();
             else if (choice == 2)
-            {
-                setValuesIfLotteryChosen();
-            }
+                SetValuesIfLotteryChosen();
             else if (choice == 3)
-            {
-                setValuesIfEqualChosen();
-            }
+                SetValuesIfEqualChosen();
             else
-            {
                 //TODO vonshick
                 // remove the warning - it's useful only for developers
-                throw new System.Exception("Assess: wrong choice ID passed to ProcessDialog()");
-            }
-            setInitialValues();
-            //todo remove, its console output
-            displayDialog();
+                throw new Exception("Assess: wrong choice ID passed to ProcessDialog()");
+            SetInitialValues();
         }
-
     }
 }

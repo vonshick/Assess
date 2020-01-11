@@ -11,10 +11,10 @@ namespace CalculationsEngine.Assess.Assess
         private Point _oneUtilityPoint;
         private float _p;
         private int _methodId;
-        public LotteriesComparison LotteriesComparison;
-        public ProbabilityComparison ProbabilityComparison;
-        public ConstantProbability ConstantProbability;
-        public VariableProbability VariableProbability;
+        public LotteriesComparisonDialog LotteriesComparisonDialog;
+        public ProbabilityComparisonDialog ProbabilityComparisonDialog;
+        public ConstantProbabilityDialog ConstantProbabilityDialog;
+        public VariableProbabilityDialog VariableProbabilityDialog;
 
 
         // methodId - integer from 1 - 4
@@ -100,14 +100,14 @@ namespace CalculationsEngine.Assess.Assess
         private void createLotteriesComparisonObject()
         {
             setLotteriesComparisonInput(_zeroUtilityPoint, _oneUtilityPoint);
-            LotteriesComparison = new LotteriesComparison(_zeroUtilityPoint.U, DisplayObject.P, DisplayObject);
+            LotteriesComparisonDialog = new LotteriesComparisonDialog(_zeroUtilityPoint.U, DisplayObject.P, DisplayObject);
         }
 
         public Dialog triggerLotteriesComparisonDialog(Point firstPoint, Point secondPoint)
         {
             setLotteriesComparisonInput(firstPoint, secondPoint);
-            return LotteriesComparison;
-//            LotteriesComparison.ProcessDialog();
+            return LotteriesComparisonDialog;
+//            LotteriesComparisonDialog.ProcessDialog();
         }
 
 
@@ -124,14 +124,14 @@ namespace CalculationsEngine.Assess.Assess
         private void createProbabilityComparisonObject()
         {
             setProbabilityComparisonInput(_zeroUtilityPoint, _oneUtilityPoint);
-            ProbabilityComparison = new ProbabilityComparison(_zeroUtilityPoint.U, _oneUtilityPoint.U, DisplayObject);
+            ProbabilityComparisonDialog = new ProbabilityComparisonDialog(_zeroUtilityPoint.U, _oneUtilityPoint.U, DisplayObject);
         }
 
         public Dialog triggerProbabilityComparisonDialog(Point firstPoint, Point secondPoint)
         {
             setProbabilityComparisonInput(firstPoint, secondPoint);
-            return ProbabilityComparison;
-//            ProbabilityComparison.ProcessDialog();
+            return ProbabilityComparisonDialog;
+//            ProbabilityComparisonDialog.ProcessDialog();
         }
 
 
@@ -148,15 +148,15 @@ namespace CalculationsEngine.Assess.Assess
         private void createConstantProbabilityObject()
         {
             setConstantProbabilityInput(_zeroUtilityPoint, _oneUtilityPoint);
-            ConstantProbability = new ConstantProbability(_zeroUtilityPoint.X, _oneUtilityPoint.X, DisplayObject);
+            ConstantProbabilityDialog = new ConstantProbabilityDialog(_zeroUtilityPoint.X, _oneUtilityPoint.X, DisplayObject);
         }
 
         public Dialog triggerConstantProbabilityDialog(Point firstPoint, Point secondPoint)
         {
             setConstantProbabilityInput(firstPoint, secondPoint);
-            ConstantProbability.setInitialValues();
-            return ConstantProbability;
-//            ConstantProbability.ProcessDialog();
+            ConstantProbabilityDialog.SetInitialValues();
+            return ConstantProbabilityDialog;
+//            ConstantProbabilityDialog.ProcessDialog();
         }
 
 
@@ -173,14 +173,14 @@ namespace CalculationsEngine.Assess.Assess
         private void createVariableProbabilityObject()
         {
             setVariableProbabilityInput(_zeroUtilityPoint, _oneUtilityPoint);
-            VariableProbability = new VariableProbability(_zeroUtilityPoint.X, _oneUtilityPoint.X, DisplayObject);
+            VariableProbabilityDialog = new VariableProbabilityDialog(_zeroUtilityPoint.X, _oneUtilityPoint.X, DisplayObject);
         }
 
         public Dialog triggerVariableProbabilityDialog(Point firstPoint, Point secondPoint)
         {
             setVariableProbabilityInput(firstPoint, secondPoint);
-            return VariableProbability;
-//            VariableProbability.ProcessDialog();
+            return VariableProbabilityDialog;
+//            VariableProbabilityDialog.ProcessDialog();
         }
     }
 }

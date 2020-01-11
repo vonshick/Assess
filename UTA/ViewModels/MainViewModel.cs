@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using CalculationsEngine;
+using CalculationsEngine.Assess.Assess;
 using DataModel.Input;
 using DataModel.Results;
 using ExportModule;
@@ -19,6 +20,8 @@ using UTA.Annotations;
 using UTA.Helpers;
 using UTA.Models;
 using UTA.Models.Tab;
+using UTA.Annotations;
+using UTA.Views;
 
 namespace UTA.ViewModels
 {
@@ -189,6 +192,16 @@ namespace UTA.ViewModels
             }
         }
 
+        public bool Recalculate
+        {
+            get => _recalculate;
+            set
+            {
+                if (value == _recalculate) return;
+                _recalculate = value;
+                OnPropertyChanged();
+            }
+        }
 
         public Alternatives Alternatives { get; set; }
         public Criteria Criteria { get; set; }
@@ -259,23 +272,21 @@ namespace UTA.ViewModels
         }
 
         [UsedImplicitly]
-        public async void CalculateButtonClicked(object sender, RoutedEventArgs e)
+        public void CalculateButtonClicked(object sender, RoutedEventArgs e)
         {
             if (Criteria.CriteriaCollection.Count == 0)
             {
-                ShowCalculateErrorDialog("It's required to provide at least 1 criterion to begin UTA calculations.");
+                ShowCalculateErrorDialog("It's required to provide at least 1 criterion to begin Assess calculations.");
                 AddTabIfNeeded(CriteriaTabViewModel);
                 AddTabIfNeeded(AlternativesTabViewModel);
-                AddTabIfNeeded(ReferenceRankingTabViewModel);
                 ShowTab(CriteriaTabViewModel);
                 return;
             }
 
             if (Alternatives.AlternativesCollection.Count <= 1)
             {
-                ShowCalculateErrorDialog("It's required to provide at least 2 alternatives to begin UTA calculations.");
+                ShowCalculateErrorDialog("It's required to provide at least 2 alternatives to begin Assess calculations.");
                 AddTabIfNeeded(AlternativesTabViewModel);
-                AddTabIfNeeded(ReferenceRankingTabViewModel);
                 ShowTab(AlternativesTabViewModel);
                 return;
             }
@@ -290,36 +301,7 @@ namespace UTA.ViewModels
                 return;
             }
 
-            if (!(ReferenceRanking.RankingsCollection.Count >= 2
-                  && ReferenceRanking.RankingsCollection.All(rank => rank.Count != 0)))
-            {
-                ShowCalculateErrorDialog(
-                    "It's required to provide at least 2 ranks in Reference Ranking filled with at least 1 alternative\nto begin UTA calculations.");
-                ShowTab(ReferenceRankingTabViewModel);
-                return;
-            }
-
-            if (ChartTabViewModels.Count == 0)
-            {
-                ShowChartTabs();
-            }
-            else
-            {
-                var dialogResult = await _dialogCoordinator.ShowMessageAsync(this, "Losing current progress.",
-                    "Your current partial utilities and final ranking data will be lost.\n" +
-                    "If you accidentally closed some partial utility plots, you can show them again by using Show menu option.\n" +
-                    "Do you want to continue?",
-                    MessageDialogStyle.AffirmativeAndNegative,
-                    new MetroDialogSettings
-                    {
-                        AffirmativeButtonText = "Yes",
-                        NegativeButtonText = "Cancel",
-                        DefaultButtonFocus = MessageDialogResult.Affirmative,
-                        AnimateShow = false,
-                        AnimateHide = false
-                    });
-                if (dialogResult == MessageDialogResult.Affirmative) ShowChartTabs();
-            }
+            ShowScalingCoeffDialogs();
         }
 
         private void AddTabIfNeeded(ITab tab)
@@ -327,10 +309,8 @@ namespace UTA.ViewModels
             if (!Tabs.Contains(tab)) Tabs.Add(tab);
         }
 
-        private async void ShowChartTabs()
+        private async void ShowScalingCoeffDialogs()
         {
-            foreach (var viewModel in ChartTabViewModels) Tabs.Remove(viewModel);
-            ChartTabViewModels.Clear();
 
             var invalidCriteriaValuesNames = new List<string>();
             foreach (var criterion in Criteria.CriteriaCollection)
@@ -359,25 +339,18 @@ namespace UTA.ViewModels
                 return;
             }
 
-            var alternativesDeepCopy = Alternatives.GetDeepCopyOfAlternatives();
-            var alternativesWithoutRanksCopy = alternativesDeepCopy.Where(alternative => alternative.ReferenceRank == null).ToList();
-            _solver = new Solver(
-                ReferenceRanking.GetDeepCopyOfReferenceRanking(alternativesDeepCopy),
-                Criteria.GetDeepCopyOfCriteria(),
-                alternativesWithoutRanksCopy,
-                Results,
-                PreserveKendallCoefficient,
-                SettingsTabViewModel.DeltaThreshold,
-                SettingsTabViewModel.EpsilonThreshold);
-            _solver.Calculate();
-            foreach (var partialUtility in Results.PartialUtilityFunctions)
+            CoefficientsDialog coefficientsDialog = new CoefficientsDialog(Criteria.CriteriaCollection.ToList());
+            foreach (var criterion in Criteria.CriteriaCollection)
             {
-                var viewModel = new ChartTabViewModel(_solver, partialUtility, SettingsTabViewModel, RefreshCharts);
-                ChartTabViewModels.Add(viewModel);
-                Tabs.Add(viewModel);
+                ShowScalingCoeffDialog(coefficientsDialog, criterion);
             }
+        }
 
-            if (ChartTabViewModels.Count > 0) ShowTab(ChartTabViewModels[0]);
+        private void ShowScalingCoeffDialog(CoefficientsDialog dialog, Criterion criterion)
+        {
+            var userDialogueDialogViewModel = new UserDialogueDialogViewModel(dialog, criterion);
+            var userDialogueDialog = new UserDialogueDialog() { DataContext = userDialogueDialogViewModel };
+            userDialogueDialog.ShowDialog();
         }
 
         private void RefreshCharts()

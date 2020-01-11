@@ -16,15 +16,15 @@
     <TextBlock Grid.Row="0" Text="Chart will be here" FontSize="18" Margin="8,8,12,8" />
     <StackPanel Grid.Row="1" Orientation="Horizontal">
       <Label Content="Start:" />
-      <TextBox Margin="10" Width="Auto" MinWidth="70" Name="StartPoint" />
+      <TextBox Text="{Binding StartPoint}" Margin="10" Width="Auto" MinWidth="70" Name="StartPoint" />
       <Label Content="End:" />
-      <TextBox Margin="10" Width="Auto" MinWidth="70" Name="EndPoint" />
+      <TextBox Text="{Binding EndPoint}" Margin="10" Width="Auto" MinWidth="70" Name="EndPoint" />
       <Label Content="Method:" />
-      <TextBox Margin="10" Width="Auto" MinWidth="70" Name="Method" />
-      <Button Name="StartButton" Click="StartDialogueButton_OnClick">Start dialogue</Button>
+      <TextBox Text="{Binding Method}" Margin="10" Width="Auto" MinWidth="70" Name="Method" />
+      <Button Name="StartButton" Command="{Binding StartDialogueCommand}">Start assessment</Button>
       <Label Name="WarningLabel" Content="" FontWeight="Bold" />
     </StackPanel>
-    <TextBlock Grid.Row="2" Name="ResultsTextBlock" Text="Results will be here after finished dialogue"
+    <TextBlock Text="{Binding ResultsText, UpdateSourceTrigger=PropertyChanged}" Grid.Row="2" Name="ResultsTextBlock"
                TextWrapping="Wrap" FontSize="18" Margin="8,8,12,8" />
   </Grid>
 </UserControl>

@@ -2,9 +2,9 @@
 
 namespace CalculationsEngine.Assess.Assess
 {
-    public class VariableProbability : Dialog
+    public class VariableProbabilityDialog : Dialog
     {
-        public VariableProbability(float lowerUtilityBoundary, float upperUtilityBoundary, DisplayObject displayObject)
+        public VariableProbabilityDialog(float lowerUtilityBoundary, float upperUtilityBoundary, DisplayObject displayObject)
             : base(lowerUtilityBoundary, upperUtilityBoundary, displayObject)
         {
         }
@@ -23,22 +23,22 @@ namespace CalculationsEngine.Assess.Assess
 
             return "";
         }
-        public override void setInitialValues()
+        public override void SetInitialValues()
         {
-            DisplayObject.X = (lowerUtilityBoundary + upperUtilityBoundary) / 2;
+            DisplayObject.X = (LowerUtilityBoundary + UpperUtilityBoundary) / 2;
         }
 
-        protected override void setValuesIfLotteryChosen()
+        protected override void SetValuesIfLotteryChosen()
         {
-            upperUtilityBoundary = DisplayObject.X;
+            UpperUtilityBoundary = DisplayObject.X;
         }
 
-        protected override void setValuesIfSureChosen()
+        protected override void SetValuesIfSureChosen()
         {
-            lowerUtilityBoundary = DisplayObject.X;
+            LowerUtilityBoundary = DisplayObject.X;
         }
 
-        protected override void setValuesIfEqualChosen()
+        protected override void SetValuesIfEqualChosen()
         {
             DisplayObject.PointsList.Add(new Point(DisplayObject.X, DisplayObject.Lottery.NewPointUtility()));
             DisplayObject.PointsList.Sort((first, second) => first.X.CompareTo(second.X));

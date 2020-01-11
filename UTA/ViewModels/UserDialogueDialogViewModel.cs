@@ -10,9 +10,6 @@ namespace UTA.ViewModels
 {
     public class UserDialogueDialogViewModel : INotifyPropertyChanged
     {
-        private readonly Criterion _criterion;
-
-        private readonly Dialog _dialog;
         private readonly int _method;
         private bool _closeDialog;
         private string _textOptionLottery;
@@ -20,29 +17,47 @@ namespace UTA.ViewModels
 
         public UserDialogueDialogViewModel(Dialog dialog, Criterion criterion, int method)
         {
-            _dialog = dialog;
-            _criterion = criterion;
             _method = method;
             Title = "Partial utility function - " + criterion.Name;
-            //todo remove, its command line
-            dialog.setInitialValues();
-            dialog.displayDialog();
-            SetChoiceOptionsTextBlocks(dialog);
+            dialog.SetInitialValues();
+            SetUtilityAssessmentTextBlocks(dialog);
 
             TakeSureCommand = new RelayCommand(_ =>
             {
-                Console.WriteLine("sure");
                 dialog.ProcessDialog(1);
-                SetChoiceOptionsTextBlocks(dialog);
+                SetUtilityAssessmentTextBlocks(dialog);
             });
             TakeLotteryCommand = new RelayCommand(_ =>
             {
-                Console.WriteLine("lottery");
                 dialog.ProcessDialog(2);
-                SetChoiceOptionsTextBlocks(dialog);
+                SetUtilityAssessmentTextBlocks(dialog);
             });
             TakeIndifferentCommand = new RelayCommand(_ =>
             {
+                dialog.ProcessDialog(3);
+                CloseDialog = true;
+            });
+        }
+
+        public UserDialogueDialogViewModel(CoefficientsDialog dialog, Criterion criterion)
+        {
+            Title = "Scaling coefficient- " + criterion.Name;
+            dialog.SetInitialValues(criterion);
+            SetCoefficientsTextBlocks(dialog);
+
+            TakeSureCommand = new RelayCommand(_ =>
+            {
+                dialog.ProcessDialog(1);
+                SetCoefficientsTextBlocks(dialog);
+            });
+            TakeLotteryCommand = new RelayCommand(_ =>
+            {
+                dialog.ProcessDialog(2);
+                SetCoefficientsTextBlocks(dialog);
+            });
+            TakeIndifferentCommand = new RelayCommand(_ =>
+            {
+                dialog.GetCoefficientsForCriteria();
                 dialog.ProcessDialog(3);
                 CloseDialog = true;
             });
@@ -87,7 +102,30 @@ namespace UTA.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void SetChoiceOptionsTextBlocks(Dialog dialog)
+        private void SetCoefficientsTextBlocks(CoefficientsDialog dialog)
+        {
+            TextOptionSure = "Click 'Sure' if you prefer to have for sure:\n";
+            for (int i = 0; i < dialog.DisplayObject.CriterionNames.Length; i++)
+            {
+                TextOptionSure += dialog.DisplayObject.CriterionNames[i] + " = " + dialog.DisplayObject.ValuesToCompare[i] + "\n";
+            }
+
+            TextOptionLottery += "\nClick 'Lottery' if you prefer to have with probability " + dialog.DisplayObject.P + " these values:\n";
+
+            for (int i = 0; i < dialog.DisplayObject.CriterionNames.Length; i++)
+            {
+                TextOptionLottery += dialog.DisplayObject.CriterionNames[i] + " = " + dialog.DisplayObject.BestValues[i] + "\n";
+            }
+
+            TextOptionLottery += "\nOR with probability " + dialog.DisplayObject.P + " these values:\n";
+
+            for (int i = 0; i < dialog.DisplayObject.CriterionNames.Length; i++)
+            {
+                TextOptionLottery += dialog.DisplayObject.CriterionNames[i] + " = " + dialog.DisplayObject.WorstValues[i] + "\n";
+            }
+        }
+
+        private void SetUtilityAssessmentTextBlocks(Dialog dialog)
         {
             if (_method == 3)
             {

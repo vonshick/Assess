@@ -2,9 +2,9 @@
 
 namespace CalculationsEngine.Assess.Assess
 {
-    public class LotteriesComparison : Dialog
+    public class LotteriesComparisonDialog : Dialog
     {
-        public LotteriesComparison(float lowerUtilityBoundary, float upperUtilityBoundary, DisplayObject displayObject) : base(lowerUtilityBoundary, upperUtilityBoundary, displayObject)
+        public LotteriesComparisonDialog(float lowerUtilityBoundary, float upperUtilityBoundary, DisplayObject displayObject) : base(lowerUtilityBoundary, upperUtilityBoundary, displayObject)
         {
 
         }
@@ -25,24 +25,24 @@ namespace CalculationsEngine.Assess.Assess
 
             return "";
         }
-        public override void setInitialValues()
+        public override void SetInitialValues()
         {
 
         }
 
-        protected override void setValuesIfLotteryChosen()
+        protected override void SetValuesIfLotteryChosen()
         {
-            upperUtilityBoundary = DisplayObject.EdgeValuesLottery.P;
-            DisplayObject.EdgeValuesLottery.P = (DisplayObject.EdgeValuesLottery.P + lowerUtilityBoundary) / 2;
+            UpperUtilityBoundary = DisplayObject.EdgeValuesLottery.P;
+            DisplayObject.EdgeValuesLottery.P = (DisplayObject.EdgeValuesLottery.P + LowerUtilityBoundary) / 2;
         }
 
-        protected override void setValuesIfSureChosen()
+        protected override void SetValuesIfSureChosen()
         {
-            lowerUtilityBoundary = DisplayObject.EdgeValuesLottery.P;
-            DisplayObject.EdgeValuesLottery.P = (DisplayObject.EdgeValuesLottery.P + upperUtilityBoundary) / 2;
+            LowerUtilityBoundary = DisplayObject.EdgeValuesLottery.P;
+            DisplayObject.EdgeValuesLottery.P = (DisplayObject.EdgeValuesLottery.P + UpperUtilityBoundary) / 2;
         }
 
-        protected override void setValuesIfEqualChosen()
+        protected override void SetValuesIfEqualChosen()
         {
             DisplayObject.PointsList.Add(new Point(DisplayObject.ComparisonLottery.UpperUtilityValue.X, DisplayObject.EdgeValuesLottery.P / DisplayObject.ComparisonLottery.P));
             DisplayObject.PointsList.Sort((first, second) => first.X.CompareTo(second.X));
