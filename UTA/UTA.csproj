@@ -141,7 +141,6 @@
     <Compile Include="ViewModels\UserDialogueDialogViewModel.cs" />
     <Compile Include="ViewModels\ReferenceRankingTabViewModel.cs" />
     <Compile Include="ViewModels\WelcomeTabViewModel.cs" />
-    <Compile Include="ViewModels\UserDialogueTabViewModel.cs" />
     <Compile Include="ViewModels\PartialUtilityTabViewModel.cs" />
     <Compile Include="ViewModels\SettingsTabViewModel.cs" />
     <Compile Include="Views\UserDialogueDialog.xaml.cs">

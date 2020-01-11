@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows;
 using CalculationsEngine.Assess.Assess;
 using DataModel.Input;
 using UTA.Annotations;
@@ -16,8 +15,8 @@ namespace UTA.ViewModels
         private readonly Dialog _dialog;
         private readonly int _method;
         private bool _closeDialog;
-        private string _textOptionSure;
         private string _textOptionLottery;
+        private string _textOptionSure;
 
         public UserDialogueDialogViewModel(Dialog dialog, Criterion criterion, int method)
         {
@@ -78,6 +77,7 @@ namespace UTA.ViewModels
                 OnPropertyChanged(nameof(TextOptionLottery));
             }
         }
+
         public string Title { get; set; }
 
         public RelayCommand TakeSureCommand { get; }
@@ -92,10 +92,11 @@ namespace UTA.ViewModels
             if (_method == 3)
             {
                 TextOptionSure = "If you prefer a lottery which gives you " + dialog.DisplayObject.ComparisonLottery.UpperUtilityValue.X +
-                                    " with probability " + dialog.DisplayObject.ComparisonLottery.P +
-                                    " or " + dialog.DisplayObject.ComparisonLottery.LowerUtilityValue.X + " with probability " +
-                                    (1 - dialog.DisplayObject.ComparisonLottery.P) + ", click Lottery 1";
-                TextOptionLottery = "If you prefer a lottery which gives you " + dialog.DisplayObject.EdgeValuesLottery.UpperUtilityValue.X +
+                                 " with probability " + dialog.DisplayObject.ComparisonLottery.P +
+                                 " or " + dialog.DisplayObject.ComparisonLottery.LowerUtilityValue.X + " with probability " +
+                                 (1 - dialog.DisplayObject.ComparisonLottery.P) + ", click Lottery 1";
+                TextOptionLottery = "If you prefer a lottery which gives you " +
+                                    dialog.DisplayObject.EdgeValuesLottery.UpperUtilityValue.X +
                                     " with probability " + dialog.DisplayObject.EdgeValuesLottery.P +
                                     " or " + dialog.DisplayObject.EdgeValuesLottery.LowerUtilityValue.X + " with probability " +
                                     (1 - dialog.DisplayObject.EdgeValuesLottery.P) + ", click Lottery 2";

@@ -9,8 +9,8 @@ namespace UTA.Views
 {
     public partial class PartialUtilityTab : UserControl
     {
-        private PartialUtilityTabViewModel _viewmodel;
         private int _method;
+        private PartialUtilityTabViewModel _viewmodel;
 
         public PartialUtilityTab()
         {
@@ -25,13 +25,13 @@ namespace UTA.Views
 
         private void StartDialogueButton_OnClick(object sender, RoutedEventArgs e)
         {
-            Criterion criterion = _viewmodel.Criterion;
+            var criterion = _viewmodel.Criterion;
             _method = int.Parse(Method.Text);
             //todo remove
             criterion.MinValue = float.Parse(StartPoint.Text);
             criterion.MaxValue = float.Parse(EndPoint.Text);
             Console.WriteLine(criterion.CriterionDirection);
-            DialogController dialogController = new DialogController(criterion, _method, 0.3f);
+            var dialogController = new DialogController(criterion, _method, 0.3f);
             var dialog = dialogController.TriggerDialog(dialogController.PointsList[0], dialogController.PointsList[1]);
             ShowDialogueDialog(dialog, criterion);
         }
@@ -40,18 +40,27 @@ namespace UTA.Views
         {
             StartButton.IsEnabled = false;
 
-            UserDialogueDialogViewModel userDialogueDialogViewModel = new UserDialogueDialogViewModel(dialog, criterion, _method);
-            UserDialogueDialog userDialogueDialog = new UserDialogueDialog();
+            var userDialogueDialogViewModel = new UserDialogueDialogViewModel(dialog, criterion, _method);
+            var userDialogueDialog = new UserDialogueDialog();
             userDialogueDialog.DataContext = userDialogueDialogViewModel;
             if (_method == 3)
             {
                 userDialogueDialog.ButtonSure.Content = "Lottery 1";
                 userDialogueDialog.ButtonLottery.Content = "Lottery 2";
             }
+
             userDialogueDialog.ShowDialog();
             StartButton.IsEnabled = true;
+            DigestResults(dialog);
         }
 
+        private void DigestResults(Dialog dialog)
+        {
+            ResultsTextBlock.Text = "";
 
+            if (_method != 3) ResultsTextBlock.Text = "wsp. równoważności = " + dialog.DisplayObject.X + ", ";
+            ResultsTextBlock.Text += "punkty:\n";
+            foreach (var point in dialog.DisplayObject.PointsList) ResultsTextBlock.Text += "(" + point.X + ";" + point.U + ")\n";
+        }
     }
 }
