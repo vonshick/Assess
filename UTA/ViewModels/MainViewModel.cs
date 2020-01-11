@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Documents;
 using CalculationsEngine;
 using CalculationsEngine.Assess.Assess;
 using DataModel.Input;
@@ -169,9 +170,63 @@ namespace UTA.ViewModels
             //Results.KendallCoefficient = 0.191919191919f;
 
             // TODO vonshick REMOVE IT AFTER TESTING
-            // string dataDirectoryPath = "D:\\Data";
-            // DataLoader dataLoader = SampleImport.ProcessSampleData(dataDirectoryPath); // csv
-            // SampleExport.exportXMCDA(dataDirectoryPath, dataLoader.CriterionList, dataLoader.AlternativeList);
+//            string dataDirectoryPath = "D:\\Data";
+//            DataLoader dataLoader = SampleImport.ProcessSampleData(dataDirectoryPath); // csv
+//            // SampleExport.exportXMCDA(dataDirectoryPath, dataLoader.CriterionList, dataLoader.AlternativeList);
+//
+////            CoefficientsDialog coefficientsDialog = new CoefficientsDialog(dataLoader.CriterionList);
+////            coefficientsDialog.GetCoefficientsForCriteria();
+//
+//            Dictionary<string, List<CalculationsEngine.Assess.Assess.Point>> criteriaFunctionsDictionary = new Dictionary<string, List<CalculationsEngine.Assess.Assess.Point>>();
+//            List<CriterionCoefficient> criteriaCoefficientsList = new List<CriterionCoefficient>();
+//            DialogController dialogController;
+//
+//            foreach (Criterion criterion in dataLoader.CriterionList)
+//            {
+//                dialogController = new DialogController(criterion, 1, 0.3f);
+//                dialogController.TriggerDialog(dialogController.PointsList[0], dialogController.PointsList[1]);
+//                criteriaFunctionsDictionary.Add(criterion.Name, dialogController.DisplayObject.PointsList);
+//                criteriaCoefficientsList.Add(new CriterionCoefficient(criterion.Name, 0.5f));
+//            }
+//
+//            //            var kCoefficients = new List<double>(new double[] { 0.25, 0.5, 0.5, 0.5});
+//            //            var kCoefficients = new List<double>(new double[] { 0.25, 0.5, 0.75, 0.875});
+//
+//            List<double> kCoefficients = criteriaCoefficientsList.Select(o => (double)o.Coefficient).ToList();
+//            BaristowSolver baristow = new BaristowSolver(kCoefficients);
+//            double K = baristow.GetScallingCoefficient();
+//
+//            foreach (Alternative alternative in dataLoader.AlternativeList)
+//            {
+//                double product = 1;
+//                foreach (CriterionValue criterionValue in alternative.CriteriaValuesList)
+//                {
+//                    var points = criteriaFunctionsDictionary[criterionValue.Name];
+//                    var k = criteriaCoefficientsList.Find(element => element.CriterionName == criterionValue.Name).Coefficient;
+//                    double u = 1;
+//
+//                    if (points[0].X == criterionValue.Value)
+//                    {
+//                        u = points[0].U;
+//                    }
+//                    else
+//                    {
+//                        for (int i = 0; i < points.Count - 1; i++)
+//                        {
+//                            if(criterionValue.Value > points[i].X && criterionValue.Value <= points[i + 1].X)
+//                            {
+//                                float a = (points[i + 1].U - points[i].U) / (points[i + 1].X - points[i].X);
+//                                float b = points[i].U - a * points[i].X;
+//                                u = a * (double)criterionValue.Value + b;
+//                            }
+//                        }
+//                    }
+//
+//                    product *= (K * k * u + 1);
+//                }
+//
+//                double utility = (product - 1) / K;
+//            }
         }
 
         private void UpdateDialogueTabs(object sender, NotifyCollectionChangedEventArgs e)
