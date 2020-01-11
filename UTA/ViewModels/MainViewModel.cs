@@ -171,86 +171,86 @@ namespace UTA.ViewModels
             //Results.KendallCoefficient = 0.191919191919f;
 
             // TODO vonshick REMOVE IT AFTER TESTING
-//            string dataDirectoryPath = "D:\\Data";
-//            DataLoader dataLoader = SampleImport.ProcessSampleData(dataDirectoryPath); // csv
-//            // SampleExport.exportXMCDA(dataDirectoryPath, dataLoader.CriterionList, dataLoader.AlternativeList);
-//
-////            CoefficientsDialog coefficientsDialog = new CoefficientsDialog(dataLoader.CriterionList);
-////            coefficientsDialog.GetCoefficientsForCriteria();
-//
-//            Dictionary<string, List<CalculationsEngine.Assess.Assess.Point>> criteriaFunctionsDictionary = new Dictionary<string, List<CalculationsEngine.Assess.Assess.Point>>();
-//            List<CriterionCoefficient> criteriaCoefficientsList = new List<CriterionCoefficient>();
-//            DialogController dialogController;
-//
-//            foreach (Criterion criterion in dataLoader.CriterionList)
-//            {
-//                dialogController = new DialogController(criterion, 1, 0.3f);
-//                dialogController.TriggerDialog(dialogController.PointsList[0], dialogController.PointsList[1]);
-//                criteriaFunctionsDictionary.Add(criterion.Name, dialogController.DisplayObject.PointsList);
-//                criteriaCoefficientsList.Add(new CriterionCoefficient(criterion.Name, 0.5f));
-//            }
-//
-//            //            var kCoefficients = new List<double>(new double[] { 0.25, 0.5, 0.5, 0.5});
-//            //            var kCoefficients = new List<double>(new double[] { 0.25, 0.5, 0.75, 0.875});
-//
-//            List<double> kCoefficients = criteriaCoefficientsList.Select(o => (double)o.Coefficient).ToList();
-//            BaristowSolver baristow = new BaristowSolver(kCoefficients);
-//            double K = baristow.GetScallingCoefficient();
-//
-//            //        public FinalRankingEntry(int position, Alternative alternative, float utility)
-//            //        {
-//            //            Position = position;
-//            //            Alternative = alternative;
-//            //            Utility = utility;
-//            //        }
-//            //
-//            //        public int Position { get; set; }
-//            //        public Alternative Alternative { get; set; }
-//            //        public float Utility { get; set; }
-//
-//            List<AlternativeUtility> alternativesUtilitiesList = new List<AlternativeUtility>();
-//
-//            foreach (Alternative alternative in dataLoader.AlternativeList)
-//            {
-//                double product = 1;
-//                foreach (CriterionValue criterionValue in alternative.CriteriaValuesList)
-//                {
-//                    var points = criteriaFunctionsDictionary[criterionValue.Name];
-//                    var k = criteriaCoefficientsList.Find(element => element.CriterionName == criterionValue.Name).Coefficient;
-//                    double u = 1;
-//
-//                    if (points[0].X == criterionValue.Value)
-//                    {
-//                        u = points[0].U;
-//                    }
-//                    else
-//                    {
-//                        for (int i = 0; i < points.Count - 1; i++)
-//                        {
-//                            if(criterionValue.Value > points[i].X && criterionValue.Value <= points[i + 1].X)
-//                            {
-//                                float a = (points[i + 1].U - points[i].U) / (points[i + 1].X - points[i].X);
-//                                float b = points[i].U - a * points[i].X;
-//                                u = a * (double)criterionValue.Value + b;
-//                            }
-//                        }
-//                    }
-//
-//                    product *= (K * k * u + 1);
-//                }
-//
-//                double utility = (product - 1) / K;
-//
-//                alternativesUtilitiesList.Add(new AlternativeUtility(alternative, utility));
-//            }
-//
-//            alternativesUtilitiesList = alternativesUtilitiesList.OrderBy(o => o.Utility).ToList();
-//            FinalRanking finalRanking = new FinalRanking();
-//
-//            for (int i = 0; i < alternativesUtilitiesList.Count; i++)
-//            {
-//                finalRanking.FinalRankingCollection.Add(new FinalRankingEntry(alternativesUtilitiesList.Count - i, alternativesUtilitiesList[i].Alternative, (float)alternativesUtilitiesList[i].Utility));
-//            }
+//             string dataDirectoryPath = "D:\\Data";
+//             DataLoader dataLoader = SampleImport.ProcessSampleData(dataDirectoryPath); // csv
+//             // SampleExport.exportXMCDA(dataDirectoryPath, dataLoader.CriterionList, dataLoader.AlternativeList);
+
+// //            CoefficientsDialog coefficientsDialog = new CoefficientsDialog(dataLoader.CriterionList);
+// //            coefficientsDialog.GetCoefficientsForCriteria();
+
+//             Dictionary<string, List<PartialUtilityValues>> criteriaFunctionsDictionary = new Dictionary<string, List<PartialUtilityValues>>();
+//             List<CriterionCoefficient> criteriaCoefficientsList = new List<CriterionCoefficient>();
+//             DialogController dialogController;
+
+//             foreach (Criterion criterion in dataLoader.CriterionList)
+//             {
+//                 dialogController = new DialogController(criterion, 1, 0.3f);
+//                 dialogController.TriggerDialog(dialogController.PointsList[0], dialogController.PointsList[1]);
+//                 criteriaFunctionsDictionary.Add(criterion.Name, dialogController.DisplayObject.PointsList);
+//                 criteriaCoefficientsList.Add(new CriterionCoefficient(criterion.Name, 0.5f));
+//             }
+
+//             //            var kCoefficients = new List<double>(new double[] { 0.25, 0.5, 0.5, 0.5});
+//             //            var kCoefficients = new List<double>(new double[] { 0.25, 0.5, 0.75, 0.875});
+
+//             List<double> kCoefficients = criteriaCoefficientsList.Select(o => (double)o.Coefficient).ToList();
+//             BaristowSolver baristow = new BaristowSolver(kCoefficients);
+//             double K = baristow.GetScallingCoefficient();
+
+//             //        public FinalRankingEntry(int position, Alternative alternative, float utility)
+//             //        {
+//             //            Position = position;
+//             //            Alternative = alternative;
+//             //            Utility = utility;
+//             //        }
+//             //
+//             //        public int Position { get; set; }
+//             //        public Alternative Alternative { get; set; }
+//             //        public float Utility { get; set; }
+
+//             List<AlternativeUtility> alternativesUtilitiesList = new List<AlternativeUtility>();
+
+//             foreach (Alternative alternative in dataLoader.AlternativeList)
+//             {
+//                 double product = 1;
+//                 foreach (CriterionValue criterionValue in alternative.CriteriaValuesList)
+//                 {
+//                     var points = criteriaFunctionsDictionary[criterionValue.Name];
+//                     var k = criteriaCoefficientsList.Find(element => element.CriterionName == criterionValue.Name).Coefficient;
+//                     double u = 1;
+
+//                     if (points[0].X == criterionValue.Value)
+//                     {
+//                         u = points[0].Y;
+//                     }
+//                     else
+//                     {
+//                         for (int i = 0; i < points.Count - 1; i++)
+//                         {
+//                             if(criterionValue.Value > points[i].X && criterionValue.Value <= points[i + 1].X)
+//                             {
+//                                 float a = (points[i + 1].Y - points[i].Y) / (points[i + 1].X - points[i].X);
+//                                 float b = points[i].Y - a * points[i].X;
+//                                 u = a * (double)criterionValue.Value + b;
+//                             }
+//                         }
+//                     }
+
+//                     product *= (K * k * u + 1);
+//                 }
+
+//                 double utility = (product - 1) / K;
+
+//                 alternativesUtilitiesList.Add(new AlternativeUtility(alternative, utility));
+//             }
+
+//             alternativesUtilitiesList = alternativesUtilitiesList.OrderBy(o => o.Utility).ToList();
+//             FinalRanking finalRanking = new FinalRanking();
+
+//             for (int i = 0; i < alternativesUtilitiesList.Count; i++)
+//             {
+//                 finalRanking.FinalRankingCollection.Add(new FinalRankingEntry(alternativesUtilitiesList.Count - i, alternativesUtilitiesList[i].Alternative, (float)alternativesUtilitiesList[i].Utility));
+//             }
 
         }
 
