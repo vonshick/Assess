@@ -24,7 +24,7 @@ namespace UTA.ViewModels
 
             AlternativesWithoutRanksCollectionView = new ListCollectionView(Alternatives.AlternativesCollection)
             {
-                Filter = o => ((Alternative)o).ReferenceRank == null
+                Filter = o => ((Alternative) o).ReferenceRank == null
             };
 
             ReferenceRanking.PropertyChanged += (sender, args) =>
@@ -33,12 +33,13 @@ namespace UTA.ViewModels
                 RefreshFilter();
                 InitializeReferenceRankFilterWatchers();
             };
+
             Alternatives.PropertyChanged += (sender, args) =>
             {
                 if (args.PropertyName != nameof(Alternatives.AlternativesCollection)) return;
                 AlternativesWithoutRanksCollectionView = new ListCollectionView(Alternatives.AlternativesCollection)
                 {
-                    Filter = o => ((Alternative)o).ReferenceRank == null
+                    Filter = o => ((Alternative) o).ReferenceRank == null
                 };
             };
 
@@ -79,6 +80,8 @@ namespace UTA.ViewModels
         public RelayCommand RemoveAlternativeFromRankCommand { get; }
         public RelayCommand RemoveRankCommand { get; }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
 
         [UsedImplicitly]
         public void AddRank()
@@ -89,7 +92,7 @@ namespace UTA.ViewModels
         public void InitializeReferenceRankFilterWatchers()
         {
             foreach (var referenceRanking in ReferenceRanking.RankingsCollection)
-                referenceRanking.CollectionChanged += InitializeRankFilterWatcher;
+                referenceRanking.CollectionChanged += RefreshFilter;
 
             ReferenceRanking.RankingsCollection.CollectionChanged += InitializeRankFilterWatcher;
         }
@@ -111,8 +114,6 @@ namespace UTA.ViewModels
         {
             AlternativesWithoutRanksCollectionView.Refresh();
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

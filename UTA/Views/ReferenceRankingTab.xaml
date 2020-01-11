@@ -81,7 +81,7 @@
                         dd:DragDrop.DropHandler="{StaticResource AlternativeDropHandler}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
-                <VirtualizingStackPanel />
+                <VirtualizingStackPanel Background="Transparent" />
               </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
 

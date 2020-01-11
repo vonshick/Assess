@@ -50,7 +50,7 @@ namespace DataModel.Results
         {
             FinalRanking.FinalRankingCollection.Clear();
             PartialUtilityFunctions.Clear();
-            KendallCoefficient = 0;
+            KendallCoefficient = null;
         }
 
         [NotifyPropertyChangedInvocator]

@@ -110,6 +110,7 @@ namespace UTA.ViewModels
             //for (var i = 0; i < Alternatives.AlternativesCollection.Count; i++)
             //    Results.FinalRanking.FinalRankingCollection.Add(new FinalRankingEntry(i, Alternatives.AlternativesCollection[i],
             //        0.1919191919f));
+            //Results.KendallCoefficient = 0.191919191919f;
 
             // TODO vonshick REMOVE IT AFTER TESTING
             // string dataDirectoryPath = "D:\\Data";
