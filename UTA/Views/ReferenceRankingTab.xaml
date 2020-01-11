@@ -3,15 +3,48 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+             xmlns:icons="clr-namespace:MahApps.Metro.IconPacks;assembly=MahApps.Metro.IconPacks.Material"
              xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.WPF.DragDrop"
              xmlns:helpers="clr-namespace:UTA.Helpers"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="900">
-  <Grid Margin="12,8" Background="{StaticResource ColorInterface7}">
+  <Grid Margin="12,8,10,12" Background="{StaticResource ColorInterface7}">
     <Grid.Resources>
       <helpers:AlternativeDropHandler x:Key="AlternativeDropHandler" />
+
+      <ItemContainerTemplate x:Key="DragAdorner">
+        <Border Background="White" BorderBrush="{StaticResource ColorBorders1}" BorderThickness="1" Width="8"
+                Height="8" />
+      </ItemContainerTemplate>
+
+      <Style TargetType="{x:Type Border}" x:Key="DraggableAlternativeBorderStyle">
+        <Style.Triggers>
+          <Trigger Property="IsMouseOver" Value="True">
+            <Setter Property="Background" Value="{StaticResource ColorInterface7Hover}" />
+          </Trigger>
+        </Style.Triggers>
+        <Setter Property="Background" Value="White" />
+        <Setter Property="BorderBrush" Value="{StaticResource ColorBorders1}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="3" />
+      </Style>
+
+      <ControlTemplate x:Key="MoveLeftButton" TargetType="{x:Type ButtonBase}">
+        <Border Name="Border" BorderThickness="1" BorderBrush="{StaticResource ColorSecondary}" Padding="4"
+                Background="Transparent" CornerRadius="2">
+          <icons:PackIconMaterial Name="Icon" Kind="ChevronLeft" Width="14" Height="14"
+                                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                                  Foreground="{StaticResource ColorSecondary}" />
+        </Border>
+        <ControlTemplate.Triggers>
+          <Trigger Property="IsMouseOver" Value="True">
+            <Setter Property="Background" TargetName="Border" Value="{StaticResource ColorSecondary}" />
+            <Setter Property="Foreground" TargetName="Icon" Value="White" />
+          </Trigger>
+        </ControlTemplate.Triggers>
+      </ControlTemplate>
+
     </Grid.Resources>
 
     <Grid.RowDefinitions>
@@ -22,13 +55,52 @@
 
     <Grid.ColumnDefinitions>
       <ColumnDefinition />
+      <ColumnDefinition Width="Auto" />
       <ColumnDefinition />
     </Grid.ColumnDefinitions>
 
-    <TextBlock Text="Reference Ranking Editor" FontSize="18" Margin="0,0,0,8" />
+    <TextBlock Text="Reference Ranking" FontSize="18" Margin="0,0,0,8" />
 
 
-    <Button Grid.Row="1" Grid.Column="1" Content="Add Rank">
+    <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Background="{StaticResource ColorInterface6}"
+            BorderThickness="1" BorderBrush="{StaticResource ColorBorders2}">
+      <DockPanel Margin="8,0">
+        <Border DockPanel.Dock="Top" BorderBrush="{StaticResource ColorBorders1}" BorderThickness="0,0,0,1">
+          <TextBlock Text="Alternatives" FontSize="{StaticResource CommonFontSize1}" Margin="6"
+                     HorizontalAlignment="Center" />
+        </Border>
+        <ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled" Margin="8,0,6,0">
+          <ItemsControl Name="AlternativesListView" Tag="Alternatives" Focusable="False"
+                        ItemsSource="{Binding AlternativesWithoutRanksCollectionView, UpdateSourceTrigger=PropertyChanged}"
+                        dd:DragDrop.IsDragSource="True"
+                        dd:DragDrop.IsDropTarget="True"
+                        dd:DragDrop.UseVisualSourceItemSizeForDragAdorner="True"
+                        dd:DragDrop.UseDefaultDragAdorner="True"
+                        dd:DragDrop.EffectMoveAdornerTemplate="{StaticResource DragAdorner}"
+                        dd:DragDrop.DropHandler="{StaticResource AlternativeDropHandler}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Border Padding="0,8,2,0" Background="Transparent">
+                  <Border Style="{StaticResource DraggableAlternativeBorderStyle}" Cursor="Hand">
+                    <TextBlock Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                               FontSize="{StaticResource CommonFontSize2}" Margin="16,4" />
+                  </Border>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+      </DockPanel>
+    </Border>
+
+
+    <icons:PackIconMaterial Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Kind="ChevronRight" Width="30" Height="30"
+                            HorizontalAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center"
+                            Foreground="{StaticResource ColorInterface2}" Margin="4" />
+
+
+    <Button Grid.Row="1" Grid.Column="2" Content="Add Rank" Style="{StaticResource PrimaryRoundButton}" MaxWidth="300">
       <i:Interaction.Triggers>
         <i:EventTrigger EventName="Click">
           <i:CallMethodAction TargetObject="{Binding}" MethodName="AddRank" />
@@ -37,31 +109,10 @@
     </Button>
 
 
-    <ListView Name="AlternativesListView" Grid.Row="1" Grid.RowSpan="2" Grid.Column="0"
-              ItemsSource="{Binding AlternativesWithoutRanksCollectionView, UpdateSourceTrigger=PropertyChanged}"
-              Tag="Alternatives"
-              dd:DragDrop.IsDragSource="True"
-              dd:DragDrop.IsDropTarget="True"
-              dd:DragDrop.UseDefaultDragAdorner="True"
-              dd:DragDrop.UseVisualSourceItemSizeForDragAdorner="True"
-              dd:DragDrop.DropHandler="{StaticResource AlternativeDropHandler}">
-      <ListView.View>
-        <GridView>
-          <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
-          <GridViewColumn Header="Description"
-                          DisplayMemberBinding="{Binding Description, UpdateSourceTrigger=PropertyChanged}" />
-
-          <!-- TODO Remove column -->
-          <GridViewColumn Header="ReferenceRank" Width="120"
-                          DisplayMemberBinding="{Binding ReferenceRank, UpdateSourceTrigger=PropertyChanged}" />
-        </GridView>
-      </ListView.View>
-    </ListView>
-
-
-    <ScrollViewer Grid.Row="2" Grid.Column="1" VerticalScrollBarVisibility="Auto"
-                  HorizontalScrollBarVisibility="Disabled">
-      <StackPanel>
+    <ScrollViewer Grid.Row="2" Grid.Column="2" VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled"
+                  Margin="0,6,0,0">
+      <StackPanel Margin="0,0,2,0">
         <ItemsControl Name="RanksItemsControl" Focusable="False"
                       ItemsSource="{Binding ReferenceRanking.RankingsCollection, UpdateSourceTrigger=PropertyChanged}"
                       AlternationCount="100000">
@@ -70,31 +121,36 @@
               <ItemsControl ItemsSource="{Binding}" Tag="Rank" Focusable="False"
                             dd:DragDrop.IsDragSource="True"
                             dd:DragDrop.IsDropTarget="True"
+                            dd:DragDrop.UseVisualSourceItemSizeForDragAdorner="True"
+                            dd:DragDrop.UseDefaultDragAdorner="True"
+                            dd:DragDrop.EffectMoveAdornerTemplate="{StaticResource DragAdorner}"
                             dd:DragDrop.DropHandler="{StaticResource AlternativeDropHandler}"
-                            Margin="0,0,0,12">
+                            Margin="0,0,0,16">
                 <ItemsControl.Template>
-                  <ControlTemplate TargetType="ItemsControl">
-                    <Border BorderBrush="Black" BorderThickness="1">
-                      <StackPanel>
+                  <ControlTemplate TargetType="{x:Type ItemsControl}">
+                    <Border BorderBrush="{StaticResource ColorBorders2}" BorderThickness="1"
+                            Background="{StaticResource ColorInterface6}">
+                      <StackPanel Margin="8,0">
                         <Border BorderThickness="0,0,0,1" BorderBrush="{StaticResource ColorBorders1}">
-                          <DockPanel LastChildFill="False">
+                          <DockPanel LastChildFill="False" Margin="8,0">
                             <TextBlock
                               Text="{Binding 
                               Path=TemplatedParent.(ItemsControl.AlternationIndex),
                               RelativeSource={RelativeSource Mode=TemplatedParent}, 
                               StringFormat=Rank {0},
                               Converter={StaticResource IndexToRankConverter}}"
-                              DockPanel.Dock="Left" Margin="4,0,4,2" FontSize="{StaticResource CommonFontSize2}" />
-                            <Button Content="Remove" Width="60" DockPanel.Dock="Right"
+                              DockPanel.Dock="Left" FontSize="{StaticResource CommonFontSize1}" Margin="0,8" />
+                            <Button Content="Remove" DockPanel.Dock="Right" Template="{StaticResource RemoveButton}"
+                                    VerticalAlignment="Center"
                                     Command="{Binding ElementName=RanksItemsControl, Path=DataContext.RemoveRankCommand}"
                                     CommandParameter="{Binding Path=TemplatedParent.(ItemsControl.AlternationIndex), RelativeSource={RelativeSource Mode=TemplatedParent}}" />
                           </DockPanel>
                         </Border>
                         <ItemsPresenter />
-                        <Border Background="Transparent" Height="26">
-                          <TextBlock Text="Drop alternative here..." FontSize="{StaticResource CommonFontSize2}"
-                                     Foreground="{StaticResource ColorPlaceholder}"
-                                     TextAlignment="Center" VerticalAlignment="Center" />
+                        <Border Background="Transparent">
+                          <TextBlock Text="Drag alternative here..." FontSize="{StaticResource CommonFontSize2}"
+                                     Foreground="{StaticResource ColorPlaceholder}" Margin="0,4,0,6"
+                                     TextAlignment="Center" />
                         </Border>
                       </StackPanel>
                     </Border>
@@ -103,46 +159,43 @@
 
                 <ItemsControl.ItemTemplate>
                   <DataTemplate>
-                    <Grid>
-                      <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                      </Grid.ColumnDefinitions>
-
-                      <Button Content="Remove" Width="80"
-                              Command="{Binding ElementName=RanksItemsControl, Path=DataContext.RemoveAlternativeFromRankCommand}"
-                              CommandParameter="{Binding}" />
-                      <TextBlock Grid.Column="1" TextAlignment="Center"
-                                 Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
-
-                      <TextBlock Grid.Column="2" Margin="10,0"
-                                 Text="{Binding ReferenceRank, UpdateSourceTrigger=PropertyChanged, StringFormat={}Rank {0},Converter={StaticResource IndexToRankConverter}}" />
-                    </Grid>
+                    <Border Padding="0,8,2,0" Background="Transparent">
+                      <DockPanel Margin="8,0">
+                        <Button Template="{StaticResource MoveLeftButton}" VerticalAlignment="Stretch" Width="28"
+                                Command="{Binding ElementName=RanksItemsControl, Path=DataContext.RemoveAlternativeFromRankCommand}"
+                                CommandParameter="{Binding}" />
+                        <Border Style="{StaticResource DraggableAlternativeBorderStyle}" Margin="8,0,0,0" Cursor="Hand">
+                          <TextBlock FontSize="{StaticResource CommonFontSize2}" Margin="12,4"
+                                     Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+                        </Border>
+                      </DockPanel>
+                    </Border>
                   </DataTemplate>
                 </ItemsControl.ItemTemplate>
               </ItemsControl>
-
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <ItemsControl ItemsSource="{Binding NewRank}" Focusable="False"
+        <!--new rank placeholder-->
+        <ItemsControl ItemsSource="{Binding NewRank}" Focusable="False" Opacity="0.7"
                       dd:DragDrop.IsDropTarget="True"
                       dd:DragDrop.DropHandler="{StaticResource AlternativeDropHandler}"
                       Drop="AlternativeDroppedOnNewRank">
           <ItemsControl.Template>
-            <ControlTemplate TargetType="ItemsControl">
-              <Border BorderBrush="Black" BorderThickness="1">
-                <StackPanel>
+            <ControlTemplate TargetType="{x:Type ItemsControl}">
+              <Border BorderBrush="{StaticResource ColorBorders2}" BorderThickness="1"
+                      Background="{StaticResource ColorInterface6}">
+                <StackPanel Margin="8,0">
                   <Border BorderThickness="0,0,0,1" BorderBrush="{StaticResource ColorBorders1}">
-                    <TextBlock Text="New Rank" Margin="4,0,4,2" FontSize="{StaticResource CommonFontSize2}" />
+                    <TextBlock TextAlignment="Center" Text="New Rank" FontSize="{StaticResource CommonFontSize1}"
+                               Margin="6" />
                   </Border>
                   <ItemsPresenter />
-                  <Border Background="Transparent" Height="26">
-                    <TextBlock Text="Drop alternative here..." FontSize="{StaticResource CommonFontSize2}"
-                               Foreground="{StaticResource ColorPlaceholder}"
-                               TextAlignment="Center" VerticalAlignment="Center" />
+                  <Border Background="Transparent">
+                    <TextBlock Text="Drag alternative here..." FontSize="{StaticResource CommonFontSize2}"
+                               Foreground="{StaticResource ColorPlaceholder}" Margin="6"
+                               TextAlignment="Center" />
                   </Border>
                 </StackPanel>
               </Border>

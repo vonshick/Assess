@@ -10,7 +10,6 @@ using System.Windows;
 using CalculationsEngine;
 using DataModel.Input;
 using DataModel.Results;
-using DataModel.Structs;
 using ExportModule;
 using ImportModule;
 using MahApps.Metro.Controls.Dialogs;
@@ -84,33 +83,33 @@ namespace UTA.ViewModels
 
             // TODO: remove. for testing purposes
             // WARNING: using these crashes application at some point
-            Criteria.CriteriaCollection.Add(new Criterion("A", "ABC", "Gain", 8));
-            Criteria.CriteriaCollection.Add(new Criterion("B", "ABC", "Gain", 8));
-            Criteria.CriteriaCollection.Add(new Criterion("C", "ABC", "Gain", 8));
-            Criteria.CriteriaCollection.Add(new Criterion("D", "ABC", "Gain", 8));
-            Criteria.CriteriaCollection.Add(new Criterion("E", "ABC", "Gain", 8));
-            Criteria.CriteriaCollection.Add(new Criterion("F", "ABC", "Gain", 8));
-            Criteria.CriteriaCollection[0].MinValue = Criteria.CriteriaCollection[1].MinValue = 0;
-            Criteria.CriteriaCollection[0].MaxValue = Criteria.CriteriaCollection[1].MaxValue = 1;
-            for (var i = 0; i < 20; i++)
-                Alternatives.AlternativesCollection.Add(new Alternative($"Alternative X{i}", new ObservableCollection<Criterion>()));
+            //Criteria.CriteriaCollection.Add(new Criterion("A", "ABC", "Gain", 8));
+            //Criteria.CriteriaCollection.Add(new Criterion("B", "ABC", "Gain", 8));
+            //Criteria.CriteriaCollection.Add(new Criterion("C", "ABC", "Gain", 8));
+            //Criteria.CriteriaCollection.Add(new Criterion("D", "ABC", "Gain", 8));
+            //Criteria.CriteriaCollection.Add(new Criterion("E", "ABC", "Gain", 8));
+            //Criteria.CriteriaCollection.Add(new Criterion("F", "ABC", "Gain", 8));
+            //Criteria.CriteriaCollection[0].MinValue = Criteria.CriteriaCollection[1].MinValue = 0;
+            //Criteria.CriteriaCollection[0].MaxValue = Criteria.CriteriaCollection[1].MaxValue = 1;
+            //for (var i = 0; i < 20; i++)
+            //    Alternatives.AlternativesCollection.Add(new Alternative($"Alternative X{i}", new ObservableCollection<Criterion>()));
 
-            for (var i = 0; i < Alternatives.AlternativesCollection.Count; i++)
-                foreach (var criterionValue in Alternatives.AlternativesCollection[i].CriteriaValuesList)
-                    criterionValue.Value = i * 0.1f;
+            //for (var i = 0; i < Alternatives.AlternativesCollection.Count; i++)
+            //    foreach (var criterionValue in Alternatives.AlternativesCollection[i].CriteriaValuesList)
+            //        criterionValue.Value = i * 0.1f;
 
-            for (var i = 0; i < 20; i++)
-            {
-                ReferenceRanking.AddAlternativeToRank(new Alternative {Name = "Reference X"}, i);
-                if (i % 2 == 0)
-                    ReferenceRanking.AddAlternativeToRank(new Alternative {Name = "Reference XX"}, i);
-                if (i % 3 == 0)
-                    ReferenceRanking.AddAlternativeToRank(new Alternative {Name = "Reference XXX"}, i);
-            }
+            //for (var i = 0; i < 20; i++)
+            //{
+            //    ReferenceRanking.AddAlternativeToRank(new Alternative { Name = "Reference X" }, i);
+            //    if (i % 2 == 0)
+            //        ReferenceRanking.AddAlternativeToRank(new Alternative { Name = "Reference XX" }, i);
+            //    if (i % 3 == 0)
+            //        ReferenceRanking.AddAlternativeToRank(new Alternative { Name = "Reference XXX" }, i);
+            //}
 
-            for (var i = 0; i < Alternatives.AlternativesCollection.Count; i++)
-                Results.FinalRanking.FinalRankingCollection.Add(new FinalRankingEntry(i, Alternatives.AlternativesCollection[i],
-                    0.1919191919f));
+            //for (var i = 0; i < Alternatives.AlternativesCollection.Count; i++)
+            //    Results.FinalRanking.FinalRankingCollection.Add(new FinalRankingEntry(i, Alternatives.AlternativesCollection[i],
+            //        0.1919191919f));
 
             // TODO vonshick REMOVE IT AFTER TESTING
             // string dataDirectoryPath = "D:\\Data";
@@ -341,7 +340,7 @@ namespace UTA.ViewModels
                     NegativeButtonText = "Save",
                     FirstAuxiliaryButtonText = "Cancel",
                     DialogResultOnCancel = MessageDialogResult.FirstAuxiliary,
-                    DefaultButtonFocus = MessageDialogResult.Negative,
+                    DefaultButtonFocus = MessageDialogResult.Affirmative,
                     AnimateShow = false,
                     AnimateHide = false
                 });

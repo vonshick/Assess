@@ -234,7 +234,7 @@ namespace UTA.Views
                     NegativeButtonText = "Save",
                     FirstAuxiliaryButtonText = "Cancel",
                     DialogResultOnCancel = MessageDialogResult.FirstAuxiliary,
-                    DefaultButtonFocus = MessageDialogResult.Negative,
+                    DefaultButtonFocus = MessageDialogResult.Affirmative,
                     AnimateShow = false,
                     AnimateHide = false
                 });

@@ -272,8 +272,7 @@
 
       <ControlTemplate x:Key="RemoveButton" TargetType="{x:Type ButtonBase}">
         <Border Name="Border" BorderThickness="1" BorderBrush="{StaticResource ColorDanger}" Padding="4"
-                Margin="2" Background="White" CornerRadius="2" VerticalAlignment="Center"
-                HorizontalAlignment="Left">
+                Margin="2" Background="White" CornerRadius="2">
           <icons:PackIconMaterial Name="Icon" Kind="Delete" Width="18" Height="18"
                                   HorizontalAlignment="Center" VerticalAlignment="Center"
                                   Foreground="{StaticResource ColorDanger}" />
