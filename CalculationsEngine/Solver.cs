@@ -26,12 +26,12 @@ namespace CalculationsEngine
         private double[] vectorCj;
 
         public Solver(ReferenceRanking referenceRanking, List<Criterion> criteriaList, List<Alternative> otherAlternatives, Results results,
-            double deltaThreshold = 0.05, double epsilonThreshold = 0.0000001)
+            bool preserveKendallCoefficient = false, double deltaThreshold = 0.05, double epsilonThreshold = 0.0000001)
         {
             DeltaThreshold = deltaThreshold;
             EpsilonThreshold = epsilonThreshold;
+            PreserveKendallCoefficient = preserveKendallCoefficient;
             NumberOfIteration = 100;
-            PreserveKendallCoefficient = false; //TODO
             this.criteriaList = criteriaList;
             Result = results;
             this.referenceRanking = referenceRanking;
@@ -123,8 +123,43 @@ namespace CalculationsEngine
             Result.KendallCoefficient = tau;
         }
 
+        public void UpdatePreserveKendallCoefficient(bool preserveKendallCoefficient)
+        {
+            PreserveKendallCoefficient = preserveKendallCoefficient;
+            double[] minArray;
+            double[] maxArray;
+            (minArray, maxArray) = CalculateRangeOfValues(restrictionsMatrix, arrayOfValues);
+            var count = 0;
+            for (var numOfCriterion = 0; numOfCriterion < Result.PartialUtilityFunctions.Count; numOfCriterion++)
+            {
+                Result.PartialUtilityFunctions[numOfCriterion].PointsValues[0].MinValue = 0;
+                Result.PartialUtilityFunctions[numOfCriterion].PointsValues[0].MaxValue = 0;
+
+                for (var i = 1; i < Result.PartialUtilityFunctions[numOfCriterion].PointsValues.Count; i++)
+                {
+                    Result.PartialUtilityFunctions[numOfCriterion].PointsValues[i].MinValue = (float)minArray[count];
+                    Result.PartialUtilityFunctions[numOfCriterion].PointsValues[i].MaxValue = (float)maxArray[count];
+                    count++;
+                }
+            }
+
+            var finalReferenceList = CreateRanking(arrayOfValues, transientMatrix, arternativesList);
+            var finalReferenceRanking = new FinalRanking(finalReferenceList);
+            var tau = CalculateKendallCoefficient(finalReferenceRanking);
+            var restOfReferenceList = CreateRanking(arrayOfValues, otherAlternativesMatrix, otherAlternatives);
+            var allFinalRankingEntry = finalReferenceList.Concat(restOfReferenceList).ToList();
+            allFinalRankingEntry = allFinalRankingEntry.OrderByDescending(o => o.Utility).ToList();
+            for (var i = 0; i < allFinalRankingEntry.Count; i++) allFinalRankingEntry[i].Position = i;
+            Result.FinalRanking.FinalRankingCollection = new ObservableCollection<FinalRankingEntry>(allFinalRankingEntry);
+            Result.KendallCoefficient = tau;
+
+        }
+
         public void ChangeValue(float value, PartialUtility partialUtility, int indexOfPointValue)
         {
+            var recalculatedMatrix = RecreateMatrix(Result.FinalRanking);
+            restrictionsMatrix = CalculateRestrictions(recalculatedMatrix, Result.FinalRanking);
+
             if (value < partialUtility.PointsValues[indexOfPointValue].MinValue ||
                 value > partialUtility.PointsValues[indexOfPointValue].MaxValue)
                 throw new ArgumentException("Value not in range", "PointsValues.Y");
