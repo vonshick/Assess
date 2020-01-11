@@ -57,8 +57,8 @@ namespace UTA.ViewModels
             });
             TakeIndifferentCommand = new RelayCommand(_ =>
             {
-                dialog.GetCoefficientsForCriteria();
                 dialog.ProcessDialog(3);
+                dialog.GetCoefficientsForCriterion(criterion);
                 CloseDialog = true;
             });
         }

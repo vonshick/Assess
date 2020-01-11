@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using DataModel.Input;
 
 namespace CalculationsEngine.Assess.Assess
@@ -36,7 +37,7 @@ namespace CalculationsEngine.Assess.Assess
         }
 
         //todo remove
-        public void GetCoefficientsForCriteria()
+        public void GetCoefficientsForCriterion(Criterion criterion)
         {
 //            for (var i = 0; i < _criterionList.Count; i++)
 //            {
@@ -51,9 +52,8 @@ namespace CalculationsEngine.Assess.Assess
 //
 //                ProcessDialog();
 //            }
-//
-            for (var i = 0; i < _criterionList.Count; i++)
-                Console.WriteLine(CriteriaCoefficientsList[i].CriterionName + " : " + CriteriaCoefficientsList[i].Coefficient);
+            var critDisplay = CriteriaCoefficientsList.First(crit => criterion.Name == crit.CriterionName);
+            Console.WriteLine(critDisplay.CriterionName + " : " + critDisplay.Coefficient);
         }
 
         public void SetInitialValues(Criterion criterion)
@@ -69,6 +69,7 @@ namespace CalculationsEngine.Assess.Assess
             _upperProbabilityBoundary = 1;
         }
 
+        //todo remove
         public string displayDialog()
         {
             Console.WriteLine("Wpisz '1' jeśli wolisz WARIANT:");
