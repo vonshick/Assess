@@ -60,12 +60,14 @@ namespace CalculationsEngine.Assess.Assess
 //                0.375*0.5*0.5 + 0.375*0.5*0.5 + 0.375*0.5*0.5 + 0.5*0.5*0.5,
 //                0.375 * 0.5 * 0.5 * 0.5
 
+//
 //                1024, 3840, 5760, 4320, 1620, 243
             };
 
             BaristowSolver baristow = new BaristowSolver(coefficients);
             
-            baristow.Solve();
+            double K = baristow.GetScallingCoefficient();
+
             Console.ReadLine();
         }
     }

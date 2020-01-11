@@ -53,7 +53,7 @@ namespace CalculationsEngine.Assess.Assess
             return ComplexNumberList.ToArray();
         }
 
-        public void Solve()
+        private void solve()
         {
             int i, k, n1;
 
@@ -268,6 +268,25 @@ namespace CalculationsEngine.Assess.Assess
                     }
                 }
             }
+        }
+
+        private double getSuitableRoot()
+        {
+            ComplexNumber minImComplexNumber = new ComplexNumber(double.PositiveInfinity, double.PositiveInfinity);
+
+            // choose the complex number with min imaginary part and min index
+            for (int i = z.Length - 1; i >= 1; i--)
+                if (Math.Abs(z[i].im) <= Math.Abs(minImComplexNumber.im))
+                    if(z[i].re != 0)
+                        minImComplexNumber = z[i];
+            
+            return minImComplexNumber.re;
+        }
+
+        public double GetScallingCoefficient()
+        {
+            solve();
+            return getSuitableRoot();
         }
     }
 }
