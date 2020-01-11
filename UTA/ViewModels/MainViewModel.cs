@@ -12,6 +12,7 @@ using CalculationsEngine;
 using CalculationsEngine.Assess.Assess;
 using DataModel.Input;
 using DataModel.Results;
+using DataModel.Structs;
 using ExportModule;
 using ImportModule;
 using MahApps.Metro.Controls.Dialogs;
@@ -196,6 +197,19 @@ namespace UTA.ViewModels
 //            BaristowSolver baristow = new BaristowSolver(kCoefficients);
 //            double K = baristow.GetScallingCoefficient();
 //
+//            //        public FinalRankingEntry(int position, Alternative alternative, float utility)
+//            //        {
+//            //            Position = position;
+//            //            Alternative = alternative;
+//            //            Utility = utility;
+//            //        }
+//            //
+//            //        public int Position { get; set; }
+//            //        public Alternative Alternative { get; set; }
+//            //        public float Utility { get; set; }
+//
+//            List<AlternativeUtility> alternativesUtilitiesList = new List<AlternativeUtility>();
+//
 //            foreach (Alternative alternative in dataLoader.AlternativeList)
 //            {
 //                double product = 1;
@@ -226,7 +240,18 @@ namespace UTA.ViewModels
 //                }
 //
 //                double utility = (product - 1) / K;
+//
+//                alternativesUtilitiesList.Add(new AlternativeUtility(alternative, utility));
 //            }
+//
+//            alternativesUtilitiesList = alternativesUtilitiesList.OrderBy(o => o.Utility).ToList();
+//            FinalRanking finalRanking = new FinalRanking();
+//
+//            for (int i = 0; i < alternativesUtilitiesList.Count; i++)
+//            {
+//                finalRanking.FinalRankingCollection.Add(new FinalRankingEntry(alternativesUtilitiesList.Count - i, alternativesUtilitiesList[i].Alternative, (float)alternativesUtilitiesList[i].Utility));
+//            }
+
         }
 
         private void UpdateDialogueTabs(object sender, NotifyCollectionChangedEventArgs e)
