@@ -66,7 +66,7 @@
 
           <StackPanel Width="100">
             <TextBlock Text="Linear Segments" Margin="0,0,0,2" />
-            <controls:NumericUpDown Value="{Binding LinearSegments, UpdateSourceTrigger=PropertyChanged}"
+            <controls:NumericUpDown Value="{Binding LinearSegments, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                                     Minimum="{x:Static criterion:Criterion.MinNumberOfLinearSegments}"
                                     Maximum="{x:Static criterion:Criterion.MaxNumberOfLinearSegments}"
                                     NumericInputMode="Numbers" />

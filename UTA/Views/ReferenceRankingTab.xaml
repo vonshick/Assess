@@ -79,6 +79,12 @@
                         dd:DragDrop.UseDefaultDragAdorner="True"
                         dd:DragDrop.EffectMoveAdornerTemplate="{StaticResource DragAdorner}"
                         dd:DragDrop.DropHandler="{StaticResource AlternativeDropHandler}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <VirtualizingStackPanel />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
             <ItemsControl.ItemTemplate>
               <DataTemplate>
                 <Border Padding="0,8,2,0" Background="Transparent">
@@ -116,6 +122,12 @@
         <ItemsControl Name="RanksItemsControl" Focusable="False"
                       ItemsSource="{Binding ReferenceRanking.RankingsCollection, UpdateSourceTrigger=PropertyChanged}"
                       AlternationCount="100000">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <VirtualizingStackPanel />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+
           <ItemsControl.ItemTemplate>
             <DataTemplate>
               <ItemsControl ItemsSource="{Binding}" Tag="Rank" Focusable="False"

@@ -3,86 +3,83 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-             xmlns:local="clr-namespace:UTA.Views"
-             xmlns:mainViewModel="clr-namespace:UTA.ViewModels"
              mc:Ignorable="d"
-             d:DesignHeight="700" d:DesignWidth="900"
-             d:DataContext="{d:DesignInstance mainViewModel:MainViewModel}"
-             DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type controls:MetroWindow}}}">
+             d:DesignHeight="700" d:DesignWidth="900">
   <Grid Background="{StaticResource ColorInterface7}">
-
-  <ScrollViewer>
-    <Grid>
-      <Grid.RowDefinitions>
-        <RowDefinition Height="15" />
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="*" />
-      </Grid.RowDefinitions>
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition MinWidth="10" Width="1*" />
-        <ColumnDefinition Width="19*" />
-        <ColumnDefinition MinWidth="10" Width="1*" />
-      </Grid.ColumnDefinitions>
-
-      <TextBlock TextAlignment="Center" Grid.Column="1" Grid.Row="1" FontSize="22" FontWeight="Bold">Witamy w UTA 1.0!</TextBlock>
-      <TextBlock TextAlignment="Center" Grid.Column="1" Grid.Row="2" FontSize="16" TextWrapping="Wrap" Margin="0,0">
-        Mamy nadzieję, że dzięki naszej aplikacji, podejmowanie złożonych decyzji i trudnych wyborów stanie
-        się łatwiejsze niż kiedykolwiek. 
-      </TextBlock>
-
-      <TextBlock Grid.Column="1" Grid.Row="3" FontSize="14" TextWrapping="Wrap" Margin="0,10" TextAlignment="Justify">
-        Interfejs użytkownika składa się z dwóch głównych komponentów: <LineBreak/>
-        <TextBlock FontSize="14" TextWrapping="Wrap" Margin="30,0" TextAlignment="Justify">
-          1. Paneli bocznych, będących stałym elementem dostępnym z poziomu każdego widoku w aplikacji. <LineBreak/>
-          2. Przestrzeni roboczej w centralnej części okna, zarządzanej przy użyciu zakładek, między którymi można dowolnie się przełączać, zamykać i otwierać ponownie.
+    <ScrollViewer>
+      <StackPanel Margin="16,8,16,12">
+        <TextBlock TextAlignment="Center" FontSize="26">Witamy w UTA 1.0!</TextBlock>
+        <TextBlock TextAlignment="Center" FontSize="{StaticResource CommonFontSize1}" TextWrapping="Wrap"
+                   Margin="0,0,0,8">
+          Mamy nadzieję, że dzięki naszej aplikacji, podejmowanie złożonych decyzji i trudnych wyborów stanie
+          się łatwiejsze niż kiedykolwiek.
         </TextBlock>
-      </TextBlock>
 
-      <TextBlock Grid.Column="1" Grid.Row="4" FontSize="14" TextWrapping="Wrap" Margin="0,10" TextAlignment="Justify">
-        <Bold>Panele boczne:</Bold> <LineBreak/>
-        Panele boczne można ukrywać/pokazywać przy pomocy zakładki "View" paska menu. Można także zmieniać ich szerokość, zwijać i rozwijać znajdujące się w nich przewijalne listy z podglądem danych, klikając w odpowiedni nagłówek.
-        Po lewej stronie umieszczono informacje o instancji: zbiór wariantów i kryteriów. Kliknięcie w dowolny wariant/kryterium otworzy odpowiednią zakładkę umożliwiającą edycję danych. <LineBreak/>
-        Po prawej stronie umieszczono panel z podglądem rankingu referencyjnego, tworzonego w zakładce "Reference Ranking", oraz rankingu wynikowego, generowanego w oparciu o wyliczony model preferencji po uruchomieniu "solvera".
-      </TextBlock>
+        <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="0,8" TextAlignment="Justify">
+          Interfejs użytkownika składa się z dwóch głównych komponentów: <LineBreak />
+          <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0"
+                     TextAlignment="Justify">
+            1. Paneli bocznych, będących stałym elementem dostępnym z poziomu każdego widoku w aplikacji. <LineBreak />
+            2. Przestrzeni roboczej w centralnej części okna, zarządzanej przy użyciu zakładek, między którymi można dowolnie się przełączać, zamykać i otwierać ponownie.
+          </TextBlock>
+        </TextBlock>
 
-      <TextBlock Grid.Column="1" Grid.Row="5" FontSize="14" TextWrapping="Wrap" Margin="0,10" TextAlignment="Justify">
-        <Bold>Zakładki:</Bold> <LineBreak/>
-        Lista otwartych zakładek wyświetlana jest na górze okna przestrzeni roboczej. Każdą zakładkę można w dowolnej chwili zamknąć i ponownie otworzyć przy pomocy przycisków na górnym pasku lub z poziomu zakładki "Show" paska menu.
-      </TextBlock>
+        <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
+          Panele boczne:
+        </TextBlock>
+        <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
+                   TextAlignment="Justify">
+          Panele boczne można ukrywać/pokazywać przy pomocy zakładki "View" paska menu. Można także zmieniać ich szerokość, zwijać i rozwijać znajdujące się w nich przewijalne listy z podglądem danych, klikając w odpowiedni nagłówek.
+          Po lewej stronie umieszczono informacje o instancji: zbiór wariantów i kryteriów. Kliknięcie w dowolny wariant/kryterium otworzy odpowiednią zakładkę umożliwiającą edycję danych.
+          <LineBreak />
+          Po prawej stronie umieszczono panel z podglądem rankingu referencyjnego, tworzonego w zakładce "Reference Ranking", oraz rankingu wynikowego, generowanego w oparciu o wyliczony model preferencji po uruchomieniu modułu obliczeniowego.
+        </TextBlock>
 
-      <TextBlock Grid.Column="1" Grid.Row="6" FontSize="14" TextWrapping="Wrap" Margin="0,10" TextAlignment="Justify">
-        <Bold>Warianty i kryteria:</Bold> <LineBreak/>
-         Kliknięcie w wariant/kryterium w panelu bocznym przeniesie widok bezpośrednio na wybrany obiekt w odpowiedniej zakładce. Owe dane edytować i usuwać można bezpośrednio z poziomu tabeli, dodawanie natomiast odbywa się przy pomocy 
-         formularza w górnej części zakładki.
-      </TextBlock>
+        <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
+          Zakładki:
+        </TextBlock>
+        <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
+                   TextAlignment="Justify">
+          Lista otwartych zakładek wyświetlana jest na górze okna przestrzeni roboczej. Każdą zakładkę można w dowolnej chwili zamknąć i ponownie otworzyć przy pomocy przycisków na górnym pasku lub z poziomu zakładki "Show" paska menu.
+        </TextBlock>
 
-      <TextBlock Grid.Column="1" Grid.Row="7" FontSize="14" TextWrapping="Wrap" Margin="0,10" TextAlignment="Justify">
-        <Bold>Ranking Referencyjny:</Bold> <LineBreak/>
-        W górnej części przestrzeni roboczej tej zakładki umieszczono tabelę z wariantami nieznajdującymi się w zbiorze referencyjnym. Poniżej widoczne są okna reprezentujące poszczególne rangi rankingu.
-        Przy pomocy przycisku "Add" możemy dodawać kolejne, początkowo puste rangi. Zbędne pozycje usuwamy przyciskiem "Remove".
-        Ranking referencyjny budujemy przeciągając warianty między tabelą, a oknami rankingu. 
-      </TextBlock>
+        <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
+          Warianty i kryteria:
+        </TextBlock>
+        <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
+                   TextAlignment="Justify">
+          Kliknięcie w wariant/kryterium w panelu bocznym przeniesie widok bezpośrednio na wybrany obiekt w odpowiedniej zakładce. Owe dane edytować i usuwać można bezpośrednio z poziomu tabeli, dodawanie natomiast odbywa się przy pomocy
+          formularza w górnej części obszaru roboczego.
+        </TextBlock>
 
-      <TextBlock Grid.Column="1" Grid.Row="8" FontSize="14" TextWrapping="Wrap" Margin="0,10" TextAlignment="Justify">
-        <Bold>Ustawienia:</Bold> <LineBreak/>
-      </TextBlock>
+        <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
+          Ranking Referencyjny:
+        </TextBlock>
+        <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
+                   TextAlignment="Justify">
+          W lewej części przestrzeni roboczej zakładki "Reference Ranking" umieszczono listę wariantów nie znajdujących się w rankingu referencyjnym. 
+          Po prawej widoczne są okna reprezentujące poszczególne rangi rankingu. 
+          Przy pomocy przycisku "Add Rank" możemy dodawać kolejne, początkowo puste rangi. 
+          Ranking referencyjny budujemy przeciągając warianty między listą, a oknami poszczególnych rang. 
+          Zbędne pozycje usuwamy czerwonym przyciskiem z symbolem kosza.
+        </TextBlock>
 
-      <TextBlock Grid.Column="1" Grid.Row="9" FontSize="14" TextWrapping="Wrap" Margin="0,10" TextAlignment="Justify">
-        <Bold>Do dzieła!</Bold> <LineBreak/>
-        Po kliknięciu w niebieski przycisk "Solve" uruchomione zostanie serce aplikacji — moduł obliczeniowy implementujący metodę wielokryterialnego wspomagania decyzji UTA,
-        który przy użyciu algorytmu Sympleks wygeneruje model preferencji decydenta.
-      </TextBlock>
+        <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
+          Ustawienia:
+        </TextBlock>
+        <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
+                   TextAlignment="Justify" />
 
-    </Grid>
-  </ScrollViewer>
+        <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
+          Do dzieła!
+        </TextBlock>
+        <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
+                   TextAlignment="Justify">
+          Po kliknięciu w niebieski przycisk "Calculate" znajdującym się po lewej stronie górnego paska, uruchomione zostanie serce aplikacji — moduł obliczeniowy implementujący metodę wielokryterialnego wspomagania decyzji UTA,
+          który przy użyciu algorytmu sympleksowego wygeneruje model preferencji decydenta.
+        </TextBlock>
+
+      </StackPanel>
+    </ScrollViewer>
   </Grid>
 </UserControl>

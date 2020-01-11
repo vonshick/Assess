@@ -161,6 +161,7 @@
         <Separator />
         <MenuItem Margin="{StaticResource MenuItemBottomMargin}" Header="Exit" Click="ExitMenuItemClicked" />
       </MenuItem>
+
       <MenuItem Header="Solution" Style="{StaticResource MenuBarItem}">
         <MenuItem Margin="{StaticResource MenuItemTopMargin}">
           <MenuItem.Style>
@@ -186,16 +187,9 @@
                   IsCheckable="True"
                   IsChecked="{Binding PreserveKendallCoefficient, UpdateSourceTrigger=PropertyChanged}" />
       </MenuItem>
+
       <MenuItem Name="ShowMenu" Header="Show" Style="{StaticResource MenuBarItem}">
-        <MenuItem Margin="{StaticResource MenuItemTopMargin}" Header="Welcome!">
-          <i:Interaction.Triggers>
-            <i:EventTrigger EventName="Click">
-              <i:InvokeCommandAction Command="{Binding ShowTabCommand}"
-                                     CommandParameter="{Binding WelcomeTabViewModel}" />
-            </i:EventTrigger>
-          </i:Interaction.Triggers>
-        </MenuItem>
-        <MenuItem Header="Criteria">
+        <MenuItem Margin="{StaticResource MenuItemTopMargin}" Header="Criteria">
           <i:Interaction.Triggers>
             <i:EventTrigger EventName="Click">
               <i:InvokeCommandAction Command="{Binding ShowTabCommand}"
@@ -211,7 +205,7 @@
             </i:EventTrigger>
           </i:Interaction.Triggers>
         </MenuItem>
-        <MenuItem Margin="{StaticResource MenuItemBottomMargin}" Header="Reference Ranking">
+        <MenuItem Header="Reference Ranking">
           <i:Interaction.Triggers>
             <i:EventTrigger EventName="Click">
               <i:InvokeCommandAction Command="{Binding ShowTabCommand}"
@@ -219,7 +213,16 @@
             </i:EventTrigger>
           </i:Interaction.Triggers>
         </MenuItem>
+        <MenuItem Margin="{StaticResource MenuItemBottomMargin}" Header="Welcome!">
+          <i:Interaction.Triggers>
+            <i:EventTrigger EventName="Click">
+              <i:InvokeCommandAction Command="{Binding ShowTabCommand}"
+                                     CommandParameter="{Binding WelcomeTabViewModel}" />
+            </i:EventTrigger>
+          </i:Interaction.Triggers>
+        </MenuItem>
       </MenuItem>
+
       <MenuItem Header="View" Style="{StaticResource MenuBarItem}">
         <MenuItem Margin="{StaticResource MenuItemTopMargin}" Header="Topbar" IsCheckable="True" IsChecked="True"
                   Click="MenuBarTopbarViewToggled" />
@@ -227,6 +230,7 @@
         <MenuItem Margin="{StaticResource MenuItemBottomMargin}" Header="Ranking Panel" IsCheckable="True"
                   IsChecked="True" Click="MenuBarPanelViewToggled" />
       </MenuItem>
+
       <MenuItem Header="Help" Style="{StaticResource MenuBarItem}">
         <MenuItem Margin="{StaticResource MenuItemTopMargin}" Header="Documentation" Click="ShowDocumentationDialog" />
         <MenuItem Margin="{StaticResource MenuItemBottomMargin}" Header="About" Click="ShowAboutDialog" />

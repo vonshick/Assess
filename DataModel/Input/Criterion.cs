@@ -76,7 +76,7 @@ namespace DataModel.Input
                 if (value == _linearSegments) return;
                 if (value < MinNumberOfLinearSegments || value > MaxNumberOfLinearSegments)
                     throw new ArgumentException(
-                        $"Value must be greater than {MinNumberOfLinearSegments} and lower than {MaxNumberOfLinearSegments}.");
+                        $"Value must be between {MinNumberOfLinearSegments} - {MaxNumberOfLinearSegments} inclusive.");
                 _linearSegments = value;
                 OnPropertyChanged(nameof(LinearSegments));
             }

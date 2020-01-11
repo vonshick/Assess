@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using UTA.Annotations;
 using UTA.Models.Tab;
@@ -8,8 +9,8 @@ namespace UTA.ViewModels
     public class SettingsTabViewModel : Tab, INotifyPropertyChanged
     {
         // TODO: set defaults later
-        private byte _finalRankingUtilityDecimalPlaces = 5;
-        private byte _plotsPartialUtilityDecimalPlaces = 3; // TODO: constrain between 1 - 6 inclusive.
+        private byte _plotsPartialUtilityDecimalPlaces = 3;
+        private float _deltaThreshold = 0.02f;
 
         public SettingsTabViewModel()
         {
@@ -22,20 +23,21 @@ namespace UTA.ViewModels
             set
             {
                 if (value == _plotsPartialUtilityDecimalPlaces) return;
+                if (value < 1 || value > 7) throw new ArgumentException("Value must be between 1 - 7 inclusive.");
                 _plotsPartialUtilityDecimalPlaces = value;
                 OnPropertyChanged(nameof(PlotsPartialUtilityDecimalPlaces));
             }
         }
 
-
-        public byte FinalRankingUtilityDecimalPlaces
+        public float DeltaThreshold
         {
-            get => _finalRankingUtilityDecimalPlaces;
+            get => _deltaThreshold;
             set
             {
-                if (value == _finalRankingUtilityDecimalPlaces) return;
-                _finalRankingUtilityDecimalPlaces = value;
-                OnPropertyChanged(nameof(FinalRankingUtilityDecimalPlaces));
+                if (value.Equals(_deltaThreshold)) return;
+                if (value < 0 || value > 1) throw new ArgumentException("Value must be between 0 - 1 inclusive.");
+                _deltaThreshold = value;
+                OnPropertyChanged(nameof(DeltaThreshold));
             }
         }
 
