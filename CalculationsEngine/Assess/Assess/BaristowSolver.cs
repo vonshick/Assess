@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CalculationsEngine.Assess.Assess
+namespace Assesss
 {
     public class BaristowSolver
     {
@@ -17,10 +17,13 @@ namespace CalculationsEngine.Assess.Assess
         public ComplexNumber[] w;
         public int it;
         public int st;
+        // 1 
+
+
 
         public BaristowSolver()
         {
-            mit = 10000;
+            mit = 1000;
             //            n = 4;
             //            a = new double[]
             //            {
@@ -31,14 +34,14 @@ namespace CalculationsEngine.Assess.Assess
             //                0
             //            };
 
-            n = 2;
+            n = 3;
             a = new double[]
             {
-                1, -4, 4
+                1, 3, 3, 1
             };
 
-            mincorr = 0.01;
-            zerodet = 0.01;
+            mincorr = 1E-12;
+            zerodet = 1E-16; // wyznacznik, który będzie uznany za zero
 
             z = createComplexNumberArray(n);
             w = createComplexNumberArray(n);
@@ -76,7 +79,7 @@ namespace CalculationsEngine.Assess.Assess
 
             bool cond, endpq; //git
 
-            double[] b = new double[n];
+            double[] b = new double[n + 1];
 
             if (n < 1 || mit < 1 || mincorr <= 0 || zerodet <= 0)
             {
@@ -86,7 +89,7 @@ namespace CalculationsEngine.Assess.Assess
             {
                 for (i = 0; i <= n; i++)
                 {
-                    b[n - 1] = a[i];
+                    b[n - i] = a[i];
                 }
 
                 st = 0;
@@ -109,7 +112,10 @@ namespace CalculationsEngine.Assess.Assess
                     {
                         if (n == 2)
                         {
-
+                            q = b[0];
+                            p = b[1] / q;
+                            q = b[2] / q;
+                            cond = false;
                         }
                         else
                         {
@@ -169,7 +175,7 @@ namespace CalculationsEngine.Assess.Assess
                                         }
                                     }
                                 }
-                            } while (st != 0 || !endpq);
+                            } while (!(st != 0 || !endpq));
 
                             if (st == 2 || st == 3)
                             {
@@ -239,7 +245,7 @@ namespace CalculationsEngine.Assess.Assess
                             }
                         }
                     }
-                } while (st != 0 || !cond);
+                } while (!(st != 0 || !cond));
 
                 if (st == 0)
                 {
@@ -251,7 +257,7 @@ namespace CalculationsEngine.Assess.Assess
                         q1 = a[n];
                         if (q == 0)
                         {
-                            for (k = n1; k <= 0; k--)
+                            for (k = n1; k >= 0; k--)
                             {
                                 q1 = q1 * p + a[k];
                             }
