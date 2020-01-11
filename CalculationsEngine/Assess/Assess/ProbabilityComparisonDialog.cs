@@ -39,7 +39,7 @@ namespace CalculationsEngine.Assess.Assess
 
         protected override void SetValuesIfEqualChosen()
         {
-            DisplayObject.PointsList.Add(new Point(DisplayObject.X, DisplayObject.Lottery.NewPointUtility()));
+            DisplayObject.PointsList.Add(new PartialUtilityValues(DisplayObject.X, DisplayObject.Lottery.NewPointUtility()));
             DisplayObject.PointsList.Sort((first, second) => first.X.CompareTo(second.X));
         }
     }

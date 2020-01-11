@@ -1,4 +1,5 @@
 ﻿using System;
+using DataModel.Results;
 
 namespace CalculationsEngine.Assess.Assess
 {
@@ -44,7 +45,7 @@ namespace CalculationsEngine.Assess.Assess
 
         protected override void SetValuesIfEqualChosen()
         {
-            DisplayObject.PointsList.Add(new Point(DisplayObject.ComparisonLottery.UpperUtilityValue.X, DisplayObject.EdgeValuesLottery.P / DisplayObject.ComparisonLottery.P));
+            DisplayObject.PointsList.Add(new PartialUtilityValues(DisplayObject.ComparisonLottery.UpperUtilityValue.X, DisplayObject.EdgeValuesLottery.P / DisplayObject.ComparisonLottery.P));
             DisplayObject.PointsList.Sort((first, second) => first.X.CompareTo(second.X));
         }
     }

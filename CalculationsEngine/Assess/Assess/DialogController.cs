@@ -1,14 +1,15 @@
 using System.Collections.Generic;
 using DataModel.Input;
+using DataModel.Results;
 
 namespace CalculationsEngine.Assess.Assess
 {
     public class DialogController
     {
         public DisplayObject DisplayObject;
-        public List<Point> PointsList;
-        private Point _zeroUtilityPoint;
-        private Point _oneUtilityPoint;
+        public List<PartialUtilityValues> PointsList;
+        private PartialUtilityValues _zeroUtilityPoint;
+        private PartialUtilityValues _oneUtilityPoint;
         private float _p;
         private int _methodId;
         public LotteriesComparisonDialog LotteriesComparisonDialog;
@@ -26,18 +27,18 @@ namespace CalculationsEngine.Assess.Assess
         {
             if (criterion.CriterionDirection.Equals("Cost"))
             {
-                _zeroUtilityPoint = new Point(criterion.MaxValue, 0);
-                _oneUtilityPoint = new Point(criterion.MinValue, 1);
+                _zeroUtilityPoint = new PartialUtilityValues(criterion.MaxValue, 0);
+                _oneUtilityPoint = new PartialUtilityValues(criterion.MinValue, 1);
             }
             else
             {
-                _zeroUtilityPoint = new Point(criterion.MaxValue, 1);
-                _oneUtilityPoint = new Point(criterion.MinValue, 0);
+                _zeroUtilityPoint = new PartialUtilityValues(criterion.MaxValue, 1);
+                _oneUtilityPoint = new PartialUtilityValues(criterion.MinValue, 0);
             }
 
             _methodId = methodId;
             DisplayObject = new DisplayObject();
-            PointsList = new List<Point>();
+            PointsList = new List<PartialUtilityValues>();
             DisplayObject.PointsList = PointsList;
             PointsList.Add(_zeroUtilityPoint);
             PointsList.Add(_oneUtilityPoint);
@@ -63,7 +64,7 @@ namespace CalculationsEngine.Assess.Assess
         }
 
         // firstPoint and secondPoint are edges of chosen utility function segment
-        public Dialog TriggerDialog(Point firstPoint, Point secondPoint)
+        public Dialog TriggerDialog(PartialUtilityValues firstPoint, PartialUtilityValues secondPoint)
         {
             switch (_methodId)
             {
@@ -81,15 +82,15 @@ namespace CalculationsEngine.Assess.Assess
         }
 
 
-        private void setLotteriesComparisonInput(Point firstPoint, Point secondPoint)
+        private void setLotteriesComparisonInput(PartialUtilityValues firstPoint, PartialUtilityValues secondPoint)
         {
-            var upperUtilityPoint = firstPoint.U > secondPoint.U ? firstPoint : secondPoint;
-            var lowerUtilityPoint = firstPoint.U < secondPoint.U ? firstPoint : secondPoint;
+            var upperUtilityPoint = firstPoint.Y > secondPoint.Y ? firstPoint : secondPoint;
+            var lowerUtilityPoint = firstPoint.Y < secondPoint.Y ? firstPoint : secondPoint;
 
             var edgeValuesLottery = new Lottery(_zeroUtilityPoint, _oneUtilityPoint);
-            edgeValuesLottery.SetProbability((float)((upperUtilityPoint.U + lowerUtilityPoint.U) / 2 * DisplayObject.P));
+            edgeValuesLottery.SetProbability((float)((upperUtilityPoint.Y + lowerUtilityPoint.Y) / 2 * DisplayObject.P));
 
-            var mediumUtilityPoint = new Point((upperUtilityPoint.X + lowerUtilityPoint.X) / 2, -1);
+            var mediumUtilityPoint = new PartialUtilityValues((upperUtilityPoint.X + lowerUtilityPoint.X) / 2, -1);
             var comparisonLottery = new Lottery(_zeroUtilityPoint, mediumUtilityPoint);
             comparisonLottery.SetProbability(DisplayObject.P);
 
@@ -100,10 +101,10 @@ namespace CalculationsEngine.Assess.Assess
         private void createLotteriesComparisonObject()
         {
             setLotteriesComparisonInput(_zeroUtilityPoint, _oneUtilityPoint);
-            LotteriesComparisonDialog = new LotteriesComparisonDialog(_zeroUtilityPoint.U, DisplayObject.P, DisplayObject);
+            LotteriesComparisonDialog = new LotteriesComparisonDialog(_zeroUtilityPoint.Y, DisplayObject.P, DisplayObject);
         }
 
-        public Dialog triggerLotteriesComparisonDialog(Point firstPoint, Point secondPoint)
+        public Dialog triggerLotteriesComparisonDialog(PartialUtilityValues firstPoint, PartialUtilityValues secondPoint)
         {
             setLotteriesComparisonInput(firstPoint, secondPoint);
             return LotteriesComparisonDialog;
@@ -112,22 +113,22 @@ namespace CalculationsEngine.Assess.Assess
 
 
 
-        private void setProbabilityComparisonInput(Point firstPoint, Point secondPoint)
+        private void setProbabilityComparisonInput(PartialUtilityValues firstPoint, PartialUtilityValues secondPoint)
         {
-            var upperUtilityPoint = firstPoint.U > secondPoint.U ? firstPoint : secondPoint;
-            var lowerUtilityPoint = firstPoint.U < secondPoint.U ? firstPoint : secondPoint;
+            var upperUtilityPoint = firstPoint.Y > secondPoint.Y ? firstPoint : secondPoint;
+            var lowerUtilityPoint = firstPoint.Y < secondPoint.Y ? firstPoint : secondPoint;
 
             DisplayObject.Lottery = new Lottery(lowerUtilityPoint, upperUtilityPoint);
-            DisplayObject.Lottery.SetProbability((lowerUtilityPoint.U + upperUtilityPoint.U) / 2);
+            DisplayObject.Lottery.SetProbability((lowerUtilityPoint.Y + upperUtilityPoint.Y) / 2);
         }
 
         private void createProbabilityComparisonObject()
         {
             setProbabilityComparisonInput(_zeroUtilityPoint, _oneUtilityPoint);
-            ProbabilityComparisonDialog = new ProbabilityComparisonDialog(_zeroUtilityPoint.U, _oneUtilityPoint.U, DisplayObject);
+            ProbabilityComparisonDialog = new ProbabilityComparisonDialog(_zeroUtilityPoint.Y, _oneUtilityPoint.Y, DisplayObject);
         }
 
-        public Dialog triggerProbabilityComparisonDialog(Point firstPoint, Point secondPoint)
+        public Dialog triggerProbabilityComparisonDialog(PartialUtilityValues firstPoint, PartialUtilityValues secondPoint)
         {
             setProbabilityComparisonInput(firstPoint, secondPoint);
             return ProbabilityComparisonDialog;
@@ -136,10 +137,10 @@ namespace CalculationsEngine.Assess.Assess
 
 
 
-        private void setConstantProbabilityInput(Point firstPoint, Point secondPoint)
+        private void setConstantProbabilityInput(PartialUtilityValues firstPoint, PartialUtilityValues secondPoint)
         {
-            var upperUtilityPoint = firstPoint.U > secondPoint.U ? firstPoint : secondPoint;
-            var lowerUtilityPoint = firstPoint.U < secondPoint.U ? firstPoint : secondPoint;
+            var upperUtilityPoint = firstPoint.Y > secondPoint.Y ? firstPoint : secondPoint;
+            var lowerUtilityPoint = firstPoint.Y < secondPoint.Y ? firstPoint : secondPoint;
 
             DisplayObject.Lottery = new Lottery(lowerUtilityPoint, upperUtilityPoint);
             DisplayObject.Lottery.SetProbability(DisplayObject.P);
@@ -151,7 +152,7 @@ namespace CalculationsEngine.Assess.Assess
             ConstantProbabilityDialog = new ConstantProbabilityDialog(_zeroUtilityPoint.X, _oneUtilityPoint.X, DisplayObject);
         }
 
-        public Dialog triggerConstantProbabilityDialog(Point firstPoint, Point secondPoint)
+        public Dialog triggerConstantProbabilityDialog(PartialUtilityValues firstPoint, PartialUtilityValues secondPoint)
         {
             setConstantProbabilityInput(firstPoint, secondPoint);
             ConstantProbabilityDialog.SetInitialValues();
@@ -161,13 +162,13 @@ namespace CalculationsEngine.Assess.Assess
 
 
 
-        private void setVariableProbabilityInput(Point firstPoint, Point secondPoint)
+        private void setVariableProbabilityInput(PartialUtilityValues firstPoint, PartialUtilityValues secondPoint)
         {
-            var upperUtilityPoint = firstPoint.U > secondPoint.U ? firstPoint : secondPoint;
-            var lowerUtilityPoint = firstPoint.U < secondPoint.U ? firstPoint : secondPoint;
+            var upperUtilityPoint = firstPoint.Y > secondPoint.Y ? firstPoint : secondPoint;
+            var lowerUtilityPoint = firstPoint.Y < secondPoint.Y ? firstPoint : secondPoint;
 
             DisplayObject.Lottery = new Lottery(lowerUtilityPoint, upperUtilityPoint);
-            DisplayObject.Lottery.SetProbability((lowerUtilityPoint.U + upperUtilityPoint.U) / 2);
+            DisplayObject.Lottery.SetProbability((lowerUtilityPoint.Y + upperUtilityPoint.Y) / 2);
         }
 
         private void createVariableProbabilityObject()
@@ -176,7 +177,7 @@ namespace CalculationsEngine.Assess.Assess
             VariableProbabilityDialog = new VariableProbabilityDialog(_zeroUtilityPoint.X, _oneUtilityPoint.X, DisplayObject);
         }
 
-        public Dialog triggerVariableProbabilityDialog(Point firstPoint, Point secondPoint)
+        public Dialog triggerVariableProbabilityDialog(PartialUtilityValues firstPoint, PartialUtilityValues secondPoint)
         {
             setVariableProbabilityInput(firstPoint, secondPoint);
             return VariableProbabilityDialog;

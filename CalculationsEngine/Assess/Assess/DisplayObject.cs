@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DataModel.Input;
+using DataModel.Results;
 
 namespace CalculationsEngine.Assess.Assess
 {
@@ -9,7 +10,7 @@ namespace CalculationsEngine.Assess.Assess
         //partial probability assessment dialog
         public float X;
         public Lottery Lottery;
-        public List<Point> PointsList;
+        public List<PartialUtilityValues> PointsList;
         public Lottery EdgeValuesLottery; //lotteries comparison
         public Lottery ComparisonLottery; //lotteries comparison
 
@@ -23,7 +24,7 @@ namespace CalculationsEngine.Assess.Assess
 
         public DisplayObject()
         {
-            PointsList = new List<Point>();
+            PointsList = new List<PartialUtilityValues>();
         }
 
         public DisplayObject(List<Criterion> criterionList, float[] valuesToCompare, float p)

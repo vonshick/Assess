@@ -1,13 +1,15 @@
 ﻿
+using DataModel.Results;
+
 namespace CalculationsEngine.Assess.Assess
 {
     public class Lottery
     {
         public float P;
-        public Point UpperUtilityValue;
-        public Point LowerUtilityValue;
+        public PartialUtilityValues UpperUtilityValue;
+        public PartialUtilityValues LowerUtilityValue;
 
-        public Lottery(Point lowerUtilityValue, Point upperUtilityValue)
+        public Lottery(PartialUtilityValues lowerUtilityValue, PartialUtilityValues upperUtilityValue)
         {
             LowerUtilityValue = lowerUtilityValue;
             UpperUtilityValue = upperUtilityValue;
@@ -20,7 +22,7 @@ namespace CalculationsEngine.Assess.Assess
 
         public float NewPointUtility()
         {
-            return P * UpperUtilityValue.U + (1 - P) * LowerUtilityValue.U;
+            return P * UpperUtilityValue.Y + (1 - P) * LowerUtilityValue.Y;
         }
     }
 }
