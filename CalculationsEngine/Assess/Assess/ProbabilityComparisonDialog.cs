@@ -1,4 +1,5 @@
 ﻿using System;
+using DataModel.Results;
 
 namespace CalculationsEngine.Assess.Assess
 {

@@ -78,7 +78,7 @@ namespace UTA.ViewModels
 
             if (_method != 3) ResultsText = "wsp. równoważności = " + dialog.DisplayObject.X + ", ";
             ResultsText += "punkty:\n";
-            foreach (var point in dialog.DisplayObject.PointsList) ResultsText += "(" + point.X + ";" + point.U + ")\n";
+            foreach (var point in dialog.DisplayObject.PointsList) ResultsText += "(" + point.X + ";" + point.Y + ")\n";
         }
 
         [NotifyPropertyChangedInvocator]
