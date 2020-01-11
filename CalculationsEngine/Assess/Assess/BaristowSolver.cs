@@ -17,31 +17,30 @@ namespace Assesss
         public ComplexNumber[] w;
         public int it;
         public int st;
-        // 1 
-
-
 
         public BaristowSolver()
         {
+//            n = 4;
+//            a = new double[]
+//            {
+//                0,
+//                0.375 + 0.5 * 3 - 1,
+//                0.375 * 0.5 * 3 + 0.5 * 0.5 * 3,
+//                0.375 * 0.5 * 0.5 * 2 + 0.5 * 0.5 * 0.5,
+//                0.375 * 0.5 * 0.5 * 0.5
+//            };
+
+
+//            a = new double[]
+//            {
+//                -1, 3, -3, 1
+//            };
+
+            n = a.Length - 1;
+
             mit = 1000;
-            //            n = 4;
-            //            a = new double[]
-            //            {
-            //                0.38 * 0.5 * 0.5 * 0.5, 
-            //                0.38 * 0.5 * 0.5 + 0.38 * 0.5 * 0.5 + 0.5 * 0.5 * 0.5,
-            //                0.38 * 0.5 * 3 + 0.5 * 0.5 * 3,
-            //                0.38 + 0.5 * 3 - 1,
-            //                0
-            //            };
-
-            n = 3;
-            a = new double[]
-            {
-                1, 3, 3, 1
-            };
-
             mincorr = 1E-12;
-            zerodet = 1E-16; // wyznacznik, który będzie uznany za zero
+            zerodet = 1E-16;
 
             z = createComplexNumberArray(n);
             w = createComplexNumberArray(n);
@@ -104,7 +103,7 @@ namespace Assesss
                 {
                     if (n == 1)
                     {
-                        z[i].re = b[1] / b[0];
+                        z[i].re = - b[1] / b[0];
                         z[i].im = 0;
                         cond = false;
                     }
@@ -119,7 +118,7 @@ namespace Assesss
                         }
                         else
                         {
-                            pq0 = float.PositiveInfinity;
+                            pq0 = 1E63;
                             pq1 = pq0;
                             endpq = true;
                             do
