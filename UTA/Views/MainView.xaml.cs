@@ -24,13 +24,20 @@ namespace UTA.Views
 
         public MainView()
         {
-            Loaded += ViewLoaded;
             InitializeComponent();
             DataContext = _viewmodel;
 
+            Loaded += (sender, args) =>
+            {
+                _viewmodel.ShowTab(_viewmodel.WelcomeTabViewModel);
+            };
+
             _viewmodel.ChartTabViewModels.CollectionChanged += ChartTabsCollectionChanged;
             var tabViewSource = CollectionViewSource.GetDefaultView(TabControl.Items);
-            tabViewSource.CollectionChanged += TabsCollectionChanged;
+            tabViewSource.CollectionChanged += (sender, args) =>
+            {
+                if (args.Action == NotifyCollectionChangedAction.Add) TabControl.SelectedIndex = _viewmodel.Tabs.Count - 1;
+            };
 
             _menuItemBottomMargin = (Thickness) ShowMenu.FindResource("MenuItemBottomMargin");
 
@@ -42,20 +49,6 @@ namespace UTA.Views
                     else TabControl.SelectedItem = _viewmodel.TabToSelect;
                 }
             };
-        }
-
-        private void ViewLoaded(object sender, RoutedEventArgs e)
-        {
-            _viewmodel.ShowTab(_viewmodel.WelcomeTabViewModel);
-        }
-
-        private void TabsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == NotifyCollectionChangedAction.Add) TabControl.SelectedIndex = _viewmodel.Tabs.Count - 1;
-            else if (e.Action == NotifyCollectionChangedAction.Remove)
-                TabControl.SelectedIndex = _viewmodel.Tabs.Count == e.OldStartingIndex
-                    ? e.OldStartingIndex - 1
-                    : e.OldStartingIndex;
         }
 
         private void TabControlHeaderSizeChanged(object sender, EventArgs e)
@@ -233,25 +226,25 @@ namespace UTA.Views
 
             var dialogResult = await this.ShowMessageAsync(
                 "Quitting application.",
-                "You have unsaved progress. Would you like to save it before leaving?",
+                "Your progress will be lost. Would you like to proceed without saving?",
                 MessageDialogStyle.AffirmativeAndNegativeAndSingleAuxiliary,
                 new MetroDialogSettings
                 {
                     AffirmativeButtonText = "Yes",
-                    NegativeButtonText = "No",
+                    NegativeButtonText = "Save",
                     FirstAuxiliaryButtonText = "Cancel",
                     DialogResultOnCancel = MessageDialogResult.FirstAuxiliary,
-                    DefaultButtonFocus = MessageDialogResult.Affirmative,
+                    DefaultButtonFocus = MessageDialogResult.Negative,
                     AnimateShow = false,
                     AnimateHide = false
                 });
 
-            if (dialogResult == MessageDialogResult.Affirmative)
+            if (dialogResult == MessageDialogResult.Negative)
             {
                 await _viewmodel.SaveMenuItemClicked();
                 Application.Current.Shutdown();
             }
-            else if (dialogResult == MessageDialogResult.Negative)
+            else if (dialogResult == MessageDialogResult.Affirmative)
             {
                 Application.Current.Shutdown();
             }

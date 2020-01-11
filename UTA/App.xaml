@@ -3,8 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:icons="clr-namespace:MahApps.Metro.IconPacks;assembly=MahApps.Metro.IconPacks.Material"
-             xmlns:local="clr-namespace:UTA"
-             xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:converters="clr-namespace:UTA.Converters"
              StartupUri="Views/MainView.xaml">
   <Application.Resources>
@@ -14,11 +12,10 @@
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Cobalt.xaml" />
-        <ResourceDictionary
-          Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
       </ResourceDictionary.MergedDictionaries>
 
-      <converters:IndexToRankConverter x:Key="IndexToRankConverter"/>
+      <converters:IndexToRankConverter x:Key="IndexToRankConverter" />
 
       <!--Cobalt color: #3373F2-->
 
@@ -40,16 +37,22 @@
       <SolidColorBrush x:Key="ColorInterface6Hover" Color="#EAEAEA" />
       <SolidColorBrush x:Key="ColorInterface7Hover" Color="#EEEEEE" />
 
+      <SolidColorBrush x:Key="ColorPlaceholder" Color="#8C8C8C" />
+
       <SolidColorBrush x:Key="ColorPrimary" Color="#3373f2" />
       <SolidColorBrush x:Key="ColorSecondary" Color="#6E6E6E" />
-      <SolidColorBrush x:Key="ColorTertiary" Color="#8C8C8C" />
       <SolidColorBrush x:Key="ColorDanger" Color="#DC000C" />
 
       <SolidColorBrush x:Key="ColorPrimaryHover" Color="#4680f2" />
       <SolidColorBrush x:Key="ColorSecondaryHover" Color="#7C7C7C" />
-      <SolidColorBrush x:Key="ColorTertiaryHover" Color="#9A9A9A" />
       <SolidColorBrush x:Key="ColorDangerHover" Color="#dc3b44" />
-      
+
+      <SolidColorBrush x:Key="ColorPrimaryPressed" Color="#2660D4" />
+      <SolidColorBrush x:Key="ColorSecondaryPressed" Color="#555555" />
+      <SolidColorBrush x:Key="ColorDangerPressed" Color="#BE000C" />
+
+      <SolidColorBrush x:Key="ColorPrimaryDisabled" Color="#333373f2" />
+
       <SolidColorBrush x:Key="ColorBorders1" Color="#AAAAAA" />
       <SolidColorBrush x:Key="ColorBorders2" Color="#B9B9B9" />
       <SolidColorBrush x:Key="ColorBorders3" Color="#E6E6E6" />
@@ -104,29 +107,36 @@
       </Style>
 
       <Style x:Key="PrimaryRoundButton" BasedOn="{StaticResource RoundButton}" TargetType="{x:Type Button}">
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Foreground" Value="{StaticResource ColorFontLight}" />
         <Style.Triggers>
           <Trigger Property="IsMouseOver" Value="True">
             <Setter Property="Background" Value="{StaticResource ColorPrimaryHover}" />
           </Trigger>
-          <Trigger Property="IsMouseOver" Value="False">
-            <Setter Property="Background" Value="{StaticResource ColorPrimary}" />
+          <Trigger Property="IsPressed" Value="True">
+            <Setter Property="Background" Value="{StaticResource ColorPrimaryPressed}" />
+          </Trigger>
+          <Trigger Property="IsEnabled" Value="False">
+            <Setter Property="Background" Value="{StaticResource ColorPrimaryDisabled}" />
           </Trigger>
         </Style.Triggers>
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{StaticResource ColorFontLight}" />
+        <Setter Property="Background" Value="{StaticResource ColorPrimary}" />
+        <Setter Property="Padding" Value="12,4,12,5" />
+        <Setter Property="FontSize" Value="14" />
       </Style>
 
       <Style x:Key="SecondaryRoundButton" BasedOn="{StaticResource RoundButton}" TargetType="{x:Type Button}">
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Foreground" Value="{StaticResource ColorFontLight}" />
         <Style.Triggers>
           <Trigger Property="IsMouseOver" Value="True">
             <Setter Property="Background" Value="{StaticResource ColorSecondaryHover}" />
           </Trigger>
-          <Trigger Property="IsMouseOver" Value="False">
-            <Setter Property="Background" Value="{StaticResource ColorSecondary}" />
+          <Trigger Property="IsPressed" Value="True">
+            <Setter Property="Background" Value="{StaticResource ColorSecondaryPressed}" />
           </Trigger>
         </Style.Triggers>
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{StaticResource ColorFontLight}" />
+        <Setter Property="Background" Value="{StaticResource ColorSecondary}" />
       </Style>
 
       <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource MetroDataGridColumnHeader}"
@@ -140,7 +150,7 @@
           <Setter.Value>
             <ControlTemplate TargetType="{x:Type DataGridCell}">
               <Grid Background="Transparent">
-                <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4,0" />
               </Grid>
             </ControlTemplate>
           </Setter.Value>
@@ -153,7 +163,7 @@
           <Setter.Value>
             <ControlTemplate TargetType="{x:Type DataGridCell}">
               <Grid Background="Transparent">
-                <ContentPresenter VerticalAlignment="Center"/>
+                <ContentPresenter VerticalAlignment="Center" Margin="4,0" />
               </Grid>
             </ControlTemplate>
           </Setter.Value>
@@ -260,6 +270,21 @@
         </ControlTemplate.Triggers>
       </ControlTemplate>
 
+      <ControlTemplate x:Key="RemoveButton" TargetType="{x:Type ButtonBase}">
+        <Border Name="Border" BorderThickness="1" BorderBrush="{StaticResource ColorDanger}" Padding="4"
+                Margin="2" Background="White" CornerRadius="2" VerticalAlignment="Center"
+                HorizontalAlignment="Left">
+          <icons:PackIconMaterial Name="Icon" Kind="Delete" Width="18" Height="18"
+                                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                                  Foreground="{StaticResource ColorDanger}" />
+        </Border>
+        <ControlTemplate.Triggers>
+          <Trigger Property="IsMouseOver" Value="True">
+            <Setter Property="Background" TargetName="Border" Value="{StaticResource ColorDanger}" />
+            <Setter Property="Foreground" TargetName="Icon" Value="White" />
+          </Trigger>
+        </ControlTemplate.Triggers>
+      </ControlTemplate>
 
       <!--global templates-->
 

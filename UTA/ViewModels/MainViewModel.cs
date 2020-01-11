@@ -10,15 +10,16 @@ using System.Windows;
 using CalculationsEngine;
 using DataModel.Input;
 using DataModel.Results;
+using DataModel.Structs;
 using ExportModule;
 using ImportModule;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Win32;
 using Ookii.Dialogs.Wpf;
+using UTA.Annotations;
 using UTA.Interactivity;
 using UTA.Models.DataBase;
 using UTA.Models.Tab;
-using UTA.Annotations;
 
 namespace UTA.ViewModels
 {
@@ -83,33 +84,33 @@ namespace UTA.ViewModels
 
             // TODO: remove. for testing purposes
             // WARNING: using these crashes application at some point
-            //Criteria.CriteriaCollection.Add(new Criterion("A", "ABC", "Gain", 8));
-            //Criteria.CriteriaCollection.Add(new Criterion("B", "ABC", "Gain", 8));
-            //Criteria.CriteriaCollection.Add(new Criterion("C", "ABC", "Gain", 8));
-            //Criteria.CriteriaCollection.Add(new Criterion("D", "ABC", "Gain", 8));
-            //Criteria.CriteriaCollection.Add(new Criterion("E", "ABC", "Gain", 8));
-            //Criteria.CriteriaCollection.Add(new Criterion("F", "ABC", "Gain", 8));
-            //Criteria.CriteriaCollection[0].MinValue = Criteria.CriteriaCollection[1].MinValue = 0;
-            //Criteria.CriteriaCollection[0].MaxValue = Criteria.CriteriaCollection[1].MaxValue = 1;
-            //for (var i = 0; i < 20; i++)
-            //    Alternatives.AlternativesCollection.Add(new Alternative($"Alternative X{i}", new ObservableCollection<Criterion>()));
+            Criteria.CriteriaCollection.Add(new Criterion("A", "ABC", "Gain", 8));
+            Criteria.CriteriaCollection.Add(new Criterion("B", "ABC", "Gain", 8));
+            Criteria.CriteriaCollection.Add(new Criterion("C", "ABC", "Gain", 8));
+            Criteria.CriteriaCollection.Add(new Criterion("D", "ABC", "Gain", 8));
+            Criteria.CriteriaCollection.Add(new Criterion("E", "ABC", "Gain", 8));
+            Criteria.CriteriaCollection.Add(new Criterion("F", "ABC", "Gain", 8));
+            Criteria.CriteriaCollection[0].MinValue = Criteria.CriteriaCollection[1].MinValue = 0;
+            Criteria.CriteriaCollection[0].MaxValue = Criteria.CriteriaCollection[1].MaxValue = 1;
+            for (var i = 0; i < 20; i++)
+                Alternatives.AlternativesCollection.Add(new Alternative($"Alternative X{i}", new ObservableCollection<Criterion>()));
 
-            //for (var i = 0; i < Alternatives.AlternativesCollection.Count; i++)
-            //    foreach (var criterionValue in Alternatives.AlternativesCollection[i].CriteriaValuesList)
-            //        criterionValue.Value = i * 0.1f;
+            for (var i = 0; i < Alternatives.AlternativesCollection.Count; i++)
+                foreach (var criterionValue in Alternatives.AlternativesCollection[i].CriteriaValuesList)
+                    criterionValue.Value = i * 0.1f;
 
-            //for (var i = 0; i < 20; i++)
-            //{
-            //    ReferenceRanking.AddAlternativeToRank(new Alternative { Name = "Reference X" }, i);
-            //    if (i % 2 == 0)
-            //        ReferenceRanking.AddAlternativeToRank(new Alternative { Name = "Reference XX" }, i);
-            //    if (i % 3 == 0)
-            //        ReferenceRanking.AddAlternativeToRank(new Alternative { Name = "Reference XXX" }, i);
-            //}
+            for (var i = 0; i < 20; i++)
+            {
+                ReferenceRanking.AddAlternativeToRank(new Alternative {Name = "Reference X"}, i);
+                if (i % 2 == 0)
+                    ReferenceRanking.AddAlternativeToRank(new Alternative {Name = "Reference XX"}, i);
+                if (i % 3 == 0)
+                    ReferenceRanking.AddAlternativeToRank(new Alternative {Name = "Reference XXX"}, i);
+            }
 
-            //for (var i = 0; i < Alternatives.AlternativesCollection.Count; i++)
-            //    Results.FinalRanking.FinalRankingCollection.Add(new FinalRankingEntry(i, Alternatives.AlternativesCollection[i],
-            //        0.191919f));
+            for (var i = 0; i < Alternatives.AlternativesCollection.Count; i++)
+                Results.FinalRanking.FinalRankingCollection.Add(new FinalRankingEntry(i, Alternatives.AlternativesCollection[i],
+                    0.1919191919f));
 
             // TODO vonshick REMOVE IT AFTER TESTING
             // string dataDirectoryPath = "D:\\Data";
@@ -332,21 +333,21 @@ namespace UTA.ViewModels
 
             var saveDialogResult = await _dialogCoordinator.ShowMessageAsync(this,
                 "Losing current progress.",
-                "Your progress will be lost. Would you like to save it before continuing?",
+                "Your progress will be lost. Would you like to proceed without saving?",
                 MessageDialogStyle.AffirmativeAndNegativeAndSingleAuxiliary,
                 new MetroDialogSettings
                 {
                     AffirmativeButtonText = "Yes",
-                    NegativeButtonText = "No",
+                    NegativeButtonText = "Save",
                     FirstAuxiliaryButtonText = "Cancel",
                     DialogResultOnCancel = MessageDialogResult.FirstAuxiliary,
-                    DefaultButtonFocus = MessageDialogResult.Affirmative,
+                    DefaultButtonFocus = MessageDialogResult.Negative,
                     AnimateShow = false,
                     AnimateHide = false
                 });
 
             if (saveDialogResult == MessageDialogResult.FirstAuxiliary) return false;
-            if (saveDialogResult == MessageDialogResult.Affirmative)
+            if (saveDialogResult == MessageDialogResult.Negative)
                 await SaveTypeChooserDialog();
 
             Results.Reset();
@@ -366,18 +367,20 @@ namespace UTA.ViewModels
             var saveFileWithResultsDialog = await _dialogCoordinator.ShowMessageAsync(this,
                 "Choose save type.",
                 "Would you like to save your progress with or without results?",
-                MessageDialogStyle.AffirmativeAndNegative,
+                MessageDialogStyle.AffirmativeAndNegativeAndSingleAuxiliary,
                 new MetroDialogSettings
                 {
                     AffirmativeButtonText = "Save With Results",
                     NegativeButtonText = "Save Without Results",
+                    FirstAuxiliaryButtonText = "Cancel",
+                    DialogResultOnCancel = MessageDialogResult.FirstAuxiliary,
                     DefaultButtonFocus = MessageDialogResult.Affirmative,
                     AnimateShow = false,
                     AnimateHide = false
                 });
 
             if (saveFileWithResultsDialog == MessageDialogResult.Affirmative) SaveWithResultsAsMenuItemClicked();
-            else SaveAsMenuItemClicked();
+            else if (saveFileWithResultsDialog == MessageDialogResult.Negative) SaveAsMenuItemClicked();
         }
 
         [UsedImplicitly]
@@ -471,7 +474,7 @@ namespace UTA.ViewModels
             }
 
             var dataSaver = new XMCDAExporter(_saveData.FilePath, new List<Criterion>(Criteria.CriteriaCollection),
-                new List<Alternative>(Alternatives.AlternativesCollection), Results) { OverwriteFile = true };
+                new List<Alternative>(Alternatives.AlternativesCollection), Results) {OverwriteFile = true};
             try
             {
                 if (_saveData.IsSavingWithResults == true) dataSaver.saveSession();
@@ -496,7 +499,7 @@ namespace UTA.ViewModels
             var directoryPath = saveXMCDADialog.SelectedPath;
             var dataSaver = new XMCDAExporter(directoryPath, new List<Criterion>(Criteria.CriteriaCollection),
                 new List<Alternative>(Alternatives.AlternativesCollection), Results);
-            
+
             await TryToSave(false, dataSaver, directoryPath);
         }
 

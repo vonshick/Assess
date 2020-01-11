@@ -4,99 +4,105 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-             xmlns:icons="clr-namespace:MahApps.Metro.IconPacks;assembly=MahApps.Metro.IconPacks.Material"
              xmlns:criterion="clr-namespace:DataModel.Input;assembly=DataModel"
              xmlns:validation="clr-namespace:UTA.Models.DataValidation"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="900" Unloaded="TabUnloaded">
-  <Grid Margin="12" Background="{StaticResource ColorInterface7}">
+  <Grid Margin="12,8,12,12" Background="{StaticResource ColorInterface7}">
     <Grid.Resources>
-      <CollectionViewSource x:Key="CriteriaCollectionViewSource" Source="{Binding Criteria.CriteriaCollection, UpdateSourceTrigger=PropertyChanged}" />
+      <CollectionViewSource x:Key="CriteriaCollectionViewSource"
+                            Source="{Binding Criteria.CriteriaCollection, UpdateSourceTrigger=PropertyChanged}" />
     </Grid.Resources>
 
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
-      <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
 
-    <StackPanel Name="AddCriterionContainer" DataContext="{Binding NewCriterion, UpdateSourceTrigger=PropertyChanged}" Orientation="Horizontal"
-                Margin="0,0,0,8"
-                Validation.ErrorTemplate="{x:Null}">
-      <StackPanel.BindingGroup>
-        <BindingGroup />
-      </StackPanel.BindingGroup>
+    <StackPanel>
+      <TextBlock Text="Add Criterion" FontSize="{StaticResource CommonFontSize1}" Margin="0,0,0,8" />
 
-      <StackPanel.Resources>
-        <Style TargetType="{x:Type StackPanel}">
-          <Setter Property="Margin" Value="0,0,12,0" />
-        </Style>
-      </StackPanel.Resources>
+      <StackPanel Name="AddCriterionContainer"
+                  DataContext="{Binding NewCriterion, UpdateSourceTrigger=PropertyChanged}"
+                  Margin="0,0,0,12" Validation.ErrorTemplate="{x:Null}">
+        <StackPanel.BindingGroup>
+          <BindingGroup />
+        </StackPanel.BindingGroup>
 
-      <i:Interaction.Triggers>
-        <i:KeyTrigger Key="Enter" FiredOn="KeyUp">
-          <i:InvokeCommandAction Command="{Binding ElementName=CriteriaDataGrid, Path=DataContext.AddCriterionCommand}"
-                                 CommandParameter="{Binding ElementName=AddCriterionContainer, Path=BindingGroup}" />
-        </i:KeyTrigger>
-      </i:Interaction.Triggers>
+        <i:Interaction.Triggers>
+          <i:KeyTrigger Key="Enter" FiredOn="KeyUp">
+            <i:InvokeCommandAction
+              Command="{Binding ElementName=CriteriaDataGrid, Path=DataContext.AddCriterionCommand}"
+              CommandParameter="{Binding ElementName=AddCriterionContainer, Path=BindingGroup}" />
+          </i:KeyTrigger>
+        </i:Interaction.Triggers>
 
-      <StackPanel>
-        <TextBlock Text="Name" />
-        <TextBox Name="NameTextBox" TextChanged="NameTextBoxTextChanged">
-          <Binding Path="Name" UpdateSourceTrigger="PropertyChanged">
-            <Binding.ValidationRules>
-              <validation:CriterionNameValidationRule
-                CriteriaCollectionViewSource="{StaticResource CriteriaCollectionViewSource}"
-                ValidationStep="RawProposedValue" />
-            </Binding.ValidationRules>
-          </Binding>
-        </TextBox>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+          <StackPanel.Resources>
+            <Style TargetType="{x:Type StackPanel}">
+              <Setter Property="Margin" Value="0,0,12,0" />
+            </Style>
+          </StackPanel.Resources>
+
+          <StackPanel MinWidth="200">
+            <TextBlock Text="Name" Margin="0,0,0,2" />
+            <TextBox Name="NameTextBox" TextChanged="NameTextBoxTextChanged">
+              <Binding Path="Name" UpdateSourceTrigger="PropertyChanged">
+                <Binding.ValidationRules>
+                  <validation:CriterionNameValidationRule
+                    CriteriaCollectionViewSource="{StaticResource CriteriaCollectionViewSource}"
+                    ValidationStep="RawProposedValue" />
+                </Binding.ValidationRules>
+              </Binding>
+            </TextBox>
+          </StackPanel>
+
+          <StackPanel Width="100">
+            <TextBlock Text="Type" Margin="0,0,0,2" />
+            <ComboBox ItemsSource="{Binding CriterionDirectionTypesList}"
+                      SelectedItem="{Binding CriterionDirection, UpdateSourceTrigger=PropertyChanged}" />
+          </StackPanel>
+
+          <StackPanel Width="100">
+            <TextBlock Text="Linear Segments" Margin="0,0,0,2" />
+            <controls:NumericUpDown Value="{Binding LinearSegments, UpdateSourceTrigger=PropertyChanged}"
+                                    Minimum="{x:Static criterion:Criterion.MinNumberOfLinearSegments}"
+                                    Maximum="{x:Static criterion:Criterion.MaxNumberOfLinearSegments}"
+                                    NumericInputMode="Numbers" />
+          </StackPanel>
+        </StackPanel>
+
+        <StackPanel>
+          <TextBlock Text="Description" Margin="0,0,0,2" />
+          <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" MinWidth="424"
+                   HorizontalAlignment="Left" />
+        </StackPanel>
       </StackPanel>
 
-      <StackPanel>
-        <TextBlock Text="Type" />
-        <ComboBox ItemsSource="{Binding CriterionDirectionTypesList}"
-                  SelectedItem="{Binding CriterionDirection, UpdateSourceTrigger=PropertyChanged}" />
-      </StackPanel>
+      <Border Margin="0,0,0,16">
+        <Button Name="AddButton" Content="Add Criterion"
+                Style="{StaticResource PrimaryRoundButton}" MinWidth="424" HorizontalAlignment="Left"
+                Command="{Binding ElementName=CriteriaDataGrid, Path=DataContext.AddCriterionCommand}"
+                CommandParameter="{Binding ElementName=AddCriterionContainer, Path=BindingGroup}" />
+      </Border>
 
-      <StackPanel>
-        <TextBlock Text="Linear Segments" />
-        <controls:NumericUpDown Value="{Binding LinearSegments, UpdateSourceTrigger=PropertyChanged}"
-                                Minimum="{x:Static criterion:Criterion.MinNumberOfLinearSegments}"
-                                Maximum="{x:Static criterion:Criterion.MaxNumberOfLinearSegments}"
-                                NumericInputMode="Numbers" />
-      </StackPanel>
-
-      <StackPanel>
-        <TextBlock Text="Description" />
-        <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Width="200" TextWrapping="Wrap" />
-      </StackPanel>
+      <TextBlock Text="Criteria Editor" FontSize="{StaticResource CommonFontSize1}" Margin="0,0,0,4" />
     </StackPanel>
 
-    <Button Name="AddButton" Grid.Row="1" Content="Add Criterion" Margin="0,0,0,24"
-            Command="{Binding ElementName=CriteriaDataGrid, Path=DataContext.AddCriterionCommand}"
-            CommandParameter="{Binding ElementName=AddCriterionContainer, Path=BindingGroup}" />
 
-    <DataGrid Name="CriteriaDataGrid" Grid.Row="2" ItemsSource="{Binding Criteria.CriteriaCollection, UpdateSourceTrigger=PropertyChanged}"
-              AutoGenerateColumns="False" SelectionMode="Single"
-              BorderBrush="Gray" BorderThickness="1" IsReadOnly="True" CanUserAddRows="False"
-              CanUserReorderColumns="False" CanUserResizeRows="False" IsSynchronizedWithCurrentItem="True"
-              PreviewKeyDown="CriteriaDataGridPreviewKeyDown" LoadingRowDetails="DataGridRowClicked">
-      <DataGrid.CellStyle>
-        <Style TargetType="DataGridCell">
-          <Setter Property="Foreground" Value="Black" />
-          <Setter Property="Background" Value="Transparent" />
-          <Setter Property="BorderThickness" Value="0" />
-          <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>
-      </DataGrid.CellStyle>
-
+    <DataGrid Name="CriteriaDataGrid" Grid.Row="1"
+              ItemsSource="{Binding Criteria.CriteriaCollection, UpdateSourceTrigger=PropertyChanged}"
+              AutoGenerateColumns="False" SelectionMode="Single" EnableRowVirtualization="True"
+              BorderBrush="{StaticResource ColorBorders1}" BorderThickness="1" IsReadOnly="True"
+              EnableColumnVirtualization="True"
+              CanUserAddRows="False" CanUserReorderColumns="False" CanUserResizeRows="False"
+              IsSynchronizedWithCurrentItem="True" HorizontalGridLinesBrush="{StaticResource ColorInterface2}"
+              VerticalGridLinesBrush="{StaticResource ColorInterface2}"
+              PreviewKeyDown="CriteriaDataGridPreviewKeyDown" LoadingRowDetails="DataGridRowClicked"
+              GridLinesVisibility="All">
       <DataGrid.RowStyle>
-        <Style TargetType="DataGridRow">
-          <Setter Property="Background" Value="White" />
-          <Setter Property="BorderThickness" Value="0,0,0,1" />
-          <Setter Property="BorderBrush" Value="{StaticResource ColorInterface3}" />
+        <Style TargetType="{x:Type DataGridRow}">
           <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
               <Setter Property="Background" Value="{StaticResource ColorInterface6}" />
@@ -105,20 +111,21 @@
               <Setter Property="Background" Value="{StaticResource ColorInterface6}" />
             </Trigger>
           </Style.Triggers>
+          <Setter Property="Background" Value="White" />
         </Style>
       </DataGrid.RowStyle>
 
       <DataGrid.RowDetailsTemplate>
         <DataTemplate>
-          <StackPanel Orientation="Horizontal" DataContext="{Binding}" Margin="12,8">
+          <StackPanel Orientation="Horizontal" DataContext="{Binding}" Margin="34,8,12,8">
             <StackPanel.Resources>
               <Style TargetType="{x:Type StackPanel}">
                 <Setter Property="Margin" Value="0,0,12,0" />
               </Style>
             </StackPanel.Resources>
 
-            <StackPanel>
-              <TextBlock Text="Name" />
+            <StackPanel MinWidth="150">
+              <TextBlock Text="Name" Margin="0,0,0,2" />
               <TextBox>
                 <Binding Path="Name" UpdateSourceTrigger="PropertyChanged">
                   <Binding.ValidationRules>
@@ -130,14 +137,14 @@
               </TextBox>
             </StackPanel>
 
-            <StackPanel>
-              <TextBlock Text="Type" />
+            <StackPanel MinWidth="80">
+              <TextBlock Text="Type" Margin="0,0,0,2" />
               <ComboBox ItemsSource="{Binding CriterionDirectionTypesList}"
                         SelectedItem="{Binding CriterionDirection, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
 
-            <StackPanel>
-              <TextBlock Text="Linear Segments" />
+            <StackPanel MinWidth="100">
+              <TextBlock Text="Linear Segments" Margin="0,0,0,2" />
               <controls:NumericUpDown
                 Value="{Binding LinearSegments, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                 Minimum="{x:Static criterion:Criterion.MinNumberOfLinearSegments}"
@@ -145,8 +152,8 @@
                 NumericInputMode="Numbers" />
             </StackPanel>
 
-            <StackPanel>
-              <TextBlock Text="Description" />
+            <StackPanel MinWidth="150">
+              <TextBlock Text="Description" Margin="0,0,0,2" />
               <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
           </StackPanel>
@@ -154,25 +161,11 @@
       </DataGrid.RowDetailsTemplate>
 
       <DataGrid.Columns>
-        <DataGridTemplateColumn>
+        <DataGridTemplateColumn CanUserResize="False">
           <DataGridTemplateColumn.CellTemplate>
             <ItemContainerTemplate>
               <Button Command="{Binding ElementName=CriteriaDataGrid, Path=DataContext.RemoveCriterionCommand}"
-                      CommandParameter="{Binding}" Margin="4">
-                <Button.Template>
-                  <ControlTemplate TargetType="{x:Type ButtonBase}">
-                    <Border x:Name="Border" BorderThickness="1" BorderBrush="{StaticResource ColorDanger}"
-                            Background="Transparent" CornerRadius="2" VerticalAlignment="Center">
-                      <ContentPresenter Margin="4" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
-                    <ControlTemplate.Triggers>
-                      <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" TargetName="Border" Value="{StaticResource ColorInterface6Hover}" />
-                      </Trigger>
-                    </ControlTemplate.Triggers>
-                  </ControlTemplate>
-                </Button.Template>
-
+                      CommandParameter="{Binding}" Template="{StaticResource RemoveButton}">
                 <i:Interaction.Triggers>
                   <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                     <i:InvokeCommandAction
@@ -180,17 +173,22 @@
                       CommandParameter="{Binding}" />
                   </i:EventTrigger>
                 </i:Interaction.Triggers>
-
-                <icons:PackIconMaterial Kind="Delete" Width="16" Height="16" Foreground="{StaticResource ColorDanger}" />
               </Button>
             </ItemContainerTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
 
-        <DataGridTextColumn Header="Name" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
-        <DataGridTextColumn Header="Type" Binding="{Binding CriterionDirection, UpdateSourceTrigger=PropertyChanged}" />
-        <DataGridTextColumn Header="Linear Segments" Binding="{Binding LinearSegments, UpdateSourceTrigger=PropertyChanged}" />
-        <DataGridTextColumn Header="Description" Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}" />
+        <DataGridTextColumn Header="Name" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                            CellStyle="{StaticResource LeftSidedDataGridCell}" MinWidth="150" />
+        <DataGridTextColumn Header="Type" Binding="{Binding CriterionDirection, UpdateSourceTrigger=PropertyChanged}"
+                            CellStyle="{StaticResource CenteredDataGridCell}"
+                            HeaderStyle="{StaticResource CenteredDataGridColumnHeader}" />
+        <DataGridTextColumn Header="Linear Segments"
+                            CellStyle="{StaticResource CenteredDataGridCell}"
+                            HeaderStyle="{StaticResource CenteredDataGridColumnHeader}"
+                            Binding="{Binding LinearSegments, UpdateSourceTrigger=PropertyChanged}" />
+        <DataGridTextColumn Header="Description" Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
+                            CellStyle="{StaticResource LeftSidedDataGridCell}" />
       </DataGrid.Columns>
     </DataGrid>
   </Grid>

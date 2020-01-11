@@ -93,7 +93,7 @@
                         <ItemsPresenter />
                         <Border Background="Transparent" Height="26">
                           <TextBlock Text="Drop alternative here..." FontSize="{StaticResource CommonFontSize2}"
-                                     Foreground="{StaticResource ColorTertiary}"
+                                     Foreground="{StaticResource ColorPlaceholder}"
                                      TextAlignment="Center" VerticalAlignment="Center" />
                         </Border>
                       </StackPanel>
@@ -141,7 +141,7 @@
                   <ItemsPresenter />
                   <Border Background="Transparent" Height="26">
                     <TextBlock Text="Drop alternative here..." FontSize="{StaticResource CommonFontSize2}"
-                               Foreground="{StaticResource ColorTertiary}"
+                               Foreground="{StaticResource ColorPlaceholder}"
                                TextAlignment="Center" VerticalAlignment="Center" />
                   </Border>
                 </StackPanel>

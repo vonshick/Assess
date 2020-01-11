@@ -93,8 +93,7 @@ namespace UTA.Views
                     },
                     Header = _viewmodel.Criteria.CriteriaCollection[i].Name,
                     HeaderStyle = _criterionValueHeaderStyle,
-                    CellStyle = _criterionValueCellStyle,
-                    MinWidth = 113
+                    CellStyle = _criterionValueCellStyle
                 };
 
                 _criterionValuesColumns.Add(criterionValueColumn);
