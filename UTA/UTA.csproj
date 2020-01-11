@@ -84,6 +84,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Views\UserDialogueDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\AboutDialogView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -92,7 +96,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\UserDialogueTab.xaml">
+    <Page Include="Views\PartialUtilityTab.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -134,18 +138,23 @@
     <Compile Include="ViewModels\AlternativesTabViewModel.cs" />
     <Compile Include="ViewModels\ChartTabViewModel.cs" />
     <Compile Include="ViewModels\CriteriaTabViewModel.cs" />
+    <Compile Include="ViewModels\UserDialogueDialogViewModel.cs" />
     <Compile Include="ViewModels\ReferenceRankingTabViewModel.cs" />
     <Compile Include="ViewModels\WelcomeTabViewModel.cs" />
     <Compile Include="ViewModels\UserDialogueTabViewModel.cs" />
+    <Compile Include="ViewModels\PartialUtilityTabViewModel.cs" />
     <Compile Include="ViewModels\SettingsTabViewModel.cs" />
+    <Compile Include="Views\UserDialogueDialog.xaml.cs">
+      <DependentUpon>UserDialogueDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\AboutDialogView.xaml.cs">
       <DependentUpon>AboutDialogView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\AlternativesTab.xaml.cs">
       <DependentUpon>AlternativesTab.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\UserDialogueTab.xaml.cs">
-      <DependentUpon>UserDialogueTab.xaml</DependentUpon>
+    <Compile Include="Views\PartialUtilityTab.xaml.cs">
+      <DependentUpon>PartialUtilityTab.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ChartTab.xaml.cs">
       <DependentUpon>ChartTab.xaml</DependentUpon>

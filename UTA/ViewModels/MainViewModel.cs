@@ -44,7 +44,7 @@ namespace UTA.ViewModels
             Tabs.CollectionChanged += TabsCollectionChanged;
             ChartTabViewModels = new ObservableCollection<ChartTabViewModel>();
             ShowTabCommand = new RelayCommand(tabViewModel => ShowTab((ITab) tabViewModel));
-            UserDialogueTabViewModels = new ObservableCollection<UserDialogueTabViewModel>();
+            UserDialogueTabViewModels = new ObservableCollection<PartialUtilityTabViewModel>();
 
             CriteriaTabViewModel = new CriteriaTabViewModel(Criteria);
             AlternativesTabViewModel = new AlternativesTabViewModel(Criteria, Alternatives);
@@ -176,7 +176,7 @@ namespace UTA.ViewModels
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
                 Console.WriteLine("Adding UserDialogueTabViewModels tab for " + ((Criterion)e.NewItems[0]).Name);
-                UserDialogueTabViewModels.Add(new UserDialogueTabViewModel((Criterion) e.NewItems[0]));
+                UserDialogueTabViewModels.Add(new PartialUtilityTabViewModel((Criterion) e.NewItems[0]));
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
@@ -197,7 +197,7 @@ namespace UTA.ViewModels
 
         public ObservableCollection<ITab> Tabs { get; }
         public ObservableCollection<ChartTabViewModel> ChartTabViewModels { get; }
-        public ObservableCollection<UserDialogueTabViewModel> UserDialogueTabViewModels { get; }
+        public ObservableCollection<PartialUtilityTabViewModel> UserDialogueTabViewModels { get; }
         public RelayCommand ShowTabCommand { get; }
 
         public CriteriaTabViewModel CriteriaTabViewModel { get; }

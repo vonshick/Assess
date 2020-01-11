@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using DataModel.Input;
 
 namespace CalculationsEngine.Assess.Assess
 {
@@ -26,7 +27,7 @@ namespace CalculationsEngine.Assess.Assess
         {
             ContinueDialog = true;
 
-            if (criterion.CriterionDirection.Equals("c"))
+            if (criterion.CriterionDirection.Equals("Cost"))
             {
                 ZeroUtilityPoint = new Point(criterion.MaxValue, 0);
                 OneUtilityPoint = new Point(criterion.MinValue, 1);
@@ -335,7 +336,7 @@ namespace CalculationsEngine.Assess.Assess
 
             for (int i = 0; i < criterionList.Count; i++)
             {
-                if (criterionList[i].CriterionDirection == "c")
+                if (criterionList[i].CriterionDirection == "Cost")
                 {
                     bestValues.Add(minValues[i]);
                     worstValues.Add(maxValues[i]);

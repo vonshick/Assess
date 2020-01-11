@@ -20,7 +20,7 @@ namespace CalculationsEngine.Assess.Assess
 
             return "";
         }
-        protected override void setInitialValues()
+        public override void setInitialValues()
         {
             DisplayObject.X = (DisplayObject.Lottery.LowerUtilityValue.X + DisplayObject.Lottery.UpperUtilityValue.X) / 2;
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DataModel.Input;
 
 namespace CalculationsEngine.Assess.Assess
 {
@@ -23,7 +24,7 @@ namespace CalculationsEngine.Assess.Assess
 
             for (int i = 0; i < _criterionList.Count; i++)
             {
-                if (_criterionList[i].CriterionDirection == "c")
+                if (_criterionList[i].CriterionDirection == "Cost")
                 {
                     _bestValues.Add(_criterionList[i].MinValue);
                     _worstValues.Add(_criterionList[i].MaxValue);

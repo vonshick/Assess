@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DataModel.Input;
 
 namespace CalculationsEngine.Assess.Assess
 {
@@ -8,10 +9,10 @@ namespace CalculationsEngine.Assess.Assess
         private static List<Criterion> createSampleCriteria()
         {
             List<Criterion> sampleCriteriaList = new List<Criterion>();
-            sampleCriteriaList.Add(new Criterion("CONS", "c", 6.1f, 9.7f));
-            sampleCriteriaList.Add(new Criterion("SPACE", "g", 4.93f, 8.67f));
-            sampleCriteriaList.Add(new Criterion("PRICE", "c", 28.8f, 72.17f));
-            sampleCriteriaList.Add(new Criterion("SPEED", "g", 110f, 190f));
+//            sampleCriteriaList.Add(new Criterion("CONS", """c", 6.1f, 9.7f));
+//            sampleCriteriaList.Add(new Criterion("SPACE", "g", 4.93f, 8.67f));
+//            sampleCriteriaList.Add(new Criterion("PRICE", "c", 28.8f, 72.17f));
+//            sampleCriteriaList.Add(new Criterion("SPEED", "g", 110f, 190f));
 
             return sampleCriteriaList;
         }

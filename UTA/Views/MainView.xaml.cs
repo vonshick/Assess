@@ -191,7 +191,7 @@ namespace UTA.Views
                     if ((string)lastMenuItem.Tag != "Dialogue") ShowMenu.Items.Add(new Separator());
                 }
 
-                var newUserDialogueTabViewModel = (UserDialogueTabViewModel) e.NewItems[0];
+                var newUserDialogueTabViewModel = (PartialUtilityTabViewModel) e.NewItems[0];
                 var newMenuItem = new MenuItem { Header = newUserDialogueTabViewModel.Name, Margin = _menuItemBottomMargin, Tag = "Dialogue" };
                 newMenuItem.Click += (s, args) => _viewmodel.ShowTab(newUserDialogueTabViewModel);
                 ShowMenu.Items.Add(newMenuItem);
@@ -199,7 +199,7 @@ namespace UTA.Views
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
-                var removedUserDialogueTabViewModel = (UserDialogueTabViewModel) e.OldItems[0];
+                var removedUserDialogueTabViewModel = (PartialUtilityTabViewModel) e.OldItems[0];
                 var menuItemToRemove = ShowMenu.Items.OfType<MenuItem>().First(menuItem => menuItem.Header == removedUserDialogueTabViewModel.Name);
                 ShowMenu.Items.Remove(menuItemToRemove);
 

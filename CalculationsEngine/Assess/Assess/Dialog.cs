@@ -19,7 +19,7 @@ namespace CalculationsEngine.Assess.Assess
         protected float lowerUtilityBoundary;
         protected float upperUtilityBoundary;
 
-        protected virtual void setInitialValues()
+        public virtual void setInitialValues()
         {
 
         }
@@ -44,22 +44,17 @@ namespace CalculationsEngine.Assess.Assess
             return "";
         }
 
-        public void ProcessDialog(string choice)
+        public void ProcessDialog(int choice)
         {
-            setInitialValues();
-//            string choice = displayDialog();
-
-            if (choice.Equals("1"))
+            if (choice == 1)
             {
                 setValuesIfSureChosen();
-//                ProcessDialog();
             }
-            else if (choice.Equals("2"))
+            else if (choice == 2)
             {
                 setValuesIfLotteryChosen();
-//                ProcessDialog();
             }
-            else if (choice.Equals("3"))
+            else if (choice == 3)
             {
                 setValuesIfEqualChosen();
             }
@@ -69,6 +64,9 @@ namespace CalculationsEngine.Assess.Assess
                 // remove the warning - it's useful only for developers
                 throw new System.Exception("Assess: wrong choice ID passed to ProcessDialog()");
             }
+            setInitialValues();
+            //todo remove, its console output
+            displayDialog();
         }
 
     }

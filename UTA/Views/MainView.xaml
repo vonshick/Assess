@@ -546,8 +546,8 @@
             <DataTemplate DataType="{x:Type viewModels:WelcomeTabViewModel}">
               <views:WelcomeTab />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type viewModels:UserDialogueTabViewModel}">
-              <views:UserDialogueTab />
+            <DataTemplate DataType="{x:Type viewModels:PartialUtilityTabViewModel}">
+              <views:PartialUtilityTab />
             </DataTemplate>
           </TabControl.Resources>
 

@@ -23,7 +23,7 @@ namespace CalculationsEngine.Assess.Assess
 
             return "";
         }
-        protected override void setInitialValues()
+        public override void setInitialValues()
         {
             DisplayObject.X = (lowerUtilityBoundary + upperUtilityBoundary) / 2;
         }

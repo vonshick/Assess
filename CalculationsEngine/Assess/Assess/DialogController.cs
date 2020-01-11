@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DataModel.Input;
 
 namespace CalculationsEngine.Assess.Assess
 {
@@ -23,7 +24,7 @@ namespace CalculationsEngine.Assess.Assess
         // 4 - probability comparison
         public DialogController(Criterion criterion, int methodId, float p = 0)
         {
-            if (criterion.CriterionDirection.Equals("c"))
+            if (criterion.CriterionDirection.Equals("Cost"))
             {
                 _zeroUtilityPoint = new Point(criterion.MaxValue, 0);
                 _oneUtilityPoint = new Point(criterion.MinValue, 1);
@@ -64,26 +65,19 @@ namespace CalculationsEngine.Assess.Assess
         // firstPoint and secondPoint are edges of chosen utility function segment
         public Dialog TriggerDialog(Point firstPoint, Point secondPoint)
         {
-            Dialog dialog = null;
             switch (_methodId)
             {
                 case 1:
-                    dialog = triggerConstantProbabilityDialog(firstPoint, secondPoint);
-                    break;
+                    return triggerConstantProbabilityDialog(firstPoint, secondPoint);
                 case 2:
-                    triggerVariableProbabilityDialog(firstPoint, secondPoint);
-                    break;
+                    return triggerVariableProbabilityDialog(firstPoint, secondPoint);
                 case 3:
-                    triggerLotteriesComparisonDialog(firstPoint, secondPoint);
-                    break;
+                    return triggerLotteriesComparisonDialog(firstPoint, secondPoint);
                 case 4:
-                    triggerProbabilityComparisonDialog(firstPoint, secondPoint);
-                    break;
+                    return triggerProbabilityComparisonDialog(firstPoint, secondPoint);
                 default:
                     throw new System.Exception("Assess error: wrong dialog method chosen.");
             }
-
-            return dialog;
         }
 
 
@@ -160,6 +154,7 @@ namespace CalculationsEngine.Assess.Assess
         public Dialog triggerConstantProbabilityDialog(Point firstPoint, Point secondPoint)
         {
             setConstantProbabilityInput(firstPoint, secondPoint);
+            ConstantProbability.setInitialValues();
             return ConstantProbability;
 //            ConstantProbability.ProcessDialog();
         }
