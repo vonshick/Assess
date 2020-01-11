@@ -18,9 +18,9 @@ namespace CalculationsEngine.Assess.Assess
         public int it;
         public int st;
 
-        public BaristowSolver(double[] coefficents)
+        public BaristowSolver(List<double> kCoefficients)
         {
-            a = coefficents;
+            a = getPolynomialCoefficients(kCoefficients);
             n = a.Length - 1;
             mit = (int)1E6;
             mincorr = 1E-63;
@@ -41,6 +41,35 @@ namespace CalculationsEngine.Assess.Assess
             }
         }
 
+        private double[] getPolynomialCoefficients(List<double> list)
+        {
+            double count = Math.Pow(2, list.Count);
+            double[] coefficients = new double[list.Count + 1];
+
+            for (int i = 1; i <= count - 1; i++)
+            {
+                string str = Convert.ToString(i, 2).PadLeft(list.Count, '0');
+
+                List<double> elements = new List<double>();
+
+                for (int j = 0; j < str.Length; j++)
+                {
+                    if (str[j] == '1')
+                    {
+                        elements.Add(list[j]);
+                    }
+                }
+
+                coefficients[elements.Count] += elements.Aggregate((a, x) => a * x);
+            }
+
+            // suiting to Keeney-Raiffa utility function for alternative with best values
+            coefficients[0] = 0;
+            coefficients[1] -= 1;
+
+            return coefficients;
+        }
+
         private ComplexNumber[] createComplexNumberArray(int n)
         {
             List<ComplexNumber> ComplexNumberList = new List<ComplexNumber>();
@@ -53,7 +82,7 @@ namespace CalculationsEngine.Assess.Assess
             return ComplexNumberList.ToArray();
         }
 
-        private void solve()
+        private void getRoots()
         {
             int i, k, n1;
 
@@ -285,7 +314,7 @@ namespace CalculationsEngine.Assess.Assess
 
         public double GetScallingCoefficient()
         {
-            solve();
+            getRoots();
             return getSuitableRoot();
         }
     }
