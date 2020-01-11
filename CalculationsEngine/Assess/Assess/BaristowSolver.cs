@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Assesss
+namespace CalculationsEngine.Assess.Assess
 {
     public class BaristowSolver
     {
@@ -18,30 +18,13 @@ namespace Assesss
         public int it;
         public int st;
 
-        public BaristowSolver()
+        public BaristowSolver(double[] coefficents)
         {
-//            n = 4;
-//            a = new double[]
-//            {
-//                0,
-//                0.375 + 0.5 * 3 - 1,
-//                0.375 * 0.5 * 3 + 0.5 * 0.5 * 3,
-//                0.375 * 0.5 * 0.5 * 2 + 0.5 * 0.5 * 0.5,
-//                0.375 * 0.5 * 0.5 * 0.5
-//            };
-
-
-//            a = new double[]
-//            {
-//                -1, 3, -3, 1
-//            };
-
+            a = coefficents;
             n = a.Length - 1;
-
-            mit = 1000;
-            mincorr = 1E-12;
-            zerodet = 1E-16;
-
+            mit = (int)1E6;
+            mincorr = 1E-63;
+            zerodet = 1E-63;
             z = createComplexNumberArray(n);
             w = createComplexNumberArray(n);
         }

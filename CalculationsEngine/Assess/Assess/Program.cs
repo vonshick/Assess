@@ -24,17 +24,48 @@ namespace CalculationsEngine.Assess.Assess
 
         static void Main(string[] args)
         {
-            var sampleCriteriaList = createSampleCriteria();
+            // var sampleCriteriaList = createSampleCriteria();
 
-            //            CoefficientsDialog coefficientsDialog = new CoefficientsDialog(sampleCriteriaList);
-            //            coefficientsDialog.GetCoefficientsForCriteria();
+            // //            CoefficientsDialog coefficientsDialog = new CoefficientsDialog(sampleCriteriaList);
+            // //            coefficientsDialog.GetCoefficientsForCriteria();
 
-            // countKCoefficient(assessCoefficientsDialog.CriteriaCoefficientsList);
+            // // countKCoefficient(assessCoefficientsDialog.CriteriaCoefficientsList);
 
-            DialogController dialogController = new DialogController(sampleCriteriaList[0], 2, 0.3f);
+            // DialogController dialogController = new DialogController(sampleCriteriaList[0], 2, 0.3f);
 
-            dialogController.TriggerDialog(dialogController.PointsList[0], dialogController.PointsList[1]);
+            // dialogController.TriggerDialog(dialogController.PointsList[0], dialogController.PointsList[1]);
 
+            // Console.ReadLine();
+
+
+
+            //check how Baristow solver works
+            var coefficients = new double[]
+            {
+//                0,
+//                0.25 + 0.5 + 0.75 + 0.875 - 1,
+//                0.25 * (0.5 + 0.75 + 0.875) + 0.5 * (0.75 + 0.875) + 0.75 * 0.875,
+//                0.25*0.5*0.75 + 0.25*0.5*0.875 + 0.25*0.75*0.875 + 0.5*0.75*0.875,
+//                0.25 * 0.5 * 0.75 * 0.875
+
+                0,
+                0.25 + 0.5 + 0.5 + 0.5 - 1,
+                0.25 * (0.5 + 0.5 + 0.5) + 0.5 * (0.5 + 0.5) + 0.5 * 0.5,
+                0.25*0.5*0.5 + 0.25*0.5*0.5 + 0.25*0.5*0.5 + 0.5*0.5*0.5,
+                0.25 * 0.5 * 0.5 * 0.5
+
+//                0,
+//                0.375 + 0.5 + 0.5 + 0.5 - 1,
+//                0.375 * (0.5 + 0.5 + 0.5) + 0.5 * (0.5 + 0.5) + 0.5 * 0.5,
+//                0.375*0.5*0.5 + 0.375*0.5*0.5 + 0.375*0.5*0.5 + 0.5*0.5*0.5,
+//                0.375 * 0.5 * 0.5 * 0.5
+
+//                1024, 3840, 5760, 4320, 1620, 243
+            };
+
+            BaristowSolver baristow = new BaristowSolver(coefficients);
+            
+            baristow.Solve();
             Console.ReadLine();
         }
     }
