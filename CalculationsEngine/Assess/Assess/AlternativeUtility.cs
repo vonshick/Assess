@@ -5,7 +5,7 @@ using DataModel.Input;
 
 namespace CalculationsEngine.Assess.Assess
 {
-    public class AlternativeUtility
+    public struct AlternativeUtility
     {
         public Alternative Alternative;
         public double Utility;

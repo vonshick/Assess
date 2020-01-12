@@ -7,7 +7,7 @@ namespace DataModel.Results
 {
     public class FinalRanking : INotifyPropertyChanged
     {
-        private ObservableCollection<FinalRankingEntry> _finalRankingCollection;
+        protected ObservableCollection<FinalRankingEntry> finalRankingCollection;
 
 
         public FinalRanking()
@@ -23,10 +23,10 @@ namespace DataModel.Results
 
         public ObservableCollection<FinalRankingEntry> FinalRankingCollection
         {
-            get => _finalRankingCollection;
+            get => finalRankingCollection;
             set
             {
-                _finalRankingCollection = value;
+                finalRankingCollection = value;
                 OnPropertyChanged(nameof(FinalRankingCollection));
             }
         }
