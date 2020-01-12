@@ -12,6 +12,7 @@ namespace ImportModule
     public class XMCDALoader : DataLoader
     {
         private string currentlyProcessedAlternativeId;
+        private string currentlyProcessedCriterionId;
         private string currentlyProcessedFile;
         private string xmcdaDirectory;
 
@@ -26,7 +27,8 @@ namespace ImportModule
         private bool checkIfResultsAvailable()
         {
             if (!File.Exists(Path.Combine(xmcdaDirectory, "alternatives_ranks.xml")) ||
-                !File.Exists(Path.Combine(xmcdaDirectory, "value_functions.xml")))
+                !File.Exists(Path.Combine(xmcdaDirectory, "value_functions.xml")) ||
+                !File.Exists(Path.Combine(xmcdaDirectory, "criteria_segments.xml")))
                 return false;
 
             return true;
@@ -189,6 +191,30 @@ namespace ImportModule
                 }
         }
 
+        private bool compareCriterionIds(Criterion criterion)
+        {
+            return criterion.ID.Equals(currentlyProcessedCriterionId);
+        }
+
+        private void LoadCriteriaSegments()
+        {
+            var xmlDocument = loadFile("criteria_segments.xml");
+
+            foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
+            foreach (XmlNode criterionSegments in xmlNode.ChildNodes)
+                // first node containts alternative ID
+                if (criterionSegments.Name == "criterionID")
+                {
+                    currentlyProcessedCriterionId = criterionSegments.InnerText;
+                }
+                else
+                {
+                    var numberOfSegments = int.Parse(criterionSegments.ChildNodes[0].InnerText);
+                    var criterionIndex = criterionList.FindIndex(compareCriterionIds);
+                    criterionList[criterionIndex].LinearSegments = numberOfSegments;
+                }
+        }
+
         private void LoadValueFunctions()
         {
             var xmlDocument = loadFile("value_functions.xml");
@@ -248,6 +274,7 @@ namespace ImportModule
             if (checkIfResultsAvailable())
             {
                 LoadAlternativesRanks();
+                LoadCriteriaSegments();
                 LoadValueFunctions();
             }
         }

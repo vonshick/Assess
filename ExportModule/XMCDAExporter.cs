@@ -219,15 +219,15 @@ namespace ExportModule
             initializeWriter(Path.Combine(outputDirectory, "criteria_segments.xml"));
             xmcdaWriter.WriteStartElement("criteriaValues");
 
-            foreach (PartialUtility partialUtility in results.PartialUtilityFunctions)
+            foreach (Criterion criterion in criterionList)
             {
                 xmcdaWriter.WriteStartElement("criterionValue");
                 xmcdaWriter.WriteStartElement("criterionID");
-                xmcdaWriter.WriteString(partialUtility.Criterion.ID);
+                xmcdaWriter.WriteString(criterion.ID);
                 xmcdaWriter.WriteEndElement();
                 xmcdaWriter.WriteStartElement("value");
                 xmcdaWriter.WriteStartElement("integer");
-                xmcdaWriter.WriteString(partialUtility.PointsValues.Count.ToString());
+                xmcdaWriter.WriteString(criterion.LinearSegments.ToString());
                 xmcdaWriter.WriteEndElement();
                 xmcdaWriter.WriteEndElement();
                 xmcdaWriter.WriteEndElement();
