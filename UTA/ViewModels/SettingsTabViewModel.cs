@@ -10,7 +10,8 @@ namespace UTA.ViewModels
     {
         // TODO: set defaults later
         private byte _plotsPartialUtilityDecimalPlaces = 3;
-        private float _deltaThreshold = 0.02f;
+        private double _deltaThreshold = 0.05;
+        private double _epsilonThreshold = 0.0000001;
 
         public SettingsTabViewModel()
         {
@@ -29,7 +30,7 @@ namespace UTA.ViewModels
             }
         }
 
-        public float DeltaThreshold
+        public double DeltaThreshold
         {
             get => _deltaThreshold;
             set
@@ -38,6 +39,18 @@ namespace UTA.ViewModels
                 if (value < 0 || value > 1) throw new ArgumentException("Value must be between 0 - 1 inclusive.");
                 _deltaThreshold = value;
                 OnPropertyChanged(nameof(DeltaThreshold));
+            }
+        }
+
+        public double EpsilonThreshold
+        {
+            get => _epsilonThreshold;
+            set
+            {
+                if (value.Equals(_epsilonThreshold)) return;
+                if (value < 0 || value > 1) throw new ArgumentException("Value must be between 0 - 1 inclusive.");
+                _epsilonThreshold = value;
+                OnPropertyChanged(nameof(EpsilonThreshold));
             }
         }
 

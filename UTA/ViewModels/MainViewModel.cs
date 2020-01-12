@@ -10,6 +10,7 @@ using System.Windows;
 using CalculationsEngine;
 using DataModel.Input;
 using DataModel.Results;
+using DataModel.Structs;
 using ExportModule;
 using ImportModule;
 using MahApps.Metro.Controls.Dialogs;
@@ -25,9 +26,10 @@ namespace UTA.ViewModels
     public class MainViewModel : INotifyPropertyChanged
     {
         private readonly IDialogCoordinator _dialogCoordinator;
-        private bool _preserveKendallCoefficient = true;
+        private bool _preserveKendallCoefficient = false;
         private SaveData _saveData;
         private ITab _tabToSelect;
+        private Solver _solver;
 
         public MainViewModel(IDialogCoordinator dialogCoordinator)
         {
@@ -192,6 +194,7 @@ namespace UTA.ViewModels
             {
                 if (_preserveKendallCoefficient == value) return;
                 _preserveKendallCoefficient = value;
+                _solver?.UpdatePreserveKendallCoefficient(_preserveKendallCoefficient);
                 OnPropertyChanged(nameof(PreserveKendallCoefficient));
             }
         }
@@ -338,15 +341,18 @@ namespace UTA.ViewModels
 
             var alternativesDeepCopy = Alternatives.GetDeepCopyOfAlternatives();
             var alternativesWithoutRanksCopy = alternativesDeepCopy.Where(alternative => alternative.ReferenceRank == null).ToList();
-            var solver = new Solver(
+            _solver = new Solver(
                 ReferenceRanking.GetDeepCopyOfReferenceRanking(alternativesDeepCopy),
                 Criteria.GetDeepCopyOfCriteria(),
                 alternativesWithoutRanksCopy,
-                Results);
-            solver.Calculate();
+                Results,
+                PreserveKendallCoefficient,
+                SettingsTabViewModel.DeltaThreshold,
+                SettingsTabViewModel.EpsilonThreshold);
+            _solver.Calculate();
             foreach (var partialUtility in Results.PartialUtilityFunctions)
             {
-                var viewModel = new ChartTabViewModel(solver, partialUtility, SettingsTabViewModel, RefreshCharts);
+                var viewModel = new ChartTabViewModel(_solver, partialUtility, SettingsTabViewModel, RefreshCharts);
                 ChartTabViewModels.Add(viewModel);
                 Tabs.Add(viewModel);
             }
@@ -405,6 +411,7 @@ namespace UTA.ViewModels
             if (saveDialogResult == MessageDialogResult.Negative)
                 await SaveTypeChooserDialog();
 
+            _solver = null;
             Results.Reset();
             ReferenceRanking.Reset();
             Alternatives.Reset();
@@ -479,33 +486,34 @@ namespace UTA.ViewModels
             if (!await NewSolution()) return;
 
             var filePath = openDirectoryDialog.SelectedPath;
-            //try
-            //{
-            var dataLoader = new XMCDALoader();
-            dataLoader.LoadData(filePath);
-            // TODO: check if everything works (vonshick)
-            Criteria.CriteriaCollection = new ObservableCollection<Criterion>(dataLoader.CriterionList);
-            // works assuming that CriteriaValuesList and ReferenceRank property are initialized properly
-            Alternatives.AlternativesCollection = new ObservableCollection<Alternative>(dataLoader.AlternativeList);
-            Results.KendallCoefficient = dataLoader.Results.KendallCoefficient;
-            Results.PartialUtilityFunctions = dataLoader.Results.PartialUtilityFunctions;
-            Results.FinalRanking.FinalRankingCollection = dataLoader.Results.FinalRanking.FinalRankingCollection;
-            if (Results.PartialUtilityFunctions.Count <= 0) return;
-            // TODO: check
-            var alternativesDeepCopy = Alternatives.GetDeepCopyOfAlternatives();
-            var alternativesWithoutRanksCopy = alternativesDeepCopy.Where(alternative => alternative.ReferenceRank == null).ToList();
-            var referenceRankingDeepCopy = ReferenceRanking.GetDeepCopyOfReferenceRanking(alternativesDeepCopy);
-            var solver = new Solver(
-                referenceRankingDeepCopy,
-                Criteria.GetDeepCopyOfCriteria(),
-                alternativesWithoutRanksCopy,
-                Results);
-            solver.LoadState(Results.PartialUtilityFunctions, referenceRankingDeepCopy, alternativesWithoutRanksCopy, Results);
-            //}
-            //catch (Exception exception)
-            //{
-            //    ShowLoadErrorDialog(exception);
-            //}
+            try
+            {
+                var dataLoader = new XMCDALoader();
+                dataLoader.LoadData(filePath);
+                // TODO: check if everything works (vonshick)
+                Criteria.CriteriaCollection = new ObservableCollection<Criterion>(dataLoader.CriterionList);
+                // works assuming that CriteriaValuesList and ReferenceRank property are initialized properly
+                Alternatives.AlternativesCollection = new ObservableCollection<Alternative>(dataLoader.AlternativeList);
+                Results.PartialUtilityFunctions = dataLoader.Results.PartialUtilityFunctions;
+                if (Results.PartialUtilityFunctions.Count <= 0) return;
+                // TODO: check
+                var alternativesDeepCopy = Alternatives.GetDeepCopyOfAlternatives();
+                var alternativesWithoutRanksCopy = alternativesDeepCopy.Where(alternative => alternative.ReferenceRank == null).ToList();
+                var referenceRankingDeepCopy = ReferenceRanking.GetDeepCopyOfReferenceRanking(alternativesDeepCopy);
+                _solver = new Solver(
+                    referenceRankingDeepCopy,
+                    Criteria.GetDeepCopyOfCriteria(),
+                    alternativesWithoutRanksCopy,
+                    Results,
+                    PreserveKendallCoefficient,
+                    SettingsTabViewModel.DeltaThreshold,
+                    SettingsTabViewModel.EpsilonThreshold);
+                _solver.LoadState(Results.PartialUtilityFunctions, referenceRankingDeepCopy, alternativesWithoutRanksCopy, Results);
+            }
+            catch (Exception exception)
+            {
+                ShowLoadErrorDialog(exception);
+            }
         }
 
         private async void ShowLoadErrorDialog(Exception exception)

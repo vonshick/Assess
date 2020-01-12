@@ -19,7 +19,18 @@
             Foreground="{StaticResource ColorSecondary}" Margin="0,0,0,4" />
           <controls:NumericUpDown
             Value="{Binding DeltaThreshold, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
-            Minimum="0" Maximum="1" NumericInputMode="All" StringFormat="G7" Interval="0.01" MinWidth="120" HorizontalAlignment="Left" />
+            Minimum="0" Maximum="1" NumericInputMode="Decimal" Interval="0.01" MinWidth="120" HorizontalAlignment="Left" />
+        </StackPanel>
+
+        <StackPanel Margin="0,0,0,20">
+          <TextBlock Text="Epsilon threshold for discrimination of zero" FontSize="{StaticResource CommonFontSize2}"
+                     Margin="0,0,0,2" />
+          <TextBlock
+            Text="Controls the threshold value of epsilon for discrimination of zero in model exploitation."
+            Foreground="{StaticResource ColorSecondary}" Margin="0,0,0,4" />
+          <controls:NumericUpDown
+            Value="{Binding EpsilonThreshold, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+            Minimum="0" Maximum="1" NumericInputMode="Decimal" StringFormat="F8" Interval="0.0000001" MinWidth="120" HorizontalAlignment="Left" />
         </StackPanel>
 
         <StackPanel Margin="0,0,0,20">
