@@ -171,29 +171,29 @@ namespace UTA.ViewModels
             //Results.KendallCoefficient = 0.191919191919f;
 
             // TODO vonshick REMOVE IT AFTER TESTING
-               string dataDirectoryPath = "D:\\Data";
-               DataLoader dataLoader = SampleImport.ProcessSampleData(dataDirectoryPath); // csv
-//               SampleExport.exportXMCDA(dataDirectoryPath, dataLoader.CriterionList, dataLoader.AlternativeList);
-
-//               CoefficientsDialog coefficientsDialog = new CoefficientsDialog(dataLoader.CriterionList);
-//               coefficientsDialog.GetCoefficientsForCriteria();
-//               List<CriterionCoefficient> criteriaCoefficientsList = coefficientsDialog.CriteriaCoefficientsList;
-
-               List<CriterionCoefficient> criteriaCoefficientsList = new List<CriterionCoefficient>();
-               List<PartialUtility> partialUtilitiesList = new List<PartialUtility>();
-               DialogController dialogController;
-
-               foreach (Criterion criterion in dataLoader.CriterionList)
-               {
-                   dialogController = new DialogController(criterion, 1, 0.3f);
-                   dialogController.TriggerDialog(dialogController.PointsList[0], dialogController.PointsList[1]);
-                   partialUtilitiesList.Add(new PartialUtility(criterion, dialogController.DisplayObject.PointsList));
-                   criteriaCoefficientsList.Add(new CriterionCoefficient(criterion.Name, 0.5f));
-               }
-
-               var utilitiesCalculator = new UtilitiesCalculator(dataLoader.AlternativeList, dataLoader.CriterionList, partialUtilitiesList, criteriaCoefficientsList);
-               utilitiesCalculator.CalculateGlobalUtilities();
-               FinalRankingAssess finalRankingAssess = new FinalRankingAssess(utilitiesCalculator.AlternativesUtilitiesList);
+//               string dataDirectoryPath = "D:\\Data";
+//               DataLoader dataLoader = SampleImport.ProcessSampleData(dataDirectoryPath); // csv
+////               SampleExport.exportXMCDA(dataDirectoryPath, dataLoader.CriterionList, dataLoader.AlternativeList);
+//
+////               CoefficientsDialog coefficientsDialog = new CoefficientsDialog(dataLoader.CriterionList);
+////               coefficientsDialog.GetCoefficientsForCriteria();
+////               List<CriterionCoefficient> criteriaCoefficientsList = coefficientsDialog.CriteriaCoefficientsList;
+//
+//               List<CriterionCoefficient> criteriaCoefficientsList = new List<CriterionCoefficient>();
+//               List<PartialUtility> partialUtilitiesList = new List<PartialUtility>();
+//               DialogController dialogController;
+//
+//               foreach (Criterion criterion in dataLoader.CriterionList)
+//               {
+//                   dialogController = new DialogController(criterion, 1, 0.3f); // 1. criterion object 2. Dialog type (integer from 1 to 4 - description in DialogController) 3. P
+//                   dialogController.TriggerDialog(dialogController.PointsList[0], dialogController.PointsList[1]); // ends of the selected segment
+//                   partialUtilitiesList.Add(new PartialUtility(criterion, dialogController.DisplayObject.PointsList));
+//                   criteriaCoefficientsList.Add(new CriterionCoefficient(criterion.Name, 0.5f)); // mock for coefficients which we can get from CoefficientsDialog - example a few lines above
+//               }
+//
+//               var utilitiesCalculator = new UtilitiesCalculator(dataLoader.AlternativeList, dataLoader.CriterionList, partialUtilitiesList, criteriaCoefficientsList);
+//               utilitiesCalculator.CalculateGlobalUtilities();
+//               FinalRankingAssess finalRankingAssess = new FinalRankingAssess(utilitiesCalculator.AlternativesUtilitiesList);
         }
 
         private void UpdateDialogueTabs(object sender, NotifyCollectionChangedEventArgs e)
