@@ -171,36 +171,29 @@ namespace UTA.ViewModels
             //Results.KendallCoefficient = 0.191919191919f;
 
             // TODO vonshick REMOVE IT AFTER TESTING
-//               string dataDirectoryPath = "D:\\Data";
-//               DataLoader dataLoader = SampleImport.ProcessSampleData(dataDirectoryPath); // csv
-//               // SampleExport.exportXMCDA(dataDirectoryPath, dataLoader.CriterionList, dataLoader.AlternativeList);
+               string dataDirectoryPath = "D:\\Data";
+               DataLoader dataLoader = SampleImport.ProcessSampleData(dataDirectoryPath); // csv
+//               SampleExport.exportXMCDA(dataDirectoryPath, dataLoader.CriterionList, dataLoader.AlternativeList);
 
-//   //            CoefficientsDialog coefficientsDialog = new CoefficientsDialog(dataLoader.CriterionList);
-//   //            coefficientsDialog.GetCoefficientsForCriteria();
+//               CoefficientsDialog coefficientsDialog = new CoefficientsDialog(dataLoader.CriterionList);
+//               coefficientsDialog.GetCoefficientsForCriteria();
+//               List<CriterionCoefficient> criteriaCoefficientsList = coefficientsDialog.CriteriaCoefficientsList;
 
-//               List<PartialUtility> partialUtilitiesList = new List<PartialUtility>();
-//               List<CriterionCoefficient> criteriaCoefficientsList = new List<CriterionCoefficient>();
-//               DialogController dialogController;
+               List<CriterionCoefficient> criteriaCoefficientsList = new List<CriterionCoefficient>();
+               List<PartialUtility> partialUtilitiesList = new List<PartialUtility>();
+               DialogController dialogController;
 
-//               foreach (Criterion criterion in dataLoader.CriterionList)
-//               {
-//                   dialogController = new DialogController(criterion, 1, 0.3f);
-//                   dialogController.TriggerDialog(dialogController.PointsList[0], dialogController.PointsList[1]);
-//                   partialUtilitiesList.Add(new PartialUtility(criterion, dialogController.DisplayObject.PointsList));
-//                   criteriaCoefficientsList.Add(new CriterionCoefficient(criterion.Name, 0.5f));
-//               }
+               foreach (Criterion criterion in dataLoader.CriterionList)
+               {
+                   dialogController = new DialogController(criterion, 1, 0.3f);
+                   dialogController.TriggerDialog(dialogController.PointsList[0], dialogController.PointsList[1]);
+                   partialUtilitiesList.Add(new PartialUtility(criterion, dialogController.DisplayObject.PointsList));
+                   criteriaCoefficientsList.Add(new CriterionCoefficient(criterion.Name, 0.5f));
+               }
 
-//               //            var kCoefficients = new List<double>(new double[] { 0.25, 0.5, 0.5, 0.5});
-//               //            var kCoefficients = new List<double>(new double[] { 0.25, 0.5, 0.75, 0.875});
-
-//               List<double> kCoefficients = criteriaCoefficientsList.Select(o => (double)o.Coefficient).ToList();
-//               BaristowSolver baristow = new BaristowSolver(kCoefficients);
-//               double K = baristow.GetScallingCoefficient();
-
-
-//               var utilitiesCalculator = new UtilitiesCalculator(dataLoader.AlternativeList, dataLoader.CriterionList, partialUtilitiesList, criteriaCoefficientsList, K);
-//               utilitiesCalculator.CalculateUtilities();
-//                 FinalRankingAssess finalRankingAssess = new FinalRankingAssess(utilitiesCalculator.AlternativesUtilitiesList);
+               var utilitiesCalculator = new UtilitiesCalculator(dataLoader.AlternativeList, dataLoader.CriterionList, partialUtilitiesList, criteriaCoefficientsList);
+               utilitiesCalculator.CalculateGlobalUtilities();
+               FinalRankingAssess finalRankingAssess = new FinalRankingAssess(utilitiesCalculator.AlternativesUtilitiesList);
         }
 
         private void UpdateDialogueTabs(object sender, NotifyCollectionChangedEventArgs e)

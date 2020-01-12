@@ -18,15 +18,11 @@ namespace CalculationsEngine.Assess.Assess
         public int it;
         public int st;
 
-        public BaristowSolver(List<double> kCoefficients)
+        public BaristowSolver()
         {
-            a = getPolynomialCoefficients(kCoefficients);
-            n = a.Length - 1;
             mit = (int)1E6;
             mincorr = 1E-63;
             zerodet = 1E-63;
-            z = createComplexNumberArray(n);
-            w = createComplexNumberArray(n);
         }
 
         public struct ComplexNumber
@@ -312,8 +308,17 @@ namespace CalculationsEngine.Assess.Assess
             return minImComplexNumber.re;
         }
 
-        public double GetScallingCoefficient()
+        private void setInitialValues(List<double> kCoefficients)
         {
+            a = getPolynomialCoefficients(kCoefficients);
+            n = a.Length - 1;
+            z = createComplexNumberArray(n);
+            w = createComplexNumberArray(n);
+        }
+
+        public double GetScalingCoefficient(List<double> kCoefficients)
+        {
+            setInitialValues(kCoefficients);
             getRoots();
             return getSuitableRoot();
         }
