@@ -12,37 +12,60 @@ namespace UTA.ViewModels
 {
     public class PartialUtilityTabViewModel : Tab, INotifyPropertyChanged
     {
-        private int _method;
         private string _resultsText;
+        private string _textOptionLottery;
+        private string _textOptionSure;
         private bool _utilityAssessed;
+
 
         public PartialUtilityTabViewModel(Criterion criterion)
         {
             Criterion = criterion;
             Name = "Utility - " + criterion.Name;
-            StartButtonEnabled = true;
             ResultsText = "Results will be here after finished dialogue";
+            StartButtonText = "Start Assessment";
 
             StartDialogueCommand = new RelayCommand(_ =>
             {
-                //todo ask for method first
-                _method = int.Parse(Method);
-                //todo remove
-                Criterion.MinValue = float.Parse(StartPoint);
-                Criterion.MaxValue = float.Parse(EndPoint);
-                Console.WriteLine(Criterion.CriterionDirection);
-                var dialogController = new DialogController(Criterion, _method, 0.3f);
-                var dialog = dialogController.TriggerDialog(dialogController.PointsList[0], dialogController.PointsList[1]);
-                ShowDialogueDialog(dialog, Criterion);
+                StartButtonText = "Restart Assessment";
+                ShowMethodDialog();
+                Console.WriteLine(Criterion.MinValue + ", max: " + Criterion.MaxValue);
+                DialogController = new DialogController(Criterion, Method, 0.3f);
+                Dialog = DialogController.TriggerDialog(DialogController.PointsList[0], DialogController.PointsList[1]);
+                Dialog.SetInitialValues();
+                SetUtilityAssessmentTextBlocks(Dialog);
+            });
+            TakeSureCommand = new RelayCommand(_ =>
+            {
+                Dialog.ProcessDialog(1);
+                SetUtilityAssessmentTextBlocks(Dialog);
+            });
+            TakeLotteryCommand = new RelayCommand(_ =>
+            {
+                Dialog.ProcessDialog(2);
+                SetUtilityAssessmentTextBlocks(Dialog);
+            });
+            TakeIndifferentCommand = new RelayCommand(_ =>
+            {
+                Dialog.ProcessDialog(3);
+                UtilityAssessed = true;
+                DigestResults(Dialog);
             });
         }
 
+        public int Method { get; set; }
+
+        private Dialog Dialog { get; set; }
+
+        private DialogController DialogController { get; set; }
+
         public Criterion Criterion { get; }
         public RelayCommand StartDialogueCommand { get; }
-        public string Method { get; set; }
-        public string StartPoint { get; set; }
-        public string EndPoint { get; set; }
-        public bool StartButtonEnabled { get; set; }
+        public RelayCommand TakeSureCommand { get; }
+        public RelayCommand TakeLotteryCommand { get; }
+        public RelayCommand TakeIndifferentCommand { get; }
+        public string StartButtonText { get; set; }
+
 
         public bool UtilityAssessed
         {
@@ -66,24 +89,60 @@ namespace UTA.ViewModels
             }
         }
 
+        public string TextOptionSure
+        {
+            get => _textOptionSure;
+            set
+            {
+                _textOptionSure = value;
+                OnPropertyChanged(nameof(TextOptionSure));
+            }
+        }
+
+        public string TextOptionLottery
+        {
+            get => _textOptionLottery;
+            set
+            {
+                _textOptionLottery = value;
+                OnPropertyChanged(nameof(TextOptionLottery));
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void ShowDialogueDialog(Dialog dialog, Criterion criterion)
+        public void ShowMethodDialog()
         {
-            StartButtonEnabled = false;
+            Console.WriteLine("Showing dialog for " + Criterion.Name);
+            var methodDialogViewModel = new AssessmentMethodDialogViewModel(Criterion.Name);
+            var assessmentMethodDialog = new AssessmentMethodDialog();
+            assessmentMethodDialog.DataContext = methodDialogViewModel;
+            assessmentMethodDialog.ShowDialog();
+            Method = methodDialogViewModel.Method;
+        }
 
-            var userDialogueDialogViewModel = new UserDialogueDialogViewModel(dialog, criterion, _method);
-            var userDialogueDialog = new UserDialogueDialog {DataContext = userDialogueDialogViewModel};
-            if (_method == 3)
+        private void SetUtilityAssessmentTextBlocks(Dialog dialog)
+        {
+            if (Method == 3)
             {
-                userDialogueDialog.ButtonSure.Content = "Lottery 1";
-                userDialogueDialog.ButtonLottery.Content = "Lottery 2";
+                TextOptionSure = "Criterion " + Criterion.Name + "\nIf you prefer a lottery which gives you " + dialog.DisplayObject.ComparisonLottery.UpperUtilityValue.X +
+                                 " with probability " + dialog.DisplayObject.ComparisonLottery.P +
+                                 " or " + dialog.DisplayObject.ComparisonLottery.LowerUtilityValue.X + " with probability " +
+                                 (1 - dialog.DisplayObject.ComparisonLottery.P) + ", click Lottery 1";
+                TextOptionLottery = "If you prefer a lottery which gives you " +
+                                    dialog.DisplayObject.EdgeValuesLottery.UpperUtilityValue.X +
+                                    " with probability " + dialog.DisplayObject.EdgeValuesLottery.P +
+                                    " or " + dialog.DisplayObject.EdgeValuesLottery.LowerUtilityValue.X + " with probability " +
+                                    (1 - dialog.DisplayObject.EdgeValuesLottery.P) + ", click Lottery 2";
             }
-
-            userDialogueDialog.ShowDialog();
-            UtilityAssessed = userDialogueDialogViewModel.UtilityAssessed;
-            StartButtonEnabled = true;
-            DigestResults(dialog);
+            else
+            {
+                TextOptionSure = "Criterion " + Criterion.Name + "\nIf you prefer to have " + dialog.DisplayObject.X + " for sure, click Take Sure.";
+                TextOptionLottery = "If you prefer a lottery which gives you " + dialog.DisplayObject.Lottery.UpperUtilityValue.X +
+                                    " with probability " + dialog.DisplayObject.Lottery.P +
+                                    " or " + dialog.DisplayObject.Lottery.LowerUtilityValue.X + " with probability " +
+                                    (1 - dialog.DisplayObject.Lottery.P + ", click Take Lottery");
+            }
         }
 
         //todo temporary to show result
@@ -91,7 +150,7 @@ namespace UTA.ViewModels
         {
             ResultsText = "";
 
-            if (_method != 3) ResultsText = "wsp. równoważności = " + dialog.DisplayObject.X + ", ";
+            if (Method != 3) ResultsText = "wsp. równoważności = " + dialog.DisplayObject.X + ", ";
             ResultsText += "punkty:\n";
             foreach (var point in dialog.DisplayObject.PointsList) ResultsText += "(" + point.X + ";" + point.Y + ")\n";
         }

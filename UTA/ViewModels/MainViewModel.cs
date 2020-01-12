@@ -22,8 +22,6 @@ using UTA.Annotations;
 using UTA.Helpers;
 using UTA.Models;
 using UTA.Models.Tab;
-using UTA.Annotations;
-using UTA.Views;
 
 namespace UTA.ViewModels
 {
@@ -32,7 +30,6 @@ namespace UTA.ViewModels
         private readonly IDialogCoordinator _dialogCoordinator;
         private bool _preserveKendallCoefficient;
         private SaveData _saveData;
-        private Solver _solver;
         private ITab _tabToSelect;
 
         public MainViewModel(IDialogCoordinator dialogCoordinator)
@@ -41,7 +38,6 @@ namespace UTA.ViewModels
             ReferenceRanking = new ReferenceRanking();
             Alternatives = new Alternatives(Criteria, ReferenceRanking);
             Results = new Results();
-            NotAssessedCriteriaCollection = new ObservableCollection<Criterion>();
 
             _dialogCoordinator = dialogCoordinator;
             _saveData = new SaveData(null, null);
@@ -58,7 +54,6 @@ namespace UTA.ViewModels
             SettingsTabViewModel = new SettingsTabViewModel();
             WelcomeTabViewModel = new WelcomeTabViewModel();
 
-            Criteria.CriteriaCollection.CollectionChanged += UpdateDialogueTabs;
             Criteria.CriteriaCollection.CollectionChanged += InstancePropertyChanged;
             Alternatives.AlternativesCollection.CollectionChanged += InstancePropertyChanged;
             ReferenceRanking.RankingsCollection.CollectionChanged += InstancePropertyChanged;
@@ -197,37 +192,6 @@ namespace UTA.ViewModels
 //               FinalRankingAssess finalRankingAssess = new FinalRankingAssess(utilitiesCalculator.AlternativesUtilitiesList);
         }
 
-        public ObservableCollection<Criterion> NotAssessedCriteriaCollection { get; set; }
-
-        private void UpdateDialogueTabs(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == NotifyCollectionChangedAction.Add)
-            {
-                Criterion criterion = (Criterion) e.NewItems[0];
-                var partialUtilityTabViewModel = new PartialUtilityTabViewModel(criterion);
-                partialUtilityTabViewModel.PropertyChanged += (s, args) =>
-                {
-                    if (args.PropertyName != nameof(partialUtilityTabViewModel.UtilityAssessed)) return;
-                    if (partialUtilityTabViewModel.UtilityAssessed)
-                        NotAssessedCriteriaCollection.Remove(partialUtilityTabViewModel.Criterion);
-                    else
-                        NotAssessedCriteriaCollection.Add(partialUtilityTabViewModel.Criterion);
-                };
-                PartialUtilityTabViewModels.Add(partialUtilityTabViewModel);
-                NotAssessedCriteriaCollection.Add(criterion);
-            }
-            else if (e.Action == NotifyCollectionChangedAction.Remove)
-            {
-                var removedCriterion = (Criterion) e.OldItems[0];
-                var associatedUserDialogueTabViewModel = PartialUtilityTabViewModels.First(tabViewModel => tabViewModel.Criterion.Name == removedCriterion.Name);
-                var tabToClose = Tabs.FirstOrDefault(tab => tab.Name == associatedUserDialogueTabViewModel.Name);
-                if (tabToClose != null) tabToClose.CloseCommand.Execute(null);
-                PartialUtilityTabViewModels.Remove(associatedUserDialogueTabViewModel);
-                if (NotAssessedCriteriaCollection.Contains(removedCriterion))
-                    NotAssessedCriteriaCollection.Remove(removedCriterion);
-            }
-        }
-
         public bool Recalculate
         {
             get => _recalculate;
@@ -337,17 +301,23 @@ namespace UTA.ViewModels
                 return;
             }
 
-            if (NotAssessedCriteriaCollection.Count != 0)
-            {
-                ShowCalculateErrorDialog("All partial utility functions must be defined. Please finish assessment for all criteria!");
-                foreach (var criterion in NotAssessedCriteriaCollection)
-                {
-                    ShowTab(PartialUtilityTabViewModels.First(vm => vm.Criterion.Name == criterion.Name));
-                }
-                return;
-            }
+            //TODO show it in one tab
+            //            ShowCoeffAssessmentTab();
+            ShowPartialUtilityTabs();
+        }
 
-            ShowScalingCoeffDialogs();
+        private void ShowPartialUtilityTabs()
+        {
+            foreach (var partialUtilityTabViewModel in PartialUtilityTabViewModels) Tabs.Remove(partialUtilityTabViewModel);
+            PartialUtilityTabViewModels.Clear();
+
+            foreach (var criterion in Criteria.CriteriaCollection)
+            {
+                var partialUtilityTabViewModel = new PartialUtilityTabViewModel(criterion);
+                PartialUtilityTabViewModels.Add(partialUtilityTabViewModel);
+                Tabs.Add(partialUtilityTabViewModel);
+                if (PartialUtilityTabViewModels.Count > 0) ShowTab(PartialUtilityTabViewModels[0]);
+            }
         }
 
         private void AddTabIfNeeded(ITab tab)
@@ -355,11 +325,8 @@ namespace UTA.ViewModels
             if (!Tabs.Contains(tab)) Tabs.Add(tab);
         }
 
-        public bool CalculationCompleted { get; set; }
-
-        private async void ShowScalingCoeffDialogs()
+        private async void ShowCoeffAssessmentTab()
         {
-
             var invalidCriteriaValuesNames = new List<string>();
             foreach (var criterion in Criteria.CriteriaCollection)
                 if (Math.Abs(criterion.MaxValue - criterion.MinValue) < 0.00000001)
@@ -387,20 +354,19 @@ namespace UTA.ViewModels
                 return;
             }
 
-            CoefficientsDialog coefficientsDialog = new CoefficientsDialog(Criteria.CriteriaCollection.ToList());
-            foreach (var criterion in Criteria.CriteriaCollection)
-            {
-                if(!ShowScalingCoeffDialog(coefficientsDialog, criterion))
-                    return;
-            }
-            CalculationCompleted = true;
+            var coefficientsDialog = new CoefficientsDialog(Criteria.CriteriaCollection.ToList());
+//            foreach (var criterion in Criteria.CriteriaCollection)
+//            {
+//                if(!ShowScalingCoeffDialog(coefficientsDialog, criterion))
+//                    return;
+//            }
         }
 
         private bool ShowScalingCoeffDialog(CoefficientsDialog dialog, Criterion criterion)
         {
-            var userDialogueDialogViewModel = new UserDialogueDialogViewModel(dialog, criterion);
-            var userDialogueDialog = new UserDialogueDialog() { DataContext = userDialogueDialogViewModel };
-            userDialogueDialog.ShowDialog();
+            var userDialogueDialogViewModel = new CoefficientAssessmentTabViewModel(dialog, criterion);
+//            var userDialogueDialog = new CoefficientAssessmentTab() { DataContext = userDialogueDialogViewModel };
+            ShowTab(userDialogueDialogViewModel);
             return userDialogueDialogViewModel.UtilityAssessed;
         }
 

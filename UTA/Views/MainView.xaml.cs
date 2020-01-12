@@ -80,6 +80,14 @@ namespace UTA.Views
         {
             if (_tabStackPanel == null) _tabStackPanel = (StackPanel) TabControl.Template.FindName("TabStackPanel", TabControl);
             ((FrameworkElement) _tabStackPanel.Children[TabControl.SelectedIndex]).BringIntoView();
+//            Console.WriteLine("BringCurrentTabIntoView");
+//            if (_viewmodel.TabToSelect is PartialUtilityTabViewModel vm)
+//            {
+//                if (!vm.MethodDialogDisplayed)
+//                    vm.ShowMethodDialog();
+//                else
+//                    Console.WriteLine(((PartialUtilityTabViewModel) _viewmodel.TabToSelect).MethodDialogDisplayed + " for " + ((PartialUtilityTabViewModel)_viewmodel.TabToSelect).Criterion.Name);
+//            }
         }
 
         private void Expander_Toggled(object sender, RoutedEventArgs e)

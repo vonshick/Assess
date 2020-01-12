@@ -84,7 +84,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Views\UserDialogueDialog.xaml">
+    <Page Include="Views\AssessmentMethodDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\CoefficientAssessmentTab.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -134,17 +138,22 @@
     </Compile>
     <Compile Include="Helpers\DataValidation\AlternativeNameValidationRule.cs" />
     <Compile Include="Helpers\DataValidation\CriterionNameValidationRule.cs" />
+    <Compile Include="Converters\AssessMethodConverter.cs" />
     <Compile Include="Converters\IndexToRankConverter.cs" />
     <Compile Include="ViewModels\AlternativesTabViewModel.cs" />
     <Compile Include="ViewModels\ChartTabViewModel.cs" />
     <Compile Include="ViewModels\CriteriaTabViewModel.cs" />
-    <Compile Include="ViewModels\UserDialogueDialogViewModel.cs" />
+    <Compile Include="ViewModels\AssessmentMethodDialogViewModel.cs" />
+    <Compile Include="ViewModels\CoefficientAssessmentTabViewModel.cs" />
     <Compile Include="ViewModels\ReferenceRankingTabViewModel.cs" />
     <Compile Include="ViewModels\WelcomeTabViewModel.cs" />
     <Compile Include="ViewModels\PartialUtilityTabViewModel.cs" />
     <Compile Include="ViewModels\SettingsTabViewModel.cs" />
-    <Compile Include="Views\UserDialogueDialog.xaml.cs">
-      <DependentUpon>UserDialogueDialog.xaml</DependentUpon>
+    <Compile Include="Views\AssessmentMethodDialog.xaml.cs">
+      <DependentUpon>AssessmentMethodDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CoefficientAssessmentTab.xaml.cs">
+      <DependentUpon>CoefficientAssessmentTab.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\AboutDialogView.xaml.cs">
       <DependentUpon>AboutDialogView.xaml</DependentUpon>

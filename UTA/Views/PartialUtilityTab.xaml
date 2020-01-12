@@ -5,26 +5,34 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="900">
-  <Grid Margin="12,8" Background="{StaticResource ColorInterface7}">
-    <Grid.RowDefinitions>
-      <RowDefinition Height="Auto" />
-      <RowDefinition Height="Auto" />
-      <RowDefinition Height="Auto" />
-      <RowDefinition Height="*" />
-    </Grid.RowDefinitions>
+  <ScrollViewer>
+    <StackPanel Margin="12,8" Background="{StaticResource ColorInterface7}">
+      <TextBlock Text="Chart will be here" FontSize="18" Margin="8,8,12,8" />
+      <TextBlock Text="{Binding Criterion.Name}" FontSize="18" Margin="8,8,12,8" />
+      <Button Name="StartButton" Width="50" Command="{Binding StartDialogueCommand}" Content="{Binding StartButtonText}"/>
 
-    <TextBlock Grid.Row="0" Text="Chart will be here" FontSize="18" Margin="8,8,12,8" />
-    <StackPanel Grid.Row="1" Orientation="Horizontal">
-      <Label Content="Start:" />
-      <TextBox Text="{Binding StartPoint}" Margin="10" Width="Auto" MinWidth="70" Name="StartPoint" />
-      <Label Content="End:" />
-      <TextBox Text="{Binding EndPoint}" Margin="10" Width="Auto" MinWidth="70" Name="EndPoint" />
-      <Label Content="Method:" />
-      <TextBox Text="{Binding Method}" Margin="10" Width="Auto" MinWidth="70" Name="Method" />
-      <Button Name="StartButton" Command="{Binding StartDialogueCommand}">Start assessment</Button>
-      <Label Name="WarningLabel" Content="" FontWeight="Bold" />
+
+      <TextBlock Text="{Binding ResultsText, UpdateSourceTrigger=PropertyChanged}" Name="ResultsTextBlock"
+                 TextWrapping="Wrap" FontSize="18" Margin="8,8,12,8" />
+
+      <TextBlock HorizontalAlignment="Center" Text="Partial utility function construction dialogue" FontSize="18"
+                 Margin="0,0,0,8" />
+
+      <TextBlock HorizontalAlignment="Center" Name="OptionSure"
+                 Text="{Binding TextOptionSure, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" FontSize="14"
+                 Margin="0,0,0,8" />
+
+      <TextBlock HorizontalAlignment="Center" Name="OptionLottery"
+                 Text="{Binding TextOptionLottery, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap"
+                 FontSize="14" Margin="0,0,0,8" />
+      <TextBlock HorizontalAlignment="Center" Name="OptionIndifferent"
+                 Text="If you are indifferent press Indifferent button" TextWrapping="Wrap" FontSize="14"
+                 Margin="0,0,0,8" />
+
+      <Button Name="ButtonSure" Command="{Binding TakeSureCommand}" Content="Take Sure" />
+      <Button Name="ButtonLottery" Command="{Binding TakeLotteryCommand}" Content="Take Lottery" />
+      <Button Name="ButtonIndifferent" Command="{Binding TakeIndifferentCommand}" Content="Indifferent" />
+
     </StackPanel>
-    <TextBlock Text="{Binding ResultsText, UpdateSourceTrigger=PropertyChanged}" Grid.Row="2" Name="ResultsTextBlock"
-               TextWrapping="Wrap" FontSize="18" Margin="8,8,12,8" />
-  </Grid>
+  </ScrollViewer>
 </UserControl>
