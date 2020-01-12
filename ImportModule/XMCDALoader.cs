@@ -75,7 +75,8 @@ namespace ImportModule
                 checkIfIdProvided(xmlNode.Attributes, "criterion");
                 var criterion = new Criterion
                 {
-                    ID = checkCriteriaIdsUniqueness(xmlNode.Attributes["id"].Value)
+                    ID = checkCriteriaIdsUniqueness(xmlNode.Attributes["id"].Value),
+                    LinearSegments = 1
                 };
 
                 criterion.Name = checkIfCriterionNameProvided(xmlNode.Attributes);

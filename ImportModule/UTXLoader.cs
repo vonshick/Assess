@@ -1,59 +1,50 @@
-using DataModel.Input;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.Xml;
+using DataModel.Input;
 
 namespace ImportModule
 {
     public class UTXLoader : DataLoader
     {
-        public UTXLoader() : base()
-        {
-
-        }
-
         private void checkEnumValue(string criterionName, string enumID, string enumValue)
         {
             if (enumValue.Equals(""))
-            {
-                throw new ImproperFileStructureException("Enum type value can not be empty. Criterion " + criterionName + ", EnumID: " + enumID + ".");
-            }
+                throw new ImproperFileStructureException("Enum type value can not be empty. Criterion " + criterionName + ", EnumID: " +
+                                                         enumID + ".");
 
             float output = 0;
             if (!float.TryParse(enumValue, NumberStyles.Any, CultureInfo.InvariantCulture, out output))
-            {
-                throw new ImproperFileStructureException("Improper value format '" + enumValue + "'. Value has to be floating point. Criterion " + criterionName + ", EnumID: " + enumID + ".");
-            }
+                throw new ImproperFileStructureException("Improper value format '" + enumValue +
+                                                         "'. Value has to be floating point. Criterion " + criterionName + ", EnumID: " +
+                                                         enumID + ".");
         }
 
 
-        override protected void ProcessFile(string filePath)
+        protected override void ProcessFile(string filePath)
         {
             ValidateFilePath(filePath);
             ValidateFileExtension(filePath, ".utx");
 
             //load XML
-            XmlDocument xmlDoc = new XmlDocument();
+            var xmlDoc = new XmlDocument();
             xmlDoc.Load(filePath);
 
-            string descriptionAttributeName = "";
+            var descriptionAttributeName = "";
 
             // iterate on its nodes
             foreach (XmlNode xmlNode in xmlDoc.DocumentElement.ChildNodes)
-            {
                 if (xmlNode.Name == "ATTRIBUTES")
-                {
                     foreach (XmlNode attribute in xmlNode)
                     {
-                        Criterion criterion = new Criterion() { };
+                        var criterion = new Criterion {LinearSegments = 1};
                         // for UTX ID and Name are the same value
                         criterion.Name = criterion.ID = checkCriteriaIdsUniqueness(attribute.Attributes["AttrID"].Value);
-                        bool saveCriterion = true;
-                        Dictionary<string, string> enumIdsNamesDictionary = new Dictionary<string, string>();
-                        Dictionary<string, float> enumIdsValuesDictionary = new Dictionary<string, float>();
+                        var saveCriterion = true;
+                        var enumIdsNamesDictionary = new Dictionary<string, string>();
+                        var enumIdsValuesDictionary = new Dictionary<string, float>();
 
                         foreach (XmlNode attributePart in attribute)
                         {
@@ -66,10 +57,10 @@ namespace ImportModule
                                     {
                                         criterion.IsEnum = true;
                                         foreach (XmlNode enumName in attributePart)
-                                        {
-                                            enumIdsNamesDictionary.Add(enumName.Attributes["EnumID"].Value, enumName.Attributes["Value"].Value);
-                                        }
+                                            enumIdsNamesDictionary.Add(enumName.Attributes["EnumID"].Value,
+                                                enumName.Attributes["Value"].Value);
                                     }
+
                                     break;
                                 case "DESCRIPTION":
                                     criterion.Description = value;
@@ -80,9 +71,12 @@ namespace ImportModule
                                     {
                                         foreach (XmlNode enumValue in attributePart)
                                         {
-                                            checkEnumValue(criterion.Name, enumValue.Attributes["EnumID"].Value, enumValue.Attributes["Value"].Value);
-                                            enumIdsValuesDictionary.Add(enumValue.Attributes["EnumID"].Value, float.Parse(enumValue.Attributes["Value"].Value, CultureInfo.InvariantCulture));
+                                            checkEnumValue(criterion.Name, enumValue.Attributes["EnumID"].Value,
+                                                enumValue.Attributes["Value"].Value);
+                                            enumIdsValuesDictionary.Add(enumValue.Attributes["EnumID"].Value,
+                                                float.Parse(enumValue.Attributes["Value"].Value, CultureInfo.InvariantCulture));
                                         }
+
                                         criterion.CriterionDirection = "Cost";
                                     }
                                     else
@@ -90,6 +84,7 @@ namespace ImportModule
                                         // "Cost" or "Gain"
                                         criterion.CriterionDirection = value == "Cost" ? "Cost" : "Gain";
                                     }
+
                                     break;
                                 case "ROLE":
                                     if (value == "Description")
@@ -101,6 +96,7 @@ namespace ImportModule
                                     {
                                         saveCriterion = true;
                                     }
+
                                     break;
                                 case "SEGMENTS":
                                     break;
@@ -116,31 +112,29 @@ namespace ImportModule
                             if (criterion.IsEnum)
                             {
                                 criterion.EnumDictionary = new Dictionary<string, float>();
-                                foreach (KeyValuePair<string, string> entry in enumIdsNamesDictionary)
+                                foreach (var entry in enumIdsNamesDictionary)
                                 {
-                                    string enumID = entry.Key;
-                                    string enumName = entry.Value;
-                                    float enumValue = enumIdsValuesDictionary[enumID];
+                                    var enumID = entry.Key;
+                                    var enumName = entry.Value;
+                                    var enumValue = enumIdsValuesDictionary[enumID];
                                     criterion.EnumDictionary.Add(enumName, enumValue);
                                 }
                             }
+
                             criterionList.Add(criterion);
                         }
                     }
-                }
                 else if (xmlNode.Name == "OBJECTS")
-                {
                     foreach (XmlNode instance in xmlNode)
                     {
                         // check if number of all child nodes (except INFO node - which isn't about criterion) is equal to criterionList.Count
-                        int alternativesCountValidation = 0;
-                        Alternative alternative = new Alternative() { Name = checkAlternativesNamesUniqueness(instance.Attributes["ObjID"].Value) };
+                        var alternativesCountValidation = 0;
+                        var alternative = new Alternative {Name = checkAlternativesNamesUniqueness(instance.Attributes["ObjID"].Value)};
                         alternative.ID = alternative.Name;
 
                         var criteriaValuesList = new ObservableCollection<CriterionValue>();
 
                         foreach (XmlNode instancePart in instance)
-                        {
                             // we avoid RANK nodes
                             if (instancePart.Name.Equals("VALUE"))
                             {
@@ -150,12 +144,12 @@ namespace ImportModule
                                 if (attributeName != descriptionAttributeName)
                                 {
                                     alternativesCountValidation++;
-                                    Criterion criterion = criterionList.Find(element => element.Name == attributeName);
+                                    var criterion = criterionList.Find(element => element.Name == attributeName);
 
                                     if (criterion == null)
-                                    {
-                                        throw new ImproperFileStructureException("Error while processing alternative " + alternative.Name + ": criterion named " + attributeName + " does not exist.");
-                                    }
+                                        throw new ImproperFileStructureException(
+                                            "Error while processing alternative " + alternative.Name + ": criterion named " +
+                                            attributeName + " does not exist.");
 
 
                                     if (criterion.IsEnum)
@@ -165,22 +159,20 @@ namespace ImportModule
                                     else
                                     {
                                         checkIfValueIsValid(value, criterion.Name, alternative.Name);
-                                        criteriaValuesList.Add(new CriterionValue(criterion.Name, float.Parse(value, CultureInfo.InvariantCulture)));
+                                        criteriaValuesList.Add(new CriterionValue(criterion.Name,
+                                            float.Parse(value, CultureInfo.InvariantCulture)));
                                     }
                                 }
                             }
-                        }
 
                         if (alternativesCountValidation != criterionList.Count)
-                        {
-                            throw new ImproperFileStructureException("Error while processing alternative " + alternative.Name + ": there are provided " + alternativesCountValidation + " criteria values and required are " + criterionList.Count + ".");
-                        }
+                            throw new ImproperFileStructureException("Error while processing alternative " + alternative.Name +
+                                                                     ": there are provided " + alternativesCountValidation +
+                                                                     " criteria values and required are " + criterionList.Count + ".");
 
                         alternative.CriteriaValuesList = criteriaValuesList;
                         alternativeList.Add(alternative);
                     }
-                }
-            }
         }
     }
 }
