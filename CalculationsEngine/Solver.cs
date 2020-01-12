@@ -10,16 +10,16 @@ namespace CalculationsEngine
 {
     public class Solver
     {
-        private readonly List<Alternative> arternativesList;
+        private List<Alternative> arternativesList;
         private readonly List<Criterion> criteriaList;
         private readonly List<int> equals;
-        private readonly List<Alternative> otherAlternatives;
-        private readonly double[,] otherAlternativesMatrix;
+        private List<Alternative> otherAlternatives;
+        private double[,] otherAlternativesMatrix;
         private readonly ReferenceRanking referenceRanking;
-        private readonly List<KeyValuePair<Alternative, int>> variantsList;
+        private List<KeyValuePair<Alternative, int>> variantsList;
         private double[] arrayOfValues;
         private int[] basicVariables;
-        private readonly int criterionFieldsCount;
+        private int criterionFieldsCount;
         private double[,] restrictionsMatrix;
         private Dictionary<double, double> solution;
         private double[,] transientMatrix;
@@ -112,6 +112,62 @@ namespace CalculationsEngine
                 }
             }
 
+            var tau = CalculateKendallCoefficient(finalReferenceRanking);
+            var restOfReferenceList = CreateRanking(arrayOfValues, otherAlternativesMatrix, otherAlternatives);
+            var allFinalRankingEntry = finalReferenceList.Concat(restOfReferenceList).ToList();
+            allFinalRankingEntry = allFinalRankingEntry.OrderByDescending(o => o.Utility).ToList();
+            for (var i = 0; i < transientMatrix.GetLength(0); i++) allFinalRankingEntry[i].Position = i;
+
+            Result.PartialUtilityFunctions = partialUtilityList;
+            Result.FinalRanking.FinalRankingCollection = new ObservableCollection<FinalRankingEntry>(allFinalRankingEntry);
+            Result.KendallCoefficient = tau;
+        }
+
+        public void LoadState(List<PartialUtility> partialUtilityList, ReferenceRanking referenceRanking, List<Alternative> notRankedAlternatives, Results results)
+        {
+            Result = results;
+            variantsList = new List<KeyValuePair<Alternative, int>>();
+            arternativesList = new List<Alternative>();
+            for (var rank = 0; rank < referenceRanking.RankingsCollection.Count; rank++)
+                foreach (var alternative in referenceRanking.RankingsCollection[rank])
+                {
+                    variantsList.Add(new KeyValuePair<Alternative, int>(alternative, rank));
+                    arternativesList.Add(alternative);
+                }
+
+            for (var i = 0; i < arternativesList.Count - 1; i++)
+                if (variantsList[i].Value == variantsList[i + 1].Value)
+                    equals.Add(i);
+            equals.Add(variantsList.Count - 1);
+
+            otherAlternatives = notRankedAlternatives;
+            otherAlternativesMatrix = CreateMatrix(otherAlternatives);
+
+            transientMatrix = CreateMatrix(arternativesList);
+
+            var cfc = 0;
+            foreach (var partialUtility in partialUtilityList) cfc += partialUtility.Criterion.LinearSegments;
+            criterionFieldsCount = cfc;
+
+            arrayOfValues = new double[criterionFieldsCount];
+            var count = 0;
+            for (var numOfCriterion = 0; numOfCriterion < partialUtilityList.Count; numOfCriterion++)
+            {
+                var sum = 0f;
+                for (var i = 1; i < partialUtilityList[numOfCriterion].PointsValues.Count; i++)
+                {
+                    var newValue = partialUtilityList[numOfCriterion].PointsValues[i].X - sum;
+                    arrayOfValues[count] = newValue;
+                    sum += newValue;
+                    count++;
+                }
+            }
+
+
+            var finalReferenceList = CreateRanking(arrayOfValues, transientMatrix, arternativesList);
+            var finalReferenceRanking = new FinalRanking(finalReferenceList);
+            var recalculatedMatrix = RecreateMatrix(finalReferenceRanking);
+            restrictionsMatrix = CalculateRestrictions(recalculatedMatrix, finalReferenceRanking);
             var tau = CalculateKendallCoefficient(finalReferenceRanking);
             var restOfReferenceList = CreateRanking(arrayOfValues, otherAlternativesMatrix, otherAlternatives);
             var allFinalRankingEntry = finalReferenceList.Concat(restOfReferenceList).ToList();
