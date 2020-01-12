@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-//using DataModel.Results;
-
 namespace CalculationsEngine
 {
     internal class Simplex
@@ -29,36 +27,35 @@ namespace CalculationsEngine
 
         internal void Run(int v)
         {
-            solution = null;
             for (var iteration = 0; iteration < v; iteration++)
             {
                 CalculateCjZjAndInfinity();
-                if (checkFinish())
+                if (CheckFinish())
                 {
-                    saveSolution();
+                    SaveSolution();
                     break;
                 }
 
                 var pivotCol = GetIndexOfMostNegativeCjZj();
                 var testRatio = TestRatio(pivotCol);
                 var pivotRow = Array.IndexOf(testRatio, testRatio.Min());
-                calculateMatrix(pivotRow, pivotCol);
-                updateBasicVariables(pivotRow, pivotCol);
+                CalculateMatrix(pivotRow, pivotCol);
+                UpdateBasicVariables(pivotRow, pivotCol);
             }
         }
 
-        private void saveSolution()
+        private void SaveSolution()
         {
             for (var row = 0; row < simplexMatrix.GetLength(0); row++)
-                solution.Add(basicVariables[row], simplexMatrix[basicVariables[row], simplexMatrix.GetLength(1)]);
+                solution.Add(basicVariables[row], simplexMatrix[row, simplexMatrix.GetLength(1) - 1]);
         }
 
-        private void updateBasicVariables(int pivotRow, int pivotCol)
+        private void UpdateBasicVariables(int pivotRow, int pivotCol)
         {
             basicVariables[pivotRow] = pivotCol;
         }
 
-        private void calculateMatrix(int pivotRow, int pivotCol)
+        private void CalculateMatrix(int pivotRow, int pivotCol)
         {
             var temporaryMatrix = new double[simplexMatrix.GetLength(0), simplexMatrix.GetLength(1)];
             for (var row = 0; row < simplexMatrix.GetLength(0); row++)
@@ -75,32 +72,7 @@ namespace CalculationsEngine
             simplexMatrix = temporaryMatrix;
         }
 
-        private void calculateMatrix2(int pivotRow, int pivotCol)
-        {
-            var temporaryMatrix = new double[simplexMatrix.GetLength(0), simplexMatrix.GetLength(1)];
-            for (var row = 0; row < simplexMatrix.GetLength(0); row++)
-            for (var column = 0; column < simplexMatrix.GetLength(1); column++)
-                if (pivotRow == row)
-                {
-                    temporaryMatrix[pivotRow, column] = Math.Round(simplexMatrix[pivotRow, column] / simplexMatrix[pivotRow, pivotCol], 3);
-                }
-                else if (pivotCol == column)
-                {
-                    temporaryMatrix[row, pivotCol] = 0;
-                }
-                else
-                {
-                    var value = simplexMatrix[row, pivotCol] / simplexMatrix[pivotRow, pivotCol];
-                    temporaryMatrix[row, column] =
-                        Math.Round(
-                            simplexMatrix[row, column] - simplexMatrix[pivotRow, column] * simplexMatrix[row, pivotCol] /
-                            simplexMatrix[pivotRow, pivotCol], 3);
-                }
-
-            simplexMatrix = temporaryMatrix;
-        }
-
-        private bool checkFinish()
+        private bool CheckFinish()
         {
             var finish = true;
             for (var column = 0; column < CjZj.Length; column++)
@@ -193,31 +165,6 @@ namespace CalculationsEngine
                 else ratio[i] = double.PositiveInfinity;
 
             return ratio;
-        }
-
-
-        private void print(double[,] simplexMatrix)
-        {
-            var rowLength = simplexMatrix.GetLength(0);
-            var colLength = simplexMatrix.GetLength(1);
-
-            for (var i = 0; i < rowLength; i++)
-            {
-                Console.Write("basic: " + basicVariables[i] + " ");
-                for (var j = 0; j < colLength; j++) Console.Write("{0} ", simplexMatrix[i, j]);
-                Console.Write(Environment.NewLine);
-            }
-
-            Console.ReadLine();
-        }
-
-        private void print(double[] array)
-        {
-            var rowLength = array.GetLength(0);
-
-            for (var i = 0; i < rowLength; i++) Console.Write("{0} ", array[i]);
-            Console.Write(Environment.NewLine);
-            Console.ReadLine();
         }
     }
 }
