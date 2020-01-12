@@ -1,35 +1,27 @@
-using DataModel.Input;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.Xml;
+using DataModel.Input;
 
 namespace ImportModule
 {
     public class XMLLoader : DataLoader
     {
-
-        public XMLLoader() : base()
-        {
-        }
-
-        override protected void ProcessFile(string filePath)
+        protected override void ProcessFile(string filePath)
         {
             ValidateFilePath(filePath);
             ValidateFileExtension(filePath, ".xml");
 
             //load XML
-            XmlDocument xmlDoc = new XmlDocument();
+            var xmlDoc = new XmlDocument();
             xmlDoc.Load(filePath);
 
-            string nameAttributeId = "";
-            string descriptionAttributeId = "";
+            var nameAttributeId = "";
+            var descriptionAttributeId = "";
 
             // iterate on its nodes
             foreach (XmlNode xmlNode in xmlDoc.DocumentElement.ChildNodes)
-            {
                 // first group of nodes are attributes
                 // second - Electre meta data
                 // third - objects
@@ -37,10 +29,11 @@ namespace ImportModule
                 {
                     foreach (XmlNode attribute in xmlNode)
                     {
-                        Criterion criterion = new Criterion() { ID = checkCriteriaIdsUniqueness(attribute.Attributes["AttrID"].Value) };
+                        var criterion = new Criterion
+                            {ID = checkCriteriaIdsUniqueness(attribute.Attributes["AttrID"].Value), LinearSegments = 1};
                         // two specific groups of nodes may appear in attributes - name and description
                         // we don't want to save it as criterion
-                        bool saveCriterion = true;
+                        var saveCriterion = true;
 
                         foreach (XmlNode attributePart in attribute)
                         {
@@ -56,18 +49,14 @@ namespace ImportModule
                                     break;
                                 case "CRITERION":
                                     if (value == "Cost" || value == "Gain")
-                                    {
                                         criterion.CriterionDirection = value == "Cost" ? "Cost" : "Gain";
-                                    }
                                     else
-                                    {
                                         //TODO
                                         // 'Rank' case 
                                         // to serve it some way 
                                         // probably dialog with user will be necessary
                                         // so far set is as gain
                                         criterion.CriterionDirection = "Cost";
-                                    }
 
                                     break;
                                 case "ROLE":
@@ -95,25 +84,21 @@ namespace ImportModule
                             }
                         }
 
-                        if (saveCriterion)
-                        {
-                            criterionList.Add(criterion);
-                        }
+                        if (saveCriterion) criterionList.Add(criterion);
                     }
                 }
                 else if (xmlNode.Name == "OBJECTS")
                 {
-                    int nodeCounter = 1;
+                    var nodeCounter = 1;
 
                     foreach (XmlNode instance in xmlNode)
                     {
-                        Alternative alternative = new Alternative();
+                        var alternative = new Alternative();
                         alternative.ID = checkAlternativesIdsUniqueness(instance.Attributes["ObjID"].Value);
-                        
-                        if ((instance.ChildNodes.Count - 2) != criterionList.Count)
-                        {
-                            throw new ImproperFileStructureException("There are provided " + (instance.ChildNodes.Count - 2) + " criteria values and required are " + criterionList.Count + ".");
-                        }
+
+                        if (instance.ChildNodes.Count - 2 != criterionList.Count)
+                            throw new ImproperFileStructureException("There are provided " + (instance.ChildNodes.Count - 2) +
+                                                                     " criteria values and required are " + criterionList.Count + ".");
 
                         var criteriaValuesList = new ObservableCollection<CriterionValue>();
 
@@ -128,18 +113,19 @@ namespace ImportModule
                             }
                             else
                             {
-                                if(attributeID != descriptionAttributeId)
+                                if (attributeID != descriptionAttributeId)
                                 {
-                                    Criterion criterion = criterionList.Find(element => element.ID == attributeID);
+                                    var criterion = criterionList.Find(element => element.ID == attributeID);
 
                                     if (criterion == null)
-                                    {
-                                        throw new ImproperFileStructureException("Error while processing alternative " + alternative.Name + ": criterion with ID " + attributeID + " does not exist.");
-                                    }
+                                        throw new ImproperFileStructureException(
+                                            "Error while processing alternative " + alternative.Name + ": criterion with ID " +
+                                            attributeID + " does not exist.");
 
                                     checkIfValueIsValid(value, criterion.Name, nodeCounter.ToString());
 
-                                    criteriaValuesList.Add(new CriterionValue(criterion.Name, float.Parse(value, CultureInfo.InvariantCulture)));
+                                    criteriaValuesList.Add(new CriterionValue(criterion.Name,
+                                        float.Parse(value, CultureInfo.InvariantCulture)));
                                 }
                             }
                         }
@@ -149,7 +135,6 @@ namespace ImportModule
                         nodeCounter++;
                     }
                 }
-            }
         }
     }
 }
