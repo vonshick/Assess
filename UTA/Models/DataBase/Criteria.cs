@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using DataModel.Input;
@@ -30,6 +31,19 @@ namespace UTA.Models.DataBase
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+
+        public List<Criterion> GetDeepCopyOfCriteria()
+        {
+            var criteriaDeepCopy = new List<Criterion>();
+            foreach (var criterion in CriteriaCollection)
+                criteriaDeepCopy.Add(new Criterion(criterion.Name, criterion.Description, criterion.CriterionDirection,
+                    criterion.LinearSegments)
+                {
+                    MinValue = criterion.MinValue,
+                    MaxValue = criterion.MaxValue
+                });
+            return criteriaDeepCopy;
+        }
 
         public void Reset()
         {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -54,7 +55,7 @@ namespace UTA.Models.DataBase
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void InitializeWatchers(object sender = null, PropertyChangedEventArgs propertyChangedEventArgs = null)
+        private void InitializeWatchers()
         {
             InitializeReferenceRankingUsingReferenceRankAlternativeProperty();
             InitializeCriteriaMinMaxUpdaterWatcher();
@@ -63,7 +64,7 @@ namespace UTA.Models.DataBase
         private void InitializeReferenceRankingUsingReferenceRankAlternativeProperty()
         {
             var maxRank = AlternativesCollection.Select(alternative => alternative.ReferenceRank).Max();
-            if (maxRank == null) return; 
+            if (maxRank == null) return;
             var referenceRanking = new ObservableCollection<ObservableCollection<Alternative>>();
             for (var i = 0; i <= maxRank; i++) referenceRanking.Add(new ObservableCollection<Alternative>());
             foreach (var alternative in AlternativesCollection)
@@ -158,6 +159,25 @@ namespace UTA.Models.DataBase
                     }
                 }
             };
+        }
+
+        public List<Alternative> GetDeepCopyOfAlternatives()
+        {
+            var alternativesDeepCopy = new List<Alternative>();
+            foreach (var alternative in AlternativesCollection)
+            {
+                var criteriaValuesDeepCopy = new ObservableCollection<CriterionValue>();
+                foreach (var criterionValue in alternative.CriteriaValuesList)
+                    criteriaValuesDeepCopy.Add(new CriterionValue(criterionValue.Name, criterionValue.Value));
+                alternativesDeepCopy.Add(new Alternative
+                {
+                    Name = alternative.Name,
+                    ReferenceRank = alternative.ReferenceRank,
+                    CriteriaValuesList = criteriaValuesDeepCopy
+                });
+            }
+
+            return alternativesDeepCopy;
         }
 
         public void Reset()

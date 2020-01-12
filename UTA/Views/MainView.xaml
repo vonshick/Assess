@@ -163,19 +163,7 @@
       </MenuItem>
 
       <MenuItem Header="Solution" Style="{StaticResource MenuBarItem}">
-        <MenuItem Margin="{StaticResource MenuItemTopMargin}">
-          <MenuItem.Style>
-            <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
-              <Style.Triggers>
-                <DataTrigger Binding="{Binding ChartTabViewModels.Count, UpdateSourceTrigger=PropertyChanged}"
-                             Value="0">
-                  <Setter Property="Header" Value="Calculate" />
-                </DataTrigger>
-              </Style.Triggers>
-              <Setter Property="Header" Value="Recalculate" /> <!--TODO: check if it's working-->
-            </Style>
-          </MenuItem.Style>
-
+        <MenuItem Margin="{StaticResource MenuItemTopMargin}" Header="Calculate">
           <i:Interaction.Triggers>
             <i:EventTrigger EventName="Click">
               <i:CallMethodAction TargetObject="{Binding}" MethodName="CalculateButtonClicked" />
@@ -263,20 +251,8 @@
       <Border Height="36" Grid.ColumnSpan="5" Background="{StaticResource ColorInterface4}" BorderThickness="1,0,1,1"
               BorderBrush="{StaticResource ColorBorders1}" Padding="12,0,12,0">
         <DockPanel Height="28" LastChildFill="False">
-          <Button FontSize="{StaticResource CommonFontSize1}" Margin="0,0,8,0" Padding="20,0,20,1"
+          <Button Content="Calculate" FontSize="{StaticResource CommonFontSize1}" Margin="0,0,8,0" Padding="20,0,20,1"
                   DockPanel.Dock="Left">
-            <Button.Style>
-              <Style TargetType="{x:Type Button}" BasedOn="{StaticResource PrimaryRoundButton}">
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding ChartTabViewModels.Count, UpdateSourceTrigger=PropertyChanged}"
-                               Value="0">
-                    <Setter Property="Content" Value="Calculate" />
-                  </DataTrigger>
-                </Style.Triggers>
-                <Setter Property="Content" Value="Recalculate" /> <!--TODO: check if it's working-->
-              </Style>
-            </Button.Style>
-
             <i:Interaction.Triggers>
               <i:EventTrigger EventName="Click">
                 <i:CallMethodAction TargetObject="{Binding}" MethodName="CalculateButtonClicked" />

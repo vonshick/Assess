@@ -1,6 +1,9 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using DataModel.Annotations;
 using DataModel.Input;
@@ -38,8 +41,7 @@ namespace DataModel.Results
         public event PropertyChangedEventHandler PropertyChanged;
 
 
-        private void InitializeAlternativeReferenceRankUpdaterWatcher(object o = null,
-            PropertyChangedEventArgs propertyChangedEventArgs = null)
+        private void InitializeAlternativeReferenceRankUpdaterWatcher()
         {
             foreach (var referenceRanking in RankingsCollection)
                 referenceRanking.CollectionChanged += UpdateAlternativeReferenceRankingIndex;
@@ -101,6 +103,19 @@ namespace DataModel.Results
         public void RemoveRank(int rank)
         {
             RankingsCollection.RemoveAt(rank);
+        }
+
+        // deep copy of reference ranking using alternatives ReferenceRank property
+        public List<List<Alternative>> GetDeepCopyOfReferenceRanking(List<Alternative> deepCopyOfAlternatives)
+        {
+            var referenceRankingDeepCopy = new List<List<Alternative>>();
+            var maxRank = deepCopyOfAlternatives.Select(alternative => alternative.ReferenceRank).Max();
+            if (maxRank == null) return referenceRankingDeepCopy;
+            for (var i = 0; i <= maxRank; i++) referenceRankingDeepCopy.Add(new List<Alternative>());
+            foreach (var alternative in deepCopyOfAlternatives)
+                if (alternative.ReferenceRank != null)
+                    referenceRankingDeepCopy[(int)alternative.ReferenceRank].Add(alternative);
+            return referenceRankingDeepCopy;
         }
 
         public void Reset()

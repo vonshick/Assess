@@ -311,7 +311,7 @@ namespace UTA.ViewModels
 
             var invalidCriteriaValuesNames = new List<string>();
             foreach (var criterion in Criteria.CriteriaCollection)
-                if (Math.Abs(criterion.MaxValue - criterion.MinValue) < 0.000000001)
+                if (Math.Abs(criterion.MaxValue - criterion.MinValue) < 0.00000001)
                     invalidCriteriaValuesNames.Add(criterion.Name);
 
             if (invalidCriteriaValuesNames.Count != 0)
@@ -335,6 +335,8 @@ namespace UTA.ViewModels
                     });
                 return;
             }
+
+            // TODO: get deep copy
             List<Alternative> notRankedAlternatives = Alternatives.AlternativesCollection.Where(x => !x.ReferenceRank.HasValue).ToList();
             var solver = new Solver(ReferenceRanking, new List<Criterion>(Criteria.CriteriaCollection),
                 notRankedAlternatives, Results);
