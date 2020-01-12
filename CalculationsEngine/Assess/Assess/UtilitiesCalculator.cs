@@ -12,15 +12,14 @@ namespace CalculationsEngine.Assess.Assess
         private readonly List<Criterion> _criteriaList;
         private readonly List<PartialUtility> _partialUtilitiesList;
         private readonly double K;
-        public List<AlternativeUtility> _alternativesUtilitiesList;
-        public FinalRankingAssess FinalRankingAssess;
+        public List<AlternativeUtility> AlternativesUtilitiesList;
 
 
         public UtilitiesCalculator(List<Alternative> alternativesList, List<Criterion> criteriaList,
             List<PartialUtility> partialUtilitiesList, List<CriterionCoefficient> criteriaCoefficientsList, double K)
         {
             this.K = K;
-            _alternativesUtilitiesList = new List<AlternativeUtility>();
+            AlternativesUtilitiesList = new List<AlternativeUtility>();
             _alternativesList = alternativesList;
             _criteriaList = criteriaList;
             _partialUtilitiesList = partialUtilitiesList;
@@ -56,10 +55,8 @@ namespace CalculationsEngine.Assess.Assess
 
                 var utility = (product - 1) / K;
 
-                _alternativesUtilitiesList.Add(new AlternativeUtility(alternative, utility));
+                AlternativesUtilitiesList.Add(new AlternativeUtility(alternative, utility));
             }
-
-            FinalRankingAssess = new FinalRankingAssess(_alternativesUtilitiesList);
         }
     }
 }
