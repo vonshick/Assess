@@ -338,14 +338,12 @@ namespace UTA.ViewModels
 
             var alternativesDeepCopy = Alternatives.GetDeepCopyOfAlternatives();
             var alternativesWithoutRanksCopy = alternativesDeepCopy.Where(alternative => alternative.ReferenceRank == null).ToList();
-            var solver = new Solver(ReferenceRanking.GetDeepCopyOfReferenceRanking(alternativesDeepCopy),
+            var solver = new Solver(
+                ReferenceRanking.GetDeepCopyOfReferenceRanking(alternativesDeepCopy),
                 Criteria.GetDeepCopyOfCriteria(),
                 alternativesWithoutRanksCopy,
                 Results);
             solver.Calculate();
-            // TODO: remove. for testing purposes
-            //solver.ChangeValue(0.04f, solver.Result.PartialUtilityFunctions[1], 1);
-
             foreach (var partialUtility in Results.PartialUtilityFunctions)
             {
                 var viewModel = new ChartTabViewModel(solver, partialUtility, SettingsTabViewModel, RefreshCharts);
@@ -481,22 +479,33 @@ namespace UTA.ViewModels
             if (!await NewSolution()) return;
 
             var filePath = openDirectoryDialog.SelectedPath;
-            try
-            {
-                var dataLoader = new XMCDALoader();
-                dataLoader.LoadData(filePath);
-                // TODO: check if everything works (vonshick)
-                Criteria.CriteriaCollection = new ObservableCollection<Criterion>(dataLoader.CriterionList);
-                // works assuming that CriteriaValuesList and ReferenceRank property are initialized properly
-                Alternatives.AlternativesCollection = new ObservableCollection<Alternative>(dataLoader.AlternativeList);
-                Results.KendallCoefficient = dataLoader.Results.KendallCoefficient;
-                Results.PartialUtilityFunctions = dataLoader.Results.PartialUtilityFunctions;
-                Results.FinalRanking.FinalRankingCollection = dataLoader.Results.FinalRanking.FinalRankingCollection;
-            }
-            catch (Exception exception)
-            {
-                ShowLoadErrorDialog(exception);
-            }
+            //try
+            //{
+            var dataLoader = new XMCDALoader();
+            dataLoader.LoadData(filePath);
+            // TODO: check if everything works (vonshick)
+            Criteria.CriteriaCollection = new ObservableCollection<Criterion>(dataLoader.CriterionList);
+            // works assuming that CriteriaValuesList and ReferenceRank property are initialized properly
+            Alternatives.AlternativesCollection = new ObservableCollection<Alternative>(dataLoader.AlternativeList);
+            Results.KendallCoefficient = dataLoader.Results.KendallCoefficient;
+            Results.PartialUtilityFunctions = dataLoader.Results.PartialUtilityFunctions;
+            Results.FinalRanking.FinalRankingCollection = dataLoader.Results.FinalRanking.FinalRankingCollection;
+            if (Results.PartialUtilityFunctions.Count <= 0) return;
+            // TODO: check
+            var alternativesDeepCopy = Alternatives.GetDeepCopyOfAlternatives();
+            var alternativesWithoutRanksCopy = alternativesDeepCopy.Where(alternative => alternative.ReferenceRank == null).ToList();
+            var referenceRankingDeepCopy = ReferenceRanking.GetDeepCopyOfReferenceRanking(alternativesDeepCopy);
+            var solver = new Solver(
+                referenceRankingDeepCopy,
+                Criteria.GetDeepCopyOfCriteria(),
+                alternativesWithoutRanksCopy,
+                Results);
+            solver.LoadState(Results.PartialUtilityFunctions, referenceRankingDeepCopy, alternativesWithoutRanksCopy, Results);
+            //}
+            //catch (Exception exception)
+            //{
+            //    ShowLoadErrorDialog(exception);
+            //}
         }
 
         private async void ShowLoadErrorDialog(Exception exception)

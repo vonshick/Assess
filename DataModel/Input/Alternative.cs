@@ -62,9 +62,6 @@ namespace DataModel.Input
             }
         }
 
-        //TODO remove, CriteriaValuesList used now instead
-        public Dictionary<Criterion, float> CriteriaValues { get; set; }
-
         public event PropertyChangedEventHandler PropertyChanged;
 
 

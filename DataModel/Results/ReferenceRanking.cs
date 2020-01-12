@@ -105,7 +105,7 @@ namespace DataModel.Results
             RankingsCollection.RemoveAt(rank);
         }
 
-        // deep copy of reference ranking using alternatives ReferenceRank property
+        // deep copy of reference ranking using alternatives deep copy ReferenceRank property
         public List<List<Alternative>> GetDeepCopyOfReferenceRanking(List<Alternative> deepCopyOfAlternatives)
         {
             var referenceRankingDeepCopy = new List<List<Alternative>>();

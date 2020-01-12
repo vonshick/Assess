@@ -18,8 +18,8 @@ namespace CalculationsEngine
         private int criterionFieldsCount;
         private List<Alternative> otherAlternatives;
         private double[,] otherAlternativesMatrix;
-        private ReferenceRanking referenceRanking;
-        private List<List<Alternative>> referenceRankingList;
+        //private ReferenceRanking referenceRanking;
+        //private List<List<Alternative>> referenceRankingList;
         private double[,] restrictionsMatrix;
         private Dictionary<double, double> solution;
         private double[,] transientMatrix;
@@ -40,7 +40,7 @@ namespace CalculationsEngine
             this.criteriaList = criteriaList;
             Result = results;
             //this.referenceRanking = referenceRanking;
-            this.referenceRankingList = referenceRankingList;
+            //this.referenceRankingList = referenceRankingList;
             variantsList = new List<KeyValuePair<Alternative, int>>();
             arternativesList = new List<Alternative>();
             for (var rank = 0; rank < referenceRankingList.Count; rank++)
@@ -129,7 +129,7 @@ namespace CalculationsEngine
             var restOfReferenceList = CreateRanking(arrayOfValues, otherAlternativesMatrix, otherAlternatives);
             var allFinalRankingEntry = finalReferenceList.Concat(restOfReferenceList).ToList();
             allFinalRankingEntry = allFinalRankingEntry.OrderByDescending(o => o.Utility).ToList();
-            for (var i = 0; i < transientMatrix.GetLength(0); i++) allFinalRankingEntry[i].Position = i;
+            for (var i = 0; i < transientMatrix.GetLength(0); i++) allFinalRankingEntry[i].Position = i + 1;
 
             Result.PartialUtilityFunctions = partialUtilityList;
             Result.FinalRanking.FinalRankingCollection = new ObservableCollection<FinalRankingEntry>(allFinalRankingEntry);
@@ -141,7 +141,7 @@ namespace CalculationsEngine
         {
             Result = results;
             //this.referenceRanking = referenceRanking;
-            this.referenceRankingList = referenceRankingList;
+            //this.referenceRankingList = referenceRankingList;
             variantsList = new List<KeyValuePair<Alternative, int>>();
             arternativesList = new List<Alternative>();
             for (var rank = 0; rank < referenceRankingList.Count; rank++)
@@ -188,7 +188,7 @@ namespace CalculationsEngine
             var restOfReferenceList = CreateRanking(arrayOfValues, otherAlternativesMatrix, otherAlternatives);
             var allFinalRankingEntry = finalReferenceList.Concat(restOfReferenceList).ToList();
             allFinalRankingEntry = allFinalRankingEntry.OrderByDescending(o => o.Utility).ToList();
-            for (var i = 0; i < transientMatrix.GetLength(0); i++) allFinalRankingEntry[i].Position = i;
+            for (var i = 0; i < transientMatrix.GetLength(0); i++) allFinalRankingEntry[i].Position = i + 1;
 
             Result.PartialUtilityFunctions = partialUtilityList;
             Result.FinalRanking.FinalRankingCollection = new ObservableCollection<FinalRankingEntry>(allFinalRankingEntry);
@@ -221,7 +221,7 @@ namespace CalculationsEngine
             var restOfReferenceList = CreateRanking(arrayOfValues, otherAlternativesMatrix, otherAlternatives);
             var allFinalRankingEntry = finalReferenceList.Concat(restOfReferenceList).ToList();
             allFinalRankingEntry = allFinalRankingEntry.OrderByDescending(o => o.Utility).ToList();
-            for (var i = 0; i < allFinalRankingEntry.Count; i++) allFinalRankingEntry[i].Position = i;
+            for (var i = 0; i < allFinalRankingEntry.Count; i++) allFinalRankingEntry[i].Position = i + 1;
             Result.FinalRanking.FinalRankingCollection = new ObservableCollection<FinalRankingEntry>(allFinalRankingEntry);
             Result.KendallCoefficient = tau;
         }
@@ -297,7 +297,7 @@ namespace CalculationsEngine
             var restOfReferenceList = CreateRanking(arrayOfValues, otherAlternativesMatrix, otherAlternatives);
             var allFinalRankingEntry = finalReferenceList.Concat(restOfReferenceList).ToList();
             allFinalRankingEntry = allFinalRankingEntry.OrderByDescending(o => o.Utility).ToList();
-            for (var i = 0; i < allFinalRankingEntry.Count; i++) allFinalRankingEntry[i].Position = i;
+            for (var i = 0; i < allFinalRankingEntry.Count; i++) allFinalRankingEntry[i].Position = i + 1;
             Result.FinalRanking.FinalRankingCollection = new ObservableCollection<FinalRankingEntry>(allFinalRankingEntry);
             Result.KendallCoefficient = tau;
         }
