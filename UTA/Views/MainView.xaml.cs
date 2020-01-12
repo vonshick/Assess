@@ -67,7 +67,7 @@ namespace UTA.Views
                 _scrollRightButton.Visibility = _scrollLeftButton.Visibility = Visibility.Collapsed;
         }
 
-        // used when tab is selected but only part of it is visible
+        // useful when tab is added, but it's out of visible range
         private void TabControlSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.AddedItems.Count == 0) return;
