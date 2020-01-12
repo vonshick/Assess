@@ -5,7 +5,10 @@
                       xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                       xmlns:local="clr-namespace:UTA.Views"
+                      xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
                       mc:Ignorable="d"
+                      mah:DialogParticipation.Register="{Binding}"
+                      Closing="DialogClosed"
                       Title="{Binding Title}" Width="600" Height="400" ResizeMode="NoResize"
                       WindowStartupLocation="CenterOwner" Background="{StaticResource ColorInterface7}">
   <ScrollViewer>

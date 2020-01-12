@@ -41,6 +41,7 @@ namespace UTA.ViewModels
             ReferenceRanking = new ReferenceRanking();
             Alternatives = new Alternatives(Criteria, ReferenceRanking);
             Results = new Results();
+            NotAssessedCriteriaCollection = new ObservableCollection<Criterion>();
 
             _dialogCoordinator = dialogCoordinator;
             _saveData = new SaveData(null, null);
@@ -49,7 +50,7 @@ namespace UTA.ViewModels
             Tabs.CollectionChanged += TabsCollectionChanged;
             ChartTabViewModels = new ObservableCollection<ChartTabViewModel>();
             ShowTabCommand = new RelayCommand(tabViewModel => ShowTab((ITab) tabViewModel));
-            UserDialogueTabViewModels = new ObservableCollection<PartialUtilityTabViewModel>();
+            PartialUtilityTabViewModels = new ObservableCollection<PartialUtilityTabViewModel>();
 
             CriteriaTabViewModel = new CriteriaTabViewModel(Criteria);
             AlternativesTabViewModel = new AlternativesTabViewModel(Criteria, Alternatives);
@@ -196,21 +197,34 @@ namespace UTA.ViewModels
 //               FinalRankingAssess finalRankingAssess = new FinalRankingAssess(utilitiesCalculator.AlternativesUtilitiesList);
         }
 
+        public ObservableCollection<Criterion> NotAssessedCriteriaCollection { get; set; }
+
         private void UpdateDialogueTabs(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
-                Console.WriteLine("Adding UserDialogueTabViewModels tab for " + ((Criterion)e.NewItems[0]).Name);
-                UserDialogueTabViewModels.Add(new PartialUtilityTabViewModel((Criterion) e.NewItems[0]));
+                Criterion criterion = (Criterion) e.NewItems[0];
+                var partialUtilityTabViewModel = new PartialUtilityTabViewModel(criterion);
+                partialUtilityTabViewModel.PropertyChanged += (s, args) =>
+                {
+                    if (args.PropertyName != nameof(partialUtilityTabViewModel.UtilityAssessed)) return;
+                    if (partialUtilityTabViewModel.UtilityAssessed)
+                        NotAssessedCriteriaCollection.Remove(partialUtilityTabViewModel.Criterion);
+                    else
+                        NotAssessedCriteriaCollection.Add(partialUtilityTabViewModel.Criterion);
+                };
+                PartialUtilityTabViewModels.Add(partialUtilityTabViewModel);
+                NotAssessedCriteriaCollection.Add(criterion);
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
                 var removedCriterion = (Criterion) e.OldItems[0];
-                Console.WriteLine("Removing UserDialogueTabViewModels tab for " + removedCriterion.Name);
-                var associatedUserDialogueTabViewModel = UserDialogueTabViewModels.First(tabViewModel => tabViewModel.Criterion.Name == removedCriterion.Name);
-                var tabToClose = Tabs.First(tab => tab.Name == associatedUserDialogueTabViewModel.Name);
-                tabToClose.CloseCommand.Execute(null);
-                UserDialogueTabViewModels.Remove(associatedUserDialogueTabViewModel);
+                var associatedUserDialogueTabViewModel = PartialUtilityTabViewModels.First(tabViewModel => tabViewModel.Criterion.Name == removedCriterion.Name);
+                var tabToClose = Tabs.FirstOrDefault(tab => tab.Name == associatedUserDialogueTabViewModel.Name);
+                if (tabToClose != null) tabToClose.CloseCommand.Execute(null);
+                PartialUtilityTabViewModels.Remove(associatedUserDialogueTabViewModel);
+                if (NotAssessedCriteriaCollection.Contains(removedCriterion))
+                    NotAssessedCriteriaCollection.Remove(removedCriterion);
             }
         }
 
@@ -232,7 +246,7 @@ namespace UTA.ViewModels
 
         public ObservableCollection<ITab> Tabs { get; }
         public ObservableCollection<ChartTabViewModel> ChartTabViewModels { get; }
-        public ObservableCollection<PartialUtilityTabViewModel> UserDialogueTabViewModels { get; }
+        public ObservableCollection<PartialUtilityTabViewModel> PartialUtilityTabViewModels { get; }
         public RelayCommand ShowTabCommand { get; }
 
         public CriteriaTabViewModel CriteriaTabViewModel { get; }
@@ -323,6 +337,16 @@ namespace UTA.ViewModels
                 return;
             }
 
+            if (NotAssessedCriteriaCollection.Count != 0)
+            {
+                ShowCalculateErrorDialog("All partial utility functions must be defined. Please finish assessment for all criteria!");
+                foreach (var criterion in NotAssessedCriteriaCollection)
+                {
+                    ShowTab(PartialUtilityTabViewModels.First(vm => vm.Criterion.Name == criterion.Name));
+                }
+                return;
+            }
+
             ShowScalingCoeffDialogs();
         }
 
@@ -330,6 +354,8 @@ namespace UTA.ViewModels
         {
             if (!Tabs.Contains(tab)) Tabs.Add(tab);
         }
+
+        public bool CalculationCompleted { get; set; }
 
         private async void ShowScalingCoeffDialogs()
         {
@@ -364,15 +390,18 @@ namespace UTA.ViewModels
             CoefficientsDialog coefficientsDialog = new CoefficientsDialog(Criteria.CriteriaCollection.ToList());
             foreach (var criterion in Criteria.CriteriaCollection)
             {
-                ShowScalingCoeffDialog(coefficientsDialog, criterion);
+                if(!ShowScalingCoeffDialog(coefficientsDialog, criterion))
+                    return;
             }
+            CalculationCompleted = true;
         }
 
-        private void ShowScalingCoeffDialog(CoefficientsDialog dialog, Criterion criterion)
+        private bool ShowScalingCoeffDialog(CoefficientsDialog dialog, Criterion criterion)
         {
             var userDialogueDialogViewModel = new UserDialogueDialogViewModel(dialog, criterion);
             var userDialogueDialog = new UserDialogueDialog() { DataContext = userDialogueDialogViewModel };
             userDialogueDialog.ShowDialog();
+            return userDialogueDialogViewModel.UtilityAssessed;
         }
 
         private void RefreshCharts()
@@ -381,10 +410,10 @@ namespace UTA.ViewModels
             foreach (var chartTabViewModel in ChartTabViewModels) chartTabViewModel.GenerateChartData();
         }
 
-        private async void ShowCalculateErrorDialog(string message)
+        private async void ShowCalculateErrorDialog(string message, string title = "Incomplete instance data.")
         {
             await _dialogCoordinator.ShowMessageAsync(this,
-                "Invalid instance data.",
+                title,
                 message,
                 MessageDialogStyle.Affirmative,
                 new MetroDialogSettings

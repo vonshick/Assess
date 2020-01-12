@@ -14,6 +14,7 @@ namespace UTA.ViewModels
     {
         private int _method;
         private string _resultsText;
+        private bool _utilityAssessed;
 
         public PartialUtilityTabViewModel(Criterion criterion)
         {
@@ -24,6 +25,7 @@ namespace UTA.ViewModels
 
             StartDialogueCommand = new RelayCommand(_ =>
             {
+                //todo ask for method first
                 _method = int.Parse(Method);
                 //todo remove
                 Criterion.MinValue = float.Parse(StartPoint);
@@ -41,6 +43,17 @@ namespace UTA.ViewModels
         public string StartPoint { get; set; }
         public string EndPoint { get; set; }
         public bool StartButtonEnabled { get; set; }
+
+        public bool UtilityAssessed
+        {
+            get => _utilityAssessed;
+            set
+            {
+                if (value == _utilityAssessed) return;
+                _utilityAssessed = value;
+                OnPropertyChanged(nameof(UtilityAssessed));
+            }
+        }
 
         public string ResultsText
         {
@@ -60,7 +73,7 @@ namespace UTA.ViewModels
             StartButtonEnabled = false;
 
             var userDialogueDialogViewModel = new UserDialogueDialogViewModel(dialog, criterion, _method);
-            var userDialogueDialog = new UserDialogueDialog() {DataContext = userDialogueDialogViewModel};
+            var userDialogueDialog = new UserDialogueDialog {DataContext = userDialogueDialogViewModel};
             if (_method == 3)
             {
                 userDialogueDialog.ButtonSure.Content = "Lottery 1";
@@ -68,10 +81,12 @@ namespace UTA.ViewModels
             }
 
             userDialogueDialog.ShowDialog();
+            UtilityAssessed = userDialogueDialogViewModel.UtilityAssessed;
             StartButtonEnabled = true;
             DigestResults(dialog);
         }
 
+        //todo temporary to show result
         private void DigestResults(Dialog dialog)
         {
             ResultsText = "";

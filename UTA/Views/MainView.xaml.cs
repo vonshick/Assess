@@ -34,7 +34,7 @@ namespace UTA.Views
             };
 
             _viewmodel.ChartTabViewModels.CollectionChanged += ChartTabsCollectionChanged;
-            _viewmodel.UserDialogueTabViewModels.CollectionChanged += UserDialogueTabsCollectionChanged;
+            _viewmodel.PartialUtilityTabViewModels.CollectionChanged += PartialUtilityTabsCollectionChanged;
             var tabViewSource = CollectionViewSource.GetDefaultView(TabControl.Items);
             tabViewSource.CollectionChanged += (sender, args) =>
             {
@@ -181,7 +181,7 @@ namespace UTA.Views
         }
 
         // updates Show MenuItem with dialogue tabs
-        private void UserDialogueTabsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void PartialUtilityTabsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
