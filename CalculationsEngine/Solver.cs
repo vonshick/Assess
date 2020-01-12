@@ -10,20 +10,24 @@ namespace CalculationsEngine
 {
     public class Solver
     {
-        private List<Alternative> arternativesList;
         private readonly List<Criterion> criteriaList;
         private readonly List<int> equals;
-        private List<Alternative> otherAlternatives;
-        private double[,] otherAlternativesMatrix;
-        private readonly ReferenceRanking referenceRanking;
-        private List<KeyValuePair<Alternative, int>> variantsList;
         private double[] arrayOfValues;
+        private List<Alternative> arternativesList;
         private int[] basicVariables;
         private int criterionFieldsCount;
+        private List<Alternative> otherAlternatives;
+        private double[,] otherAlternativesMatrix;
+        private ReferenceRanking referenceRanking;
         private double[,] restrictionsMatrix;
         private Dictionary<double, double> solution;
         private double[,] transientMatrix;
+        private List<KeyValuePair<Alternative, int>> variantsList;
         private double[] vectorCj;
+
+        public Solver()
+        {
+        }
 
         public Solver(ReferenceRanking referenceRanking, List<Criterion> criteriaList, List<Alternative> otherAlternatives, Results results,
             bool preserveKendallCoefficient = false, double deltaThreshold = 0.05, double epsilonThreshold = 0.0000001)
@@ -123,9 +127,11 @@ namespace CalculationsEngine
             Result.KendallCoefficient = tau;
         }
 
-        public void LoadState(List<PartialUtility> partialUtilityList, ReferenceRanking referenceRanking, List<Alternative> notRankedAlternatives, Results results)
+        public void LoadState(List<PartialUtility> partialUtilityList, ReferenceRanking referenceRanking,
+            List<Alternative> notRankedAlternatives, Results results)
         {
             Result = results;
+            this.referenceRanking = referenceRanking;
             variantsList = new List<KeyValuePair<Alternative, int>>();
             arternativesList = new List<Alternative>();
             for (var rank = 0; rank < referenceRanking.RankingsCollection.Count; rank++)
@@ -193,8 +199,8 @@ namespace CalculationsEngine
 
                 for (var i = 1; i < Result.PartialUtilityFunctions[numOfCriterion].PointsValues.Count; i++)
                 {
-                    Result.PartialUtilityFunctions[numOfCriterion].PointsValues[i].MinValue = (float)minArray[count];
-                    Result.PartialUtilityFunctions[numOfCriterion].PointsValues[i].MaxValue = (float)maxArray[count];
+                    Result.PartialUtilityFunctions[numOfCriterion].PointsValues[i].MinValue = (float) minArray[count];
+                    Result.PartialUtilityFunctions[numOfCriterion].PointsValues[i].MaxValue = (float) maxArray[count];
                     count++;
                 }
             }
@@ -208,7 +214,6 @@ namespace CalculationsEngine
             for (var i = 0; i < allFinalRankingEntry.Count; i++) allFinalRankingEntry[i].Position = i;
             Result.FinalRanking.FinalRankingCollection = new ObservableCollection<FinalRankingEntry>(allFinalRankingEntry);
             Result.KendallCoefficient = tau;
-
         }
 
         public void ChangeValue(float value, PartialUtility partialUtility, int indexOfPointValue)
@@ -603,7 +608,7 @@ namespace CalculationsEngine
             for (var i = 0; i < transientMatrix.GetLength(0); i++)
             {
                 var score = CreateFinalRankingEntryUtility(arrayOfValues, GetRow(transientMatrix, i));
-                var finalRankingEntry = new FinalRankingEntry(-1, listOfAlternatives[i], (float)score);
+                var finalRankingEntry = new FinalRankingEntry(-1, listOfAlternatives[i], (float) score);
                 finalRankingList.Add(finalRankingEntry);
             }
 
