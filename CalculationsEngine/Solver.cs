@@ -35,7 +35,7 @@ namespace CalculationsEngine
             DeltaThreshold = deltaThreshold;
             EpsilonThreshold = epsilonThreshold;
             PreserveKendallCoefficient = preserveKendallCoefficient;
-            NumberOfIteration = 100;
+            NumberOfIteration = 250;
             this.criteriaList = criteriaList;
             Result = results;
             this.referenceRanking = referenceRanking;
