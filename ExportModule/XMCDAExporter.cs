@@ -248,7 +248,7 @@ namespace ExportModule
             {
                 xmcdaWriter.WriteStartElement("criterion");
                 xmcdaWriter.WriteStartElement("criterionID");
-                xmcdaWriter.WriteString(partialUtility.Criterion.ID);
+                xmcdaWriter.WriteString(partialUtility.Criterion.ID != null ? partialUtility.Criterion.ID : partialUtility.Criterion.Name);
                 xmcdaWriter.WriteEndElement();
                 xmcdaWriter.WriteStartElement("criterionFunction");
                 xmcdaWriter.WriteStartElement("points");
