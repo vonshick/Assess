@@ -223,7 +223,7 @@ namespace ExportModule
             {
                 xmcdaWriter.WriteStartElement("criterionValue");
                 xmcdaWriter.WriteStartElement("criterionID");
-                xmcdaWriter.WriteString(criterion.ID);
+                xmcdaWriter.WriteString(criterion.ID != null ? criterion.ID : criterion.Name);
                 xmcdaWriter.WriteEndElement();
                 xmcdaWriter.WriteStartElement("value");
                 xmcdaWriter.WriteStartElement("integer");
