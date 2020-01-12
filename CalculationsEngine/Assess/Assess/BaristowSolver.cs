@@ -21,8 +21,8 @@ namespace CalculationsEngine.Assess.Assess
         public BaristowSolver()
         {
             mit = (int)1E6;
-            mincorr = 1E-63;
-            zerodet = 1E-63;
+            mincorr = 1E-6;
+            zerodet = 1E-6;
         }
 
         public struct ComplexNumber
@@ -302,7 +302,7 @@ namespace CalculationsEngine.Assess.Assess
             // choose the complex number with min imaginary part and min index
             for (int i = z.Length - 1; i >= 1; i--)
                 if (Math.Abs(z[i].im) <= Math.Abs(minImComplexNumber.im))
-                    if(z[i].re != 0)
+                    if(z[i].re != 0 && Math.Abs(z[i].re) > 1E-3)
                         minImComplexNumber = z[i];
             
             return minImComplexNumber.re;
