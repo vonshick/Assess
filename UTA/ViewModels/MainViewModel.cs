@@ -336,10 +336,12 @@ namespace UTA.ViewModels
                 return;
             }
 
-            // TODO: get deep copy
-            List<Alternative> notRankedAlternatives = Alternatives.AlternativesCollection.Where(x => !x.ReferenceRank.HasValue).ToList();
-            var solver = new Solver(ReferenceRanking, new List<Criterion>(Criteria.CriteriaCollection),
-                notRankedAlternatives, Results);
+            var alternativesDeepCopy = Alternatives.GetDeepCopyOfAlternatives();
+            var alternativesWithoutRanksCopy = alternativesDeepCopy.Where(alternative => alternative.ReferenceRank == null).ToList();
+            var solver = new Solver(ReferenceRanking.GetDeepCopyOfReferenceRanking(alternativesDeepCopy),
+                Criteria.GetDeepCopyOfCriteria(),
+                alternativesWithoutRanksCopy,
+                Results);
             solver.Calculate();
             // TODO: remove. for testing purposes
             //solver.ChangeValue(0.04f, solver.Result.PartialUtilityFunctions[1], 1);

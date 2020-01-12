@@ -19,6 +19,7 @@ namespace CalculationsEngine
         private List<Alternative> otherAlternatives;
         private double[,] otherAlternativesMatrix;
         private ReferenceRanking referenceRanking;
+        private List<List<Alternative>> referenceRankingList;
         private double[,] restrictionsMatrix;
         private Dictionary<double, double> solution;
         private double[,] transientMatrix;
@@ -29,7 +30,7 @@ namespace CalculationsEngine
         {
         }
 
-        public Solver(ReferenceRanking referenceRanking, List<Criterion> criteriaList, List<Alternative> otherAlternatives, Results results,
+        public Solver(List<List<Alternative>> referenceRankingList, List<Criterion> criteriaList, List<Alternative> otherAlternatives, Results results,
             bool preserveKendallCoefficient = false, double deltaThreshold = 0.05, double epsilonThreshold = 0.0000001)
         {
             DeltaThreshold = deltaThreshold;
@@ -38,15 +39,23 @@ namespace CalculationsEngine
             NumberOfIteration = 250;
             this.criteriaList = criteriaList;
             Result = results;
-            this.referenceRanking = referenceRanking;
+            //this.referenceRanking = referenceRanking;
+            this.referenceRankingList = referenceRankingList;
             variantsList = new List<KeyValuePair<Alternative, int>>();
             arternativesList = new List<Alternative>();
-            for (var rank = 0; rank < referenceRanking.RankingsCollection.Count; rank++)
-                foreach (var alternative in referenceRanking.RankingsCollection[rank])
+            for (var rank = 0; rank < referenceRankingList.Count; rank++)
+                foreach (var alternative in referenceRankingList[rank])
                 {
                     variantsList.Add(new KeyValuePair<Alternative, int>(alternative, rank));
                     arternativesList.Add(alternative);
                 }
+
+            //for (var rank = 0; rank < referenceRanking.RankingsCollection.Count; rank++)
+            //    foreach (var alternative in referenceRanking.RankingsCollection[rank])
+            //    {
+            //        variantsList.Add(new KeyValuePair<Alternative, int>(alternative, rank));
+            //        arternativesList.Add(alternative);
+            //}
 
             var cfc = 0;
             foreach (var criterion in criteriaList) cfc += criterion.LinearSegments;
@@ -127,15 +136,16 @@ namespace CalculationsEngine
             Result.KendallCoefficient = tau;
         }
 
-        public void LoadState(List<PartialUtility> partialUtilityList, ReferenceRanking referenceRanking,
+        public void LoadState(List<PartialUtility> partialUtilityList, List<List<Alternative>> referenceRankingList,
             List<Alternative> notRankedAlternatives, Results results)
         {
             Result = results;
-            this.referenceRanking = referenceRanking;
+            //this.referenceRanking = referenceRanking;
+            this.referenceRankingList = referenceRankingList;
             variantsList = new List<KeyValuePair<Alternative, int>>();
             arternativesList = new List<Alternative>();
-            for (var rank = 0; rank < referenceRanking.RankingsCollection.Count; rank++)
-                foreach (var alternative in referenceRanking.RankingsCollection[rank])
+            for (var rank = 0; rank < referenceRankingList.Count; rank++)
+                foreach (var alternative in referenceRankingList[rank])
                 {
                     variantsList.Add(new KeyValuePair<Alternative, int>(alternative, rank));
                     arternativesList.Add(alternative);

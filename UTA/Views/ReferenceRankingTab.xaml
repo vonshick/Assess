@@ -190,7 +190,7 @@
         </ItemsControl>
 
         <!--new rank placeholder-->
-        <ItemsControl ItemsSource="{Binding NewRank}" Focusable="False" Opacity="0.7"
+        <ItemsControl ItemsSource="{Binding NewRank}" Tag="Rank" Focusable="False" Opacity="0.7"
                       dd:DragDrop.IsDropTarget="True"
                       dd:DragDrop.DropHandler="{StaticResource AlternativeDropHandler}"
                       Drop="AlternativeDroppedOnNewRank">

@@ -195,7 +195,8 @@ namespace UTA.ViewModels
             pointAnnotation.Fill = _colorPrimary;
             _draggablePointTooltip.TextPosition = DataPoint.Undefined;
             PlotEventHandler(e);
-            //_solver.ChangeValue((float) pointAnnotation.Y, _partialUtility, (float) pointAnnotation.X);
+            _solver.ChangeValue((float) pointAnnotation.Y, _partialUtility,
+                _partialUtility.PointsValues.FindIndex(point => point.X == (float) pointAnnotation.X));
             _refreshCharts();
         }
 

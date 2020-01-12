@@ -251,8 +251,8 @@
       <Border Height="36" Grid.ColumnSpan="5" Background="{StaticResource ColorInterface4}" BorderThickness="1,0,1,1"
               BorderBrush="{StaticResource ColorBorders1}" Padding="12,0,12,0">
         <DockPanel Height="28" LastChildFill="False">
-          <Button Content="Calculate" FontSize="{StaticResource CommonFontSize1}" Margin="0,0,8,0" Padding="20,0,20,1"
-                  DockPanel.Dock="Left">
+          <Button Content="Calculate" Style="{StaticResource PrimaryRoundButton}" DockPanel.Dock="Left"
+                  FontSize="{StaticResource CommonFontSize1}" Margin="0,0,8,0" Padding="20,0,20,1">
             <i:Interaction.Triggers>
               <i:EventTrigger EventName="Click">
                 <i:CallMethodAction TargetObject="{Binding}" MethodName="CalculateButtonClicked" />
@@ -681,7 +681,7 @@
               </Expander.Resources>
               <DockPanel>
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
-                  <TextBlock Text="Kendall Coefficient: " Margin="8,2,0,2" FontSize="{StaticResource CommonFontSize2}"/>
+                  <TextBlock Text="Kendall Coefficient: " Margin="8,2,0,2" FontSize="{StaticResource CommonFontSize2}" />
                   <TextBlock FontSize="{StaticResource CommonFontSize2}" Margin="0,2">
                     <TextBlock.Style>
                       <Style TargetType="{x:Type TextBlock}">

@@ -7,9 +7,9 @@
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="900">
   <Grid Background="{StaticResource ColorInterface7}">
-    <ScrollViewer>
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
       <StackPanel Margin="12,8,10,12">
-        <TextBlock Text="Settings" FontSize="18" Margin="0,0,0,20" />
+        <TextBlock Text="Settings" FontSize="18" Margin="0,0,0,16" />
 
         <StackPanel Margin="0,0,0,20">
           <TextBlock Text="Delta threshold for discrimination of zero" FontSize="{StaticResource CommonFontSize2}"
