@@ -175,7 +175,13 @@ namespace ImportModule
 
         private void LoadAlternativesRanks()
         {
-            var xmlDocument = loadFile("alternatives_ranks.xml");
+            currentlyProcessedFile = Path.Combine(xmcdaDirectory, "alternatives_ranks.xml");
+
+            if (!File.Exists(currentlyProcessedFile))
+                return;
+
+            var xmlDocument = new XmlDocument();
+            xmlDocument.Load(currentlyProcessedFile);
 
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
             foreach (XmlNode alternativeResult in xmlNode.ChildNodes)
@@ -199,7 +205,13 @@ namespace ImportModule
 
         private void LoadCriteriaSegments()
         {
-            var xmlDocument = loadFile("criteria_segments.xml");
+            currentlyProcessedFile = Path.Combine(xmcdaDirectory, "criteria_segments.xml");
+
+            if (!File.Exists(currentlyProcessedFile))
+                return;
+
+            var xmlDocument = new XmlDocument();
+            xmlDocument.Load(currentlyProcessedFile);
 
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
             foreach (XmlNode criterionSegments in xmlNode.ChildNodes)
@@ -218,7 +230,13 @@ namespace ImportModule
 
         private void LoadValueFunctions()
         {
-            var xmlDocument = loadFile("value_functions.xml");
+            currentlyProcessedFile = Path.Combine(xmcdaDirectory, "value_functions.xml");
+
+            if (!File.Exists(currentlyProcessedFile))
+                return;
+
+            var xmlDocument = new XmlDocument();
+            xmlDocument.Load(currentlyProcessedFile);
 
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
             {
@@ -270,14 +288,12 @@ namespace ImportModule
             LoadCriteriaScales();
             LoadAlternatives();
             LoadPerformanceTable();
-            setMinAndMaxCriterionValues();
 
-            if (checkIfResultsAvailable())
-            {
-                LoadAlternativesRanks();
-                LoadCriteriaSegments();
-                LoadValueFunctions();
-            }
+            LoadCriteriaSegments();
+            LoadAlternativesRanks();
+            LoadValueFunctions();
+
+            setMinAndMaxCriterionValues();
         }
     }
 }
