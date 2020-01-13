@@ -125,7 +125,7 @@ namespace UTA.ViewModels
             for (var i = 0; i < dialog.DisplayObject.CriterionNames.Length; i++)
                 TextOptionLottery += dialog.DisplayObject.CriterionNames[i] + " = " + dialog.DisplayObject.BestValues[i] + "\n";
 
-            TextOptionLottery += "\nOR with probability " + dialog.DisplayObject.P + " these values:\n";
+            TextOptionLottery += "\nOR with probability " + (1 - dialog.DisplayObject.P) + " these values:\n";
 
             for (var i = 0; i < dialog.DisplayObject.CriterionNames.Length; i++)
                 TextOptionLottery += dialog.DisplayObject.CriterionNames[i] + " = " + dialog.DisplayObject.WorstValues[i] + "\n";
