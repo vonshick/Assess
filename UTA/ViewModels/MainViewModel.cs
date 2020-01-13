@@ -304,12 +304,11 @@ namespace UTA.ViewModels
                 partialUtilitiesList.Add(new PartialUtility(criterion, new DialogController(criterion, 1, 0.5f).DisplayObject.PointsList));
 
             //run solver for initial utilities
-//            var utilitiesCalculator =
-//                new UtilitiesCalculator(copyAlternatives, copyCriteria, partialUtilitiesList, criteriaCoefficientsList);
-//            utilitiesCalculator.CalculateGlobalUtilities();
+            var utilitiesCalculator = new UtilitiesCalculator(copyAlternatives, partialUtilitiesList, criteriaCoefficientsList);
+            utilitiesCalculator.CalculateGlobalUtilities();
 
             //todo present in panels
-//            var finalRankingAssess = new FinalRankingAssess(utilitiesCalculator.AlternativesUtilitiesList);
+            var finalRankingAssess = new FinalRankingAssess(utilitiesCalculator.AlternativesUtilitiesList);
 
             ShowPartialUtilityTabs(copyCriteria);
 

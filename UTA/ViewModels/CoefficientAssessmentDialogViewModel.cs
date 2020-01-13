@@ -45,7 +45,9 @@ namespace UTA.ViewModels
             TakeIndifferentCommand = new RelayCommand(_ =>
             {
                 _dialog.ProcessDialog(3);
-                _dialog.GetCoefficientsForCriterion(CurrentCriterion);
+
+                CriteriaCoefficientsList.Add(_dialog.GetCoefficientsForCriterion(CurrentCriterion));
+
                 if (_index < _criteriaCollection.Count - 1)
                 {
                     _index++;

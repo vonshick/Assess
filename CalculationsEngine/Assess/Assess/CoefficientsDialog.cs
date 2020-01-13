@@ -36,24 +36,9 @@ namespace CalculationsEngine.Assess.Assess
                 }
         }
 
-        //todo remove
-        public void GetCoefficientsForCriterion(Criterion criterion)
+        public CriterionCoefficient GetCoefficientsForCriterion(Criterion criterion)
         {
-//            for (var i = 0; i < _criterionList.Count; i++)
-//            {
-//                var valuesToCompare = _worstValues.ToArray();
-//                valuesToCompare[i] = _bestValues[i];
-//
-//                DisplayObject = new DisplayObject(_criterionList, valuesToCompare, 0.5f);
-//
-//                _currentCriterionName = _criterionList[i].Name;
-//                _lowerProbabilityBoundary = 0;
-//                _upperProbabilityBoundary = 1;
-//
-//                ProcessDialog();
-//            }
-            var critDisplay = CriteriaCoefficientsList.First(crit => criterion.Name == crit.CriterionName);
-            Console.WriteLine(critDisplay.CriterionName + " : " + critDisplay.Coefficient);
+            return CriteriaCoefficientsList.First(crit => criterion.Name == crit.CriterionName);
         }
 
         public void SetInitialValues(Criterion criterion)

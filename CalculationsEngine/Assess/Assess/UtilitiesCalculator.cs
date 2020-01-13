@@ -9,18 +9,16 @@ namespace CalculationsEngine.Assess.Assess
     {
         private readonly List<Alternative> _alternativesList;
         private readonly List<CriterionCoefficient> _criteriaCoefficientsList;
-        private readonly List<Criterion> _criteriaList;
         private readonly List<PartialUtility> _partialUtilitiesList;
         private double K;
         public List<AlternativeUtility> AlternativesUtilitiesList;
         private BaristowSolver _baristowSolver;
 
-        public UtilitiesCalculator(List<Alternative> alternativesList, List<Criterion> criteriaList,
+        public UtilitiesCalculator(List<Alternative> alternativesList,
             List<PartialUtility> partialUtilitiesList, List<CriterionCoefficient> criteriaCoefficientsList)
         {
             AlternativesUtilitiesList = new List<AlternativeUtility>();
             _alternativesList = alternativesList;
-            _criteriaList = criteriaList;
             _partialUtilitiesList = partialUtilitiesList;
             _criteriaCoefficientsList = criteriaCoefficientsList;
             setScalingCoefficient(criteriaCoefficientsList);
@@ -40,7 +38,6 @@ namespace CalculationsEngine.Assess.Assess
                 double product = 1;
                 foreach (var criterionValue in alternative.CriteriaValuesList)
                 {
-                    var criterion = _criteriaList.Find(o => o.Name == criterionValue.Name);
                     var points = _partialUtilitiesList.Find(o => o.Criterion.Name == criterionValue.Name).PointsValues;
                     points = points.OrderBy(o => o.X).ToList();
                     var k = _criteriaCoefficientsList.Find(element => element.CriterionName == criterionValue.Name).Coefficient;
