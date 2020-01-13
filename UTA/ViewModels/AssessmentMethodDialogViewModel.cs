@@ -40,9 +40,13 @@ namespace UTA.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public async void DialogClosed()
+        //todo bind directly in xaml?
+        public async void DialogClosed(object sender, CancelEventArgs e)
         {
-            var dialogResult = await DialogCoordinator.ShowMessageAsync(this,
+            // cancel close, because window doesn't wait for async function and closes anyway
+            e.Cancel = !CloseDialog;
+
+            await DialogCoordinator.ShowMessageAsync(this,
                 "Cannot close dialog!",
                 "You have to select method.",
                 MessageDialogStyle.Affirmative,

@@ -30,12 +30,9 @@ namespace UTA.Views
             };
         }
 
-        //todo bind in xaml?
         private void DialogClosed(object sender, CancelEventArgs e)
         {
-            // cancel close, because window doesn't wait for async function and closes anyway
-            e.Cancel = !_viewmodel.CloseDialog;
-            _viewmodel.DialogClosed();
+            _viewmodel.DialogClosed(sender, e);
         }
     }
 }

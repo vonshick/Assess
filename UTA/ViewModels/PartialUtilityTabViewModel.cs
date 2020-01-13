@@ -30,7 +30,8 @@ namespace UTA.ViewModels
                 StartButtonText = "Restart Assessment";
                 ShowMethodDialog();
                 Console.WriteLine(Criterion.MinValue + ", max: " + Criterion.MaxValue);
-                DialogController = new DialogController(Criterion, Method, 0.3f);
+                //todo what probability?
+                DialogController = new DialogController(Criterion, Method, 0.5f);
                 Dialog = DialogController.TriggerDialog(DialogController.PointsList[0], DialogController.PointsList[1]);
                 Dialog.SetInitialValues();
                 SetUtilityAssessmentTextBlocks(Dialog);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -7,12 +8,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Documents;
-using CalculationsEngine;
 using CalculationsEngine.Assess.Assess;
 using DataModel.Input;
 using DataModel.Results;
-using DataModel.Structs;
 using ExportModule;
 using ImportModule;
 using MahApps.Metro.Controls.Dialogs;
@@ -22,6 +20,7 @@ using UTA.Annotations;
 using UTA.Helpers;
 using UTA.Models;
 using UTA.Models.Tab;
+using UTA.Views;
 
 namespace UTA.ViewModels
 {
@@ -192,17 +191,6 @@ namespace UTA.ViewModels
 //               FinalRankingAssess finalRankingAssess = new FinalRankingAssess(utilitiesCalculator.AlternativesUtilitiesList);
         }
 
-        public bool Recalculate
-        {
-            get => _recalculate;
-            set
-            {
-                if (value == _recalculate) return;
-                _recalculate = value;
-                OnPropertyChanged();
-            }
-        }
-
         public Alternatives Alternatives { get; set; }
         public Criteria Criteria { get; set; }
         public ReferenceRanking ReferenceRanking { get; set; }
@@ -301,17 +289,64 @@ namespace UTA.ViewModels
                 return;
             }
 
-            //TODO show it in one tab
-            //            ShowCoeffAssessmentTab();
-            ShowPartialUtilityTabs();
+            if (!CriteriaValuesCorrect(Criteria.CriteriaCollection.ToList())) return;
+
+            //todo deep copies
+            var copyAlternatives = Alternatives.AlternativesCollection.ToList();
+            var copyCriteria = Criteria.CriteriaCollection.ToList();
+
+            var criteriaCoefficientsList = AssessCoefficients(copyCriteria);
+            if (criteriaCoefficientsList == null) return;
+
+            //get initial partial utilities
+            var partialUtilitiesList = new List<PartialUtility>();
+            foreach (var criterion in copyCriteria)
+                partialUtilitiesList.Add(new PartialUtility(criterion, new DialogController(criterion, 1, 0.5f).DisplayObject.PointsList));
+
+            //run solver for initial utilities
+            var utilitiesCalculator =
+                new UtilitiesCalculator(copyAlternatives, copyCriteria, partialUtilitiesList, criteriaCoefficientsList);
+            utilitiesCalculator.CalculateGlobalUtilities();
+
+            //todo present in panels
+            var finalRankingAssess = new FinalRankingAssess(utilitiesCalculator.AlternativesUtilitiesList);
+
+            ShowPartialUtilityTabs(copyCriteria);
+
+            //todo after first calculation - dynamic recalcualtion
         }
 
-        private void ShowPartialUtilityTabs()
+        private bool CriteriaValuesCorrect(List<Criterion> criteriaList)
+        {
+            var invalidCriteriaValuesNames = new List<string>();
+            foreach (var criterion in criteriaList)
+                if (Math.Abs(criterion.MaxValue - criterion.MinValue) < 0.000000001)
+                    invalidCriteriaValuesNames.Add(criterion.Name);
+
+            if (invalidCriteriaValuesNames.Count != 0)
+            {
+                ShowTab(AlternativesTabViewModel);
+                ShowCriteriaMinMaxValueWarning(invalidCriteriaValuesNames);
+                return false;
+            }
+
+            return true;
+        }
+
+        private List<CriterionCoefficient> AssessCoefficients(List<Criterion> criteriaList)
+        {
+            var coefficientTabViewModel = new CoefficientAssessmentDialogViewModel(criteriaList);
+            var coefficientAssessmentDialog = new CoefficientAssessmentDialog {DataContext = coefficientTabViewModel};
+            coefficientAssessmentDialog.ShowDialog();
+            return coefficientTabViewModel.CriteriaCoefficientsList;
+        }
+
+        private void ShowPartialUtilityTabs(List<Criterion> criteriaList)
         {
             foreach (var partialUtilityTabViewModel in PartialUtilityTabViewModels) Tabs.Remove(partialUtilityTabViewModel);
             PartialUtilityTabViewModels.Clear();
 
-            foreach (var criterion in Criteria.CriteriaCollection)
+            foreach (var criterion in criteriaList)
             {
                 var partialUtilityTabViewModel = new PartialUtilityTabViewModel(criterion);
                 PartialUtilityTabViewModels.Add(partialUtilityTabViewModel);
@@ -325,50 +360,25 @@ namespace UTA.ViewModels
             if (!Tabs.Contains(tab)) Tabs.Add(tab);
         }
 
-        private async void ShowCoeffAssessmentTab()
+        private async void ShowCriteriaMinMaxValueWarning(List<string> invalidCriteriaValuesNames)
         {
-            var invalidCriteriaValuesNames = new List<string>();
-            foreach (var criterion in Criteria.CriteriaCollection)
-                if (Math.Abs(criterion.MaxValue - criterion.MinValue) < 0.00000001)
-                    invalidCriteriaValuesNames.Add(criterion.Name);
-
-            if (invalidCriteriaValuesNames.Count != 0)
-            {
-                ShowTab(AlternativesTabViewModel);
-
-                var warningMessage = "Alternatives values on the following criteria have too high precision or are the same:\n";
-                foreach (var criterionName in invalidCriteriaValuesNames) warningMessage += $"{criterionName},\n";
-                warningMessage +=
-                    "Please provide lower precision values or at least two unique values on a whole set of alternatives values.";
-                await _dialogCoordinator.ShowMessageAsync(this,
-                    "Invalid alternatives values.",
-                    warningMessage,
-                    MessageDialogStyle.Affirmative,
-                    new MetroDialogSettings
-                    {
-                        AffirmativeButtonText = "OK",
-                        DefaultButtonFocus = MessageDialogResult.Affirmative,
-                        AnimateShow = false,
-                        AnimateHide = false
-                    });
-                return;
-            }
-
-            var coefficientsDialog = new CoefficientsDialog(Criteria.CriteriaCollection.ToList());
-//            foreach (var criterion in Criteria.CriteriaCollection)
-//            {
-//                if(!ShowScalingCoeffDialog(coefficientsDialog, criterion))
-//                    return;
-//            }
+            var warningMessage = "Alternatives values on the following criteria have too high precision or are the same:\n";
+            foreach (var criterionName in invalidCriteriaValuesNames) warningMessage += $"{criterionName},\n";
+            warningMessage +=
+                "Please provide lower precision values or at least two unique values on a whole set of alternatives values.";
+            await _dialogCoordinator.ShowMessageAsync(this,
+                "Invalid alternatives values.",
+                warningMessage,
+                MessageDialogStyle.Affirmative,
+                new MetroDialogSettings
+                {
+                    AffirmativeButtonText = "OK",
+                    DefaultButtonFocus = MessageDialogResult.Affirmative,
+                    AnimateShow = false,
+                    AnimateHide = false
+                });
         }
 
-        private bool ShowScalingCoeffDialog(CoefficientsDialog dialog, Criterion criterion)
-        {
-            var userDialogueDialogViewModel = new CoefficientAssessmentTabViewModel(dialog, criterion);
-//            var userDialogueDialog = new CoefficientAssessmentTab() { DataContext = userDialogueDialogViewModel };
-            ShowTab(userDialogueDialogViewModel);
-            return userDialogueDialogViewModel.UtilityAssessed;
-        }
 
         private void RefreshCharts()
         {
