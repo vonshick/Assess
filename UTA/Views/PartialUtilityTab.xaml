@@ -9,7 +9,7 @@
     <StackPanel Margin="12,8" Background="{StaticResource ColorInterface7}">
       <TextBlock Text="Chart will be here" FontSize="18" Margin="8,8,12,8" />
       <TextBlock Text="{Binding Criterion.Name}" FontSize="18" Margin="8,8,12,8" />
-      <Button Name="StartButton" Width="50" Command="{Binding StartDialogueCommand}" Content="{Binding StartButtonText}"/>
+      <Button Name="StartButton" Width="Auto" MinWidth="50" Command="{Binding StartDialogueCommand}" Content="{Binding StartButtonText}"/>
 
 
       <TextBlock Text="{Binding ResultsText, UpdateSourceTrigger=PropertyChanged}" Name="ResultsTextBlock"

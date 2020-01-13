@@ -45,7 +45,7 @@ namespace UTA.ViewModels
             TakeIndifferentCommand = new RelayCommand(_ =>
             {
                 _dialog.ProcessDialog(3);
-                _dialog.GetCoefficientsForCriterion(_currentCriterion);
+                _dialog.GetCoefficientsForCriterion(CurrentCriterion);
                 if (_index < _criteriaCollection.Count - 1)
                 {
                     _index++;
@@ -58,8 +58,8 @@ namespace UTA.ViewModels
 
         private void SetupCriterionAssessment()
         {
-            _currentCriterion = _criteriaCollection[_index];
-            _dialog.SetInitialValues(_currentCriterion);
+            CurrentCriterion = _criteriaCollection[_index];
+            _dialog.SetInitialValues(CurrentCriterion);
             SetCoefficientsTextBlocks(_dialog);
         }
 
@@ -70,6 +70,17 @@ namespace UTA.ViewModels
         public RelayCommand TakeLotteryCommand { get; }
         public RelayCommand TakeIndifferentCommand { get; }
         public IDialogCoordinator DialogCoordinator { get; set; }
+
+        public Criterion CurrentCriterion
+        {
+            get => _currentCriterion;
+            set
+            {
+                if (Equals(value, _currentCriterion)) return;
+                _currentCriterion = value;
+                OnPropertyChanged();
+            }
+        }
         public bool CloseDialog
         {
             get => _closeDialog;
@@ -107,7 +118,7 @@ namespace UTA.ViewModels
             for (var i = 0; i < dialog.DisplayObject.CriterionNames.Length; i++)
                 TextOptionSure += dialog.DisplayObject.CriterionNames[i] + " = " + dialog.DisplayObject.ValuesToCompare[i] + "\n";
 
-            TextOptionLottery += "\nClick 'Lottery' if you prefer to have with probability " + dialog.DisplayObject.P + " these values:\n";
+            TextOptionLottery = "\nClick 'Lottery' if you prefer to have with probability " + dialog.DisplayObject.P + " these values:\n";
 
             for (var i = 0; i < dialog.DisplayObject.CriterionNames.Length; i++)
                 TextOptionLottery += dialog.DisplayObject.CriterionNames[i] + " = " + dialog.DisplayObject.BestValues[i] + "\n";
