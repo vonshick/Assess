@@ -34,8 +34,10 @@ namespace ImportModule
 
             var descriptionAttributeName = "";
 
+            XmlNodeList dataList = xmlDoc.GetElementsByTagName("DATA");     
+
             // iterate on its nodes
-            foreach (XmlNode xmlNode in xmlDoc.DocumentElement.ChildNodes)
+            foreach (XmlNode xmlNode in dataList[0].ChildNodes)
                 if (xmlNode.Name == "ATTRIBUTES")
                     foreach (XmlNode attribute in xmlNode)
                     {
