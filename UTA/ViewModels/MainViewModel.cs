@@ -310,6 +310,8 @@ namespace UTA.ViewModels
             //todo present in panels
             var finalRankingAssess = new FinalRankingAssess(utilitiesCalculator.AlternativesUtilitiesList);
 
+            Results.FinalRanking.FinalRankingCollection = finalRankingAssess.FinalRankingCollection;
+            
             ShowPartialUtilityTabs(copyCriteria);
 
             //todo after first calculation - dynamic recalcualtion
