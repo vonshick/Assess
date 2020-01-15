@@ -5,13 +5,13 @@ VisualStudioVersion = 16.0.29418.71
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UTA", "UTA\UTA.csproj", "{765EA298-662D-4DF9-AFB5-1C05F99D6B0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImportModule", "ImportModule\ImportModule.csproj", "{DCF35BB6-C438-4B0D-8B3F-66FCE55D3E1A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImportModule", "ImportModule\ImportModule.csproj", "{DCF35BB6-C438-4B0D-8B3F-66FCE55D3E1A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExportModule", "ExportModule\ExportModule.csproj", "{A4282863-E07F-4801-95E7-974F8069CB8C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExportModule", "ExportModule\ExportModule.csproj", "{A4282863-E07F-4801-95E7-974F8069CB8C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalculationsEngine", "CalculationsEngine\CalculationsEngine.csproj", "{1DCCD037-7370-49D5-8EC8-2BB0DCB47D5D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalculationsEngine", "CalculationsEngine\CalculationsEngine.csproj", "{1DCCD037-7370-49D5-8EC8-2BB0DCB47D5D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataModel", "DataModel\DataModel.csproj", "{8954BCD5-4C2C-4552-9259-C4109980B823}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataModel", "DataModel\DataModel.csproj", "{8954BCD5-4C2C-4552-9259-C4109980B823}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

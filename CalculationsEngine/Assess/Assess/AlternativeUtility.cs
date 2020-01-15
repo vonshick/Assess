@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using DataModel.Input;
+﻿using DataModel.Input;
 
 namespace CalculationsEngine.Assess.Assess
 {

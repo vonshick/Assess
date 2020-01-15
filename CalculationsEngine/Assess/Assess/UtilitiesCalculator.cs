@@ -10,9 +10,9 @@ namespace CalculationsEngine.Assess.Assess
         private readonly List<Alternative> _alternativesList;
         private readonly List<CriterionCoefficient> _criteriaCoefficientsList;
         private readonly List<PartialUtility> _partialUtilitiesList;
-        private double K;
-        public List<AlternativeUtility> AlternativesUtilitiesList;
         private BaristowSolver _baristowSolver;
+        public List<AlternativeUtility> AlternativesUtilitiesList;
+        private double K;
 
         public UtilitiesCalculator(List<Alternative> alternativesList,
             List<PartialUtility> partialUtilitiesList, List<CriterionCoefficient> criteriaCoefficientsList)
@@ -27,7 +27,7 @@ namespace CalculationsEngine.Assess.Assess
         private void setScalingCoefficient(List<CriterionCoefficient> criteriaCoefficientsList)
         {
             _baristowSolver = new BaristowSolver();
-            List<double> kCoefficients = criteriaCoefficientsList.Select(o => (double)o.Coefficient).ToList();
+            var kCoefficients = criteriaCoefficientsList.Select(o => o.Coefficient).ToList();
             K = _baristowSolver.GetScalingCoefficient(kCoefficients);
         }
 

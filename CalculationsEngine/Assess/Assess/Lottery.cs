@@ -1,13 +1,12 @@
-﻿
-using DataModel.Results;
+﻿using DataModel.Results;
 
 namespace CalculationsEngine.Assess.Assess
 {
     public class Lottery
     {
+        public PartialUtilityValues LowerUtilityValue;
         public double P;
         public PartialUtilityValues UpperUtilityValue;
-        public PartialUtilityValues LowerUtilityValue;
 
         public Lottery(PartialUtilityValues lowerUtilityValue, PartialUtilityValues upperUtilityValue)
         {

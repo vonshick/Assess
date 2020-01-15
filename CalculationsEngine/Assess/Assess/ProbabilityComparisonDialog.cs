@@ -5,7 +5,8 @@ namespace CalculationsEngine.Assess.Assess
 {
     public class ProbabilityComparisonDialog : Dialog
     {
-        public ProbabilityComparisonDialog(double lowerUtilityBoundary, double upperUtilityBoundary, DisplayObject displayObject) : base(lowerUtilityBoundary, upperUtilityBoundary, displayObject)
+        public ProbabilityComparisonDialog(double lowerUtilityBoundary, double upperUtilityBoundary, DisplayObject displayObject) : base(
+            lowerUtilityBoundary, upperUtilityBoundary, displayObject)
         {
         }
 
@@ -21,6 +22,7 @@ namespace CalculationsEngine.Assess.Assess
 
             return "";
         }
+
         public override void SetInitialValues()
         {
             DisplayObject.X = (DisplayObject.Lottery.LowerUtilityValue.X + DisplayObject.Lottery.UpperUtilityValue.X) / 2;

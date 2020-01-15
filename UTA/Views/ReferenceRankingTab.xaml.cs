@@ -2,7 +2,6 @@
 using System.Windows;
 using System.Windows.Controls;
 using DataModel.Input;
-using UTA.ViewModels;
 
 namespace UTA.Views
 {

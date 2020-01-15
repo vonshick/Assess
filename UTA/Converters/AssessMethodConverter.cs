@@ -14,6 +14,7 @@ namespace UTA.Converters
                 if (parameter != null && integer == int.Parse(parameter.ToString()))
                     return true;
             }
+
             return false;
         }
 

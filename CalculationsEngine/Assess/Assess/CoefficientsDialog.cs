@@ -9,10 +9,10 @@ namespace CalculationsEngine.Assess.Assess
     {
         private readonly List<double> _bestValues;
         private readonly List<Criterion> _criterionList;
+        private readonly List<double> _worstValues;
         private string _currentCriterionName;
         private double _lowerProbabilityBoundary;
         private double _upperProbabilityBoundary;
-        private readonly List<double> _worstValues;
         public List<CriterionCoefficient> CriteriaCoefficientsList;
         public DisplayObject DisplayObject;
 

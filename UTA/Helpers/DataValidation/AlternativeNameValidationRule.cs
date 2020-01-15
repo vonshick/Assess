@@ -18,7 +18,7 @@ namespace UTA.Helpers.DataValidation
             if (name == null || name.Trim(' ') == "")
                 return new ValidationResult(false, "Alternative name cannot be empty!");
 
-            var criteriaCollection = (ObservableCollection<Alternative>)AlternativesCollectionViewSource.Source;
+            var criteriaCollection = (ObservableCollection<Alternative>) AlternativesCollectionViewSource.Source;
             if (criteriaCollection.Any(criterion => criterion.Name == name))
                 return new ValidationResult(false, "Alternative already exists!");
 

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using CalculationsEngine.Assess.Assess;
@@ -15,12 +13,12 @@ namespace UTA.ViewModels
     public class CoefficientAssessmentDialogViewModel : Tab, INotifyPropertyChanged
     {
         private readonly List<Criterion> _criteriaCollection;
-        private string _textOptionSure;
-        private string _textOptionLottery;
-        private int _index;
         private readonly CoefficientsDialog _dialog;
-        private Criterion _currentCriterion;
         private bool _closeDialog;
+        private Criterion _currentCriterion;
+        private int _index;
+        private string _textOptionLottery;
+        private string _textOptionSure;
 
         public CoefficientAssessmentDialogViewModel(List<Criterion> criteriaCollection)
         {
@@ -54,15 +52,10 @@ namespace UTA.ViewModels
                     SetupCriterionAssessment();
                 }
                 else
+                {
                     CloseDialog = true;
+                }
             });
-        }
-
-        private void SetupCriterionAssessment()
-        {
-            CurrentCriterion = _criteriaCollection[_index];
-            _dialog.SetInitialValues(CurrentCriterion);
-            SetCoefficientsTextBlocks(_dialog);
         }
 
         public List<CriterionCoefficient> CriteriaCoefficientsList { get; set; }
@@ -83,6 +76,7 @@ namespace UTA.ViewModels
                 OnPropertyChanged();
             }
         }
+
         public bool CloseDialog
         {
             get => _closeDialog;
@@ -102,6 +96,7 @@ namespace UTA.ViewModels
                 OnPropertyChanged(nameof(TextOptionSure));
             }
         }
+
         public string TextOptionLottery
         {
             get => _textOptionLottery;
@@ -111,7 +106,15 @@ namespace UTA.ViewModels
                 OnPropertyChanged(nameof(TextOptionLottery));
             }
         }
+
         public event PropertyChangedEventHandler PropertyChanged;
+
+        private void SetupCriterionAssessment()
+        {
+            CurrentCriterion = _criteriaCollection[_index];
+            _dialog.SetInitialValues(CurrentCriterion);
+            SetCoefficientsTextBlocks(_dialog);
+        }
 
 
         private void SetCoefficientsTextBlocks(CoefficientsDialog dialog)

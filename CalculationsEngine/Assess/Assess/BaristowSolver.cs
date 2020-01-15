@@ -1,60 +1,42 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CalculationsEngine.Assess.Assess
 {
     public class BaristowSolver
     {
-        private int n;
         private double[] a;
-        private int mit;
-        private double mincorr;
-        private double zerodet;
-        public ComplexNumber[] z;
-        public ComplexNumber[] w;
         public int it;
+        private readonly double mincorr;
+        private readonly int mit;
+        private int n;
         public int st;
+        public ComplexNumber[] w;
+        public ComplexNumber[] z;
+        private readonly double zerodet;
 
         public BaristowSolver()
         {
-            mit = (int)1E6;
+            mit = (int) 1E6;
             mincorr = 1E-6;
             zerodet = 1E-6;
         }
 
-        public struct ComplexNumber
-        {
-            public double im;
-            public double re;
-
-            public ComplexNumber(double im, double re)
-            {
-                this.im = im;
-                this.re = re;
-            }
-        }
-
         private double[] getPolynomialCoefficients(List<double> list)
         {
-            double count = Math.Pow(2, list.Count);
-            double[] coefficients = new double[list.Count + 1];
+            var count = Math.Pow(2, list.Count);
+            var coefficients = new double[list.Count + 1];
 
-            for (int i = 1; i <= count - 1; i++)
+            for (var i = 1; i <= count - 1; i++)
             {
-                string str = Convert.ToString(i, 2).PadLeft(list.Count, '0');
+                var str = Convert.ToString(i, 2).PadLeft(list.Count, '0');
 
-                List<double> elements = new List<double>();
+                var elements = new List<double>();
 
-                for (int j = 0; j < str.Length; j++)
-                {
+                for (var j = 0; j < str.Length; j++)
                     if (str[j] == '1')
-                    {
                         elements.Add(list[j]);
-                    }
-                }
 
                 coefficients[elements.Count] += elements.Aggregate((a, x) => a * x);
             }
@@ -68,12 +50,9 @@ namespace CalculationsEngine.Assess.Assess
 
         private ComplexNumber[] createComplexNumberArray(int n)
         {
-            List<ComplexNumber> ComplexNumberList = new List<ComplexNumber>();
+            var ComplexNumberList = new List<ComplexNumber>();
 
-            for (int i = 0; i <= n; i++)
-            {
-                ComplexNumberList.Add(new ComplexNumber(0, 0));
-            }
+            for (var i = 0; i <= n; i++) ComplexNumberList.Add(new ComplexNumber(0, 0));
 
             return ComplexNumberList.ToArray();
         }
@@ -86,7 +65,7 @@ namespace CalculationsEngine.Assess.Assess
 
             bool cond, endpq; //git
 
-            double[] b = new double[n + 1];
+            var b = new double[n + 1];
 
             if (n < 1 || mit < 1 || mincorr <= 0 || zerodet <= 0)
             {
@@ -94,10 +73,7 @@ namespace CalculationsEngine.Assess.Assess
             }
             else
             {
-                for (i = 0; i <= n; i++)
-                {
-                    b[n - i] = a[i];
-                }
+                for (i = 0; i <= n; i++) b[n - i] = a[i];
 
                 st = 0;
                 i = 1;
@@ -111,7 +87,7 @@ namespace CalculationsEngine.Assess.Assess
                 {
                     if (n == 1)
                     {
-                        z[i].re = - b[1] / b[0];
+                        z[i].re = -b[1] / b[0];
                         z[i].im = 0;
                         cond = false;
                     }
@@ -146,7 +122,7 @@ namespace CalculationsEngine.Assess.Assess
                                     q3 = q4;
                                 }
 
-                                if ((Math.Abs(q2) + Math.Abs(q3)) < zerodet)
+                                if (Math.Abs(q2) + Math.Abs(q3) < zerodet)
                                 {
                                     endpq = false;
                                 }
@@ -176,10 +152,7 @@ namespace CalculationsEngine.Assess.Assess
                                             endpq = false;
                                         }
 
-                                        if (it == mit && endpq)
-                                        {
-                                            st = 3;
-                                        }
+                                        if (it == mit && endpq) st = 3;
                                     }
                                 }
                             } while (!(st != 0 || !endpq));
@@ -213,24 +186,16 @@ namespace CalculationsEngine.Assess.Assess
                             else
                             {
                                 if (m > 0)
-                                {
                                     m = m + q1;
-                                }
                                 else
-                                {
                                     m = m - q1;
-                                }
 
                                 z[i + 1].re = m;
 
                                 if (Math.Abs(m) == 0)
-                                {
                                     z[i].re = 0;
-                                }
                                 else
-                                {
                                     z[i].re = q / m;
-                                }
 
                                 z[i].im = 0;
                                 z[i + 1].im = 0;
@@ -264,10 +229,7 @@ namespace CalculationsEngine.Assess.Assess
                         q1 = a[n];
                         if (q == 0)
                         {
-                            for (k = n1; k >= 0; k--)
-                            {
-                                q1 = q1 * p + a[k];
-                            }
+                            for (k = n1; k >= 0; k--) q1 = q1 * p + a[k];
 
                             q2 = 0;
                         }
@@ -297,14 +259,14 @@ namespace CalculationsEngine.Assess.Assess
 
         private double getSuitableRoot()
         {
-            ComplexNumber minImComplexNumber = new ComplexNumber(double.PositiveInfinity, double.PositiveInfinity);
+            var minImComplexNumber = new ComplexNumber(double.PositiveInfinity, double.PositiveInfinity);
 
             // choose the complex number with min imaginary part and min index
-            for (int i = z.Length - 1; i >= 1; i--)
+            for (var i = z.Length - 1; i >= 1; i--)
                 if (Math.Abs(z[i].im) <= Math.Abs(minImComplexNumber.im))
-                    if(z[i].re != 0 && Math.Abs(z[i].re) > 1E-3)
+                    if (z[i].re != 0 && Math.Abs(z[i].re) > 1E-3)
                         minImComplexNumber = z[i];
-            
+
             return minImComplexNumber.re;
         }
 
@@ -321,6 +283,18 @@ namespace CalculationsEngine.Assess.Assess
             setInitialValues(kCoefficients);
             getRoots();
             return getSuitableRoot();
+        }
+
+        public struct ComplexNumber
+        {
+            public double im;
+            public double re;
+
+            public ComplexNumber(double im, double re)
+            {
+                this.im = im;
+                this.re = re;
+            }
         }
     }
 }

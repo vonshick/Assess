@@ -126,7 +126,8 @@ namespace UTA.ViewModels
         {
             if (Method == 3)
             {
-                TextOptionSure = "Criterion " + Criterion.Name + "\nIf you prefer a lottery which gives you " + dialog.DisplayObject.ComparisonLottery.UpperUtilityValue.X +
+                TextOptionSure = "Criterion " + Criterion.Name + "\nIf you prefer a lottery which gives you " +
+                                 dialog.DisplayObject.ComparisonLottery.UpperUtilityValue.X +
                                  " with probability " + dialog.DisplayObject.ComparisonLottery.P +
                                  " or " + dialog.DisplayObject.ComparisonLottery.LowerUtilityValue.X + " with probability " +
                                  (1 - dialog.DisplayObject.ComparisonLottery.P) + ", click Lottery 1";
@@ -138,7 +139,8 @@ namespace UTA.ViewModels
             }
             else
             {
-                TextOptionSure = "Criterion " + Criterion.Name + "\nIf you prefer to have " + dialog.DisplayObject.X + " for sure, click Take Sure.";
+                TextOptionSure = "Criterion " + Criterion.Name + "\nIf you prefer to have " + dialog.DisplayObject.X +
+                                 " for sure, click Take Sure.";
                 TextOptionLottery = "If you prefer a lottery which gives you " + dialog.DisplayObject.Lottery.UpperUtilityValue.X +
                                     " with probability " + dialog.DisplayObject.Lottery.P +
                                     " or " + dialog.DisplayObject.Lottery.LowerUtilityValue.X + " with probability " +

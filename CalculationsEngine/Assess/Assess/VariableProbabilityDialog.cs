@@ -24,6 +24,7 @@ namespace CalculationsEngine.Assess.Assess
 
             return "";
         }
+
         public override void SetInitialValues()
         {
             DisplayObject.X = (LowerUtilityBoundary + UpperUtilityBoundary) / 2;

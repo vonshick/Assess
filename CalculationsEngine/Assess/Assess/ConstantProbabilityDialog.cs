@@ -5,11 +5,11 @@ namespace CalculationsEngine.Assess.Assess
 {
     public class ConstantProbabilityDialog : Dialog
     {
-        public ConstantProbabilityDialog(double lowerUtilityBoundary, double upperUtilityBoundary, DisplayObject displayObject) : base(lowerUtilityBoundary, upperUtilityBoundary, displayObject)
+        public ConstantProbabilityDialog(double lowerUtilityBoundary, double upperUtilityBoundary, DisplayObject displayObject) : base(
+            lowerUtilityBoundary, upperUtilityBoundary, displayObject)
         {
-
         }
- 
+
         public override string displayDialog()
         {
             Console.WriteLine("Wpisz '1' jeśli wolisz równoważnik pewności:");

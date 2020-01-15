@@ -1,9 +1,4 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Controls;
-using CalculationsEngine.Assess.Assess;
-using DataModel.Input;
-using UTA.ViewModels;
+﻿using System.Windows.Controls;
 
 namespace UTA.Views
 {

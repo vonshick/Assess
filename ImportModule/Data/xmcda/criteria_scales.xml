@@ -1,35 +1,38 @@
-<?xml version="1.0" ?>
-<xmcda:XMCDA xmlns:xmcda="http://www.decision-deck.org/2016/XMCDA-3.0.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.decision-deck.org/2016/XMCDA-3.0.2 http://www.decision-deck.org/xmcda/_downloads/XMCDA-3.0.2.xsd">
-<criteriaScales>
+<?xml version="1.0"?>
+
+<xmcda:XMCDA xmlns:xmcda="http://www.decision-deck.org/2016/XMCDA-3.0.2"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.decision-deck.org/2016/XMCDA-3.0.2 http://www.decision-deck.org/xmcda/_downloads/XMCDA-3.0.2.xsd">
+  <criteriaScales>
     <criterionScale>
-	<criterionID>c01</criterionID>
-	<scales>
-	    <scale>
-       	        <quantitative>
-                    <preferenceDirection>max</preferenceDirection>
-                </quantitative>
-            </scale>
-	</scales>
+      <criterionID>c01</criterionID>
+      <scales>
+        <scale>
+          <quantitative>
+            <preferenceDirection>max</preferenceDirection>
+          </quantitative>
+        </scale>
+      </scales>
     </criterionScale>
     <criterionScale>
-	<criterionID>c02</criterionID>
-	<scales>
-	    <scale>
-       	        <quantitative>
-                    <preferenceDirection>min</preferenceDirection>
-                </quantitative>
-            </scale>
-	</scales>
+      <criterionID>c02</criterionID>
+      <scales>
+        <scale>
+          <quantitative>
+            <preferenceDirection>min</preferenceDirection>
+          </quantitative>
+        </scale>
+      </scales>
     </criterionScale>
     <criterionScale>
-	<criterionID>c03</criterionID>
-	<scales>
-	    <scale>
-       	        <quantitative>
-                    <preferenceDirection>max</preferenceDirection>
-                </quantitative>
-            </scale>
-	</scales>
+      <criterionID>c03</criterionID>
+      <scales>
+        <scale>
+          <quantitative>
+            <preferenceDirection>max</preferenceDirection>
+          </quantitative>
+        </scale>
+      </scales>
     </criterionScale>
-</criteriaScales>
+  </criteriaScales>
 </xmcda:XMCDA>

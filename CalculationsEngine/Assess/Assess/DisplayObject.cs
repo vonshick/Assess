@@ -7,20 +7,22 @@ namespace CalculationsEngine.Assess.Assess
 {
     public class DisplayObject
     {
-        //partial probability assessment dialog
-        public double X;
-        public Lottery Lottery;
-        public List<PartialUtilityValues> PointsList;
-        public Lottery EdgeValuesLottery; //lotteries comparison
+        public double[] BestValues;
         public Lottery ComparisonLottery; //lotteries comparison
+        public string[] CriterionNames;
+        public Lottery EdgeValuesLottery; //lotteries comparison
+        public Lottery Lottery;
 
         public double P; //lotteries comparison, coefficients dialog
+        public List<PartialUtilityValues> PointsList;
 
         //coefficients dialog
         public double[] ValuesToCompare;
+
         public double[] WorstValues;
-        public double[] BestValues;
-        public string[] CriterionNames;
+
+        //partial probability assessment dialog
+        public double X;
 
         public DisplayObject()
         {

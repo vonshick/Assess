@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -311,7 +310,7 @@ namespace UTA.ViewModels
             var finalRankingAssess = new FinalRankingAssess(utilitiesCalculator.AlternativesUtilitiesList);
 
             Results.FinalRanking.FinalRankingCollection = finalRankingAssess.FinalRankingCollection;
-            
+
             ShowPartialUtilityTabs(copyCriteria);
 
             //todo after first calculation - dynamic recalcualtion

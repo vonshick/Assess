@@ -1,30 +1,33 @@
-<?xml version="1.0" ?>
-<xmcda:XMCDA xmlns:xmcda="http://www.decision-deck.org/2016/XMCDA-3.0.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.decision-deck.org/2016/XMCDA-3.0.2 http://www.decision-deck.org/xmcda/_downloads/XMCDA-3.0.2.xsd">
+<?xml version="1.0"?>
 
-<criteriaValues name="significance" mcdaConcept="Importance">
-		<criterionValue>
-			<criterionID>c01</criterionID>
-			<values>
-				<value>
-					<real>1.0</real>
-				</value>
-			</values>
-		</criterionValue>
-		<criterionValue>
-			<criterionID>c02</criterionID>
-			<values>
-				<value>
-					<real>3.0</real>
-				</value>
-			</values>
-		</criterionValue>
-		<criterionValue>
-			<criterionID>c03</criterionID>
-			<values>
-				<value>
-					<real>4.0</real>
-				</value>
-			</values>
-		</criterionValue>
-	</criteriaValues>
+<xmcda:XMCDA xmlns:xmcda="http://www.decision-deck.org/2016/XMCDA-3.0.2"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.decision-deck.org/2016/XMCDA-3.0.2 http://www.decision-deck.org/xmcda/_downloads/XMCDA-3.0.2.xsd">
+
+  <criteriaValues name="significance" mcdaConcept="Importance">
+    <criterionValue>
+      <criterionID>c01</criterionID>
+      <values>
+        <value>
+          <real>1.0</real>
+        </value>
+      </values>
+    </criterionValue>
+    <criterionValue>
+      <criterionID>c02</criterionID>
+      <values>
+        <value>
+          <real>3.0</real>
+        </value>
+      </values>
+    </criterionValue>
+    <criterionValue>
+      <criterionID>c03</criterionID>
+      <values>
+        <value>
+          <real>4.0</real>
+        </value>
+      </values>
+    </criterionValue>
+  </criteriaValues>
 </xmcda:XMCDA>

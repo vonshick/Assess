@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using DataModel.Input;
 using DataModel.Results;
@@ -6,15 +7,15 @@ namespace CalculationsEngine.Assess.Assess
 {
     public class DialogController
     {
-        public DisplayObject DisplayObject;
-        public List<PartialUtilityValues> PointsList;
-        private PartialUtilityValues _zeroUtilityPoint;
-        private PartialUtilityValues _oneUtilityPoint;
+        private readonly int _methodId;
+        private readonly PartialUtilityValues _oneUtilityPoint;
         private double _p;
-        private int _methodId;
-        public LotteriesComparisonDialog LotteriesComparisonDialog;
-        public ProbabilityComparisonDialog ProbabilityComparisonDialog;
+        private readonly PartialUtilityValues _zeroUtilityPoint;
         public ConstantProbabilityDialog ConstantProbabilityDialog;
+        public DisplayObject DisplayObject;
+        public LotteriesComparisonDialog LotteriesComparisonDialog;
+        public List<PartialUtilityValues> PointsList;
+        public ProbabilityComparisonDialog ProbabilityComparisonDialog;
         public VariableProbabilityDialog VariableProbabilityDialog;
 
 
@@ -59,7 +60,7 @@ namespace CalculationsEngine.Assess.Assess
                     createProbabilityComparisonObject();
                     break;
                 default:
-                    throw new System.Exception("Assess error: wrong dialog method chosen.");
+                    throw new Exception("Assess error: wrong dialog method chosen.");
             }
         }
 
@@ -77,7 +78,7 @@ namespace CalculationsEngine.Assess.Assess
                 case 4:
                     return triggerProbabilityComparisonDialog(firstPoint, secondPoint);
                 default:
-                    throw new System.Exception("Assess error: wrong dialog method chosen.");
+                    throw new Exception("Assess error: wrong dialog method chosen.");
             }
         }
 
@@ -88,7 +89,7 @@ namespace CalculationsEngine.Assess.Assess
             var lowerUtilityPoint = firstPoint.Y < secondPoint.Y ? firstPoint : secondPoint;
 
             var edgeValuesLottery = new Lottery(_zeroUtilityPoint, _oneUtilityPoint);
-            edgeValuesLottery.SetProbability((double)((upperUtilityPoint.Y + lowerUtilityPoint.Y) / 2 * DisplayObject.P));
+            edgeValuesLottery.SetProbability((upperUtilityPoint.Y + lowerUtilityPoint.Y) / 2 * DisplayObject.P);
 
             var mediumUtilityPoint = new PartialUtilityValues((upperUtilityPoint.X + lowerUtilityPoint.X) / 2, -1);
             var comparisonLottery = new Lottery(_zeroUtilityPoint, mediumUtilityPoint);
@@ -110,7 +111,6 @@ namespace CalculationsEngine.Assess.Assess
             return LotteriesComparisonDialog;
 //            LotteriesComparisonDialog.ProcessDialog();
         }
-
 
 
         private void setProbabilityComparisonInput(PartialUtilityValues firstPoint, PartialUtilityValues secondPoint)
@@ -136,7 +136,6 @@ namespace CalculationsEngine.Assess.Assess
         }
 
 
-
         private void setConstantProbabilityInput(PartialUtilityValues firstPoint, PartialUtilityValues secondPoint)
         {
             var upperUtilityPoint = firstPoint.Y > secondPoint.Y ? firstPoint : secondPoint;
@@ -159,7 +158,6 @@ namespace CalculationsEngine.Assess.Assess
             return ConstantProbabilityDialog;
 //            ConstantProbabilityDialog.ProcessDialog();
         }
-
 
 
         private void setVariableProbabilityInput(PartialUtilityValues firstPoint, PartialUtilityValues secondPoint)

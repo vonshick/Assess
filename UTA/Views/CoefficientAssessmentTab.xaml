@@ -11,31 +11,32 @@
                       Closing="DialogClosed"
                       Title="Select Assessment Method" Width="600" Height="500" ResizeMode="NoResize"
                       WindowStartupLocation="CenterOwner" Background="{StaticResource ColorInterface7}">
-  <ScrollViewer>
-    <StackPanel Margin="12,8" Background="{StaticResource ColorInterface7}">
-      <TextBlock HorizontalAlignment="Center" Text="Scaling coefficient assessment dialogue:" FontSize="18"
-                 Margin="0,0,0,8" />
-      <TextBlock Text="{Binding CurrentCriterion.Name, UpdateSourceTrigger=PropertyChanged}" FontSize="18"
-                 Margin="8,8,12,8" />
+    <ScrollViewer>
+        <StackPanel Margin="12,8" Background="{StaticResource ColorInterface7}">
+            <TextBlock HorizontalAlignment="Center" Text="Scaling coefficient assessment dialogue:" FontSize="18"
+                       Margin="0,0,0,8" />
+            <TextBlock Text="{Binding CurrentCriterion.Name, UpdateSourceTrigger=PropertyChanged}" FontSize="18"
+                       Margin="8,8,12,8" />
 
-      <TextBlock HorizontalAlignment="Center" Name="OptionSure"
-                 Text="{Binding TextOptionSure, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" FontSize="14"
-                 Margin="0,0,0,8" />
+            <TextBlock HorizontalAlignment="Center" Name="OptionSure"
+                       Text="{Binding TextOptionSure, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap"
+                       FontSize="14"
+                       Margin="0,0,0,8" />
 
-      <TextBlock HorizontalAlignment="Center" Name="OptionLottery"
-                 Text="{Binding TextOptionLottery, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap"
-                 FontSize="14" Margin="0,0,0,8" />
-      <TextBlock HorizontalAlignment="Center" Name="OptionIndifferent"
-                 Text="If you are indifferent press Indifferent button" TextWrapping="Wrap" FontSize="14"
-                 Margin="0,0,0,8" />
+            <TextBlock HorizontalAlignment="Center" Name="OptionLottery"
+                       Text="{Binding TextOptionLottery, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap"
+                       FontSize="14" Margin="0,0,0,8" />
+            <TextBlock HorizontalAlignment="Center" Name="OptionIndifferent"
+                       Text="If you are indifferent press Indifferent button" TextWrapping="Wrap" FontSize="14"
+                       Margin="0,0,0,8" />
 
-      <Button Name="ButtonSure" Command="{Binding TakeSureCommand}" Content="Take Sure" />
-      <Button Name="ButtonLottery" Command="{Binding TakeLotteryCommand}" Content="Take Lottery" />
-      <Button Name="ButtonIndifferent" Command="{Binding TakeIndifferentCommand}" Content="Indifferent" />
+            <Button Name="ButtonSure" Command="{Binding TakeSureCommand}" Content="Take Sure" />
+            <Button Name="ButtonLottery" Command="{Binding TakeLotteryCommand}" Content="Take Lottery" />
+            <Button Name="ButtonIndifferent" Command="{Binding TakeIndifferentCommand}" Content="Indifferent" />
 
-      <TextBlock Text="{Binding ResultsText, UpdateSourceTrigger=PropertyChanged}" Name="ResultsTextBlock"
-                 TextWrapping="Wrap" FontSize="18" Margin="8,8,12,8" />
+            <TextBlock Text="{Binding ResultsText, UpdateSourceTrigger=PropertyChanged}" Name="ResultsTextBlock"
+                       TextWrapping="Wrap" FontSize="18" Margin="8,8,12,8" />
 
-    </StackPanel>
-  </ScrollViewer>
+        </StackPanel>
+    </ScrollViewer>
 </controls:MetroWindow>
