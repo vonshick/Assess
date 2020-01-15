@@ -22,6 +22,29 @@ namespace ImportModule
                                                          enumID + ".");
         }
 
+        private Criterion validateCriterion(Criterion criterion, Dictionary<string, string> enumNames, Dictionary<string, float> enumValues)
+        {
+            if (criterion.IsEnum)
+            {
+                criterion.EnumDictionary = new Dictionary<string, float>();
+                foreach (var entry in enumNames)
+                {
+                    var enumID = entry.Key;
+                    var enumName = entry.Value;
+                    var enumValue = enumValues[enumID];
+                    criterion.EnumDictionary.Add(enumName, enumValue);
+                }
+            }
+
+            if (criterion.Name == null || criterion.Name.Equals(""))
+                criterion.Name = criterion.ID;
+
+            if (criterion.CriterionDirection == null || criterion.CriterionDirection.Equals(""))
+                throw new ImproperFileStructureException("There was no criterion scale ('Cost' or 'Gain') provided for criterion " + criterion.Name);
+        
+            return criterion;
+        }
+
         protected override void ProcessFile(string filePath)
         {
             ValidateFilePath(filePath);
@@ -115,18 +138,7 @@ namespace ImportModule
 
                 if (saveCriterion)
                 {
-                    if (criterion.IsEnum)
-                    {
-                        criterion.EnumDictionary = new Dictionary<string, float>();
-                        foreach (var entry in enumIdsNamesDictionary)
-                        {
-                            var enumID = entry.Key;
-                            var enumName = entry.Value;
-                            var enumValue = enumIdsValuesDictionary[enumID];
-                            criterion.EnumDictionary.Add(enumName, enumValue);
-                        }
-                    }
-
+                    criterion = validateCriterion(criterion, enumIdsNamesDictionary, enumIdsValuesDictionary);
                     criterionList.Add(criterion);
                 }
             }
@@ -150,9 +162,8 @@ namespace ImportModule
                     if (attributeID == nameAttributeId) alternative.Name = checkAlternativesNamesUniqueness(value);
                 }
 
-                if (alternative.Name == null)
-                    throw new ImproperFileStructureException("There was no alternative name provided in node " + nodeCounter +
-                                                             " of OBJECTS.");
+                if (alternative.Name == null || alternative.Name.Equals(""))
+                    alternative.Name = alternative.ID;
 
                 foreach (XmlNode instancePart in instance)
                 {
