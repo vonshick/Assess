@@ -147,32 +147,36 @@ namespace ImportModule
                     var value = instancePart.Attributes["Value"].Value;
                     var attributeID = instancePart.Attributes["AttrID"].Value;
 
-                    if (attributeID == nameAttributeId)
+                    if (attributeID == nameAttributeId) alternative.Name = checkAlternativesNamesUniqueness(value);
+                }
+
+                if (alternative.Name == null)
+                    throw new ImproperFileStructureException("There was no alternative name provided in node " + nodeCounter +
+                                                             " of OBJECTS.");
+
+                foreach (XmlNode instancePart in instance)
+                {
+                    var value = instancePart.Attributes["Value"].Value;
+                    var attributeID = instancePart.Attributes["AttrID"].Value;
+                    if (attributeID != nameAttributeId && attributeID != descriptionAttributeId)
                     {
-                        alternative.Name = checkAlternativesNamesUniqueness(value);
-                    }
-                    else
-                    {
-                        if (attributeID != descriptionAttributeId)
+                        alternativesCountValidation++;
+                        var criterion = criterionList.Find(element => element.ID == attributeID);
+
+                        if (criterion == null)
+                            throw new ImproperFileStructureException(
+                                "Error while processing alternative " + alternative.Name + ": criterion with ID " +
+                                attributeID + " does not exist.");
+
+                        if (criterion.IsEnum)
                         {
-                            alternativesCountValidation++;
-                            var criterion = criterionList.Find(element => element.ID == attributeID);
-
-                            if (criterion == null)
-                                throw new ImproperFileStructureException(
-                                    "Error while processing alternative " + alternative.Name + ": criterion with ID " +
-                                    attributeID + " does not exist.");
-
-                            if (criterion.IsEnum)
-                            {
-                                criteriaValuesList.Add(new CriterionValue(criterion.Name, criterion.EnumDictionary[value]));
-                            }
-                            else
-                            {
-                                checkIfValueIsValid(value, criterion.Name, alternative.Name);
-                                criteriaValuesList.Add(new CriterionValue(criterion.Name,
-                                    float.Parse(value, CultureInfo.InvariantCulture)));
-                            }
+                            criteriaValuesList.Add(new CriterionValue(criterion.Name, criterion.EnumDictionary[value]));
+                        }
+                        else
+                        {
+                            checkIfValueIsValid(value, criterion.Name, alternative.Name);
+                            criteriaValuesList.Add(new CriterionValue(criterion.Name,
+                                float.Parse(value, CultureInfo.InvariantCulture)));
                         }
                     }
                 }
