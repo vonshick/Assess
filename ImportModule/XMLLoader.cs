@@ -130,9 +130,12 @@ namespace ImportModule
                             }
 
                             break;
+                        case "SEGMENTS":
+                            break;
                         default:
-                            Console.WriteLine("Improper XML structure");
-                            return;
+                            //TODO vonshick warnings
+                            // maybe instead of throwing exception just do nothing
+                            throw new Exception("Attribute " + attributePart.Name + " is not compatible with application.");
                     }
                 }
 
@@ -142,8 +145,6 @@ namespace ImportModule
                     criterionList.Add(criterion);
                 }
             }
-
-            var nodeCounter = 1;
 
             foreach (XmlNode instance in objects[0].ChildNodes)
             {
@@ -199,7 +200,6 @@ namespace ImportModule
 
                 alternative.CriteriaValuesList = criteriaValuesList;
                 alternativeList.Add(alternative);
-                nodeCounter++;
             }
         }
     }
