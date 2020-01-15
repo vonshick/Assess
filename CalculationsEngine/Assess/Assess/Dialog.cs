@@ -5,15 +5,15 @@ namespace CalculationsEngine.Assess.Assess
     public class Dialog
     {
         public DisplayObject DisplayObject;
-        protected float LowerUtilityBoundary;
-        protected float UpperUtilityBoundary;
+        protected double LowerUtilityBoundary;
+        protected double UpperUtilityBoundary;
 
         public Dialog(DisplayObject displayObject)
         {
             DisplayObject = displayObject;
         }
 
-        public Dialog(float lowerUtilityBoundary, float upperUtilityBoundary, DisplayObject displayObject)
+        public Dialog(double lowerUtilityBoundary, double upperUtilityBoundary, DisplayObject displayObject)
         {
             LowerUtilityBoundary = lowerUtilityBoundary;
             UpperUtilityBoundary = upperUtilityBoundary;

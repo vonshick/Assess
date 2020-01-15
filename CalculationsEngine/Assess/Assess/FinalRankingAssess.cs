@@ -21,7 +21,7 @@ namespace CalculationsEngine.Assess.Assess
 
             for (int i = 0; i < alternativesUtilitiesList.Count; i++)
             {
-                finalRankingCollection.Add(new FinalRankingEntry(alternativesUtilitiesList.Count - i, alternativesUtilitiesList[i].Alternative, (float)alternativesUtilitiesList[i].Utility));
+                finalRankingCollection.Add(new FinalRankingEntry(alternativesUtilitiesList.Count - i, alternativesUtilitiesList[i].Alternative, (double)alternativesUtilitiesList[i].Utility));
             }
         }
 

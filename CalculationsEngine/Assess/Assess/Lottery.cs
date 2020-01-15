@@ -5,7 +5,7 @@ namespace CalculationsEngine.Assess.Assess
 {
     public class Lottery
     {
-        public float P;
+        public double P;
         public PartialUtilityValues UpperUtilityValue;
         public PartialUtilityValues LowerUtilityValue;
 
@@ -15,12 +15,12 @@ namespace CalculationsEngine.Assess.Assess
             UpperUtilityValue = upperUtilityValue;
         }
 
-        public void SetProbability(float p)
+        public void SetProbability(double p)
         {
             P = p;
         }
 
-        public float NewPointUtility()
+        public double NewPointUtility()
         {
             return P * UpperUtilityValue.Y + (1 - P) * LowerUtilityValue.Y;
         }

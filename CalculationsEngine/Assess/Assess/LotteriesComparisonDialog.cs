@@ -5,7 +5,7 @@ namespace CalculationsEngine.Assess.Assess
 {
     public class LotteriesComparisonDialog : Dialog
     {
-        public LotteriesComparisonDialog(float lowerUtilityBoundary, float upperUtilityBoundary, DisplayObject displayObject) : base(lowerUtilityBoundary, upperUtilityBoundary, displayObject)
+        public LotteriesComparisonDialog(double lowerUtilityBoundary, double upperUtilityBoundary, DisplayObject displayObject) : base(lowerUtilityBoundary, upperUtilityBoundary, displayObject)
         {
 
         }

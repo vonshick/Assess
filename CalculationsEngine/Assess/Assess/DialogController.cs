@@ -10,7 +10,7 @@ namespace CalculationsEngine.Assess.Assess
         public List<PartialUtilityValues> PointsList;
         private PartialUtilityValues _zeroUtilityPoint;
         private PartialUtilityValues _oneUtilityPoint;
-        private float _p;
+        private double _p;
         private int _methodId;
         public LotteriesComparisonDialog LotteriesComparisonDialog;
         public ProbabilityComparisonDialog ProbabilityComparisonDialog;
@@ -23,7 +23,7 @@ namespace CalculationsEngine.Assess.Assess
         // 2 - variable probability
         // 3 - lotteries comparison
         // 4 - probability comparison
-        public DialogController(Criterion criterion, int methodId, float p = 0)
+        public DialogController(Criterion criterion, int methodId, double p = 0)
         {
             if (criterion.CriterionDirection.Equals("Cost"))
             {
@@ -88,7 +88,7 @@ namespace CalculationsEngine.Assess.Assess
             var lowerUtilityPoint = firstPoint.Y < secondPoint.Y ? firstPoint : secondPoint;
 
             var edgeValuesLottery = new Lottery(_zeroUtilityPoint, _oneUtilityPoint);
-            edgeValuesLottery.SetProbability((float)((upperUtilityPoint.Y + lowerUtilityPoint.Y) / 2 * DisplayObject.P));
+            edgeValuesLottery.SetProbability((double)((upperUtilityPoint.Y + lowerUtilityPoint.Y) / 2 * DisplayObject.P));
 
             var mediumUtilityPoint = new PartialUtilityValues((upperUtilityPoint.X + lowerUtilityPoint.X) / 2, -1);
             var comparisonLottery = new Lottery(_zeroUtilityPoint, mediumUtilityPoint);

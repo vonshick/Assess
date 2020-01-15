@@ -7,20 +7,20 @@ namespace CalculationsEngine.Assess.Assess
 {
     public class CoefficientsDialog
     {
-        private readonly List<float> _bestValues;
+        private readonly List<double> _bestValues;
         private readonly List<Criterion> _criterionList;
         private string _currentCriterionName;
-        private float _lowerProbabilityBoundary;
-        private float _upperProbabilityBoundary;
-        private readonly List<float> _worstValues;
+        private double _lowerProbabilityBoundary;
+        private double _upperProbabilityBoundary;
+        private readonly List<double> _worstValues;
         public List<CriterionCoefficient> CriteriaCoefficientsList;
         public DisplayObject DisplayObject;
 
         public CoefficientsDialog(List<Criterion> criterionList)
         {
             _criterionList = criterionList;
-            _bestValues = new List<float>();
-            _worstValues = new List<float>();
+            _bestValues = new List<double>();
+            _worstValues = new List<double>();
             CriteriaCoefficientsList = new List<CriterionCoefficient>();
 
             for (var i = 0; i < _criterionList.Count; i++)

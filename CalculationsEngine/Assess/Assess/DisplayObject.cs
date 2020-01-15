@@ -8,18 +8,18 @@ namespace CalculationsEngine.Assess.Assess
     public class DisplayObject
     {
         //partial probability assessment dialog
-        public float X;
+        public double X;
         public Lottery Lottery;
         public List<PartialUtilityValues> PointsList;
         public Lottery EdgeValuesLottery; //lotteries comparison
         public Lottery ComparisonLottery; //lotteries comparison
 
-        public float P; //lotteries comparison, coefficients dialog
+        public double P; //lotteries comparison, coefficients dialog
 
         //coefficients dialog
-        public float[] ValuesToCompare;
-        public float[] WorstValues;
-        public float[] BestValues;
+        public double[] ValuesToCompare;
+        public double[] WorstValues;
+        public double[] BestValues;
         public string[] CriterionNames;
 
         public DisplayObject()
@@ -27,7 +27,7 @@ namespace CalculationsEngine.Assess.Assess
             PointsList = new List<PartialUtilityValues>();
         }
 
-        public DisplayObject(List<Criterion> criterionList, float[] valuesToCompare, float p)
+        public DisplayObject(List<Criterion> criterionList, double[] valuesToCompare, double p)
         {
             ValuesToCompare = valuesToCompare;
             WorstValues = criterionList.Select(criterion => criterion.MinValue).ToArray();

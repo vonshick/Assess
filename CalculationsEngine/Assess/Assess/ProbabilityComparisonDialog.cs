@@ -5,7 +5,7 @@ namespace CalculationsEngine.Assess.Assess
 {
     public class ProbabilityComparisonDialog : Dialog
     {
-        public ProbabilityComparisonDialog(float lowerUtilityBoundary, float upperUtilityBoundary, DisplayObject displayObject) : base(lowerUtilityBoundary, upperUtilityBoundary, displayObject)
+        public ProbabilityComparisonDialog(double lowerUtilityBoundary, double upperUtilityBoundary, DisplayObject displayObject) : base(lowerUtilityBoundary, upperUtilityBoundary, displayObject)
         {
         }
 

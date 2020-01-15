@@ -6,7 +6,7 @@ namespace CalculationsEngine.Assess.Assess
 {
     public class LotteryCoefficients
     {
-        public LotteryCoefficients(List<Criterion> criterionList, float[] valuesToCompare, float p)
+        public LotteryCoefficients(List<Criterion> criterionList, double[] valuesToCompare, double p)
         {
             ValuesToCompare = valuesToCompare;
             WorstValues = criterionList.Select(criterion => criterion.MinValue).ToArray();
@@ -15,10 +15,10 @@ namespace CalculationsEngine.Assess.Assess
             P = p;
         }
 
-        public float[] ValuesToCompare;
-        public float[] WorstValues;
-        public float[] BestValues;
+        public double[] ValuesToCompare;
+        public double[] WorstValues;
+        public double[] BestValues;
         public string[] CriterionNames;
-        public float P;
+        public double P;
     }
 }

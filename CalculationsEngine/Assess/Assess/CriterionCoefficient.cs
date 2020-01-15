@@ -3,9 +3,9 @@
     public struct CriterionCoefficient
     {
         public string CriterionName;
-        public float Coefficient;
+        public double Coefficient;
 
-        public CriterionCoefficient(string criterionName, float coefficient)
+        public CriterionCoefficient(string criterionName, double coefficient)
         {
             CriterionName = criterionName;
             Coefficient = coefficient;

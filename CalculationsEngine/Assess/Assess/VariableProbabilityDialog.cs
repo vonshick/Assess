@@ -5,7 +5,7 @@ namespace CalculationsEngine.Assess.Assess
 {
     public class VariableProbabilityDialog : Dialog
     {
-        public VariableProbabilityDialog(float lowerUtilityBoundary, float upperUtilityBoundary, DisplayObject displayObject)
+        public VariableProbabilityDialog(double lowerUtilityBoundary, double upperUtilityBoundary, DisplayObject displayObject)
             : base(lowerUtilityBoundary, upperUtilityBoundary, displayObject)
         {
         }

@@ -5,7 +5,7 @@ namespace CalculationsEngine.Assess.Assess
 {
     public class ConstantProbabilityDialog : Dialog
     {
-        public ConstantProbabilityDialog(float lowerUtilityBoundary, float upperUtilityBoundary, DisplayObject displayObject) : base(lowerUtilityBoundary, upperUtilityBoundary, displayObject)
+        public ConstantProbabilityDialog(double lowerUtilityBoundary, double upperUtilityBoundary, DisplayObject displayObject) : base(lowerUtilityBoundary, upperUtilityBoundary, displayObject)
         {
 
         }
