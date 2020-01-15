@@ -284,17 +284,5 @@ namespace CalculationsEngine.Assess.Assess
             getRoots();
             return getSuitableRoot();
         }
-
-        public struct ComplexNumber
-        {
-            public double im;
-            public double re;
-
-            public ComplexNumber(double im, double re)
-            {
-                this.im = im;
-                this.re = re;
-            }
-        }
     }
 }
