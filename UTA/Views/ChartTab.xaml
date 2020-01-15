@@ -28,8 +28,8 @@
                   <TextBlock Text="{Binding YAxis.Title}" />
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Right">
-                  <TextBlock Text="{Binding DataPoint.X, StringFormat=F9}" />
-                  <TextBlock Text="{Binding DataPoint.Y, StringFormat=F9}" />
+                  <TextBlock Text="{Binding DataPoint.X, StringFormat=F15}" />
+                  <TextBlock Text="{Binding DataPoint.Y, StringFormat=F15}" />
                 </StackPanel>
               </DockPanel>
             </oxy:TrackerControl.Content>

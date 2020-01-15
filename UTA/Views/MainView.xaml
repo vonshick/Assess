@@ -704,7 +704,7 @@
                   <ListView.View>
                     <GridView AllowsColumnReorder="False">
                       <GridViewColumn Header="#" DisplayMemberBinding="{Binding Position}" Width="32" />
-                      <GridViewColumn Header="Utility" DisplayMemberBinding="{Binding Utility, StringFormat=F7}"
+                      <GridViewColumn Header="Utility" DisplayMemberBinding="{Binding Utility, StringFormat=F15}"
                                       Width="66" />
                       <GridViewColumn Header="Rank" Width="41"
                                       DisplayMemberBinding="{Binding Alternative.ReferenceRank, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource IndexToRankConverter}}" />

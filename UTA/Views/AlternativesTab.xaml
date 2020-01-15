@@ -73,11 +73,11 @@
 
             <ItemsControl.ItemTemplate>
               <DataTemplate>
-                <StackPanel Margin="0,0,16,0" MinWidth="90">
+                <StackPanel Margin="0,0,16,0" MinWidth="115">
                   <TextBlock Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,2" />
                   <controls:NumericUpDown
                     Value="{Binding Value, UpdateSourceTrigger=PropertyChanged, BindingGroupName=NewAlternativeBindingGroup, ValidatesOnExceptions=True}"
-                    NumericInputMode="All" StringFormat="G7" Minimum="-3.402823E+38" Maximum="3.402823E+38" />
+                    NumericInputMode="All" StringFormat="G15" />
                 </StackPanel>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
@@ -144,11 +144,11 @@
 
               <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                  <StackPanel Margin="0,0,12,0" MinWidth="90">
+                  <StackPanel Margin="0,0,12,0" MinWidth="115">
                     <TextBlock Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,2" />
                     <controls:NumericUpDown
                       Value="{Binding Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
-                      NumericInputMode="All" StringFormat="G7" Minimum="-3.402823E+38" Maximum="3.402823E+38" />
+                      NumericInputMode="All" StringFormat="G15" />
                   </StackPanel>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>

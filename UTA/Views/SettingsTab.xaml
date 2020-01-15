@@ -19,7 +19,7 @@
             Foreground="{StaticResource ColorSecondary}" Margin="0,0,0,4" />
           <controls:NumericUpDown
             Value="{Binding DeltaThreshold, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
-            Minimum="0" Maximum="1" NumericInputMode="Decimal" Interval="0.01" MinWidth="120"
+            Minimum="0" Maximum="1" NumericInputMode="All" Interval="0.01" MinWidth="124" StringFormat="G15"
             HorizontalAlignment="Left" />
         </StackPanel>
 
@@ -31,7 +31,7 @@
             Foreground="{StaticResource ColorSecondary}" Margin="0,0,0,4" />
           <controls:NumericUpDown
             Value="{Binding EpsilonThreshold, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
-            Minimum="0" Maximum="1" NumericInputMode="Decimal" StringFormat="F8" Interval="0.0000001" MinWidth="120"
+            Minimum="0" Maximum="1" NumericInputMode="All" StringFormat="G15" Interval="0.0000001" MinWidth="124"
             HorizontalAlignment="Left" />
         </StackPanel>
 
@@ -43,7 +43,7 @@
             Foreground="{StaticResource ColorSecondary}" Margin="0,0,0,4" />
           <controls:NumericUpDown
             Value="{Binding PlotsPartialUtilityDecimalPlaces, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
-            Minimum="1" Maximum="7" NumericInputMode="Numbers" MinWidth="120" HorizontalAlignment="Left" />
+            Minimum="1" Maximum="7" NumericInputMode="Numbers" MinWidth="124" HorizontalAlignment="Left" />
         </StackPanel>
       </StackPanel>
     </ScrollViewer>
