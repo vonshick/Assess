@@ -15,8 +15,8 @@ namespace ImportModule
                 throw new ImproperFileStructureException("Enum type value can not be empty. Criterion " + criterionName + ", EnumID: " +
                                                          enumID + ".");
 
-            float output = 0;
-            if (!float.TryParse(enumValue, NumberStyles.Any, CultureInfo.InvariantCulture, out output))
+            double output = 0;
+            if (!double.TryParse(enumValue, NumberStyles.Any, CultureInfo.InvariantCulture, out output))
                 throw new ImproperFileStructureException("Improper value format '" + enumValue +
                                                          "'. Value has to be floating point. Criterion " + criterionName + ", EnumID: " +
                                                          enumID + ".");
@@ -44,7 +44,7 @@ namespace ImportModule
                         criterion.Name = criterion.ID = checkCriteriaIdsUniqueness(attribute.Attributes["AttrID"].Value);
                         var saveCriterion = true;
                         var enumIdsNamesDictionary = new Dictionary<string, string>();
-                        var enumIdsValuesDictionary = new Dictionary<string, float>();
+                        var enumIdsValuesDictionary = new Dictionary<string, double>();
 
                         foreach (XmlNode attributePart in attribute)
                         {
@@ -74,7 +74,7 @@ namespace ImportModule
                                             checkEnumValue(criterion.Name, enumValue.Attributes["EnumID"].Value,
                                                 enumValue.Attributes["Value"].Value);
                                             enumIdsValuesDictionary.Add(enumValue.Attributes["EnumID"].Value,
-                                                float.Parse(enumValue.Attributes["Value"].Value, CultureInfo.InvariantCulture));
+                                                double.Parse(enumValue.Attributes["Value"].Value, CultureInfo.InvariantCulture));
                                         }
 
                                         criterion.CriterionDirection = "Cost";
@@ -111,7 +111,7 @@ namespace ImportModule
                         {
                             if (criterion.IsEnum)
                             {
-                                criterion.EnumDictionary = new Dictionary<string, float>();
+                                criterion.EnumDictionary = new Dictionary<string, double>();
                                 foreach (var entry in enumIdsNamesDictionary)
                                 {
                                     var enumID = entry.Key;
@@ -160,7 +160,7 @@ namespace ImportModule
                                     {
                                         checkIfValueIsValid(value, criterion.Name, alternative.Name);
                                         criteriaValuesList.Add(new CriterionValue(criterion.Name,
-                                            float.Parse(value, CultureInfo.InvariantCulture)));
+                                            double.Parse(value, CultureInfo.InvariantCulture)));
                                     }
                                 }
                             }

@@ -38,10 +38,10 @@ namespace DataModel.Input
         [UsedImplicitly] public static string[] CriterionDirectionTypesList { get; } = {"Gain", "Cost"};
 
         public string ID { get; set; }
-        public float MinValue { get; set; } = float.MaxValue;
-        public float MaxValue { get; set; } = float.MinValue;
+        public double MinValue { get; set; } = double.MaxValue;
+        public double MaxValue { get; set; } = double.MinValue;
         public bool IsEnum { get; set; } = false;
-        public Dictionary<string, float> EnumDictionary { get; set; }
+        public Dictionary<string, double> EnumDictionary { get; set; }
 
         public string Name
         {

@@ -110,7 +110,7 @@ namespace ImportModule
                     {
                         checkIfValueIsValid(values[i + 1], criterionList[i].Name, alternative.Name);
                         alternative.CriteriaValuesList.Add(new CriterionValue(criterionList[i].Name,
-                            float.Parse(values[i + 1], CultureInfo.InvariantCulture)));
+                            double.Parse(values[i + 1], CultureInfo.InvariantCulture)));
                     }
 
                     alternativeList.Add(alternative);

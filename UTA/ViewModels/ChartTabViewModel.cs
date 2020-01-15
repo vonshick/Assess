@@ -14,9 +14,9 @@ namespace UTA.ViewModels
 {
     public class ChartTabViewModel : Tab
     {
-        private const float AxesExtraSpace = 0.025f;
+        private const double AxesExtraSpace = 0.025f;
         private readonly OxyColor _colorPrimary = OxyColor.FromRgb(51, 115, 242); // ColorPrimary
-        private readonly Dictionary<float, PointAnnotation> _draggablePoints;
+        private readonly Dictionary<double, PointAnnotation> _draggablePoints;
         private readonly TextAnnotation _draggablePointTooltip;
         private readonly OxyColor _draggablePointTooltipFillColor = OxyColor.FromArgb(208, 252, 252, 252); // ColorInterface7
         private readonly OxyColor _draggablePointTooltipStrokeColor = OxyColor.FromRgb(170, 170, 170); // ColorBorders1
@@ -25,7 +25,7 @@ namespace UTA.ViewModels
         private readonly OxyColor _lineColor = OxyColor.FromRgb(110, 110, 110); // ColorSecondary
         private readonly PartialUtility _partialUtility;
         private readonly List<PartialUtilityValues> _pointsValues;
-        private readonly Dictionary<float, LineAnnotation> _ranges;
+        private readonly Dictionary<double, LineAnnotation> _ranges;
         private readonly OxyColor _rangesColor = OxyColor.FromRgb(210, 210, 210); // ColorInterface2
         private readonly Action _refreshCharts;
         private readonly SettingsTabViewModel _settings;
@@ -42,8 +42,8 @@ namespace UTA.ViewModels
             _refreshCharts = refreshCharts;
             Name = $"Utility - {Criterion.Name}";
             Title = $"{Criterion.Name} - Partial Utility Function";
-            _ranges = new Dictionary<float, LineAnnotation>();
-            _draggablePoints = new Dictionary<float, PointAnnotation>();
+            _ranges = new Dictionary<double, LineAnnotation>();
+            _draggablePoints = new Dictionary<double, PointAnnotation>();
 
             _line = new LineSeries
             {
@@ -164,7 +164,11 @@ namespace UTA.ViewModels
             pointAnnotation.Fill = OxyColor.FromRgb(97, 149, 250);
             if (sender is LineAnnotation)
             {
-                pointAnnotation.Y = lineAnnotation.InverseTransform(e.Position).Y;
+                var cursorCoords = lineAnnotation.InverseTransform(e.Position);
+                if (cursorCoords.Y >= lineAnnotation.MinimumY && cursorCoords.Y <= lineAnnotation.MaximumY)
+                    pointAnnotation.Y = cursorCoords.Y;
+                else if (cursorCoords.Y > lineAnnotation.MaximumY) pointAnnotation.Y = lineAnnotation.MaximumY;
+                else pointAnnotation.Y = lineAnnotation.MinimumY;
                 var linePointIndex = _line.Points.FindIndex(point => point.X == pointAnnotation.X);
                 // initializing new datapoint, because it doesn't have a setter
                 _line.Points[linePointIndex] = new DataPoint(pointAnnotation.X, pointAnnotation.Y);
@@ -195,8 +199,8 @@ namespace UTA.ViewModels
             pointAnnotation.Fill = _colorPrimary;
             _draggablePointTooltip.TextPosition = DataPoint.Undefined;
             PlotEventHandler(e);
-            _solver.ChangeValue((float) pointAnnotation.Y, _partialUtility,
-                _partialUtility.PointsValues.FindIndex(point => point.X == (float) pointAnnotation.X));
+            _solver.ChangeValue(pointAnnotation.Y, _partialUtility,
+                _partialUtility.PointsValues.FindIndex(point => point.X == pointAnnotation.X));
             _refreshCharts();
         }
 
@@ -214,12 +218,12 @@ namespace UTA.ViewModels
             if (sender is PointAnnotation)
             {
                 outPointAnnotation = (PointAnnotation) sender;
-                outLineAnnotation = _ranges[(float) outPointAnnotation.X];
+                outLineAnnotation = _ranges[outPointAnnotation.X];
             }
             else
             {
                 outLineAnnotation = (LineAnnotation) sender;
-                outPointAnnotation = _draggablePoints[(float) outLineAnnotation.X];
+                outPointAnnotation = _draggablePoints[outLineAnnotation.X];
             }
         }
 

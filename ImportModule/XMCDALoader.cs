@@ -166,7 +166,7 @@ namespace ImportModule
                         var alternativeIndex = alternativeList.FindIndex(compareAlternativeIds);
 
                         alternativeList[alternativeIndex].CriteriaValuesList.Add(new CriterionValue(matchingCriterion.Name,
-                            float.Parse(value, CultureInfo.InvariantCulture)));
+                            double.Parse(value, CultureInfo.InvariantCulture)));
                     }
 
                 nodeCounter++;
@@ -251,18 +251,18 @@ namespace ImportModule
                     {
                         foreach (XmlNode point in criterionFunction.FirstChild.ChildNodes)
                         {
-                            var argument = float.PositiveInfinity;
-                            var value = float.PositiveInfinity;
+                            var argument = double.PositiveInfinity;
+                            var value = double.PositiveInfinity;
 
                             foreach (XmlNode coordinate in point.ChildNodes)
                                 if (coordinate.Name == "abscissa")
                                 {
-                                    argument = float.Parse(coordinate.FirstChild.InnerText, CultureInfo.InvariantCulture);
+                                    argument = double.Parse(coordinate.FirstChild.InnerText, CultureInfo.InvariantCulture);
                                 }
                                 else
                                 {
-                                    value = float.Parse(coordinate.FirstChild.InnerText, CultureInfo.InvariantCulture);
-                                    if (argument == float.PositiveInfinity || value == float.PositiveInfinity)
+                                    value = double.Parse(coordinate.FirstChild.InnerText, CultureInfo.InvariantCulture);
+                                    if (argument == double.PositiveInfinity || value == double.PositiveInfinity)
                                     {
                                         Trace.WriteLine("Format of value_functions.xml file is not valid");
                                         return;

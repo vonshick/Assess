@@ -8,7 +8,7 @@ namespace DataModel.Results
 {
     public class Results : INotifyPropertyChanged
     {
-        private float? _kendallCoefficient;
+        private double? _kendallCoefficient;
         private List<PartialUtility> _partialUtilityFunctions;
 
 
@@ -22,7 +22,7 @@ namespace DataModel.Results
 
         public FinalRanking FinalRanking { get; set; }
 
-        public float? KendallCoefficient
+        public double? KendallCoefficient
         {
             get => _kendallCoefficient;
             set

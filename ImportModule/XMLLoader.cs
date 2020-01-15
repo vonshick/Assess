@@ -125,7 +125,7 @@ namespace ImportModule
                                     checkIfValueIsValid(value, criterion.Name, nodeCounter.ToString());
 
                                     criteriaValuesList.Add(new CriterionValue(criterion.Name,
-                                        float.Parse(value, CultureInfo.InvariantCulture)));
+                                        double.Parse(value, CultureInfo.InvariantCulture)));
                                 }
                             }
                         }

@@ -39,14 +39,14 @@ namespace ImportModule
         {
             for (int i = 0; i < criterionList.Count; i++)
             {
-                float min = float.PositiveInfinity, max = float.NegativeInfinity;
+                double min = double.PositiveInfinity, max = double.NegativeInfinity;
 
                 for (int j = 0; j < alternativeList.Count; j++)
                 {
 
                     CriterionValue matchingCriterionValue = alternativeList[j].CriteriaValuesList.First(criterionValue => criterionValue.Name == criterionList[i].Name);
                     if(matchingCriterionValue != null) {
-                        float value = (float) matchingCriterionValue.Value;
+                        double value = (double) matchingCriterionValue.Value;
 
                         if (value < min)
                         {
@@ -168,8 +168,8 @@ namespace ImportModule
                 throw new ImproperFileStructureException("Value can not be empty. Alternative " + alternativeId + ", criterion " + criterionId + ".");
             }
 
-            float output = 0;
-            if (!float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out output))
+            double output = 0;
+            if (!double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out output))
             {
                 throw new ImproperFileStructureException("Improper value format '" + value + "'. Value has to be floating point. Alternative " + alternativeId + ", criterion " + criterionId + ".");
             }

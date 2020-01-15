@@ -126,8 +126,8 @@ namespace UTA.Models.DataBase
                     {
                         if (criterionValue.Value == null) return;
                         var associatedCriterion = Criteria.CriteriaCollection.First(criterion => criterion.Name == criterionValue.Name);
-                        associatedCriterion.MinValue = Math.Min(associatedCriterion.MinValue, (float) criterionValue.Value);
-                        associatedCriterion.MaxValue = Math.Max(associatedCriterion.MaxValue, (float) criterionValue.Value);
+                        associatedCriterion.MinValue = Math.Min(associatedCriterion.MinValue, (double) criterionValue.Value);
+                        associatedCriterion.MaxValue = Math.Max(associatedCriterion.MaxValue, (double) criterionValue.Value);
                     }
                 }
                 else if (e.Action == NotifyCollectionChangedAction.Remove)
@@ -140,21 +140,21 @@ namespace UTA.Models.DataBase
                         var associatedCriterion = Criteria.CriteriaCollection[i];
                         if (AlternativesCollection.Count == 0)
                         {
-                            associatedCriterion.MinValue = float.MaxValue;
-                            associatedCriterion.MaxValue = float.MinValue;
+                            associatedCriterion.MinValue = double.MaxValue;
+                            associatedCriterion.MaxValue = double.MinValue;
                         }
                         else
                         {
                             if (criterionValue.Value == associatedCriterion.MinValue)
                                 associatedCriterion.MinValue = AlternativesCollection.Select(alternative =>
-                                    alternative.CriteriaValuesList[i].Value is float alternativeCriterionValue
+                                    alternative.CriteriaValuesList[i].Value is double alternativeCriterionValue
                                         ? alternativeCriterionValue
-                                        : float.MaxValue).Min();
+                                        : double.MaxValue).Min();
                             else if (criterionValue.Value == associatedCriterion.MaxValue)
                                 associatedCriterion.MaxValue = AlternativesCollection.Select(alternative =>
-                                    alternative.CriteriaValuesList[i].Value is float alternativeCriterionValue
+                                    alternative.CriteriaValuesList[i].Value is double alternativeCriterionValue
                                         ? alternativeCriterionValue
-                                        : float.MinValue).Max();
+                                        : double.MinValue).Max();
                         }
                     }
                 }

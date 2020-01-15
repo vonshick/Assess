@@ -172,7 +172,7 @@ namespace ExportModule
                     xmcdaWriter.WriteStartElement("values");
                     xmcdaWriter.WriteStartElement("value");
                     xmcdaWriter.WriteStartElement("real");
-                    xmcdaWriter.WriteString(((float)criterionValue.Value).ToString("G", CultureInfo.InvariantCulture));
+                    xmcdaWriter.WriteString(((double)criterionValue.Value).ToString("G", CultureInfo.InvariantCulture));
                     xmcdaWriter.WriteEndElement();
                     xmcdaWriter.WriteEndElement();
                     xmcdaWriter.WriteEndElement();

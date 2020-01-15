@@ -4,7 +4,7 @@ namespace DataModel.Structs
 {
     public class FinalRankingEntry
     {
-        public FinalRankingEntry(int position, Alternative alternative, float utility)
+        public FinalRankingEntry(int position, Alternative alternative, double utility)
         {
             Position = position;
             Alternative = alternative;
@@ -13,6 +13,6 @@ namespace DataModel.Structs
 
         public int Position { get; set; }
         public Alternative Alternative { get; set; }
-        public float Utility { get; set; }
+        public double Utility { get; set; }
     }
 }

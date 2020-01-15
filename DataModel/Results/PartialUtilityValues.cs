@@ -2,20 +2,20 @@
 {
     public class PartialUtilityValues
     {
-        public float MaxValue;
-        public float MinValue;
-        public float X;
-        public float Y;
+        public double MaxValue;
+        public double MinValue;
+        public double X;
+        public double Y;
 
-        public PartialUtilityValues(float x, float y)
+        public PartialUtilityValues(double x, double y)
         {
             X = x;
             Y = y;
-            MinValue = float.MaxValue;
-            MaxValue = float.MinValue;
+            MinValue = double.MaxValue;
+            MaxValue = double.MinValue;
         }
 
-        public PartialUtilityValues(float point, float value, float minValue, float maxValue)
+        public PartialUtilityValues(double point, double value, double minValue, double maxValue)
         {
             X = point;
             Y = value;

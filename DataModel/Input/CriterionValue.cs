@@ -8,10 +8,10 @@ namespace DataModel.Input
     public class CriterionValue : INotifyPropertyChanged
     {
         private string _name;
-        private float? _value;
+        private double? _value;
 
 
-        public CriterionValue(string name, float? value)
+        public CriterionValue(string name, double? value)
         {
             Name = name;
             Value = value;
@@ -29,7 +29,7 @@ namespace DataModel.Input
             }
         }
 
-        public float? Value
+        public double? Value
         {
             get => _value;
             set
