@@ -22,6 +22,28 @@ namespace ImportModule
                                                          enumID + ".");
         }
 
+        private Criterion validateCriterion(Criterion criterion, Dictionary<string, string> enumNames, Dictionary<string, float> enumValues)
+        {
+            if (criterion.IsEnum)
+            {
+                criterion.EnumDictionary = new Dictionary<string, float>();
+                foreach (var entry in enumNames)
+                {
+                    var enumID = entry.Key;
+                    var enumName = entry.Value;
+                    var enumValue = enumValues[enumID];
+                    criterion.EnumDictionary.Add(enumName, enumValue);
+                }
+            }
+
+            if (criterion.Name == null || criterion.Name.Equals(""))
+                criterion.Name = criterion.ID;
+
+            if (criterion.CriterionDirection == null || criterion.CriterionDirection.Equals(""))
+                throw new ImproperFileStructureException("There was no criterion scale ('Cost' or 'Gain') provided for criterion " + criterion.Name);
+        
+            return criterion;
+        }
 
         protected override void ProcessFile(string filePath)
         {
@@ -32,13 +54,16 @@ namespace ImportModule
             var xmlDoc = new XmlDocument();
             xmlDoc.Load(filePath);
 
+            var nameAttributeId = "";
             var descriptionAttributeName = "";
 
+            var attributes = xmlDoc.GetElementsByTagName("ATTRIBUTES");
+
+            var objects = xmlDoc.GetElementsByTagName("OBJECTS"); 
+
             // iterate on its nodes
-            foreach (XmlNode xmlNode in xmlDoc.DocumentElement.ChildNodes)
-                if (xmlNode.Name == "ATTRIBUTES")
-                    foreach (XmlNode attribute in xmlNode)
-                    {
+            foreach (XmlNode attribute in attributes[0].ChildNodes)
+            {
                         var criterion = new Criterion {LinearSegments = 1};
                         // for UTX ID and Name are the same value
                         criterion.Name = criterion.ID = checkCriteriaIdsUniqueness(attribute.Attributes["AttrID"].Value);
@@ -107,26 +132,16 @@ namespace ImportModule
                             }
                         }
 
-                        if (saveCriterion)
-                        {
-                            if (criterion.IsEnum)
-                            {
-                                criterion.EnumDictionary = new Dictionary<string, float>();
-                                foreach (var entry in enumIdsNamesDictionary)
-                                {
-                                    var enumID = entry.Key;
-                                    var enumName = entry.Value;
-                                    var enumValue = enumIdsValuesDictionary[enumID];
-                                    criterion.EnumDictionary.Add(enumName, enumValue);
-                                }
-                            }
-
-                            criterionList.Add(criterion);
-                        }
+                if (saveCriterion)
+                {
+                    criterion = validateCriterion(criterion, enumIdsNamesDictionary, enumIdsValuesDictionary);
+                    criterionList.Add(criterion);
+                }
                     }
-                else if (xmlNode.Name == "OBJECTS")
-                    foreach (XmlNode instance in xmlNode)
-                    {
+
+
+            foreach (XmlNode instance in objects[0].ChildNodes)
+            {
                         // check if number of all child nodes (except INFO node - which isn't about criterion) is equal to criterionList.Count
                         var alternativesCountValidation = 0;
                         var alternative = new Alternative {Name = checkAlternativesNamesUniqueness(instance.Attributes["ObjID"].Value)};
