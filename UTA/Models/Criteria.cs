@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using DataModel.Input;
 using UTA.Annotations;
 
-namespace UTA.Models.DataBase
+namespace UTA.Models
 {
     public class Criteria : INotifyPropertyChanged
     {

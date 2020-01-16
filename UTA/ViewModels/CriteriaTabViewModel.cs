@@ -3,8 +3,8 @@ using System.Runtime.CompilerServices;
 using System.Windows.Data;
 using DataModel.Annotations;
 using DataModel.Input;
-using UTA.Interactivity;
-using UTA.Models.DataBase;
+using UTA.Helpers;
+using UTA.Models;
 using UTA.Models.Tab;
 
 namespace UTA.ViewModels

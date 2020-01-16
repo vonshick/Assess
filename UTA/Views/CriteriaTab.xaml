@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:criterion="clr-namespace:DataModel.Input;assembly=DataModel"
-             xmlns:validation="clr-namespace:UTA.Models.DataValidation"
+             xmlns:validation="clr-namespace:UTA.Helpers.DataValidation"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="900" Unloaded="TabUnloaded">

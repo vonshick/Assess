@@ -5,7 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using DataModel.Input;
 
-namespace UTA.Models.DataValidation
+namespace UTA.Helpers.DataValidation
 {
     public class CriterionNameValidationRule : ValidationRule
     {

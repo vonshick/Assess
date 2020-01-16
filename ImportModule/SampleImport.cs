@@ -1,14 +1,10 @@
-﻿using DataModel.Input;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 
 namespace ImportModule
 {
     public class SampleImport
     {
-
         public static DataLoader ProcessSampleData(string dataDirectoryPath)
         {
             // XMLLoader dataLoader = new XMLLoader();
@@ -22,12 +18,12 @@ namespace ImportModule
             // dataLoader.LoadData(Path.Combine(dataDirectoryPath, "Lab7_bus.csv"));
 
             //example with results
-            XMCDALoader dataLoader = new XMCDALoader();
+            var dataLoader = new XMCDALoader();
             dataLoader.LoadData(Path.Combine(dataDirectoryPath, "xmcda"));
 
             Trace.WriteLine("### ### ### ### ### ### ### ### ### ###");
             Trace.WriteLine("Criteria:");
-            for (int i = 0; i < dataLoader.CriterionList.Count; i++)
+            for (var i = 0; i < dataLoader.CriterionList.Count; i++)
             {
                 Trace.WriteLine("");
                 Trace.WriteLine(dataLoader.CriterionList[i].Name);
@@ -38,14 +34,11 @@ namespace ImportModule
             }
 
             Trace.WriteLine("Alternatives:");
-            for (int i = 0; i < dataLoader.AlternativeList.Count; i++)
+            for (var i = 0; i < dataLoader.AlternativeList.Count; i++)
             {
                 Trace.WriteLine(dataLoader.AlternativeList[i].Name);
-                ObservableCollection<CriterionValue> criteriaValuesList = dataLoader.AlternativeList[i].CriteriaValuesList;
-                foreach (CriterionValue criterionValue in criteriaValuesList)
-                {
-                    Trace.WriteLine(criterionValue.Name + " = " + criterionValue.Value);
-                }
+                var criteriaValuesList = dataLoader.AlternativeList[i].CriteriaValuesList;
+                foreach (var criterionValue in criteriaValuesList) Trace.WriteLine(criterionValue.Name + " = " + criterionValue.Value);
                 Trace.WriteLine("");
             }
 

@@ -124,8 +124,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Models\DataValidation\AlternativeNameValidationRule.cs" />
-    <Compile Include="Models\DataValidation\CriterionNameValidationRule.cs" />
+    <Compile Include="Helpers\DataValidation\AlternativeNameValidationRule.cs" />
+    <Compile Include="Helpers\DataValidation\CriterionNameValidationRule.cs" />
     <Compile Include="Converters\IndexToRankConverter.cs" />
     <Compile Include="ViewModels\AlternativesTabViewModel.cs" />
     <Compile Include="ViewModels\ChartTabViewModel.cs" />
@@ -145,9 +145,9 @@
     <Compile Include="Views\CriteriaTab.xaml.cs">
       <DependentUpon>CriteriaTab.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Models\DataBase\Alternatives.cs" />
-    <Compile Include="Models\DataBase\Criteria.cs" />
-    <Compile Include="Interactivity\RelayCommand.cs" />
+    <Compile Include="Models\Alternatives.cs" />
+    <Compile Include="Models\Criteria.cs" />
+    <Compile Include="Helpers\RelayCommand.cs" />
     <Compile Include="Models\Tab\ITab.cs" />
     <Compile Include="Models\Tab\Tab.cs" />
     <Compile Include="Properties\Annotations.cs" />

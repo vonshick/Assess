@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using DataModel.Annotations;
-using DataModel.Structs;
 
 namespace DataModel.Results
 {

@@ -22,7 +22,8 @@ namespace ImportModule
                                                          enumID + ".");
         }
 
-        private Criterion validateCriterion(Criterion criterion, Dictionary<string, string> enumNames, Dictionary<string, double> enumValues)
+        private Criterion validateCriterion(Criterion criterion, Dictionary<string, string> enumNames,
+            Dictionary<string, double> enumValues)
         {
             if (criterion.IsEnum)
             {
@@ -40,8 +41,9 @@ namespace ImportModule
                 criterion.Name = criterion.ID;
 
             if (criterion.CriterionDirection == null || criterion.CriterionDirection.Equals(""))
-                throw new ImproperFileStructureException("There was no criterion scale ('Cost' or 'Gain') provided for criterion " + criterion.Name);
-        
+                throw new ImproperFileStructureException("There was no criterion scale ('Cost' or 'Gain') provided for criterion " +
+                                                         criterion.Name);
+
             return criterion;
         }
 

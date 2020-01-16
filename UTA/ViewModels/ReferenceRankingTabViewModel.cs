@@ -6,8 +6,8 @@ using System.Windows.Data;
 using DataModel.Input;
 using DataModel.Results;
 using UTA.Annotations;
-using UTA.Interactivity;
-using UTA.Models.DataBase;
+using UTA.Helpers;
+using UTA.Models;
 using UTA.Models.Tab;
 
 namespace UTA.ViewModels

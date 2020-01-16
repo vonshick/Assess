@@ -1,6 +1,6 @@
 ﻿using DataModel.Input;
 
-namespace DataModel.Structs
+namespace DataModel.Results
 {
     public class FinalRankingEntry
     {

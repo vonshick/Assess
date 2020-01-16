@@ -1,28 +1,29 @@
-﻿using DataModel.Input;
-using DataModel.Results;
-using DataModel.Structs;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Xml;
+using DataModel.Input;
+using DataModel.Results;
 
 namespace ExportModule
 {
     public class XMCDAExporter
     {
-        private List<Criterion> criterionList;
-        private List<Alternative> alternativeList;
-        private Results results;
-        private string outputDirectory;
-        private XmlTextWriter xmcdaWriter;
+        private readonly List<Alternative> alternativeList;
+        private readonly List<Criterion> criterionList;
+        private readonly string outputDirectory;
         public bool OverwriteFile;
+        private readonly Results results;
+        private XmlTextWriter xmcdaWriter;
 
         public XMCDAExporter(string outputDirectory,
-                             List<Criterion> criterionList,
-                             List<Alternative> alternativeList,
-                             Results results)
+            List<Criterion> criterionList,
+            List<Alternative> alternativeList,
+            Results results)
         {
-            this.OverwriteFile = false;
+            OverwriteFile = false;
             this.outputDirectory = outputDirectory;
             this.criterionList = criterionList;
             this.alternativeList = alternativeList;
@@ -30,10 +31,10 @@ namespace ExportModule
         }
 
         public XMCDAExporter(string outputDirectory,
-                             List<Criterion> criterionList,
-                             List<Alternative> alternativeList)
+            List<Criterion> criterionList,
+            List<Alternative> alternativeList)
         {
-            this.OverwriteFile = false;
+            OverwriteFile = false;
             this.outputDirectory = outputDirectory;
             this.criterionList = criterionList;
             this.alternativeList = alternativeList;
@@ -41,13 +42,10 @@ namespace ExportModule
 
         private void checkIfFileExists(string path)
         {
-            if(!OverwriteFile)
-            {
-                if(File.Exists(@path)) 
-                {
-                    throw new XmcdaFileExistsException("File " + Path.GetFileName(path) + " already exists. Would you like to overwrite it?");
-                }
-            }
+            if (!OverwriteFile)
+                if (File.Exists(path))
+                    throw new XmcdaFileExistsException(
+                        "File " + Path.GetFileName(path) + " already exists. Would you like to overwrite it?");
         }
 
         private void checkIfInputFilesExists()
@@ -67,14 +65,15 @@ namespace ExportModule
 
         private void initializeWriter(string filePath)
         {
-            xmcdaWriter = new XmlTextWriter(filePath, System.Text.Encoding.UTF8);
+            xmcdaWriter = new XmlTextWriter(filePath, Encoding.UTF8);
             xmcdaWriter.Formatting = Formatting.Indented;
             xmcdaWriter.Indentation = 2;
             xmcdaWriter.WriteStartDocument(false);
             xmcdaWriter.WriteStartElement("xmcda:XMCDA");
             xmcdaWriter.WriteAttributeString("xmlns:xmcda", "http://www.decision-deck.org/2016/XMCDA-3.0.2");
             xmcdaWriter.WriteAttributeString("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-            xmcdaWriter.WriteAttributeString("xsi:schemaLocation", "http://www.decision-deck.org/2016/XMCDA-3.0.2 http://www.decision-deck.org/xmcda/_downloads/XMCDA-3.0.2.xsd");
+            xmcdaWriter.WriteAttributeString("xsi:schemaLocation",
+                "http://www.decision-deck.org/2016/XMCDA-3.0.2 http://www.decision-deck.org/xmcda/_downloads/XMCDA-3.0.2.xsd");
         }
 
         private void saveCriterions()
@@ -82,10 +81,10 @@ namespace ExportModule
             initializeWriter(Path.Combine(outputDirectory, "criteria.xml"));
             xmcdaWriter.WriteStartElement("criteria");
 
-            foreach (Criterion criterion in criterionList)
+            foreach (var criterion in criterionList)
             {
                 xmcdaWriter.WriteStartElement("criterion");
-                xmcdaWriter.WriteAttributeString("id",  criterion.ID != null ? criterion.ID : criterion.Name);
+                xmcdaWriter.WriteAttributeString("id", criterion.ID != null ? criterion.ID : criterion.Name);
                 xmcdaWriter.WriteAttributeString("name", criterion.Name);
                 xmcdaWriter.WriteStartElement("active");
                 xmcdaWriter.WriteString("true");
@@ -103,7 +102,7 @@ namespace ExportModule
             initializeWriter(Path.Combine(outputDirectory, "alternatives.xml"));
             xmcdaWriter.WriteStartElement("alternatives");
 
-            foreach (Alternative alternative in alternativeList)
+            foreach (var alternative in alternativeList)
             {
                 xmcdaWriter.WriteStartElement("alternative");
                 xmcdaWriter.WriteAttributeString("id", alternative.ID != null ? alternative.ID : alternative.Name);
@@ -127,7 +126,7 @@ namespace ExportModule
             initializeWriter(Path.Combine(outputDirectory, "criteria_scales.xml"));
             xmcdaWriter.WriteStartElement("criteriaScales");
 
-            foreach (Criterion criterion in criterionList)
+            foreach (var criterion in criterionList)
             {
                 xmcdaWriter.WriteStartElement("criterionScale");
                 xmcdaWriter.WriteStartElement("criterionID");
@@ -155,36 +154,36 @@ namespace ExportModule
             initializeWriter(Path.Combine(outputDirectory, "performance_table.xml"));
             xmcdaWriter.WriteStartElement("performanceTable");
             xmcdaWriter.WriteAttributeString("mcdaConcept", "REAL");
-            foreach (Alternative alternative in alternativeList)
+            foreach (var alternative in alternativeList)
             {
                 xmcdaWriter.WriteStartElement("alternativePerformances");
                 xmcdaWriter.WriteStartElement("alternativeID");
                 xmcdaWriter.WriteString(alternative.ID != null ? alternative.ID : alternative.Name);
                 xmcdaWriter.WriteEndElement();
 
-                foreach (CriterionValue criterionValue in alternative.CriteriaValuesList)
+                foreach (var criterionValue in alternative.CriteriaValuesList)
                 {
                     xmcdaWriter.WriteStartElement("performance");
                     xmcdaWriter.WriteStartElement("criterionID");
-                    Criterion matchingCriterion = criterionList.Find(criterion => criterion.Name == criterionValue.Name);
+                    var matchingCriterion = criterionList.Find(criterion => criterion.Name == criterionValue.Name);
                     xmcdaWriter.WriteString(matchingCriterion.ID != null ? matchingCriterion.ID : matchingCriterion.Name);
                     xmcdaWriter.WriteEndElement();
                     xmcdaWriter.WriteStartElement("values");
                     xmcdaWriter.WriteStartElement("value");
                     xmcdaWriter.WriteStartElement("real");
-                    xmcdaWriter.WriteString(((double)criterionValue.Value).ToString("G", CultureInfo.InvariantCulture));
+                    xmcdaWriter.WriteString(((double) criterionValue.Value).ToString("G", CultureInfo.InvariantCulture));
                     xmcdaWriter.WriteEndElement();
                     xmcdaWriter.WriteEndElement();
                     xmcdaWriter.WriteEndElement();
                     xmcdaWriter.WriteEndElement();
                 }
+
                 xmcdaWriter.WriteEndElement();
             }
 
             xmcdaWriter.WriteEndElement();
             xmcdaWriter.WriteEndDocument();
             xmcdaWriter.Close();
-
         }
 
         private void saveReferenceRanking()
@@ -192,9 +191,8 @@ namespace ExportModule
             initializeWriter(Path.Combine(outputDirectory, "alternatives_ranks.xml"));
             xmcdaWriter.WriteStartElement("alternativesValues");
 
-            foreach (Alternative alternative in alternativeList)
-            {
-                if(alternative.ReferenceRank != null) 
+            foreach (var alternative in alternativeList)
+                if (alternative.ReferenceRank != null)
                 {
                     xmcdaWriter.WriteStartElement("alternativeValue");
                     xmcdaWriter.WriteStartElement("alternativeID");
@@ -207,7 +205,6 @@ namespace ExportModule
                     xmcdaWriter.WriteEndElement();
                     xmcdaWriter.WriteEndElement();
                 }
-            }
 
             xmcdaWriter.WriteEndElement();
             xmcdaWriter.WriteEndDocument();
@@ -219,7 +216,7 @@ namespace ExportModule
             initializeWriter(Path.Combine(outputDirectory, "criteria_segments.xml"));
             xmcdaWriter.WriteStartElement("criteriaValues");
 
-            foreach (Criterion criterion in criterionList)
+            foreach (var criterion in criterionList)
             {
                 xmcdaWriter.WriteStartElement("criterionValue");
                 xmcdaWriter.WriteStartElement("criterionID");
@@ -244,7 +241,7 @@ namespace ExportModule
             xmcdaWriter.WriteStartElement("criteria");
             xmcdaWriter.WriteAttributeString("mcdaConcept", "criteria");
 
-            foreach (PartialUtility partialUtility in results.PartialUtilityFunctions)
+            foreach (var partialUtility in results.PartialUtilityFunctions)
             {
                 xmcdaWriter.WriteStartElement("criterion");
                 xmcdaWriter.WriteStartElement("criterionID");
@@ -252,7 +249,7 @@ namespace ExportModule
                 xmcdaWriter.WriteEndElement();
                 xmcdaWriter.WriteStartElement("criterionFunction");
                 xmcdaWriter.WriteStartElement("points");
-                foreach (PartialUtilityValues pointValue in partialUtility.PointsValues)
+                foreach (var pointValue in partialUtility.PointsValues)
                 {
                     xmcdaWriter.WriteStartElement("point");
 
@@ -293,14 +290,15 @@ namespace ExportModule
         public void saveResults()
         {
             checkIfResultFilesExists();
-            if(results != null) {
+            if (results != null)
+            {
                 saveReferenceRanking();
                 saveCriteriaSegments();
                 saveValueFunctions();
             }
             else
             {
-                throw new System.Exception("Results are not available");
+                throw new Exception("Results are not available");
             }
         }
 

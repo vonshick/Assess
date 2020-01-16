@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using DataModel.Input;
 using DataModel.Results;
-using DataModel.Structs;
 
 namespace CalculationsEngine
 {

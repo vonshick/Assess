@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -7,8 +6,8 @@ using System.Windows.Data;
 using DataModel.Annotations;
 using DataModel.Input;
 using DataModel.PropertyChangedExtended;
-using UTA.Interactivity;
-using UTA.Models.DataBase;
+using UTA.Helpers;
+using UTA.Models;
 using UTA.Models.Tab;
 
 namespace UTA.ViewModels
@@ -113,14 +112,18 @@ namespace UTA.ViewModels
             {
                 if (args.Action == NotifyCollectionChangedAction.Add)
                 {
-                    var addedCriterion = (Criterion)args.NewItems[0];
+                    var addedCriterion = (Criterion) args.NewItems[0];
                     NewAlternative.AddCriterionValue(new CriterionValue(addedCriterion.Name, null));
                     AddCriterionNamePropertyChangedHandler(addedCriterion);
                 }
                 else if (args.Action == NotifyCollectionChangedAction.Remove)
+                {
                     NewAlternative.RemoveCriterionValue(((Criterion) args.OldItems[0]).Name);
+                }
                 else if (args.Action == NotifyCollectionChangedAction.Reset)
+                {
                     InitializeNewAlternative();
+                }
             };
         }
 
@@ -129,8 +132,9 @@ namespace UTA.ViewModels
             criterion.PropertyChanged += (sender, e) =>
             {
                 if (e.PropertyName != nameof(criterion.Name)) return;
-                var extendedArgs = (PropertyChangedExtendedEventArgs<string>)e;
-                var criterionValueToUpdate = NewAlternative.CriteriaValuesList.First(criterionValue => criterionValue.Name == extendedArgs.OldValue);
+                var extendedArgs = (PropertyChangedExtendedEventArgs<string>) e;
+                var criterionValueToUpdate =
+                    NewAlternative.CriteriaValuesList.First(criterionValue => criterionValue.Name == extendedArgs.OldValue);
                 criterionValueToUpdate.Name = extendedArgs.NewValue;
             };
         }

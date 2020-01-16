@@ -16,8 +16,8 @@ using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Win32;
 using Ookii.Dialogs.Wpf;
 using UTA.Annotations;
-using UTA.Interactivity;
-using UTA.Models.DataBase;
+using UTA.Helpers;
+using UTA.Models;
 using UTA.Models.Tab;
 
 namespace UTA.ViewModels

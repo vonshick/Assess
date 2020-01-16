@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace UTA.Interactivity
+namespace UTA.Helpers
 {
     public class RelayCommand : ICommand
     {

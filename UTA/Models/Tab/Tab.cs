@@ -1,5 +1,5 @@
 ﻿using System;
-using UTA.Interactivity;
+using UTA.Helpers;
 
 namespace UTA.Models.Tab
 {

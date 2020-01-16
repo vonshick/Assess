@@ -41,11 +41,9 @@ namespace ImportModule
             var separatorSet = new HashSet<char>(separators);
 
             if (separatorSet.Count != 1)
-            {
                 //TODO vonshick WARNINGS
                 throw new ImproperFileStructureException(
                     "Improper criteria directions row - it should contain only 'c', 'g' and separator (e.g. ',', ';') characters.");
-            }
 
             separator = separators[0];
             numberOfColumns = separators.Length + 1;

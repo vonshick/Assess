@@ -10,7 +10,7 @@ using DataModel.PropertyChangedExtended;
 using DataModel.Results;
 using UTA.Annotations;
 
-namespace UTA.Models.DataBase
+namespace UTA.Models
 {
     public class Alternatives : INotifyPropertyChanged
     {

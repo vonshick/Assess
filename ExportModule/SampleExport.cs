@@ -1,9 +1,8 @@
-using DataModel.Input;
-using DataModel.Results;
-using DataModel.Structs;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using DataModel.Input;
+using DataModel.Results;
 
 namespace ExportModule
 {
@@ -28,11 +27,9 @@ namespace ExportModule
         private static FinalRanking createSampleFinalRanking(List<Alternative> alternativeList)
         {
             var finalRakingList = new ObservableCollection<FinalRankingEntry>();
-            
-            for (int i = 0; i < alternativeList.Count; i++)
-            {
+
+            for (var i = 0; i < alternativeList.Count; i++)
                 finalRakingList.Add(new FinalRankingEntry(i + 1, alternativeList[i], 1 / (i + 1)));
-            }
 
             return new FinalRanking(finalRakingList);
         }
@@ -43,11 +40,11 @@ namespace ExportModule
             results.PartialUtilityFunctions = createSamplePartialUtilities(criterionList);
             // results.FinalRanking = createSampleFinalRanking(alternativeList);
 
-            string xmcdaOutputDirectory = Path.Combine(dataDirectoryPath, "xmcda_output");
-            XMCDAExporter xmcdaExporter = new XMCDAExporter(xmcdaOutputDirectory,
-                                                            criterionList,
-                                                            alternativeList, 
-                                                            results);
+            var xmcdaOutputDirectory = Path.Combine(dataDirectoryPath, "xmcda_output");
+            var xmcdaExporter = new XMCDAExporter(xmcdaOutputDirectory,
+                criterionList,
+                alternativeList,
+                results);
             xmcdaExporter.saveSession();
         }
     }
