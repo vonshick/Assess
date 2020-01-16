@@ -132,7 +132,7 @@ namespace CalculationsEngine
 
             Result.PartialUtilityFunctions = partialUtilityList;
             Result.FinalRanking.FinalRankingCollection = new ObservableCollection<FinalRankingEntry>(allFinalRankingEntry);
-            Result.KendallCoefficient = tau;
+//            Result.KendallCoefficient = tau;
         }
 
         public void LoadState(List<PartialUtility> partialUtilityList, List<List<Alternative>> referenceRankingList,
@@ -191,7 +191,7 @@ namespace CalculationsEngine
 
             Result.PartialUtilityFunctions = partialUtilityList;
             Result.FinalRanking.FinalRankingCollection = new ObservableCollection<FinalRankingEntry>(allFinalRankingEntry);
-            Result.KendallCoefficient = tau;
+//            Result.KendallCoefficient = tau;
         }
 
         public void UpdatePreserveKendallCoefficient(bool preserveKendallCoefficient)
@@ -222,7 +222,7 @@ namespace CalculationsEngine
             allFinalRankingEntry = allFinalRankingEntry.OrderByDescending(o => o.Utility).ToList();
             for (var i = 0; i < allFinalRankingEntry.Count; i++) allFinalRankingEntry[i].Position = i + 1;
             Result.FinalRanking.FinalRankingCollection = new ObservableCollection<FinalRankingEntry>(allFinalRankingEntry);
-            Result.KendallCoefficient = tau;
+//            Result.KendallCoefficient = tau;
         }
 
         public void ChangeValue(double value, PartialUtility partialUtility, int indexOfPointValue)
@@ -298,7 +298,7 @@ namespace CalculationsEngine
             allFinalRankingEntry = allFinalRankingEntry.OrderByDescending(o => o.Utility).ToList();
             for (var i = 0; i < allFinalRankingEntry.Count; i++) allFinalRankingEntry[i].Position = i + 1;
             Result.FinalRanking.FinalRankingCollection = new ObservableCollection<FinalRankingEntry>(allFinalRankingEntry);
-            Result.KendallCoefficient = tau;
+//            Result.KendallCoefficient = tau;
         }
 
         private (double[] deepCopyofMin, double[] deepCopyofMax) CalculateRangeOfValues(double[,] restrictions, double[] arrayOfValues)

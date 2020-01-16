@@ -8,28 +8,35 @@ namespace DataModel.Results
 {
     public class Results : INotifyPropertyChanged
     {
-        private double? _kendallCoefficient;
+        private double? _k;
         private List<PartialUtility> _partialUtilityFunctions;
-
+        private List<CriterionCoefficient> _criteriaCoefficients = new List<CriterionCoefficient>();
+        public FinalRanking FinalRanking { get; set; }
 
         public Results()
         {
             FinalRanking = new FinalRanking();
             PartialUtilityFunctions = new List<PartialUtility>();
-            KendallCoefficient = null;
         }
 
-
-        public FinalRanking FinalRanking { get; set; }
-
-        public double? KendallCoefficient
+        public double? K
         {
-            get => _kendallCoefficient;
+            get => _k;
             set
             {
-                if (Nullable.Equals(value, _kendallCoefficient)) return;
-                _kendallCoefficient = value;
+                if (Nullable.Equals(value, _k)) return;
+                _k = value;
                 OnPropertyChanged();
+            }
+        }
+
+        public List<CriterionCoefficient> CriteriaCoefficients
+        {
+            get => _criteriaCoefficients;
+            set
+            {
+                _criteriaCoefficients = value;
+                OnPropertyChanged(nameof(CriteriaCoefficients));
             }
         }
 
@@ -50,7 +57,7 @@ namespace DataModel.Results
         {
             FinalRanking.FinalRankingCollection.Clear();
             PartialUtilityFunctions.Clear();
-            KendallCoefficient = null;
+            K = null;
         }
 
         [NotifyPropertyChangedInvocator]

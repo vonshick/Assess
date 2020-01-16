@@ -20,7 +20,6 @@ namespace DataModel.Results
             FinalRankingCollection = finalRankingCollection;
         }
 
-
         public ObservableCollection<FinalRankingEntry> FinalRankingCollection
         {
             get => finalRankingCollection;
