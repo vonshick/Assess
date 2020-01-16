@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using DataModel.Input;
 using DataModel.Results;
@@ -13,13 +14,12 @@ namespace CalculationsEngine.Assess.Assess
 
         public Results Results;
 
-        public UtilitiesCalculator(List<Alternative> alternativesList,
-            List<PartialUtility> partialUtilitiesList, List<CriterionCoefficient> criteriaCoefficientsList)
+        public UtilitiesCalculator(List<Alternative> alternativesList, Results results)
         {
-            Results = new Results {PartialUtilityFunctions = partialUtilitiesList, CriteriaCoefficients = criteriaCoefficientsList};
+            Results = results;
             _alternativesUtilitiesList = new List<AlternativeUtility>();
             _alternativesList = alternativesList;
-            setScalingCoefficient(criteriaCoefficientsList);
+            setScalingCoefficient(Results.CriteriaCoefficients);
         }
 
         private void setScalingCoefficient(List<CriterionCoefficient> criteriaCoefficientsList)
@@ -55,9 +55,9 @@ namespace CalculationsEngine.Assess.Assess
                     product *= (double)Results.K * k * u + 1;
                 }
 
-                var utility = (product - 1) / (double)Results.K;
+                var utility = (product - 1) / (double) Results.K;
 
-                _alternativesUtilitiesList.Add(new AlternativeUtility(alternative, (double)utility));
+                _alternativesUtilitiesList.Add(new AlternativeUtility(alternative, (double) utility));
             }
 
             UpdateFinalRanking();
@@ -66,10 +66,13 @@ namespace CalculationsEngine.Assess.Assess
         private void UpdateFinalRanking()
         {
             _alternativesUtilitiesList = _alternativesUtilitiesList.OrderBy(o => o.Utility).ToList();
+            ObservableCollection<FinalRankingEntry> finalRankingEntries = new ObservableCollection<FinalRankingEntry>();
 
             for (var i = 0; i < _alternativesUtilitiesList.Count; i++)
-                Results.FinalRanking.FinalRankingCollection.Add(new FinalRankingEntry(_alternativesUtilitiesList.Count - i,
+                finalRankingEntries.Add(new FinalRankingEntry(_alternativesUtilitiesList.Count - i,
                     _alternativesUtilitiesList[i].Alternative, _alternativesUtilitiesList[i].Utility));
+
+            Results.FinalRanking.FinalRankingCollection = finalRankingEntries;
         }
 
     }

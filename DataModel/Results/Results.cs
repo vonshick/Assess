@@ -10,13 +10,14 @@ namespace DataModel.Results
     {
         private double? _k;
         private List<PartialUtility> _partialUtilityFunctions;
-        private List<CriterionCoefficient> _criteriaCoefficients = new List<CriterionCoefficient>();
+        private List<CriterionCoefficient> _criteriaCoefficients;
         public FinalRanking FinalRanking { get; set; }
 
         public Results()
         {
             FinalRanking = new FinalRanking();
             PartialUtilityFunctions = new List<PartialUtility>();
+            CriteriaCoefficients = new List<CriterionCoefficient>();
         }
 
         public double? K
@@ -57,6 +58,7 @@ namespace DataModel.Results
         {
             FinalRanking.FinalRankingCollection.Clear();
             PartialUtilityFunctions.Clear();
+            CriteriaCoefficients.Clear();
             K = null;
         }
 
