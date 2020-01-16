@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using MahApps.Metro.Controls.Dialogs;
 using UTA.Annotations;
-using UTA.Interactivity;
+using UTA.Helpers;
 
 namespace UTA.ViewModels
 {

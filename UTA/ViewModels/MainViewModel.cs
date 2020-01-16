@@ -214,7 +214,6 @@ namespace UTA.ViewModels
             {
                 if (_preserveKendallCoefficient == value) return;
                 _preserveKendallCoefficient = value;
-                _solver?.UpdatePreserveKendallCoefficient(_preserveKendallCoefficient);
                 OnPropertyChanged(nameof(PreserveKendallCoefficient));
             }
         }
@@ -431,7 +430,6 @@ namespace UTA.ViewModels
             if (saveDialogResult == MessageDialogResult.Negative)
                 await SaveTypeChooserDialog();
 
-            _solver = null;
             Results.Reset();
             ReferenceRanking.Reset();
             Alternatives.Reset();
@@ -518,23 +516,16 @@ namespace UTA.ViewModels
                 var alternativesDeepCopy = Alternatives.GetDeepCopyOfAlternatives();
                 var alternativesWithoutRanksCopy = alternativesDeepCopy.Where(alternative => alternative.ReferenceRank == null).ToList();
                 var referenceRankingDeepCopy = ReferenceRanking.GetDeepCopyOfReferenceRanking(alternativesDeepCopy);
-                _solver = new Solver(
-                    referenceRankingDeepCopy,
-                    Criteria.GetDeepCopyOfCriteria(),
-                    alternativesWithoutRanksCopy,
-                    Results,
-                    PreserveKendallCoefficient,
-                    SettingsTabViewModel.DeltaThreshold,
-                    SettingsTabViewModel.EpsilonThreshold);
-                _solver.LoadState(Results.PartialUtilityFunctions, referenceRankingDeepCopy, alternativesWithoutRanksCopy, Results);
-                foreach (var partialUtility in Results.PartialUtilityFunctions)
-                {
-                    var viewModel = new ChartTabViewModel(_solver, partialUtility, SettingsTabViewModel, RefreshCharts);
-                    ChartTabViewModels.Add(viewModel);
-                    Tabs.Add(viewModel);
-                }
 
-                if (ChartTabViewModels.Count > 0) ShowTab(ChartTabViewModels[0]);
+                // TODO: load state
+                //foreach (var partialUtility in Results.PartialUtilityFunctions)
+                //{
+                //    var viewModel = new ChartTabViewModel(_solver, partialUtility, SettingsTabViewModel, RefreshCharts);
+                //    ChartTabViewModels.Add(viewModel);
+                //    Tabs.Add(viewModel);
+                //}
+
+                //if (ChartTabViewModels.Count > 0) ShowTab(ChartTabViewModels[0]);
             }
             catch (Exception exception)
             {

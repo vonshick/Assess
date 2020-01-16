@@ -5,7 +5,7 @@ using CalculationsEngine.Assess.Assess;
 using DataModel.Input;
 using MahApps.Metro.Controls.Dialogs;
 using UTA.Annotations;
-using UTA.Interactivity;
+using UTA.Helpers;
 using UTA.Models.Tab;
 
 namespace UTA.ViewModels

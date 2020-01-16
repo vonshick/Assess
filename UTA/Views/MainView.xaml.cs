@@ -208,7 +208,7 @@ namespace UTA.Views
             else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
                 var removedUserDialogueTabViewModel = (PartialUtilityTabViewModel) e.OldItems[0];
-                var menuItemToRemove = ShowMenu.Items.OfType<MenuItem>().First(menuItem => menuItem.Header == removedUserDialogueTabViewModel.Name);
+                var menuItemToRemove = ShowMenu.Items.OfType<MenuItem>().First(menuItem => (string) menuItem.Header == removedUserDialogueTabViewModel.Name);
                 ShowMenu.Items.Remove(menuItemToRemove);
 
                 if (ShowMenu.Items[ShowMenu.Items.Count - 1] is Separator separator) ShowMenu.Items.Remove(separator);

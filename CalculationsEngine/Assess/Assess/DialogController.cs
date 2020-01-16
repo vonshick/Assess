@@ -9,7 +9,6 @@ namespace CalculationsEngine.Assess.Assess
     {
         private readonly int _methodId;
         private readonly PartialUtilityValues _oneUtilityPoint;
-        private double _p;
         private readonly PartialUtilityValues _zeroUtilityPoint;
         public ConstantProbabilityDialog ConstantProbabilityDialog;
         public DisplayObject DisplayObject;
