@@ -1,4 +1,4 @@
-﻿namespace CalculationsEngine.Assess.Assess
+﻿namespace DataModel.Results
 {
     public struct CriterionCoefficient
     {

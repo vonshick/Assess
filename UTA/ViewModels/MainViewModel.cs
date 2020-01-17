@@ -163,31 +163,6 @@ namespace UTA.ViewModels
             //    Results.FinalRanking.FinalRankingCollection.Add(new FinalRankingEntry(i, Alternatives.AlternativesCollection[i],
             //        0.1919191919f));
             //Results.KendallCoefficient = 0.191919191919f;
-
-            // TODO vonshick REMOVE IT AFTER TESTING
-//               string dataDirectoryPath = "D:\\Data";
-//               DataLoader dataLoader = SampleImport.ProcessSampleData(dataDirectoryPath); // csv
-////               SampleExport.exportXMCDA(dataDirectoryPath, dataLoader.CriterionList, dataLoader.AlternativeList);
-//
-////               CoefficientsDialog coefficientsDialog = new CoefficientsDialog(dataLoader.CriterionList);
-////               coefficientsDialog.GetCoefficientsForCriteria();
-////               List<CriterionCoefficient> criteriaCoefficientsList = coefficientsDialog.CriteriaCoefficientsList;
-//
-//               List<CriterionCoefficient> criteriaCoefficientsList = new List<CriterionCoefficient>();
-//               List<PartialUtility> partialUtilitiesList = new List<PartialUtility>();
-//               DialogController dialogController;
-//
-//               foreach (Criterion criterion in dataLoader.CriterionList)
-//               {
-//                   dialogController = new DialogController(criterion, 1, 0.3f); // 1. criterion object 2. Dialog type (integer from 1 to 4 - description in DialogController) 3. P
-//                   dialogController.TriggerDialog(dialogController.PointsList[0], dialogController.PointsList[1]); // ends of the selected segment
-//                   partialUtilitiesList.Add(new PartialUtility(criterion, dialogController.DisplayObject.PointsList));
-//                   criteriaCoefficientsList.Add(new CriterionCoefficient(criterion.Name, 0.5f)); // mock for coefficients which we can get from CoefficientsDialog - example a few lines above
-//               }
-//
-//               var utilitiesCalculator = new UtilitiesCalculator(dataLoader.AlternativeList, dataLoader.CriterionList, partialUtilitiesList, criteriaCoefficientsList);
-//               utilitiesCalculator.CalculateGlobalUtilities();
-//               FinalRankingAssess finalRankingAssess = new FinalRankingAssess(utilitiesCalculator.AlternativesUtilitiesList);
         }
 
         public Alternatives Alternatives { get; set; }
@@ -298,17 +273,16 @@ namespace UTA.ViewModels
 
             //get initial partial utilities
             var partialUtilitiesList = new List<PartialUtility>();
-            foreach (var criterion in copyCriteria)
-                partialUtilitiesList.Add(new PartialUtility(criterion, new DialogController(criterion, 1, 0.5f).DisplayObject.PointsList));
+
+//TODO CHANGE SOURCE OF PARTIAL UTILITIES
+//            foreach (var criterion in copyCriteria)
+//                partialUtilitiesList.Add(new PartialUtility(criterion, new DialogController(criterion, 1, 0.5f).DisplayObject.PointsList));
 
             //run solver for initial utilities
-            var utilitiesCalculator = new UtilitiesCalculator(copyAlternatives, partialUtilitiesList, criteriaCoefficientsList);
-            utilitiesCalculator.CalculateGlobalUtilities();
+//            var utilitiesCalculator = new UtilitiesCalculator(copyAlternatives, partialUtilitiesList, criteriaCoefficientsList);
+//            utilitiesCalculator.CalculateGlobalUtilities();
 
-            //todo present in panels
-            var finalRankingAssess = new FinalRankingAssess(utilitiesCalculator.AlternativesUtilitiesList);
-
-            Results.FinalRanking.FinalRankingCollection = finalRankingAssess.FinalRankingCollection;
+//            Results.FinalRanking.FinalRankingCollection = utilitiesCalculator.Results.FinalRanking.FinalRankingCollection;
 
             ShowPartialUtilityTabs(copyCriteria);
 

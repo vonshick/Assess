@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DataModel.Input;
+using DataModel.Results;
 
 namespace CalculationsEngine.Assess.Assess
 {

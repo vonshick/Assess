@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using CalculationsEngine.Assess.Assess;
 using DataModel.Input;
+using DataModel.Results;
 using MahApps.Metro.Controls.Dialogs;
 using UTA.Annotations;
 using UTA.Helpers;

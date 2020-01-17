@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using DataModel.Input;
 using DataModel.Results;
@@ -8,27 +9,49 @@ namespace CalculationsEngine.Assess.Assess
     public class UtilitiesCalculator
     {
         private readonly List<Alternative> _alternativesList;
-        private readonly List<CriterionCoefficient> _criteriaCoefficientsList;
-        private readonly List<PartialUtility> _partialUtilitiesList;
         private BaristowSolver _baristowSolver;
-        public List<AlternativeUtility> AlternativesUtilitiesList;
-        private double K;
+        private List<AlternativeUtility> _alternativesUtilitiesList;
 
-        public UtilitiesCalculator(List<Alternative> alternativesList,
-            List<PartialUtility> partialUtilitiesList, List<CriterionCoefficient> criteriaCoefficientsList)
+        public Results Results;
+
+        public UtilitiesCalculator(List<Alternative> alternativesList, Results results, List<Criterion> criteriaList)
         {
-            AlternativesUtilitiesList = new List<AlternativeUtility>();
+            Results = results;
+            Results.PartialUtilityFunctions = InitPartialUtilityFunctions(criteriaList);
+            _alternativesUtilitiesList = new List<AlternativeUtility>();
             _alternativesList = alternativesList;
-            _partialUtilitiesList = partialUtilitiesList;
-            _criteriaCoefficientsList = criteriaCoefficientsList;
-            setScalingCoefficient(criteriaCoefficientsList);
+            setScalingCoefficient(Results.CriteriaCoefficients);
+        }
+
+        private List<PartialUtility> InitPartialUtilityFunctions(List<Criterion> criteriaList)
+        {
+            List<PartialUtility> partialUtilityFunctions = new List<PartialUtility>();
+
+            foreach (Criterion criterion in criteriaList)
+            {
+                var pointsList = new List<PartialUtilityValues>();
+                if (criterion.CriterionDirection.Equals("Cost"))
+                {
+                    pointsList.Add(new PartialUtilityValues(criterion.MaxValue, 0));
+                    pointsList.Add(new PartialUtilityValues(criterion.MinValue, 1));
+                }
+                else
+                {
+                    pointsList.Add(new PartialUtilityValues(criterion.MaxValue, 1));
+                    pointsList.Add(new PartialUtilityValues(criterion.MinValue, 0));
+                }
+
+                partialUtilityFunctions.Add(new PartialUtility(criterion, pointsList));
+            }
+
+            return partialUtilityFunctions;
         }
 
         private void setScalingCoefficient(List<CriterionCoefficient> criteriaCoefficientsList)
         {
             _baristowSolver = new BaristowSolver();
             var kCoefficients = criteriaCoefficientsList.Select(o => o.Coefficient).ToList();
-            K = _baristowSolver.GetScalingCoefficient(kCoefficients);
+            Results.K = _baristowSolver.GetScalingCoefficient(kCoefficients);
         }
 
         public void CalculateGlobalUtilities()
@@ -38,9 +61,9 @@ namespace CalculationsEngine.Assess.Assess
                 double product = 1;
                 foreach (var criterionValue in alternative.CriteriaValuesList)
                 {
-                    var points = _partialUtilitiesList.Find(o => o.Criterion.Name == criterionValue.Name).PointsValues;
+                    var points = Results.PartialUtilityFunctions.Find(o => o.Criterion.Name == criterionValue.Name).PointsValues;
                     points = points.OrderBy(o => o.X).ToList();
-                    var k = _criteriaCoefficientsList.Find(element => element.CriterionName == criterionValue.Name).Coefficient;
+                    var k = Results.CriteriaCoefficients.Find(element => element.CriterionName == criterionValue.Name).Coefficient;
                     double u = 1;
 
                     if (points[0].X == criterionValue.Value)
@@ -54,13 +77,28 @@ namespace CalculationsEngine.Assess.Assess
                                 u = a * (double) criterionValue.Value + b;
                             }
 
-                    product *= K * k * u + 1;
+                    product *= (double)Results.K * k * u + 1;
                 }
 
-                var utility = (product - 1) / K;
+                var utility = (product - 1) / (double) Results.K;
 
-                AlternativesUtilitiesList.Add(new AlternativeUtility(alternative, utility));
+                _alternativesUtilitiesList.Add(new AlternativeUtility(alternative, (double) utility));
             }
+
+            UpdateFinalRanking();
         }
+
+        private void UpdateFinalRanking()
+        {
+            _alternativesUtilitiesList = _alternativesUtilitiesList.OrderBy(o => o.Utility).ToList();
+            ObservableCollection<FinalRankingEntry> finalRankingEntries = new ObservableCollection<FinalRankingEntry>();
+
+            for (var i = 0; i < _alternativesUtilitiesList.Count; i++)
+                finalRankingEntries.Add(new FinalRankingEntry(_alternativesUtilitiesList.Count - i,
+                    _alternativesUtilitiesList[i].Alternative, _alternativesUtilitiesList[i].Utility));
+
+            Results.FinalRanking.FinalRankingCollection = finalRankingEntries;
+        }
+
     }
 }
