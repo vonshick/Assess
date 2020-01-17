@@ -14,12 +14,37 @@ namespace CalculationsEngine.Assess.Assess
 
         public Results Results;
 
-        public UtilitiesCalculator(List<Alternative> alternativesList, Results results)
+        public UtilitiesCalculator(List<Alternative> alternativesList, Results results, List<Criterion> criteriaList)
         {
             Results = results;
+            Results.PartialUtilityFunctions = InitPartialUtilityFunctions(criteriaList);
             _alternativesUtilitiesList = new List<AlternativeUtility>();
             _alternativesList = alternativesList;
             setScalingCoefficient(Results.CriteriaCoefficients);
+        }
+
+        private List<PartialUtility> InitPartialUtilityFunctions(List<Criterion> criteriaList)
+        {
+            List<PartialUtility> partialUtilityFunctions = new List<PartialUtility>();
+
+            foreach (Criterion criterion in criteriaList)
+            {
+                var pointsList = new List<PartialUtilityValues>();
+                if (criterion.CriterionDirection.Equals("Cost"))
+                {
+                    pointsList.Add(new PartialUtilityValues(criterion.MaxValue, 0));
+                    pointsList.Add(new PartialUtilityValues(criterion.MinValue, 1));
+                }
+                else
+                {
+                    pointsList.Add(new PartialUtilityValues(criterion.MaxValue, 1));
+                    pointsList.Add(new PartialUtilityValues(criterion.MinValue, 0));
+                }
+
+                partialUtilityFunctions.Add(new PartialUtility(criterion, pointsList));
+            }
+
+            return partialUtilityFunctions;
         }
 
         private void setScalingCoefficient(List<CriterionCoefficient> criteriaCoefficientsList)
