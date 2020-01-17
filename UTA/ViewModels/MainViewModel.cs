@@ -19,13 +19,17 @@ using UTA.Annotations;
 using UTA.Helpers;
 using UTA.Models;
 using UTA.Models.Tab;
-using UTA.Views;
 
 namespace UTA.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
         private readonly IDialogCoordinator _dialogCoordinator;
+        public readonly ObservableCollection<PartialUtilityTabViewModel> PartialUtilityTabViewModels;
+        private CoefficientAssessmentTabViewModel _coefficientAssessmentTabViewModel;
+        private List<CriterionCoefficient> _criteriaCoefficients;
+        private List<Alternative> _currentCalculationAlternativesCopy;
+        private List<Criterion> _currentCalculationCriteriaCopy;
         private bool _preserveKendallCoefficient;
         private SaveData _saveData;
         private ITab _tabToSelect;
@@ -44,13 +48,15 @@ namespace UTA.ViewModels
             Tabs.CollectionChanged += TabsCollectionChanged;
             ChartTabViewModels = new ObservableCollection<ChartTabViewModel>();
             ShowTabCommand = new RelayCommand(tabViewModel => ShowTab((ITab) tabViewModel));
-            PartialUtilityTabViewModels = new ObservableCollection<PartialUtilityTabViewModel>();
 
             CriteriaTabViewModel = new CriteriaTabViewModel(Criteria);
             AlternativesTabViewModel = new AlternativesTabViewModel(Criteria, Alternatives);
             ReferenceRankingTabViewModel = new ReferenceRankingTabViewModel(ReferenceRanking, Alternatives);
             SettingsTabViewModel = new SettingsTabViewModel();
             WelcomeTabViewModel = new WelcomeTabViewModel();
+
+            CriteriaCoefficients = new List<CriterionCoefficient>();
+            PartialUtilityTabViewModels = new ObservableCollection<PartialUtilityTabViewModel>();
 
             Criteria.CriteriaCollection.CollectionChanged += InstancePropertyChanged;
             Alternatives.AlternativesCollection.CollectionChanged += InstancePropertyChanged;
@@ -82,7 +88,6 @@ namespace UTA.ViewModels
                 Results.FinalRanking.FinalRankingCollection.CollectionChanged += InstancePropertyChanged;
             };
 
-
             // TODO: remove. for testing purposes
             // WARNING: using these crashes application at some point
             //Criteria.CriteriaCollection.Add(new Criterion("A", "ABC", "Gain", 8));
@@ -91,54 +96,54 @@ namespace UTA.ViewModels
             //Criteria.CriteriaCollection.Add(new Criterion("D", "ABC", "Gain", 8));
             //Criteria.CriteriaCollection.Add(new Criterion("E", "ABC", "Gain", 8));
             //Criteria.CriteriaCollection.Add(new Criterion("F", "ABC", "Gain", 8));
-            /*
-            Criteria.AddCriterion("Price", "", "Cost", 2);
-            Criteria.AddCriterion("Time", "", "Cost", 3);
-            Criteria.AddCriterion("Comfort", "", "Gain", 3);
 
-            Criteria.CriteriaCollection[0].MinValue = 2;
-            Criteria.CriteriaCollection[0].MaxValue = 30;
-            Criteria.CriteriaCollection[1].MinValue = 10;
-            Criteria.CriteriaCollection[1].MaxValue = 40;
-            Criteria.CriteriaCollection[2].MinValue = 0;
-            Criteria.CriteriaCollection[2].MaxValue = 3;
+            //Criteria.AddCriterion("Price", "", "Cost", 2);
+            //Criteria.AddCriterion("Time", "", "Cost", 3);
+            //Criteria.AddCriterion("Comfort", "", "Gain", 3);
 
-            Alternatives.AddAlternative("RER", "");
-            Alternatives.AddAlternative("METRO (1)", "");
-            Alternatives.AddAlternative("METRO (2)", "");
-            Alternatives.AddAlternative("BUS", "");
-            Alternatives.AddAlternative("TAXI", "");
-            Alternatives.AddAlternative("Other1", "");
-            Alternatives.AddAlternative("Other2", "");
+            //Criteria.CriteriaCollection[0].MinValue = 2;
+            //Criteria.CriteriaCollection[0].MaxValue = 30;
+            //Criteria.CriteriaCollection[1].MinValue = 10;
+            //Criteria.CriteriaCollection[1].MaxValue = 40;
+            //Criteria.CriteriaCollection[2].MinValue = 0;
+            //Criteria.CriteriaCollection[2].MaxValue = 3;
 
-            Alternatives.AlternativesCollection[0].CriteriaValuesList[0].Value = 3;
-            Alternatives.AlternativesCollection[0].CriteriaValuesList[1].Value = 10;
-            Alternatives.AlternativesCollection[0].CriteriaValuesList[2].Value = 1;
-            Alternatives.AlternativesCollection[1].CriteriaValuesList[0].Value = 4;
-            Alternatives.AlternativesCollection[1].CriteriaValuesList[1].Value = 20;
-            Alternatives.AlternativesCollection[1].CriteriaValuesList[2].Value = 2;
-            Alternatives.AlternativesCollection[2].CriteriaValuesList[0].Value = 2;
-            Alternatives.AlternativesCollection[2].CriteriaValuesList[1].Value = 20;
-            Alternatives.AlternativesCollection[2].CriteriaValuesList[2].Value = 0;
-            Alternatives.AlternativesCollection[3].CriteriaValuesList[0].Value = 6;
-            Alternatives.AlternativesCollection[3].CriteriaValuesList[1].Value = 40;
-            Alternatives.AlternativesCollection[3].CriteriaValuesList[2].Value = 0;
-            Alternatives.AlternativesCollection[4].CriteriaValuesList[0].Value = 30;
-            Alternatives.AlternativesCollection[4].CriteriaValuesList[1].Value = 30;
-            Alternatives.AlternativesCollection[4].CriteriaValuesList[2].Value = 3;
-            Alternatives.AlternativesCollection[5].CriteriaValuesList[0].Value = 8;
-            Alternatives.AlternativesCollection[5].CriteriaValuesList[1].Value = 24;
-            Alternatives.AlternativesCollection[5].CriteriaValuesList[2].Value = 2;
-            Alternatives.AlternativesCollection[6].CriteriaValuesList[0].Value = 16;
-            Alternatives.AlternativesCollection[6].CriteriaValuesList[1].Value = 36;
-            Alternatives.AlternativesCollection[6].CriteriaValuesList[2].Value = 3;
+            //Alternatives.AddAlternative("RER", "");
+            //Alternatives.AddAlternative("METRO (1)", "");
+            //Alternatives.AddAlternative("METRO (2)", "");
+            //Alternatives.AddAlternative("BUS", "");
+            //Alternatives.AddAlternative("TAXI", "");
+            //Alternatives.AddAlternative("Other1", "");
+            //Alternatives.AddAlternative("Other2", "");
 
-            ReferenceRanking.AddAlternativeToRank(Alternatives.AlternativesCollection[0], 1);
-            ReferenceRanking.AddAlternativeToRank(Alternatives.AlternativesCollection[1], 2);
-            ReferenceRanking.AddAlternativeToRank(Alternatives.AlternativesCollection[2], 2);
-            ReferenceRanking.AddAlternativeToRank(Alternatives.AlternativesCollection[3], 3);
-            ReferenceRanking.AddAlternativeToRank(Alternatives.AlternativesCollection[4], 4);
-            */
+            //Alternatives.AlternativesCollection[0].CriteriaValuesList[0].Value = 3;
+            //Alternatives.AlternativesCollection[0].CriteriaValuesList[1].Value = 10;
+            //Alternatives.AlternativesCollection[0].CriteriaValuesList[2].Value = 1;
+            //Alternatives.AlternativesCollection[1].CriteriaValuesList[0].Value = 4;
+            //Alternatives.AlternativesCollection[1].CriteriaValuesList[1].Value = 20;
+            //Alternatives.AlternativesCollection[1].CriteriaValuesList[2].Value = 2;
+            //Alternatives.AlternativesCollection[2].CriteriaValuesList[0].Value = 2;
+            //Alternatives.AlternativesCollection[2].CriteriaValuesList[1].Value = 20;
+            //Alternatives.AlternativesCollection[2].CriteriaValuesList[2].Value = 0;
+            //Alternatives.AlternativesCollection[3].CriteriaValuesList[0].Value = 6;
+            //Alternatives.AlternativesCollection[3].CriteriaValuesList[1].Value = 40;
+            //Alternatives.AlternativesCollection[3].CriteriaValuesList[2].Value = 0;
+            //Alternatives.AlternativesCollection[4].CriteriaValuesList[0].Value = 30;
+            //Alternatives.AlternativesCollection[4].CriteriaValuesList[1].Value = 30;
+            //Alternatives.AlternativesCollection[4].CriteriaValuesList[2].Value = 3;
+            //Alternatives.AlternativesCollection[5].CriteriaValuesList[0].Value = 8;
+            //Alternatives.AlternativesCollection[5].CriteriaValuesList[1].Value = 24;
+            //Alternatives.AlternativesCollection[5].CriteriaValuesList[2].Value = 2;
+            //Alternatives.AlternativesCollection[6].CriteriaValuesList[0].Value = 16;
+            //Alternatives.AlternativesCollection[6].CriteriaValuesList[1].Value = 36;
+            //Alternatives.AlternativesCollection[6].CriteriaValuesList[2].Value = 3;
+
+            //ReferenceRanking.AddAlternativeToRank(Alternatives.AlternativesCollection[0], 1);
+            //ReferenceRanking.AddAlternativeToRank(Alternatives.AlternativesCollection[1], 2);
+            //ReferenceRanking.AddAlternativeToRank(Alternatives.AlternativesCollection[2], 2);
+            //ReferenceRanking.AddAlternativeToRank(Alternatives.AlternativesCollection[3], 3);
+            //ReferenceRanking.AddAlternativeToRank(Alternatives.AlternativesCollection[4], 4);
+
 
             //Criteria.AddCriterion("0-100 km/h", "", "Cost", 5);
             //Criteria.CriteriaCollection[0].MinValue = Criteria.CriteriaCollection[1].MinValue = 0;
@@ -172,7 +177,6 @@ namespace UTA.ViewModels
 
         public ObservableCollection<ITab> Tabs { get; }
         public ObservableCollection<ChartTabViewModel> ChartTabViewModels { get; }
-        public ObservableCollection<PartialUtilityTabViewModel> PartialUtilityTabViewModels { get; }
         public RelayCommand ShowTabCommand { get; }
 
         public CriteriaTabViewModel CriteriaTabViewModel { get; }
@@ -200,6 +204,17 @@ namespace UTA.ViewModels
             {
                 _tabToSelect = value;
                 OnPropertyChanged(nameof(TabToSelect));
+            }
+        }
+
+        public List<CriterionCoefficient> CriteriaCoefficients
+        {
+            get => _criteriaCoefficients;
+            set
+            {
+                if (Equals(value, _criteriaCoefficients)) return;
+                _criteriaCoefficients = value;
+                OnPropertyChanged(nameof(CriteriaCoefficients));
             }
         }
 
@@ -233,7 +248,7 @@ namespace UTA.ViewModels
         }
 
         [UsedImplicitly]
-        public void CalculateButtonClicked(object sender, RoutedEventArgs e)
+        public async void CalculateButtonClicked(object sender, RoutedEventArgs e)
         {
             if (Criteria.CriteriaCollection.Count == 0)
             {
@@ -257,106 +272,126 @@ namespace UTA.ViewModels
             if (isAnyCriterionValueNull)
             {
                 ShowCalculateErrorDialog(
-                    "It's required to provide data to every criterion value to all alternatives to begin UTA calculations.");
+                    "It's required to provide data to every criterion value to all alternatives to begin Assess calculations.");
                 ShowTab(AlternativesTabViewModel);
                 return;
             }
 
-            if (!CriteriaValuesCorrect(Criteria.CriteriaCollection.ToList())) return;
+            if (!await IsCriteriaValuesPrecisionAcceptable(Criteria.CriteriaCollection)) return;
 
-            //todo deep copies
-            var copyAlternatives = Alternatives.AlternativesCollection.ToList();
-            var copyCriteria = Criteria.CriteriaCollection.ToList();
+            if (_coefficientAssessmentTabViewModel != null || PartialUtilityTabViewModels.Count > 0)
+                if (await ShowLosingProgressWarning() == MessageDialogResult.Canceled)
+                    return;
 
-            var criteriaCoefficientsList = AssessCoefficients(copyCriteria);
-            if (criteriaCoefficientsList == null) return;
+            Tabs.Remove(_coefficientAssessmentTabViewModel);
+            foreach (var partialUtilityTabViewModel in PartialUtilityTabViewModels) Tabs.Remove(partialUtilityTabViewModel);
+
+            _currentCalculationCriteriaCopy = Criteria.GetDeepCopyOfCriteria();
+            _currentCalculationAlternativesCopy = Alternatives.GetDeepCopyOfAlternatives();
+
+            _coefficientAssessmentTabViewModel =
+                new CoefficientAssessmentTabViewModel(_currentCalculationCriteriaCopy, ShowPartialUtilityTabs);
+            ShowTab(_coefficientAssessmentTabViewModel);
 
             //get initial partial utilities
-            var partialUtilitiesList = new List<PartialUtility>();
+            //var partialUtilitiesList = new List<PartialUtility>();
+            //foreach (var criterion in criteriaDeepCopy)
+            //    partialUtilitiesList.Add(new PartialUtility(criterion, new DialogController(criterion, 1, 0.5f).DisplayObject.PointsList));
 
-//TODO CHANGE SOURCE OF PARTIAL UTILITIES
-//            foreach (var criterion in copyCriteria)
-//                partialUtilitiesList.Add(new PartialUtility(criterion, new DialogController(criterion, 1, 0.5f).DisplayObject.PointsList));
+            ////run solver for initial utilities
+            //var utilitiesCalculator = new UtilitiesCalculator(alternativesDeepCopy, partialUtilitiesList, criteriaCoefficientsList);
+            //utilitiesCalculator.CalculateGlobalUtilities();
 
-            //run solver for initial utilities
-//            var utilitiesCalculator = new UtilitiesCalculator(copyAlternatives, partialUtilitiesList, criteriaCoefficientsList);
-//            utilitiesCalculator.CalculateGlobalUtilities();
+            ////todo present in panels
+            //var finalRankingAssess = new FinalRankingAssess(utilitiesCalculator.AlternativesUtilitiesList);
 
-//            Results.FinalRanking.FinalRankingCollection = utilitiesCalculator.Results.FinalRanking.FinalRankingCollection;
+            //Results.FinalRanking.FinalRankingCollection = finalRankingAssess.FinalRankingCollection;
 
-            ShowPartialUtilityTabs(copyCriteria);
+            //ShowPartialUtilityTabs(criteriaDeepCopy);
 
             //todo after first calculation - dynamic recalcualtion
         }
 
-        private bool CriteriaValuesCorrect(List<Criterion> criteriaList)
+        private async Task<MessageDialogResult> ShowLosingProgressWarning()
+        {
+            var dialogResult = await _dialogCoordinator.ShowMessageAsync(this, "Losing current progress.",
+                "Your current calculations progress will be lost.\n" +
+                "If you accidentally closed some tabs, you can show them again by using Show menu option.\n" +
+                "Do you want to continue?",
+                MessageDialogStyle.AffirmativeAndNegative,
+                new MetroDialogSettings
+                {
+                    AffirmativeButtonText = "Yes",
+                    NegativeButtonText = "Cancel",
+                    DefaultButtonFocus = MessageDialogResult.Affirmative,
+                    AnimateShow = false,
+                    AnimateHide = false
+                });
+            return dialogResult;
+        }
+
+        private async Task<bool> IsCriteriaValuesPrecisionAcceptable(IEnumerable<Criterion> criteriaList)
         {
             var invalidCriteriaValuesNames = new List<string>();
             foreach (var criterion in criteriaList)
-                if (Math.Abs(criterion.MaxValue - criterion.MinValue) < 0.000000001)
+                if (Math.Abs(criterion.MaxValue - criterion.MinValue) < 1E-14)
                     invalidCriteriaValuesNames.Add(criterion.Name);
 
             if (invalidCriteriaValuesNames.Count != 0)
             {
                 ShowTab(AlternativesTabViewModel);
-                ShowCriteriaMinMaxValueWarning(invalidCriteriaValuesNames);
+
+                var warningMessage = "Alternatives values on the following criteria have too high precision or are the same:\n";
+                foreach (var criterionName in invalidCriteriaValuesNames) warningMessage += $"{criterionName},\n";
+                warningMessage +=
+                    "Please provide lower precision values or at least two unique values on a whole set of alternatives values.";
+                await _dialogCoordinator.ShowMessageAsync(this,
+                    "Invalid alternatives values.",
+                    warningMessage,
+                    MessageDialogStyle.Affirmative,
+                    new MetroDialogSettings
+                    {
+                        AffirmativeButtonText = "OK",
+                        DefaultButtonFocus = MessageDialogResult.Affirmative,
+                        AnimateShow = false,
+                        AnimateHide = false
+                    });
                 return false;
             }
 
             return true;
         }
 
-        private List<CriterionCoefficient> AssessCoefficients(List<Criterion> criteriaList)
-        {
-            var coefficientTabViewModel = new CoefficientAssessmentDialogViewModel(criteriaList);
-            var coefficientAssessmentDialog = new CoefficientAssessmentDialog {DataContext = coefficientTabViewModel};
-            coefficientAssessmentDialog.ShowDialog();
-            return coefficientTabViewModel.CriteriaCoefficientsList;
-        }
 
-        private void ShowPartialUtilityTabs(List<Criterion> criteriaList)
+        private void ShowPartialUtilityTabs(List<CriterionCoefficient> criteriaCoefficients)
         {
+            CriteriaCoefficients = criteriaCoefficients;
+
+            Tabs.Remove(_coefficientAssessmentTabViewModel);
             foreach (var partialUtilityTabViewModel in PartialUtilityTabViewModels) Tabs.Remove(partialUtilityTabViewModel);
             PartialUtilityTabViewModels.Clear();
 
-            foreach (var criterion in criteriaList)
+            // TODO
+            //foreach (var criterion in _currentCalculationCriteriaCopy)
+            //    partialUtilitiesList.Add(new PartialUtility(criterion, new DialogController(criterion, 1, 0.5f).DisplayObject.PointsList));
+
+            //var utilitiesCalculator =
+            //    new UtilitiesCalculator(_currentCalculationAlternativesCopy, partialUtilitiesList, _criteriaCoefficients);
+            //utilitiesCalculator.CalculateGlobalUtilities();
+
+            foreach (var criterion in _currentCalculationCriteriaCopy)
             {
                 var partialUtilityTabViewModel = new PartialUtilityTabViewModel(criterion);
                 PartialUtilityTabViewModels.Add(partialUtilityTabViewModel);
                 Tabs.Add(partialUtilityTabViewModel);
-                if (PartialUtilityTabViewModels.Count > 0) ShowTab(PartialUtilityTabViewModels[0]);
             }
+
+            if (PartialUtilityTabViewModels.Count > 0) ShowTab(PartialUtilityTabViewModels[0]);
         }
 
         private void AddTabIfNeeded(ITab tab)
         {
             if (!Tabs.Contains(tab)) Tabs.Add(tab);
-        }
-
-        private async void ShowCriteriaMinMaxValueWarning(List<string> invalidCriteriaValuesNames)
-        {
-            var warningMessage = "Alternatives values on the following criteria have too high precision or are the same:\n";
-            foreach (var criterionName in invalidCriteriaValuesNames) warningMessage += $"{criterionName},\n";
-            warningMessage +=
-                "Please provide lower precision values or at least two unique values on a whole set of alternatives values.";
-            await _dialogCoordinator.ShowMessageAsync(this,
-                "Invalid alternatives values.",
-                warningMessage,
-                MessageDialogStyle.Affirmative,
-                new MetroDialogSettings
-                {
-                    AffirmativeButtonText = "OK",
-                    DefaultButtonFocus = MessageDialogResult.Affirmative,
-                    AnimateShow = false,
-                    AnimateHide = false
-                });
-        }
-
-
-        private void RefreshCharts()
-        {
-            // TODO: optional. consider using faster method than GenerateChartData
-            foreach (var chartTabViewModel in ChartTabViewModels) chartTabViewModel.GenerateChartData();
         }
 
         private async void ShowCalculateErrorDialog(string message, string title = "Incomplete instance data.")

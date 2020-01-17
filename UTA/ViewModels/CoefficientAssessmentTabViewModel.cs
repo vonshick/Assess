@@ -1,35 +1,34 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using CalculationsEngine.Assess.Assess;
 using DataModel.Input;
 using DataModel.Results;
-using MahApps.Metro.Controls.Dialogs;
 using UTA.Annotations;
 using UTA.Helpers;
 using UTA.Models.Tab;
 
 namespace UTA.ViewModels
 {
-    public class CoefficientAssessmentDialogViewModel : Tab, INotifyPropertyChanged
+    public class CoefficientAssessmentTabViewModel : Tab, INotifyPropertyChanged
     {
         private readonly List<Criterion> _criteriaCollection;
         private readonly CoefficientsDialog _dialog;
-        private bool _closeDialog;
-        private Criterion _currentCriterion;
-        private int _index;
+        private int _currentCriterionIndex;
         private string _textOptionLottery;
         private string _textOptionSure;
+        private readonly Action<List<CriterionCoefficient>> _showPartialUtilityTabs;
 
-        public CoefficientAssessmentDialogViewModel(List<Criterion> criteriaCollection)
+        public CoefficientAssessmentTabViewModel(List<Criterion> criteriaCollection, Action<List<CriterionCoefficient>> showPartialUtilityTabs)
         {
+            Name = "Dialogue - Scaling Coefficient";
             _criteriaCollection = criteriaCollection;
-            Title = "Scaling coefficients";
-            //todo fill it
-            CriteriaCoefficientsList = new List<CriterionCoefficient>();
+            _showPartialUtilityTabs = showPartialUtilityTabs;
             _dialog = new CoefficientsDialog(criteriaCollection);
-            _index = 0;
-            SetupCriterionAssessment();
+            _dialog.SetInitialValues(_criteriaCollection[_currentCriterionIndex = 0]);
+
+            SetCoefficientsTextBlocks(_dialog);
 
             TakeSureCommand = new RelayCommand(_ =>
             {
@@ -44,49 +43,24 @@ namespace UTA.ViewModels
             TakeIndifferentCommand = new RelayCommand(_ =>
             {
                 _dialog.ProcessDialog(3);
-
-                CriteriaCoefficientsList.Add(_dialog.GetCoefficientsForCriterion(CurrentCriterion));
-
-                if (_index < _criteriaCollection.Count - 1)
+                if (_currentCriterionIndex < _criteriaCollection.Count - 1)
                 {
-                    _index++;
-                    SetupCriterionAssessment();
+                    _dialog.SetInitialValues(_criteriaCollection[++_currentCriterionIndex]);
+                    OnPropertyChanged(nameof(CurrentCriterion));
+                    SetCoefficientsTextBlocks(_dialog);
                 }
                 else
                 {
-                    CloseDialog = true;
+                    _showPartialUtilityTabs(_dialog.CriteriaCoefficientsList);
                 }
             });
         }
 
-        public List<CriterionCoefficient> CriteriaCoefficientsList { get; set; }
+        public Criterion CurrentCriterion => _criteriaCollection[_currentCriterionIndex];
 
-        public string Title { get; set; }
         public RelayCommand TakeSureCommand { get; }
         public RelayCommand TakeLotteryCommand { get; }
         public RelayCommand TakeIndifferentCommand { get; }
-        public IDialogCoordinator DialogCoordinator { get; set; }
-
-        public Criterion CurrentCriterion
-        {
-            get => _currentCriterion;
-            set
-            {
-                if (Equals(value, _currentCriterion)) return;
-                _currentCriterion = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool CloseDialog
-        {
-            get => _closeDialog;
-            set
-            {
-                _closeDialog = value;
-                OnPropertyChanged(nameof(CloseDialog));
-            }
-        }
 
         public string TextOptionSure
         {
@@ -110,13 +84,6 @@ namespace UTA.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void SetupCriterionAssessment()
-        {
-            CurrentCriterion = _criteriaCollection[_index];
-            _dialog.SetInitialValues(CurrentCriterion);
-            SetCoefficientsTextBlocks(_dialog);
-        }
-
 
         private void SetCoefficientsTextBlocks(CoefficientsDialog dialog)
         {
@@ -133,33 +100,6 @@ namespace UTA.ViewModels
 
             for (var i = 0; i < dialog.DisplayObject.CriterionNames.Length; i++)
                 TextOptionLottery += dialog.DisplayObject.CriterionNames[i] + " = " + dialog.DisplayObject.WorstValues[i] + "\n";
-        }
-
-        //todo bind directly in xaml?
-        //todo allow exiting dialog?
-        public async void DialogClosed(object sender, CancelEventArgs e)
-        {
-            // cancel close, because window doesn't wait for async function and closes anyway
-            e.Cancel = !CloseDialog;
-
-            var dialogResult = await DialogCoordinator.ShowMessageAsync(this,
-                "Terminating calculation",
-                "If you do not finish coefficients assessment, current calculation will not proceed. Do you want to close dialog and terminate calculation?",
-                MessageDialogStyle.AffirmativeAndNegative,
-                new MetroDialogSettings
-                {
-                    AffirmativeButtonText = "Yes",
-                    NegativeButtonText = "No",
-                    DefaultButtonFocus = MessageDialogResult.Negative,
-                    AnimateShow = false,
-                    AnimateHide = false
-                });
-
-            if (dialogResult == MessageDialogResult.Affirmative)
-            {
-                CriteriaCoefficientsList = null;
-                CloseDialog = true;
-            }
         }
 
         [NotifyPropertyChangedInvocator]

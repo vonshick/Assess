@@ -143,8 +143,8 @@
     <Compile Include="ViewModels\AlternativesTabViewModel.cs" />
     <Compile Include="ViewModels\ChartTabViewModel.cs" />
     <Compile Include="ViewModels\CriteriaTabViewModel.cs" />
-    <Compile Include="ViewModels\AssessmentMethodDialogViewModel.cs" />
-    <Compile Include="ViewModels\CoefficientAssessmentDialogViewModel.cs" />
+    <Compile Include="ViewModels\AssessmentMethodTabViewModel.cs" />
+    <Compile Include="ViewModels\CoefficientAssessmentTabViewModel.cs" />
     <Compile Include="ViewModels\ReferenceRankingTabViewModel.cs" />
     <Compile Include="ViewModels\WelcomeTabViewModel.cs" />
     <Compile Include="ViewModels\PartialUtilityTabViewModel.cs" />

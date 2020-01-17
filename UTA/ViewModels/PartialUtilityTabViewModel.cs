@@ -116,7 +116,7 @@ namespace UTA.ViewModels
         public void ShowMethodDialog()
         {
             Console.WriteLine("Showing dialog for " + Criterion.Name);
-            var methodDialogViewModel = new AssessmentMethodDialogViewModel(Criterion.Name);
+            var methodDialogViewModel = new AssessmentMethodTabViewModel(Criterion.Name);
             var assessmentMethodDialog = new AssessmentMethodDialog();
             assessmentMethodDialog.DataContext = methodDialogViewModel;
             assessmentMethodDialog.ShowDialog();

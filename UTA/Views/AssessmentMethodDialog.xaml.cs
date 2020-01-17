@@ -8,7 +8,7 @@ namespace UTA.Views
     public partial class AssessmentMethodDialog
     {
         private readonly IDialogCoordinator _dialogCoordinator = DialogCoordinator.Instance;
-        private AssessmentMethodDialogViewModel _viewmodel;
+        private AssessmentMethodTabViewModel _viewmodel;
 
         public AssessmentMethodDialog()
         {
@@ -21,7 +21,7 @@ namespace UTA.Views
 
         private void ViewLoaded(object sender, RoutedEventArgs e)
         {
-            _viewmodel = (AssessmentMethodDialogViewModel) DataContext;
+            _viewmodel = (AssessmentMethodTabViewModel) DataContext;
             _viewmodel.DialogCoordinator = _dialogCoordinator;
             _viewmodel.PropertyChanged += (s, args) =>
             {

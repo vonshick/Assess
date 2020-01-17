@@ -549,6 +549,9 @@
             <DataTemplate DataType="{x:Type viewModels:PartialUtilityTabViewModel}">
               <views:PartialUtilityTab />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModels:CoefficientAssessmentTabViewModel}">
+              <views:CoefficientAssessmentTab />
+            </DataTemplate>
           </TabControl.Resources>
 
           <!--tab header template-->

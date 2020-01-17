@@ -7,16 +7,22 @@
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="900">
   <Grid Background="{StaticResource ColorInterface7}">
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-      <StackPanel Margin="12,8,10,12">
-        <TextBlock Text="Settings" FontSize="18" Margin="0,0,0,16" />
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition/>
+    </Grid.RowDefinitions>
+
+    <TextBlock Text="Settings" FontSize="18" Margin="12,8,12,16" />
+
+    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+      <StackPanel Margin="12,0,10,0">
 
         <StackPanel Margin="0,0,0,20">
           <TextBlock Text="Delta threshold for discrimination of zero" FontSize="{StaticResource CommonFontSize2}"
-                     Margin="0,0,0,2" />
+                     Margin="0,0,0,2" TextWrapping="Wrap"/>
           <TextBlock
             Text="Controls the threshold value of delta for discrimination of zero in linear programming problem in calculations."
-            Foreground="{StaticResource ColorSecondary}" Margin="0,0,0,4" />
+            Foreground="{StaticResource ColorSecondary}" Margin="0,0,0,4" TextWrapping="Wrap"/>
           <controls:NumericUpDown
             Value="{Binding DeltaThreshold, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
             Minimum="0" Maximum="1" NumericInputMode="All" Interval="0.01" MinWidth="124" StringFormat="G15"
@@ -25,10 +31,10 @@
 
         <StackPanel Margin="0,0,0,20">
           <TextBlock Text="Epsilon threshold for discrimination of zero" FontSize="{StaticResource CommonFontSize2}"
-                     Margin="0,0,0,2" />
+                     Margin="0,0,0,2" TextWrapping="Wrap"/>
           <TextBlock
             Text="Controls the threshold value of epsilon for discrimination of zero in model exploitation."
-            Foreground="{StaticResource ColorSecondary}" Margin="0,0,0,4" />
+            Foreground="{StaticResource ColorSecondary}" Margin="0,0,0,4" TextWrapping="Wrap"/>
           <controls:NumericUpDown
             Value="{Binding EpsilonThreshold, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
             Minimum="0" Maximum="1" NumericInputMode="All" StringFormat="G15" Interval="0.0000001" MinWidth="124"
@@ -37,10 +43,10 @@
 
         <StackPanel Margin="0,0,0,20">
           <TextBlock Text="Plots' partial utility tooltip decimal places" FontSize="{StaticResource CommonFontSize2}"
-                     Margin="0,0,0,2" />
+                     Margin="0,0,0,2" TextWrapping="Wrap"/>
           <TextBlock
             Text="Controls the number of decimal places in plots' draggable points' partial utility value tooltip."
-            Foreground="{StaticResource ColorSecondary}" Margin="0,0,0,4" />
+            Foreground="{StaticResource ColorSecondary}" Margin="0,0,0,4" TextWrapping="Wrap"/>
           <controls:NumericUpDown
             Value="{Binding PlotsPartialUtilityDecimalPlaces, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
             Minimum="1" Maximum="7" NumericInputMode="Numbers" MinWidth="124" HorizontalAlignment="Left" />
