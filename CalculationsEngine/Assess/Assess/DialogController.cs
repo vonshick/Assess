@@ -23,25 +23,12 @@ namespace CalculationsEngine.Assess.Assess
         // 2 - variable probability
         // 3 - lotteries comparison
         // 4 - probability comparison
-        public DialogController(Criterion criterion, int methodId, double p = 0)
+        public DialogController(PartialUtility partialUtility, int methodId, double p = 0)
         {
-            if (criterion.CriterionDirection.Equals("Cost"))
-            {
-                _zeroUtilityPoint = new PartialUtilityValues(criterion.MaxValue, 0);
-                _oneUtilityPoint = new PartialUtilityValues(criterion.MinValue, 1);
-            }
-            else
-            {
-                _zeroUtilityPoint = new PartialUtilityValues(criterion.MaxValue, 1);
-                _oneUtilityPoint = new PartialUtilityValues(criterion.MinValue, 0);
-            }
-
             _methodId = methodId;
             DisplayObject = new DisplayObject();
-            PointsList = new List<PartialUtilityValues>();
+            PointsList = partialUtility.PointsValues;
             DisplayObject.PointsList = PointsList;
-            PointsList.Add(_zeroUtilityPoint);
-            PointsList.Add(_oneUtilityPoint);
             DisplayObject.P = p;
 
             switch (_methodId)

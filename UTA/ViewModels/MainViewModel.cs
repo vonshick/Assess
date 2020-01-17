@@ -273,8 +273,10 @@ namespace UTA.ViewModels
 
             //get initial partial utilities
             var partialUtilitiesList = new List<PartialUtility>();
-            foreach (var criterion in copyCriteria)
-                partialUtilitiesList.Add(new PartialUtility(criterion, new DialogController(criterion, 1, 0.5f).DisplayObject.PointsList));
+
+//TODO CHANGE SOURCE OF PARTIAL UTILITIES
+//            foreach (var criterion in copyCriteria)
+//                partialUtilitiesList.Add(new PartialUtility(criterion, new DialogController(criterion, 1, 0.5f).DisplayObject.PointsList));
 
             //run solver for initial utilities
 //            var utilitiesCalculator = new UtilitiesCalculator(copyAlternatives, partialUtilitiesList, criteriaCoefficientsList);
