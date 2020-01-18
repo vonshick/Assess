@@ -66,7 +66,7 @@ namespace ImportModule
             // iterate on its nodes
             foreach (XmlNode attribute in attributes[0].ChildNodes)
             {
-                var criterion = new Criterion {LinearSegments = 1};
+                var criterion = new Criterion();
                 // for UTX ID and Name are the same value
                 criterion.Name = criterion.ID = checkCriteriaIdsUniqueness(attribute.Attributes["AttrID"].Value);
                 var saveCriterion = true;
@@ -126,8 +126,6 @@ namespace ImportModule
 
                             break;
                         case "SEGMENTS":
-                            CheckIfIntegerValueIsValid(value, "SEGMENT in ATTRIBUTE", criterion.ID);
-                            criterion.LinearSegments = int.Parse(value);
                             break;
                         default:
                             //TODO vonshick warnings
