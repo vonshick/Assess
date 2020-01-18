@@ -139,6 +139,20 @@ namespace ImportModule
                                                          ", criterion " + criterionId + ".");
         }
 
+        protected void CheckIfIntegerValueIsValid(string value, string objectType, string objectID)
+        {
+            if (value.Equals(""))
+                throw new ImproperFileStructureException("Value can not be empty. " + objectType + ": " + objectID + ".");
+
+            int output = 0;
+            if (!int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out output))
+                throw new ImproperFileStructureException("Improper value format '" + value + "'. Value has to be integer. " + objectType + ": " + objectID + ".");
+
+            if (int.Parse(value) <= 0)
+                throw new ImproperFileStructureException("Improper value '" + value + "'. Value has to be positive integer. " + objectType + ": " + objectID + ".");
+        }
+
+
         protected string checkCriteriaNamesUniqueness(string newName)
         {
             if (newName.Equals("")) throw new ImproperFileStructureException("Criterion name can not be an empty string.");

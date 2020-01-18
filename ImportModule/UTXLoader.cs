@@ -126,6 +126,8 @@ namespace ImportModule
 
                             break;
                         case "SEGMENTS":
+                            CheckIfIntegerValueIsValid(value, "SEGMENT in ATTRIBUTE", criterion.ID);
+                            criterion.LinearSegments = int.Parse(value);
                             break;
                         default:
                             //TODO vonshick warnings
@@ -152,8 +154,13 @@ namespace ImportModule
                 var criteriaValuesList = new ObservableCollection<CriterionValue>();
 
                 foreach (XmlNode instancePart in instance)
-                    // we avoid RANK nodes
-                    if (instancePart.Name.Equals("VALUE"))
+                    if (instancePart.Name.Equals("RANK"))
+                    {
+                        var value = instancePart.Attributes["Value"].Value;
+                        CheckIfIntegerValueIsValid(value, "RANK in OBJECT", alternative.ID);
+                        alternative.ReferenceRank = int.Parse(value);
+                    }
+                    else if (instancePart.Name.Equals("VALUE"))
                     {
                         var value = instancePart.Attributes["Value"].Value;
                         var attributeName = instancePart.Attributes["AttrID"].Value;
