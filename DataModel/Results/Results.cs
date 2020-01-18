@@ -8,10 +8,9 @@ namespace DataModel.Results
 {
     public class Results : INotifyPropertyChanged
     {
+        private List<CriterionCoefficient> _criteriaCoefficients;
         private double? _k;
         private List<PartialUtility> _partialUtilityFunctions;
-        private List<CriterionCoefficient> _criteriaCoefficients;
-        public FinalRanking FinalRanking { get; set; }
 
         public Results()
         {
@@ -20,6 +19,8 @@ namespace DataModel.Results
             CriteriaCoefficients = new List<CriterionCoefficient>();
         }
 
+        public FinalRanking FinalRanking { get; set; }
+
         public double? K
         {
             get => _k;
@@ -27,7 +28,7 @@ namespace DataModel.Results
             {
                 if (Nullable.Equals(value, _k)) return;
                 _k = value;
-                OnPropertyChanged();
+                OnPropertyChanged(nameof(K));
             }
         }
 

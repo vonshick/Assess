@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using DataModel.Annotations;
 using DataModel.PropertyChangedExtended;
@@ -9,12 +10,11 @@ namespace DataModel.Input
 {
     public class Criterion : INotifyPropertyChanged, INotifyPropertyChangedExtended<string>
     {
-        public static double MinNumberOfLinearSegments = 1; // type double, because can't use other type in xaml
-        public static double MaxNumberOfLinearSegments = 99; // TODO: change this value according to app performance
         private string _criterionDirection;
         private string _description;
-        private int _linearSegments;
+        private string _method = "Set during calculations";
         private string _name;
+        private double? _p = 0.3;
 
 
         public Criterion()
@@ -27,21 +27,38 @@ namespace DataModel.Input
             CriterionDirection = criterionDirection;
         }
 
-        public Criterion(string name, string description, string criterionDirection, int linearSegments)
+        public Criterion(string name, string description, string criterionDirection, double? probability = 0.3,
+            string method = "Set during calculations")
         {
             Name = name;
             Description = description;
             CriterionDirection = criterionDirection;
-            LinearSegments = linearSegments;
+            Probability = probability;
+            Method = method;
         }
 
+
+        public static double MinimumProbability { get; } = 1E-15;
+        public static double MaximumProbability { get; } = 1 - 1E-15;
+
         [UsedImplicitly] public static string[] CriterionDirectionTypesList { get; } = {"Gain", "Cost"};
+
+        [UsedImplicitly] // changing order of options or renaming them will break application
+        public static string[] MethodOptionsList { get; } =
+        {
+            "Set during calculations",
+            "Certainty equivalent with constant probability",
+            "Certainty equivalent with variable probability",
+            "Lottery comparison",
+            "Probability comparison"
+        };
 
         public string ID { get; set; }
         public double MinValue { get; set; } = double.MaxValue;
         public double MaxValue { get; set; } = double.MinValue;
         public bool IsEnum { get; set; } = false;
         public Dictionary<string, double> EnumDictionary { get; set; }
+        public int LinearSegments { get; set; } // TODO: remove
 
         public string Name
         {
@@ -68,20 +85,6 @@ namespace DataModel.Input
             }
         }
 
-        public int LinearSegments
-        {
-            get => _linearSegments;
-            set
-            {
-                if (value == _linearSegments) return;
-                if (value < MinNumberOfLinearSegments || value > MaxNumberOfLinearSegments)
-                    throw new ArgumentException(
-                        $"Value must be between {MinNumberOfLinearSegments} - {MaxNumberOfLinearSegments} inclusive.");
-                _linearSegments = value;
-                OnPropertyChanged(nameof(LinearSegments));
-            }
-        }
-
         public string Description
         {
             get => _description;
@@ -90,6 +93,37 @@ namespace DataModel.Input
                 if (value == _description) return;
                 _description = value;
                 OnPropertyChanged(nameof(Description));
+            }
+        }
+
+        public double? Probability // lotteries comparison dialog, constant probability dialog
+        {
+            get => IsProbabilityIncluded ? _p : null;
+            set
+            {
+                if (value.Equals(_p)) return;
+                if (IsProbabilityIncluded && (value == null || value <= 0 || value >= 1))
+                    throw new ArgumentException("Value must be between 0 and 1 exclusive.");
+                _p = value;
+                OnPropertyChanged(nameof(Probability));
+            }
+        }
+
+        public bool IsProbabilityIncluded => Method == MethodOptionsList[1] || Method == MethodOptionsList[3];
+
+        public string Method
+        {
+            get => _method;
+            set
+            {
+                if (value == _method) return;
+                if (!MethodOptionsList.Contains(value))
+                    throw new ArgumentException(MethodOptionsList.Aggregate("Value must be one of the following:",
+                        (current, option) => current + $"\n{option}"));
+                _method = value;
+                OnPropertyChanged(nameof(Method));
+                OnPropertyChanged(nameof(IsProbabilityIncluded));
+                OnPropertyChanged(nameof(Probability));
             }
         }
 

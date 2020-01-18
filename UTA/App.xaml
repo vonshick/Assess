@@ -67,6 +67,7 @@
                  Right="{StaticResource CommonPadding}" Top="{StaticResource CommonPadding}"
                  Bottom="{StaticResource CommonPadding}" />
 
+      <sys:Double x:Key="CommonFontSize0">18</sys:Double>
       <sys:Double x:Key="CommonFontSize1">16</sys:Double>
       <sys:Double x:Key="CommonFontSize2">14</sys:Double>
 

@@ -75,7 +75,7 @@ namespace UTA.ViewModels
                 OnPropertyChanged(nameof(CriterionIndexToShow));
             }
         }
-
+        
         public event PropertyChangedEventHandler PropertyChanged;
 
 
@@ -91,7 +91,7 @@ namespace UTA.ViewModels
 
         private void InitializeNewCriterion()
         {
-            NewCriterion = new Criterion("", "", Criterion.CriterionDirectionTypesList[0], 1);
+            NewCriterion = new Criterion("", "", Criterion.CriterionDirectionTypesList[0]);
         }
 
         [NotifyPropertyChangedInvocator]

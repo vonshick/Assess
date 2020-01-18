@@ -25,14 +25,13 @@ namespace UTA.ViewModels
     public class MainViewModel : INotifyPropertyChanged
     {
         private readonly IDialogCoordinator _dialogCoordinator;
-        public readonly ObservableCollection<PartialUtilityTabViewModel> PartialUtilityTabViewModels;
         private CoefficientAssessmentTabViewModel _coefficientAssessmentTabViewModel;
-        private List<CriterionCoefficient> _criteriaCoefficients;
         private List<Alternative> _currentCalculationAlternativesCopy;
         private List<Criterion> _currentCalculationCriteriaCopy;
         private bool _preserveKendallCoefficient;
         private SaveData _saveData;
         private ITab _tabToSelect;
+        public readonly ObservableCollection<PartialUtilityTabViewModel> PartialUtilityTabViewModels;
 
         public MainViewModel(IDialogCoordinator dialogCoordinator)
         {
@@ -55,7 +54,6 @@ namespace UTA.ViewModels
             SettingsTabViewModel = new SettingsTabViewModel();
             WelcomeTabViewModel = new WelcomeTabViewModel();
 
-            CriteriaCoefficients = new List<CriterionCoefficient>();
             PartialUtilityTabViewModels = new ObservableCollection<PartialUtilityTabViewModel>();
 
             Criteria.CriteriaCollection.CollectionChanged += InstancePropertyChanged;
@@ -90,53 +88,46 @@ namespace UTA.ViewModels
 
             // TODO: remove. for testing purposes
             // WARNING: using these crashes application at some point
-            //Criteria.CriteriaCollection.Add(new Criterion("A", "ABC", "Gain", 8));
-            //Criteria.CriteriaCollection.Add(new Criterion("B", "ABC", "Gain", 8));
-            //Criteria.CriteriaCollection.Add(new Criterion("C", "ABC", "Gain", 8));
-            //Criteria.CriteriaCollection.Add(new Criterion("D", "ABC", "Gain", 8));
-            //Criteria.CriteriaCollection.Add(new Criterion("E", "ABC", "Gain", 8));
-            //Criteria.CriteriaCollection.Add(new Criterion("F", "ABC", "Gain", 8));
+            Criteria.CriteriaCollection.Add(new Criterion("Price", "", "Cost"));
+            Criteria.CriteriaCollection.Add(new Criterion("Time", "", "Cost"));
+            Criteria.CriteriaCollection.Add(new Criterion("Comfort", "", "Gain"));
 
-            //Criteria.AddCriterion("Price", "", "Cost", 2);
-            //Criteria.AddCriterion("Time", "", "Cost", 3);
-            //Criteria.AddCriterion("Comfort", "", "Gain", 3);
+            Criteria.CriteriaCollection[0].MinValue = 2;
+            Criteria.CriteriaCollection[0].MaxValue = 30;
+            Criteria.CriteriaCollection[1].MinValue = 10;
+            Criteria.CriteriaCollection[1].MaxValue = 40;
+            Criteria.CriteriaCollection[2].MinValue = 0;
+            Criteria.CriteriaCollection[2].MaxValue = 3;
 
-            //Criteria.CriteriaCollection[0].MinValue = 2;
-            //Criteria.CriteriaCollection[0].MaxValue = 30;
-            //Criteria.CriteriaCollection[1].MinValue = 10;
-            //Criteria.CriteriaCollection[1].MaxValue = 40;
-            //Criteria.CriteriaCollection[2].MinValue = 0;
-            //Criteria.CriteriaCollection[2].MaxValue = 3;
+            Alternatives.AlternativesCollection.Add(new Alternative("RER", Criteria.CriteriaCollection));
+            Alternatives.AlternativesCollection.Add(new Alternative("Metro 1", Criteria.CriteriaCollection));
+            Alternatives.AlternativesCollection.Add(new Alternative("Metro 2", Criteria.CriteriaCollection));
+            Alternatives.AlternativesCollection.Add(new Alternative("Bus", Criteria.CriteriaCollection));
+            Alternatives.AlternativesCollection.Add(new Alternative("Taxi", Criteria.CriteriaCollection));
+            Alternatives.AlternativesCollection.Add(new Alternative("Car", Criteria.CriteriaCollection));
+            Alternatives.AlternativesCollection.Add(new Alternative("Train", Criteria.CriteriaCollection));
 
-            //Alternatives.AddAlternative("RER", "");
-            //Alternatives.AddAlternative("METRO (1)", "");
-            //Alternatives.AddAlternative("METRO (2)", "");
-            //Alternatives.AddAlternative("BUS", "");
-            //Alternatives.AddAlternative("TAXI", "");
-            //Alternatives.AddAlternative("Other1", "");
-            //Alternatives.AddAlternative("Other2", "");
-
-            //Alternatives.AlternativesCollection[0].CriteriaValuesList[0].Value = 3;
-            //Alternatives.AlternativesCollection[0].CriteriaValuesList[1].Value = 10;
-            //Alternatives.AlternativesCollection[0].CriteriaValuesList[2].Value = 1;
-            //Alternatives.AlternativesCollection[1].CriteriaValuesList[0].Value = 4;
-            //Alternatives.AlternativesCollection[1].CriteriaValuesList[1].Value = 20;
-            //Alternatives.AlternativesCollection[1].CriteriaValuesList[2].Value = 2;
-            //Alternatives.AlternativesCollection[2].CriteriaValuesList[0].Value = 2;
-            //Alternatives.AlternativesCollection[2].CriteriaValuesList[1].Value = 20;
-            //Alternatives.AlternativesCollection[2].CriteriaValuesList[2].Value = 0;
-            //Alternatives.AlternativesCollection[3].CriteriaValuesList[0].Value = 6;
-            //Alternatives.AlternativesCollection[3].CriteriaValuesList[1].Value = 40;
-            //Alternatives.AlternativesCollection[3].CriteriaValuesList[2].Value = 0;
-            //Alternatives.AlternativesCollection[4].CriteriaValuesList[0].Value = 30;
-            //Alternatives.AlternativesCollection[4].CriteriaValuesList[1].Value = 30;
-            //Alternatives.AlternativesCollection[4].CriteriaValuesList[2].Value = 3;
-            //Alternatives.AlternativesCollection[5].CriteriaValuesList[0].Value = 8;
-            //Alternatives.AlternativesCollection[5].CriteriaValuesList[1].Value = 24;
-            //Alternatives.AlternativesCollection[5].CriteriaValuesList[2].Value = 2;
-            //Alternatives.AlternativesCollection[6].CriteriaValuesList[0].Value = 16;
-            //Alternatives.AlternativesCollection[6].CriteriaValuesList[1].Value = 36;
-            //Alternatives.AlternativesCollection[6].CriteriaValuesList[2].Value = 3;
+            Alternatives.AlternativesCollection[0].CriteriaValuesList[0].Value = 3;
+            Alternatives.AlternativesCollection[0].CriteriaValuesList[1].Value = 10;
+            Alternatives.AlternativesCollection[0].CriteriaValuesList[2].Value = 1;
+            Alternatives.AlternativesCollection[1].CriteriaValuesList[0].Value = 4;
+            Alternatives.AlternativesCollection[1].CriteriaValuesList[1].Value = 20;
+            Alternatives.AlternativesCollection[1].CriteriaValuesList[2].Value = 2;
+            Alternatives.AlternativesCollection[2].CriteriaValuesList[0].Value = 2;
+            Alternatives.AlternativesCollection[2].CriteriaValuesList[1].Value = 20;
+            Alternatives.AlternativesCollection[2].CriteriaValuesList[2].Value = 0;
+            Alternatives.AlternativesCollection[3].CriteriaValuesList[0].Value = 6;
+            Alternatives.AlternativesCollection[3].CriteriaValuesList[1].Value = 40;
+            Alternatives.AlternativesCollection[3].CriteriaValuesList[2].Value = 0;
+            Alternatives.AlternativesCollection[4].CriteriaValuesList[0].Value = 30;
+            Alternatives.AlternativesCollection[4].CriteriaValuesList[1].Value = 30;
+            Alternatives.AlternativesCollection[4].CriteriaValuesList[2].Value = 3;
+            Alternatives.AlternativesCollection[5].CriteriaValuesList[0].Value = 8;
+            Alternatives.AlternativesCollection[5].CriteriaValuesList[1].Value = 24;
+            Alternatives.AlternativesCollection[5].CriteriaValuesList[2].Value = 2;
+            Alternatives.AlternativesCollection[6].CriteriaValuesList[0].Value = 16;
+            Alternatives.AlternativesCollection[6].CriteriaValuesList[1].Value = 36;
+            Alternatives.AlternativesCollection[6].CriteriaValuesList[2].Value = 3;
 
             //ReferenceRanking.AddAlternativeToRank(Alternatives.AlternativesCollection[0], 1);
             //ReferenceRanking.AddAlternativeToRank(Alternatives.AlternativesCollection[1], 2);
@@ -204,17 +195,6 @@ namespace UTA.ViewModels
             {
                 _tabToSelect = value;
                 OnPropertyChanged(nameof(TabToSelect));
-            }
-        }
-
-        public List<CriterionCoefficient> CriteriaCoefficients
-        {
-            get => _criteriaCoefficients;
-            set
-            {
-                if (Equals(value, _criteriaCoefficients)) return;
-                _criteriaCoefficients = value;
-                OnPropertyChanged(nameof(CriteriaCoefficients));
             }
         }
 
@@ -289,27 +269,12 @@ namespace UTA.ViewModels
             _currentCalculationCriteriaCopy = Criteria.GetDeepCopyOfCriteria();
             _currentCalculationAlternativesCopy = Alternatives.GetDeepCopyOfAlternatives();
 
+            foreach (var partialUtilityTabViewModel in PartialUtilityTabViewModels) Tabs.Remove(partialUtilityTabViewModel);
+            PartialUtilityTabViewModels.Clear();
+
             _coefficientAssessmentTabViewModel =
                 new CoefficientAssessmentTabViewModel(_currentCalculationCriteriaCopy, ShowPartialUtilityTabs);
             ShowTab(_coefficientAssessmentTabViewModel);
-
-            //get initial partial utilities
-            //var partialUtilitiesList = new List<PartialUtility>();
-            //foreach (var criterion in criteriaDeepCopy)
-            //    partialUtilitiesList.Add(new PartialUtility(criterion, new DialogController(criterion, 1, 0.5f).DisplayObject.PointsList));
-
-            ////run solver for initial utilities
-            //var utilitiesCalculator = new UtilitiesCalculator(alternativesDeepCopy, partialUtilitiesList, criteriaCoefficientsList);
-            //utilitiesCalculator.CalculateGlobalUtilities();
-
-            ////todo present in panels
-            //var finalRankingAssess = new FinalRankingAssess(utilitiesCalculator.AlternativesUtilitiesList);
-
-            //Results.FinalRanking.FinalRankingCollection = finalRankingAssess.FinalRankingCollection;
-
-            //ShowPartialUtilityTabs(criteriaDeepCopy);
-
-            //todo after first calculation - dynamic recalcualtion
         }
 
         private async Task<MessageDialogResult> ShowLosingProgressWarning()
@@ -362,26 +327,21 @@ namespace UTA.ViewModels
             return true;
         }
 
-
+        // called in CoefficientAssessmentTabViewModel, after answering to last dialogue question
         private void ShowPartialUtilityTabs(List<CriterionCoefficient> criteriaCoefficients)
         {
-            CriteriaCoefficients = criteriaCoefficients;
+            Results.CriteriaCoefficients = criteriaCoefficients;
 
             Tabs.Remove(_coefficientAssessmentTabViewModel);
-            foreach (var partialUtilityTabViewModel in PartialUtilityTabViewModels) Tabs.Remove(partialUtilityTabViewModel);
-            PartialUtilityTabViewModels.Clear();
 
-            // TODO
-            //foreach (var criterion in _currentCalculationCriteriaCopy)
-            //    partialUtilitiesList.Add(new PartialUtility(criterion, new DialogController(criterion, 1, 0.5f).DisplayObject.PointsList));
+            var utilitiesCalculator =
+                new UtilitiesCalculator(_currentCalculationAlternativesCopy, Results, _currentCalculationCriteriaCopy);
+            utilitiesCalculator.CalculateGlobalUtilities();
 
-            //var utilitiesCalculator =
-            //    new UtilitiesCalculator(_currentCalculationAlternativesCopy, partialUtilitiesList, _criteriaCoefficients);
-            //utilitiesCalculator.CalculateGlobalUtilities();
-
-            foreach (var criterion in _currentCalculationCriteriaCopy)
+            foreach (var partialUtility in Results.PartialUtilityFunctions)
             {
-                var partialUtilityTabViewModel = new PartialUtilityTabViewModel(criterion);
+                var partialUtilityTabViewModel =
+                    new PartialUtilityTabViewModel(partialUtility, utilitiesCalculator.CalculateGlobalUtilities);
                 PartialUtilityTabViewModels.Add(partialUtilityTabViewModel);
                 Tabs.Add(partialUtilityTabViewModel);
             }

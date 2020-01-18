@@ -1,21 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using DataModel.Annotations;
 using DataModel.Input;
 using DataModel.Results;
 
 namespace CalculationsEngine.Assess.Assess
 {
-    public class CoefficientsDialog
+    public class CoefficientsDialog : INotifyPropertyChanged
     {
         private readonly List<double> _bestValues;
         private readonly List<Criterion> _criterionList;
         private readonly List<double> _worstValues;
         private string _currentCriterionName;
+        private DisplayObject _displayObject;
         private double _lowerProbabilityBoundary;
         private double _upperProbabilityBoundary;
         public List<CriterionCoefficient> CriteriaCoefficientsList;
-        public DisplayObject DisplayObject;
 
         public CoefficientsDialog(List<Criterion> criterionList)
         {
@@ -37,10 +39,17 @@ namespace CalculationsEngine.Assess.Assess
                 }
         }
 
-        public CriterionCoefficient GetCoefficientsForCriterion(Criterion criterion)
+        public DisplayObject DisplayObject
         {
-            return CriteriaCoefficientsList.First(crit => criterion.Name == crit.CriterionName);
+            get => _displayObject;
+            set
+            {
+                _displayObject = value;
+                OnPropertyChanged(nameof(DisplayObject));
+            }
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public void SetInitialValues(Criterion criterion)
         {
@@ -56,27 +65,27 @@ namespace CalculationsEngine.Assess.Assess
         }
 
         //todo remove
-        public string displayDialog()
-        {
-            Console.WriteLine("Wpisz '1' jeśli wolisz WARIANT:");
-            for (var i = 0; i < DisplayObject.CriterionNames.Length; i++)
-                Console.WriteLine(DisplayObject.CriterionNames[i] + " = " + DisplayObject.ValuesToCompare[i]);
+        //public string displayDialog()
+        //{
+        //    Console.WriteLine("Wpisz '1' jeśli wolisz WARIANT:");
+        //    for (var i = 0; i < DisplayObject.CriterionNames.Length; i++)
+        //        Console.WriteLine(DisplayObject.CriterionNames[i] + " = " + DisplayObject.ValuesToCompare[i]);
 
-            Console.WriteLine("\nWpisz '2' jeśli wolisz LOTERIĘ");
-            for (var i = 0; i < DisplayObject.CriterionNames.Length; i++)
-                Console.WriteLine(DisplayObject.CriterionNames[i] + " = " + DisplayObject.BestValues[i]);
+        //    Console.WriteLine("\nWpisz '2' jeśli wolisz LOTERIĘ");
+        //    for (var i = 0; i < DisplayObject.CriterionNames.Length; i++)
+        //        Console.WriteLine(DisplayObject.CriterionNames[i] + " = " + DisplayObject.BestValues[i]);
 
-            Console.WriteLine("z prawdopodobienstwem " + DisplayObject.P + "\n");
+        //    Console.WriteLine("z prawdopodobienstwem " + DisplayObject.P + "\n");
 
-            for (var i = 0; i < DisplayObject.CriterionNames.Length; i++)
-                Console.WriteLine(DisplayObject.CriterionNames[i] + " = " + DisplayObject.WorstValues[i]);
+        //    for (var i = 0; i < DisplayObject.CriterionNames.Length; i++)
+        //        Console.WriteLine(DisplayObject.CriterionNames[i] + " = " + DisplayObject.WorstValues[i]);
 
-            Console.WriteLine("z prawdopodobienstwem " + (1 - DisplayObject.P) + "\n");
+        //    Console.WriteLine("z prawdopodobienstwem " + (1 - DisplayObject.P) + "\n");
 
-            Console.WriteLine("'1', '2' lub 'n' :\n");
+        //    Console.WriteLine("'1', '2' lub 'n' :\n");
 
-            return Console.ReadLine();
-        }
+        //    return Console.ReadLine();
+        //}
 
         public void ProcessDialog(int choice)
         {
@@ -101,6 +110,12 @@ namespace CalculationsEngine.Assess.Assess
                 // remove the warning - it's useful only for developers
                 throw new Exception("Assess: wrong choice ID passed to ProcessDialog()");
             }
+        }
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

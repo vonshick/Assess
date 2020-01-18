@@ -36,8 +36,7 @@ namespace UTA.Models
         {
             var criteriaDeepCopy = new List<Criterion>();
             foreach (var criterion in CriteriaCollection)
-                criteriaDeepCopy.Add(new Criterion(criterion.Name, criterion.Description, criterion.CriterionDirection,
-                    criterion.LinearSegments)
+                criteriaDeepCopy.Add(new Criterion(criterion.Name, criterion.Description, criterion.CriterionDirection, criterion.Probability, criterion.Method)
                 {
                     MinValue = criterion.MinValue,
                     MaxValue = criterion.MaxValue

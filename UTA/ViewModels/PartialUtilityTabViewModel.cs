@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using CalculationsEngine.Assess.Assess;
 using DataModel.Input;
+using DataModel.Results;
 using UTA.Annotations;
 using UTA.Helpers;
 using UTA.Models.Tab;
@@ -16,12 +18,16 @@ namespace UTA.ViewModels
         private string _textOptionLottery;
         private string _textOptionSure;
         private bool _utilityAssessed;
+        private readonly List<PartialUtilityValues> _pointsValues;
+        private readonly Action _calculateUtilities;
 
 
-        public PartialUtilityTabViewModel(Criterion criterion)
+        public PartialUtilityTabViewModel(PartialUtility partialUtility, Action calculateUtilities)
         {
-            Criterion = criterion;
-            Name = "Utility - " + criterion.Name;
+            Criterion = partialUtility.Criterion;
+            _pointsValues = partialUtility.PointsValues;
+            _calculateUtilities = calculateUtilities;
+            Name = $"Utility - {Criterion.Name}";
             ResultsText = "Results will be here after finished dialogue";
             StartButtonText = "Start Assessment";
 
@@ -50,6 +56,7 @@ namespace UTA.ViewModels
             TakeIndifferentCommand = new RelayCommand(_ =>
             {
                 Dialog.ProcessDialog(3);
+                _calculateUtilities();
                 UtilityAssessed = true;
                 DigestResults(Dialog);
             });
