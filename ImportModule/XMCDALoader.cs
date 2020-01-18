@@ -12,7 +12,6 @@ namespace ImportModule
     public class XMCDALoader : DataLoader
     {
         private string currentlyProcessedAlternativeId;
-        private string currentlyProcessedCriterionId;
         private string currentlyProcessedFile;
         private string xmcdaDirectory;
 
@@ -22,16 +21,6 @@ namespace ImportModule
             ValidateFilePath(Path.Combine(xmcdaDirectory, "alternatives.xml"));
             ValidateFilePath(Path.Combine(xmcdaDirectory, "criteria_scales.xml"));
             ValidateFilePath(Path.Combine(xmcdaDirectory, "performance_table.xml"));
-        }
-
-        private bool checkIfResultsAvailable()
-        {
-            if (!File.Exists(Path.Combine(xmcdaDirectory, "alternatives_ranks.xml")) ||
-                !File.Exists(Path.Combine(xmcdaDirectory, "value_functions.xml")) ||
-                !File.Exists(Path.Combine(xmcdaDirectory, "criteria_segments.xml")))
-                return false;
-
-            return true;
         }
 
         private void checkIfIdProvided(XmlAttributeCollection attributesCollection, string elementType)
@@ -75,8 +64,7 @@ namespace ImportModule
                 checkIfIdProvided(xmlNode.Attributes, "criterion");
                 var criterion = new Criterion
                 {
-                    ID = checkCriteriaIdsUniqueness(xmlNode.Attributes["id"].Value),
-                    LinearSegments = 1
+                    ID = checkCriteriaIdsUniqueness(xmlNode.Attributes["id"].Value)
                 };
 
                 criterion.Name = checkIfCriterionNameProvided(xmlNode.Attributes);
@@ -173,61 +161,6 @@ namespace ImportModule
             }
         }
 
-        private void LoadAlternativesRanks()
-        {
-            currentlyProcessedFile = Path.Combine(xmcdaDirectory, "alternatives_ranks.xml");
-
-            if (!File.Exists(currentlyProcessedFile))
-                return;
-
-            var xmlDocument = new XmlDocument();
-            xmlDocument.Load(currentlyProcessedFile);
-
-            foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
-            foreach (XmlNode alternativeResult in xmlNode.ChildNodes)
-                // first node containts alternative ID
-                if (alternativeResult.Name == "alternativeID")
-                {
-                    currentlyProcessedAlternativeId = alternativeResult.InnerText;
-                }
-                else
-                {
-                    var rank = int.Parse(alternativeResult.ChildNodes[0].InnerText);
-                    var alternativeIndex = alternativeList.FindIndex(compareAlternativeIds);
-                    alternativeList[alternativeIndex].ReferenceRank = rank;
-                }
-        }
-
-        private bool compareCriterionIds(Criterion criterion)
-        {
-            return criterion.ID.Equals(currentlyProcessedCriterionId);
-        }
-
-        private void LoadCriteriaSegments()
-        {
-            currentlyProcessedFile = Path.Combine(xmcdaDirectory, "criteria_segments.xml");
-
-            if (!File.Exists(currentlyProcessedFile))
-                return;
-
-            var xmlDocument = new XmlDocument();
-            xmlDocument.Load(currentlyProcessedFile);
-
-            foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
-            foreach (XmlNode criterionSegments in xmlNode.ChildNodes)
-                // first node containts alternative ID
-                if (criterionSegments.Name == "criterionID")
-                {
-                    currentlyProcessedCriterionId = criterionSegments.InnerText;
-                }
-                else
-                {
-                    var numberOfSegments = int.Parse(criterionSegments.ChildNodes[0].InnerText);
-                    var criterionIndex = criterionList.FindIndex(compareCriterionIds);
-                    criterionList[criterionIndex].LinearSegments = numberOfSegments;
-                }
-        }
-
         private void LoadValueFunctions()
         {
             currentlyProcessedFile = Path.Combine(xmcdaDirectory, "value_functions.xml");
@@ -289,8 +222,6 @@ namespace ImportModule
             LoadAlternatives();
             LoadPerformanceTable();
 
-            LoadCriteriaSegments();
-            LoadAlternativesRanks();
             LoadValueFunctions();
 
             setMinAndMaxCriterionValues();

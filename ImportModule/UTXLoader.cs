@@ -66,7 +66,7 @@ namespace ImportModule
             // iterate on its nodes
             foreach (XmlNode attribute in attributes[0].ChildNodes)
             {
-                var criterion = new Criterion {LinearSegments = 1};
+                var criterion = new Criterion();
                 // for UTX ID and Name are the same value
                 criterion.Name = criterion.ID = checkCriteriaIdsUniqueness(attribute.Attributes["AttrID"].Value);
                 var saveCriterion = true;
@@ -152,8 +152,13 @@ namespace ImportModule
                 var criteriaValuesList = new ObservableCollection<CriterionValue>();
 
                 foreach (XmlNode instancePart in instance)
-                    // we avoid RANK nodes
-                    if (instancePart.Name.Equals("VALUE"))
+                    if (instancePart.Name.Equals("RANK"))
+                    {
+                        var value = instancePart.Attributes["Value"].Value;
+                        CheckIfIntegerValueIsValid(value, "RANK in OBJECT", alternative.ID);
+                        alternative.ReferenceRank = int.Parse(value);
+                    }
+                    else if (instancePart.Name.Equals("VALUE"))
                     {
                         var value = instancePart.Attributes["Value"].Value;
                         var attributeName = instancePart.Attributes["AttrID"].Value;

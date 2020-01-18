@@ -66,7 +66,7 @@ namespace ImportModule
             foreach (XmlNode attribute in attributes[0].ChildNodes)
             {
                 var criterion = new Criterion
-                    {ID = checkCriteriaIdsUniqueness(attribute.Attributes["AttrID"].Value), LinearSegments = 1};
+                    {ID = checkCriteriaIdsUniqueness(attribute.Attributes["AttrID"].Value)};
                 // two specific groups of nodes may appear in attributes - name and description
                 // we don't want to save it as criterion
                 var saveCriterion = true;

@@ -92,7 +92,7 @@ namespace ImportModule
                 for (var i = 1; i < criterionDirectionsArray.Length; i++)
                     // for CSV ID and Name are the same value
                     criterionList.Add(new Criterion(checkCriteriaNamesUniqueness(criterionNamesArray[i]), criterionDirectionsArray[i])
-                        {ID = checkCriteriaNamesUniqueness(criterionNamesArray[i]), LinearSegments = 1});
+                        {ID = checkCriteriaNamesUniqueness(criterionNamesArray[i])});
 
                 while (!reader.EndOfStream)
                 {

@@ -58,8 +58,6 @@ namespace ExportModule
 
         private void checkIfResultFilesExists()
         {
-            checkIfFileExists(Path.Combine(outputDirectory, "alternatives_ranks.xml"));
-            checkIfFileExists(Path.Combine(outputDirectory, "criteria_segments.xml"));
             checkIfFileExists(Path.Combine(outputDirectory, "value_functions.xml"));
         }
 
@@ -186,55 +184,6 @@ namespace ExportModule
             xmcdaWriter.Close();
         }
 
-        private void saveReferenceRanking()
-        {
-            initializeWriter(Path.Combine(outputDirectory, "alternatives_ranks.xml"));
-            xmcdaWriter.WriteStartElement("alternativesValues");
-
-            foreach (var alternative in alternativeList)
-                if (alternative.ReferenceRank != null)
-                {
-                    xmcdaWriter.WriteStartElement("alternativeValue");
-                    xmcdaWriter.WriteStartElement("alternativeID");
-                    xmcdaWriter.WriteString(alternative.ID != null ? alternative.ID : alternative.Name);
-                    xmcdaWriter.WriteEndElement();
-                    xmcdaWriter.WriteStartElement("value");
-                    xmcdaWriter.WriteStartElement("integer");
-                    xmcdaWriter.WriteString(alternative.ReferenceRank.ToString());
-                    xmcdaWriter.WriteEndElement();
-                    xmcdaWriter.WriteEndElement();
-                    xmcdaWriter.WriteEndElement();
-                }
-
-            xmcdaWriter.WriteEndElement();
-            xmcdaWriter.WriteEndDocument();
-            xmcdaWriter.Close();
-        }
-
-        public void saveCriteriaSegments()
-        {
-            initializeWriter(Path.Combine(outputDirectory, "criteria_segments.xml"));
-            xmcdaWriter.WriteStartElement("criteriaValues");
-
-            foreach (var criterion in criterionList)
-            {
-                xmcdaWriter.WriteStartElement("criterionValue");
-                xmcdaWriter.WriteStartElement("criterionID");
-                xmcdaWriter.WriteString(criterion.ID != null ? criterion.ID : criterion.Name);
-                xmcdaWriter.WriteEndElement();
-                xmcdaWriter.WriteStartElement("value");
-                xmcdaWriter.WriteStartElement("integer");
-                xmcdaWriter.WriteString(criterion.LinearSegments.ToString());
-                xmcdaWriter.WriteEndElement();
-                xmcdaWriter.WriteEndElement();
-                xmcdaWriter.WriteEndElement();
-            }
-
-            xmcdaWriter.WriteEndElement();
-            xmcdaWriter.WriteEndDocument();
-            xmcdaWriter.Close();
-        }
-
         private void saveValueFunctions()
         {
             initializeWriter(Path.Combine(outputDirectory, "value_functions.xml"));
@@ -292,8 +241,6 @@ namespace ExportModule
             checkIfResultFilesExists();
             if (results != null)
             {
-                saveReferenceRanking();
-                saveCriteriaSegments();
                 saveValueFunctions();
             }
             else
