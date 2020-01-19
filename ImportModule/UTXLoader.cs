@@ -152,13 +152,8 @@ namespace ImportModule
                 var criteriaValuesList = new ObservableCollection<CriterionValue>();
 
                 foreach (XmlNode instancePart in instance)
-                    if (instancePart.Name.Equals("RANK"))
-                    {
-                        var value = instancePart.Attributes["Value"].Value;
-                        CheckIfIntegerValueIsValid(value, "RANK in OBJECT", alternative.ID);
-                        alternative.ReferenceRank = int.Parse(value);
-                    }
-                    else if (instancePart.Name.Equals("VALUE"))
+                    //beyond VALUE there exist attributes "RANK" which we do not take into account
+                    if (instancePart.Name.Equals("VALUE"))
                     {
                         var value = instancePart.Attributes["Value"].Value;
                         var attributeName = instancePart.Attributes["AttrID"].Value;
