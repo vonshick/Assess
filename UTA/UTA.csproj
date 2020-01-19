@@ -104,19 +104,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\ChartTab.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\CriteriaTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\DocumentationDialogView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ReferenceRankingTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -139,13 +131,10 @@
     <Compile Include="Helpers\DataValidation\AlternativeNameValidationRule.cs" />
     <Compile Include="Helpers\DataValidation\CriterionNameValidationRule.cs" />
     <Compile Include="Converters\AssessMethodConverter.cs" />
-    <Compile Include="Converters\IndexToRankConverter.cs" />
     <Compile Include="ViewModels\AlternativesTabViewModel.cs" />
-    <Compile Include="ViewModels\ChartTabViewModel.cs" />
     <Compile Include="ViewModels\CriteriaTabViewModel.cs" />
     <Compile Include="ViewModels\AssessmentMethodTabViewModel.cs" />
     <Compile Include="ViewModels\CoefficientAssessmentTabViewModel.cs" />
-    <Compile Include="ViewModels\ReferenceRankingTabViewModel.cs" />
     <Compile Include="ViewModels\WelcomeTabViewModel.cs" />
     <Compile Include="ViewModels\PartialUtilityTabViewModel.cs" />
     <Compile Include="ViewModels\SettingsTabViewModel.cs" />
@@ -164,9 +153,6 @@
     <Compile Include="Views\PartialUtilityTab.xaml.cs">
       <DependentUpon>PartialUtilityTab.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ChartTab.xaml.cs">
-      <DependentUpon>ChartTab.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\CriteriaTab.xaml.cs">
       <DependentUpon>CriteriaTab.xaml</DependentUpon>
     </Compile>
@@ -179,16 +165,12 @@
     <Compile Include="Views\DocumentationDialogView.xaml.cs">
       <DependentUpon>DocumentationDialogView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ReferenceRankingTab.xaml.cs">
-      <DependentUpon>ReferenceRankingTab.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\WelcomeTab.xaml.cs">
       <DependentUpon>WelcomeTab.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SettingsTab.xaml.cs">
       <DependentUpon>SettingsTab.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Helpers\AlternativeDropHandler.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>

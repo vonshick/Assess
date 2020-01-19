@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -27,10 +26,7 @@ namespace UTA.Views
         {
             InitializeComponent();
             DataContext = _viewmodel;
-
             Loaded += (sender, args) => { _viewmodel.ShowTab(_viewmodel.WelcomeTabViewModel); };
-
-            _viewmodel.ChartTabViewModels.CollectionChanged += ChartTabsCollectionChanged;
             _viewmodel.PartialUtilityTabViewModels.CollectionChanged += PartialUtilityTabsCollectionChanged;
             var tabViewSource = CollectionViewSource.GetDefaultView(TabControl.Items);
             tabViewSource.CollectionChanged += (sender, args) =>
@@ -77,14 +73,6 @@ namespace UTA.Views
         {
             if (_tabStackPanel == null) _tabStackPanel = (StackPanel) TabControl.Template.FindName("TabStackPanel", TabControl);
             ((FrameworkElement) _tabStackPanel.Children[TabControl.SelectedIndex]).BringIntoView();
-//            Console.WriteLine("BringCurrentTabIntoView");
-//            if (_viewmodel.TabToSelect is PartialUtilityTabViewModel vm)
-//            {
-//                if (!vm.MethodDialogDisplayed)
-//                    vm.ShowMethodDialog();
-//                else
-//                    Console.WriteLine(((PartialUtilityTabViewModel) _viewmodel.TabToSelect).MethodDialogDisplayed + " for " + ((PartialUtilityTabViewModel)_viewmodel.TabToSelect).Criterion.Name);
-//            }
         }
 
         private void Expander_Toggled(object sender, RoutedEventArgs e)
@@ -166,7 +154,7 @@ namespace UTA.Views
                 widthResourceKey = "RightPanelWidth";
                 minWidthResourceKey = "RightPanelMinWidth";
                 panelColumnIndex = 4;
-                columnsGridSplitter = TabsRankingsGridSplitter;
+                columnsGridSplitter = TabsResultsGridSplitter;
             }
 
             if (viewPanel.IsChecked)
@@ -215,39 +203,40 @@ namespace UTA.Views
         }
 
         // updates Show MenuItem with chart tabs and manages right panel expanders
-        private void ChartTabsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == NotifyCollectionChangedAction.Reset)
-            {
-                FinalRankingExpander.IsExpanded = false;
-                ReferenceRankingExpander.IsExpanded = true;
+        // TODO
+        //private void ChartTabsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        //{
+        //    if (e.Action == NotifyCollectionChangedAction.Reset)
+        //    {
+        //        FinalRankingExpander.IsExpanded = false;
+        //        CoefficientsExpander.IsExpanded = true;
 
-                var itemsToRemove = new List<MenuItem>();
-                foreach (var item in ShowMenu.Items)
-                    if (item is MenuItem menuItem && (string) menuItem.Tag == "Chart")
-                        itemsToRemove.Add(menuItem);
-                foreach (var menuItem in itemsToRemove) ShowMenu.Items.Remove(menuItem);
+        //        var itemsToRemove = new List<MenuItem>();
+        //        foreach (var item in ShowMenu.Items)
+        //            if (item is MenuItem menuItem && (string) menuItem.Tag == "Chart")
+        //                itemsToRemove.Add(menuItem);
+        //        foreach (var menuItem in itemsToRemove) ShowMenu.Items.Remove(menuItem);
 
-                if (ShowMenu.Items[ShowMenu.Items.Count - 1] is Separator separator) ShowMenu.Items.Remove(separator);
-                ((MenuItem) ShowMenu.Items[ShowMenu.Items.Count - 1]).Margin = _menuItemBottomMargin;
-            }
-            else if (e.Action == NotifyCollectionChangedAction.Add)
-            {
-                FinalRankingExpander.IsExpanded = true;
-                ReferenceRankingExpander.IsExpanded = false;
+        //        if (ShowMenu.Items[ShowMenu.Items.Count - 1] is Separator separator) ShowMenu.Items.Remove(separator);
+        //        ((MenuItem) ShowMenu.Items[ShowMenu.Items.Count - 1]).Margin = _menuItemBottomMargin;
+        //    }
+        //    else if (e.Action == NotifyCollectionChangedAction.Add)
+        //    {
+        //        FinalRankingExpander.IsExpanded = true;
+        //        CoefficientsExpander.IsExpanded = false;
 
-                if (ShowMenu.Items[ShowMenu.Items.Count - 1] is MenuItem lastMenuItem)
-                {
-                    lastMenuItem.Margin = new Thickness(0);
-                    if ((string) lastMenuItem.Tag != "Chart") ShowMenu.Items.Add(new Separator());
-                }
+        //        if (ShowMenu.Items[ShowMenu.Items.Count - 1] is MenuItem lastMenuItem)
+        //        {
+        //            lastMenuItem.Margin = new Thickness(0);
+        //            if ((string) lastMenuItem.Tag != "Chart") ShowMenu.Items.Add(new Separator());
+        //        }
 
-                var newChartTabViewModel = (ChartTabViewModel) e.NewItems[0];
-                var newMenuItem = new MenuItem {Header = newChartTabViewModel.Name, Margin = _menuItemBottomMargin, Tag = "Chart"};
-                newMenuItem.Click += (s, args) => _viewmodel.ShowTab(newChartTabViewModel);
-                ShowMenu.Items.Add(newMenuItem);
-            }
-        }
+        //        var newChartTabViewModel = (ChartTabViewModel) e.NewItems[0];
+        //        var newMenuItem = new MenuItem {Header = newChartTabViewModel.Name, Margin = _menuItemBottomMargin, Tag = "Chart"};
+        //        newMenuItem.Click += (s, args) => _viewmodel.ShowTab(newChartTabViewModel);
+        //        ShowMenu.Items.Add(newMenuItem);
+        //    }
+        //}
 
         private void ExitMenuItemClicked(object sender, RoutedEventArgs e)
         {

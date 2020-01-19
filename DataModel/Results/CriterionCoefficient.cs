@@ -2,8 +2,8 @@
 {
     public struct CriterionCoefficient
     {
-        public string CriterionName;
-        public double Coefficient;
+        public string CriterionName { get; set; }
+        public double Coefficient { get; set; }
 
         public CriterionCoefficient(string criterionName, double coefficient)
         {

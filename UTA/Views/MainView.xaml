@@ -163,17 +163,13 @@
       </MenuItem>
 
       <MenuItem Header="Solution" Style="{StaticResource MenuBarItem}">
-        <MenuItem Margin="{StaticResource MenuItemTopMargin}" Header="Calculate">
+        <MenuItem Margin="0,4" Header="Calculate">
           <i:Interaction.Triggers>
             <i:EventTrigger EventName="Click">
               <i:CallMethodAction TargetObject="{Binding}" MethodName="CalculateButtonClicked" />
             </i:EventTrigger>
           </i:Interaction.Triggers>
         </MenuItem>
-        <Separator />
-        <MenuItem Margin="{StaticResource MenuItemBottomMargin}" Header="Preserve Kendall's Coefficient"
-                  IsCheckable="True"
-                  IsChecked="{Binding PreserveKendallCoefficient, UpdateSourceTrigger=PropertyChanged}" />
       </MenuItem>
 
       <MenuItem Name="ShowMenu" Header="Show" Style="{StaticResource MenuBarItem}">
@@ -193,14 +189,6 @@
             </i:EventTrigger>
           </i:Interaction.Triggers>
         </MenuItem>
-        <MenuItem Header="Reference Ranking">
-          <i:Interaction.Triggers>
-            <i:EventTrigger EventName="Click">
-              <i:InvokeCommandAction Command="{Binding ShowTabCommand}"
-                                     CommandParameter="{Binding ReferenceRankingTabViewModel}" />
-            </i:EventTrigger>
-          </i:Interaction.Triggers>
-        </MenuItem>
         <MenuItem Margin="{StaticResource MenuItemBottomMargin}" Header="Welcome!">
           <i:Interaction.Triggers>
             <i:EventTrigger EventName="Click">
@@ -215,7 +203,7 @@
         <MenuItem Margin="{StaticResource MenuItemTopMargin}" Header="Topbar" IsCheckable="True" IsChecked="True"
                   Click="MenuBarTopbarViewToggled" />
         <MenuItem Header="Instance Panel" IsCheckable="True" IsChecked="True" Click="MenuBarPanelViewToggled" />
-        <MenuItem Margin="{StaticResource MenuItemBottomMargin}" Header="Ranking Panel" IsCheckable="True"
+        <MenuItem Margin="{StaticResource MenuItemBottomMargin}" Header="Results Panel" IsCheckable="True"
                   IsChecked="True" Click="MenuBarPanelViewToggled" />
       </MenuItem>
 
@@ -231,8 +219,8 @@
       <Grid.Resources>
         <GridLength x:Key="LeftPanelWidth">192</GridLength>
         <sys:Double x:Key="LeftPanelMinWidth">130</sys:Double>
-        <GridLength x:Key="RightPanelWidth">290</GridLength>
-        <sys:Double x:Key="RightPanelMinWidth">180</sys:Double>
+        <GridLength x:Key="RightPanelWidth">198</GridLength>
+        <sys:Double x:Key="RightPanelMinWidth">190</sys:Double>
       </Grid.Resources>
 
       <Grid.RowDefinitions>
@@ -284,25 +272,6 @@
               </i:EventTrigger>
             </i:Interaction.Triggers>
           </Button>
-
-          <Button Content="Reference Ranking" Style="{StaticResource SecondaryRoundButton}"
-                  FontSize="{StaticResource CommonFontSize1}" DockPanel.Dock="Left" Margin="0,0,8,0"
-                  Padding="16,0,16,1">
-            <i:Interaction.Triggers>
-              <i:EventTrigger EventName="Click">
-                <i:InvokeCommandAction Command="{Binding ShowTabCommand}"
-                                       CommandParameter="{Binding ReferenceRankingTabViewModel}" />
-              </i:EventTrigger>
-            </i:Interaction.Triggers>
-          </Button>
-
-          <Rectangle Focusable="False" Margin="0,0,8,0" Width="1" Fill="{StaticResource ColorSeparator}"
-                     DockPanel.Dock="Left" />
-
-          <CheckBox Margin="0,0,8,0"
-                    IsChecked="{Binding PreserveKendallCoefficient, UpdateSourceTrigger=PropertyChanged}">
-            <TextBlock Text="Preserve Kendall's Coefficient" FontSize="{StaticResource CommonFontSize2}" />
-          </CheckBox>
 
           <Button Content="Settings" Style="{StaticResource SecondaryRoundButton}" Margin="0" Padding="16,0,16,1"
                   DockPanel.Dock="Right" FontSize="{StaticResource CommonFontSize1}">
@@ -534,12 +503,6 @@
             <DataTemplate DataType="{x:Type viewModels:AlternativesTabViewModel}">
               <views:AlternativesTab />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type viewModels:ReferenceRankingTabViewModel}">
-              <views:ReferenceRankingTab />
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type viewModels:ChartTabViewModel}">
-              <views:ChartTab />
-            </DataTemplate>
             <DataTemplate DataType="{x:Type viewModels:SettingsTabViewModel}">
               <views:SettingsTab />
             </DataTemplate>
@@ -630,11 +593,11 @@
 
 
       <!--GridSplitter enables panel resize-->
-      <GridSplitter Name="TabsRankingsGridSplitter" Width="5" Panel.ZIndex="1" Grid.Row="1" Grid.Column="3"
+      <GridSplitter Name="TabsResultsGridSplitter" Width="5" Panel.ZIndex="1" Grid.Row="1" Grid.Column="3"
                     HorizontalAlignment="Stretch" Focusable="False" Margin="-5,0,0,0" Background="Transparent" />
 
 
-      <!--right panel (final ranking, reference ranking)-->
+      <!--right panel (final ranking, coefficients)-->
       <Border Grid.Row="1" Grid.Column="4" Background="{StaticResource ColorInterface6}" BorderThickness="1,0,0,0"
               BorderBrush="{StaticResource ColorBorders1}">
         <Grid>
@@ -643,7 +606,7 @@
             <RowDefinition Height="*" />
           </Grid.RowDefinitions>
 
-          <TextBlock Text="Rankings" VerticalAlignment="Center" Margin="8,0,0,2"
+          <TextBlock Text="Results" VerticalAlignment="Center" Margin="8,0,0,2"
                      FontSize="{StaticResource CommonFontSize1}" />
 
           <Grid Grid.Row="1">
@@ -658,110 +621,87 @@
                 <Setter Property="Background" Value="Transparent" />
               </Style>
 
-              <Style TargetType="{x:Type ListViewItem}" x:Key="RightPanelListViewItemStyle">
+              <Style TargetType="{x:Type ListViewItem}">
                 <Setter Property="Focusable" Value="False" />
+                <Setter Property="Template">
+                  <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListViewItem}">
+                      <Border Padding="0,2">
+                        <GridViewRowPresenter Content="{TemplateBinding Content}"
+                                              Columns="{TemplateBinding GridView.ColumnCollection}" />
+                      </Border>
+                    </ControlTemplate>
+                  </Setter.Value>
+                </Setter>
+              </Style>
+
+              <!--hack solution to change grid header background color-->
+              <Style TargetType="{x:Type ScrollViewer}">
+                <Setter Property="Background" Value="{StaticResource ColorInterface5}" />
               </Style>
             </Grid.Resources>
 
             <Expander Name="FinalRankingExpander" Header="Final" Collapsed="Expander_Toggled"
-                      Expanded="Expander_Toggled" IsExpanded="False"
+                      Expanded="Expander_Toggled" IsExpanded="True"
                       HeaderTemplate="{StaticResource ExpanderPlainHeaderTemplate}">
-              <Expander.Resources>
-                <!--hack solution to change grid header background color-->
-                <Style TargetType="{x:Type ScrollViewer}">
-                  <Setter Property="Background" Value="{StaticResource ColorInterface5}" />
-                </Style>
+              <ListView
+                ItemsSource="{Binding Results.FinalRanking.FinalRankingCollection, UpdateSourceTrigger=PropertyChanged}"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListView.View>
+                  <GridView AllowsColumnReorder="False">
+                    <GridViewColumn Header="#" DisplayMemberBinding="{Binding Position}" Width="32" />
+                    <GridViewColumn Header="Utility" DisplayMemberBinding="{Binding Utility, StringFormat=F15}"
+                                    Width="66" />
+                    <GridViewColumn Header="Alternative"
+                                    DisplayMemberBinding="{Binding Alternative.Name, UpdateSourceTrigger=PropertyChanged}"
+                                    Width="9999" />
+                  </GridView>
+                </ListView.View>
+              </ListView>
+            </Expander>
 
-                <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource RightPanelListViewItemStyle}">
-                  <Setter Property="Template">
-                    <Setter.Value>
-                      <ControlTemplate TargetType="{x:Type ListViewItem}">
-                        <Border Padding="0,2">
-                          <GridViewRowPresenter Content="{TemplateBinding Content}"
-                                                Columns="{TemplateBinding GridView.ColumnCollection}" />
-                        </Border>
-                      </ControlTemplate>
-                    </Setter.Value>
-                  </Setter>
-                </Style>
-              </Expander.Resources>
+            <Expander Name="CoefficientsExpander" Header="Scaling coefficients" Grid.Row="1"
+                      Collapsed="Expander_Toggled"
+                      Expanded="Expander_Toggled" IsExpanded="True"
+                      HeaderTemplate="{StaticResource ExpanderPlainHeaderTemplate}">
               <DockPanel>
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
-                  <TextBlock Text="Kendall Coefficient: " Margin="8,2,0,2" FontSize="{StaticResource CommonFontSize2}" />
-                  <TextBlock FontSize="{StaticResource CommonFontSize2}" Margin="0,2">
+                <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Left" Margin="8,2,0,2">
+                  <TextBlock Text="Utility Scaling Coefficient:" FontSize="{StaticResource CommonFontSize2}" />
+                  <TextBlock Text="{Binding Results.K, StringFormat=G10, UpdateSourceTrigger=PropertyChanged}"
+                             FontSize="{StaticResource CommonFontSize2}" TextAlignment="Right">
                     <TextBlock.Style>
                       <Style TargetType="{x:Type TextBlock}">
                         <Style.Triggers>
-                          <DataTrigger
-                            Binding="{Binding Results.KendallCoefficient, UpdateSourceTrigger=PropertyChanged}"
-                            Value="{x:Null}">
-                            <Setter Property="Text" Value="-" />
+                          <DataTrigger Binding="{Binding Results.K, UpdateSourceTrigger=PropertyChanged}"
+                                       Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" />
                           </DataTrigger>
                         </Style.Triggers>
-                        <Setter Property="Text"
-                                Value="{Binding Results.KendallCoefficient, UpdateSourceTrigger=PropertyChanged}" />
+                        <Setter Property="Visibility" Value="Visible" />
                       </Style>
                     </TextBlock.Style>
                   </TextBlock>
                 </StackPanel>
+
                 <ListView
-                  ItemsSource="{Binding Results.FinalRanking.FinalRankingCollection, UpdateSourceTrigger=PropertyChanged}"
+                  ItemsSource="{Binding Results.CriteriaCoefficients, UpdateSourceTrigger=PropertyChanged}"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled" DockPanel.Dock="Top">
+                  <ListView.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
+                      <Setter Property="FontSize" Value="{StaticResource CommonFontSize2}" />
+                    </Style>
+                  </ListView.ItemContainerStyle>
+
                   <ListView.View>
                     <GridView AllowsColumnReorder="False">
-                      <GridViewColumn Header="#" DisplayMemberBinding="{Binding Position}" Width="32" />
-                      <GridViewColumn Header="Utility" DisplayMemberBinding="{Binding Utility, StringFormat=F15}"
-                                      Width="66" />
-                      <GridViewColumn Header="Rank" Width="41"
-                                      DisplayMemberBinding="{Binding Alternative.ReferenceRank, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource IndexToRankConverter}}" />
-                      <GridViewColumn Header="Alternative"
-                                      DisplayMemberBinding="{Binding Alternative.Name, UpdateSourceTrigger=PropertyChanged}"
+                      <GridViewColumn Header="Criterion" Width="120"
+                                      DisplayMemberBinding="{Binding CriterionName, UpdateSourceTrigger=PropertyChanged}" />
+                      <GridViewColumn Header="Weight" DisplayMemberBinding="{Binding Coefficient, StringFormat=G15}"
                                       Width="9999" />
                     </GridView>
                   </ListView.View>
                 </ListView>
               </DockPanel>
-            </Expander>
-
-            <Expander Name="ReferenceRankingExpander" Header="Reference" Grid.Row="1" Collapsed="Expander_Toggled"
-                      Expanded="Expander_Toggled" IsExpanded="True"
-                      HeaderTemplate="{StaticResource ExpanderPlainHeaderTemplate}">
-              <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                <ItemsControl
-                  ItemsSource="{Binding ReferenceRanking.RankingsCollection, UpdateSourceTrigger=PropertyChanged}"
-                  Focusable="False"
-                  AlternationCount="100000">
-                  <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                      <ItemsControl ItemsSource="{Binding}" Focusable="False">
-                        <ItemsControl.Template>
-                          <ControlTemplate TargetType="ItemsControl">
-                            <StackPanel Margin="12,0,12,10">
-                              <Border BorderThickness="0,0,0,1" BorderBrush="{StaticResource ColorBorders1}">
-                                <TextBlock
-                                  Text="{Binding 
-                                  RelativeSource={RelativeSource Mode=TemplatedParent}, 
-                                  Path=TemplatedParent.(ItemsControl.AlternationIndex),
-                                  StringFormat=Rank {0},
-                                  Converter={StaticResource IndexToRankConverter}}"
-                                  Margin="4,0,4,2" FontSize="{StaticResource CommonFontSize2}" />
-                              </Border>
-                              <ItemsPresenter />
-                            </StackPanel>
-                          </ControlTemplate>
-                        </ItemsControl.Template>
-
-                        <ItemsControl.ItemTemplate>
-                          <DataTemplate>
-                            <TextBlock Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="4,2,0,2" />
-                          </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                      </ItemsControl>
-                    </DataTemplate>
-                  </ItemsControl.ItemTemplate>
-                </ItemsControl>
-              </ScrollViewer>
-
             </Expander>
           </Grid>
         </Grid>

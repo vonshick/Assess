@@ -17,16 +17,15 @@ namespace UTA.Models
         private ObservableCollection<Alternative> _alternativesCollection;
 
 
-        public Alternatives(Criteria criteria, ReferenceRanking referenceRanking)
+        public Alternatives(Criteria criteria)
         {
             Criteria = criteria;
-            ReferenceRanking = referenceRanking;
             AlternativesCollection = new ObservableCollection<Alternative>();
 
             PropertyChanged += (sender, args) =>
             {
                 if (args.PropertyName != nameof(AlternativesCollection)) return;
-                InitializeWatchers();
+                InitializeCriteriaMinMaxUpdaterWatcher();
             };
 
             Criteria.PropertyChanged += (sender, args) =>
@@ -35,7 +34,7 @@ namespace UTA.Models
                 InitializeCriterionValueNameUpdaterWatcher();
             };
 
-            InitializeWatchers();
+            InitializeCriteriaMinMaxUpdaterWatcher();
             InitializeCriterionValueNameUpdaterWatcher();
         }
 
@@ -50,28 +49,10 @@ namespace UTA.Models
             }
         }
 
-        public ReferenceRanking ReferenceRanking { get; set; }
         public Criteria Criteria { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void InitializeWatchers()
-        {
-            InitializeReferenceRankingUsingReferenceRankAlternativeProperty();
-            InitializeCriteriaMinMaxUpdaterWatcher();
-        }
-
-        private void InitializeReferenceRankingUsingReferenceRankAlternativeProperty()
-        {
-            var maxRank = AlternativesCollection.Select(alternative => alternative.ReferenceRank).Max();
-            if (maxRank == null) return;
-            var referenceRanking = new ObservableCollection<ObservableCollection<Alternative>>();
-            for (var i = 0; i <= maxRank; i++) referenceRanking.Add(new ObservableCollection<Alternative>());
-            foreach (var alternative in AlternativesCollection)
-                if (alternative.ReferenceRank != null)
-                    referenceRanking[(int) alternative.ReferenceRank].Add(alternative);
-            ReferenceRanking.RankingsCollection = referenceRanking;
-        }
 
         private void InitializeCriterionValueNameUpdaterWatcher()
         {
@@ -172,7 +153,6 @@ namespace UTA.Models
                 alternativesDeepCopy.Add(new Alternative
                 {
                     Name = alternative.Name,
-                    ReferenceRank = alternative.ReferenceRank,
                     CriteriaValuesList = criteriaValuesDeepCopy
                 });
             }

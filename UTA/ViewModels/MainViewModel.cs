@@ -28,7 +28,6 @@ namespace UTA.ViewModels
         private CoefficientAssessmentTabViewModel _coefficientAssessmentTabViewModel;
         private List<Alternative> _currentCalculationAlternativesCopy;
         private List<Criterion> _currentCalculationCriteriaCopy;
-        private bool _preserveKendallCoefficient;
         private SaveData _saveData;
         private ITab _tabToSelect;
         public readonly ObservableCollection<PartialUtilityTabViewModel> PartialUtilityTabViewModels;
@@ -36,8 +35,7 @@ namespace UTA.ViewModels
         public MainViewModel(IDialogCoordinator dialogCoordinator)
         {
             Criteria = new Criteria();
-            ReferenceRanking = new ReferenceRanking();
-            Alternatives = new Alternatives(Criteria, ReferenceRanking);
+            Alternatives = new Alternatives(Criteria);
             Results = new Results();
 
             _dialogCoordinator = dialogCoordinator;
@@ -45,12 +43,10 @@ namespace UTA.ViewModels
 
             Tabs = new ObservableCollection<ITab>();
             Tabs.CollectionChanged += TabsCollectionChanged;
-            ChartTabViewModels = new ObservableCollection<ChartTabViewModel>();
             ShowTabCommand = new RelayCommand(tabViewModel => ShowTab((ITab) tabViewModel));
 
             CriteriaTabViewModel = new CriteriaTabViewModel(Criteria);
             AlternativesTabViewModel = new AlternativesTabViewModel(Criteria, Alternatives);
-            ReferenceRankingTabViewModel = new ReferenceRankingTabViewModel(ReferenceRanking, Alternatives);
             SettingsTabViewModel = new SettingsTabViewModel();
             WelcomeTabViewModel = new WelcomeTabViewModel();
 
@@ -58,7 +54,6 @@ namespace UTA.ViewModels
 
             Criteria.CriteriaCollection.CollectionChanged += InstancePropertyChanged;
             Alternatives.AlternativesCollection.CollectionChanged += InstancePropertyChanged;
-            ReferenceRanking.RankingsCollection.CollectionChanged += InstancePropertyChanged;
             Results.FinalRanking.FinalRankingCollection.CollectionChanged += InstancePropertyChanged;
 
             Criteria.PropertyChanged += (sender, args) =>
@@ -72,12 +67,6 @@ namespace UTA.ViewModels
                 if (args.PropertyName != nameof(Alternatives.AlternativesCollection)) return;
                 InstancePropertyChanged();
                 Alternatives.AlternativesCollection.CollectionChanged += InstancePropertyChanged;
-            };
-            ReferenceRanking.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName != nameof(ReferenceRanking.RankingsCollection)) return;
-                InstancePropertyChanged();
-                ReferenceRanking.RankingsCollection.CollectionChanged += InstancePropertyChanged;
             };
             Results.FinalRanking.PropertyChanged += (sender, args) =>
             {
@@ -128,65 +117,20 @@ namespace UTA.ViewModels
             Alternatives.AlternativesCollection[6].CriteriaValuesList[0].Value = 16;
             Alternatives.AlternativesCollection[6].CriteriaValuesList[1].Value = 36;
             Alternatives.AlternativesCollection[6].CriteriaValuesList[2].Value = 3;
-
-            //ReferenceRanking.AddAlternativeToRank(Alternatives.AlternativesCollection[0], 1);
-            //ReferenceRanking.AddAlternativeToRank(Alternatives.AlternativesCollection[1], 2);
-            //ReferenceRanking.AddAlternativeToRank(Alternatives.AlternativesCollection[2], 2);
-            //ReferenceRanking.AddAlternativeToRank(Alternatives.AlternativesCollection[3], 3);
-            //ReferenceRanking.AddAlternativeToRank(Alternatives.AlternativesCollection[4], 4);
-
-
-            //Criteria.AddCriterion("0-100 km/h", "", "Cost", 5);
-            //Criteria.CriteriaCollection[0].MinValue = Criteria.CriteriaCollection[1].MinValue = 0;
-            //Criteria.CriteriaCollection[0].MaxValue = Criteria.CriteriaCollection[1].MaxValue = 1;
-            //for (var i = 0; i < 20; i++)
-            //    Alternatives.AlternativesCollection.Add(new Alternative($"Alternative X{i}", new ObservableCollection<Criterion>()));
-
-            //for (var i = 0; i < Alternatives.AlternativesCollection.Count; i++)
-            //    foreach (var criterionValue in Alternatives.AlternativesCollection[i].CriteriaValuesList)
-            //        criterionValue.Value = i * 0.1f;
-
-            //for (var i = 0; i < 20; i++)
-            //{
-            //    ReferenceRanking.AddAlternativeToRank(new Alternative { Name = "Reference X" }, i);
-            //    if (i % 2 == 0)
-            //        ReferenceRanking.AddAlternativeToRank(new Alternative { Name = "Reference XX" }, i);
-            //    if (i % 3 == 0)
-            //        ReferenceRanking.AddAlternativeToRank(new Alternative { Name = "Reference XXX" }, i);
-            //}
-
-            //for (var i = 0; i < Alternatives.AlternativesCollection.Count; i++)
-            //    Results.FinalRanking.FinalRankingCollection.Add(new FinalRankingEntry(i, Alternatives.AlternativesCollection[i],
-            //        0.1919191919f));
-            //Results.KendallCoefficient = 0.191919191919f;
         }
 
         public Alternatives Alternatives { get; set; }
         public Criteria Criteria { get; set; }
-        public ReferenceRanking ReferenceRanking { get; set; }
         public Results Results { get; set; }
 
         public ObservableCollection<ITab> Tabs { get; }
-        public ObservableCollection<ChartTabViewModel> ChartTabViewModels { get; }
         public RelayCommand ShowTabCommand { get; }
 
         public CriteriaTabViewModel CriteriaTabViewModel { get; }
         public AlternativesTabViewModel AlternativesTabViewModel { get; }
-        public ReferenceRankingTabViewModel ReferenceRankingTabViewModel { get; }
         public SettingsTabViewModel SettingsTabViewModel { get; }
         public WelcomeTabViewModel WelcomeTabViewModel { get; }
 
-
-        public bool PreserveKendallCoefficient
-        {
-            get => _preserveKendallCoefficient;
-            set
-            {
-                if (_preserveKendallCoefficient == value) return;
-                _preserveKendallCoefficient = value;
-                OnPropertyChanged(nameof(PreserveKendallCoefficient));
-            }
-        }
 
         public ITab TabToSelect
         {
@@ -201,7 +145,6 @@ namespace UTA.ViewModels
         public bool IsThereAnyApplicationProgress =>
             Results.FinalRanking.FinalRankingCollection.Count != 0
             || Results.PartialUtilityFunctions.Count != 0
-            || ReferenceRanking.RankingsCollection.Count != 0
             || Alternatives.AlternativesCollection.Count != 0
             || Criteria.CriteriaCollection.Count != 0;
 
@@ -265,16 +208,34 @@ namespace UTA.ViewModels
 
             Tabs.Remove(_coefficientAssessmentTabViewModel);
             foreach (var partialUtilityTabViewModel in PartialUtilityTabViewModels) Tabs.Remove(partialUtilityTabViewModel);
+            foreach (var partialUtilityTabViewModel in PartialUtilityTabViewModels) Tabs.Remove(partialUtilityTabViewModel);
+            PartialUtilityTabViewModels.Clear();
 
             _currentCalculationCriteriaCopy = Criteria.GetDeepCopyOfCriteria();
             _currentCalculationAlternativesCopy = Alternatives.GetDeepCopyOfAlternatives();
 
-            foreach (var partialUtilityTabViewModel in PartialUtilityTabViewModels) Tabs.Remove(partialUtilityTabViewModel);
-            PartialUtilityTabViewModels.Clear();
-
-            _coefficientAssessmentTabViewModel =
-                new CoefficientAssessmentTabViewModel(_currentCalculationCriteriaCopy, ShowPartialUtilityTabs);
+            _coefficientAssessmentTabViewModel = new CoefficientAssessmentTabViewModel(_currentCalculationCriteriaCopy, ShowPartialUtilityTabs);
             ShowTab(_coefficientAssessmentTabViewModel);
+        }
+
+        private void AddTabIfNeeded(ITab tab)
+        {
+            if (!Tabs.Contains(tab)) Tabs.Add(tab);
+        }
+
+        private async void ShowCalculateErrorDialog(string message, string title = "Incomplete instance data.")
+        {
+            await _dialogCoordinator.ShowMessageAsync(this,
+                title,
+                message,
+                MessageDialogStyle.Affirmative,
+                new MetroDialogSettings
+                {
+                    AffirmativeButtonText = "OK",
+                    DefaultButtonFocus = MessageDialogResult.Affirmative,
+                    AnimateShow = false,
+                    AnimateHide = false
+                });
         }
 
         private async Task<MessageDialogResult> ShowLosingProgressWarning()
@@ -327,7 +288,7 @@ namespace UTA.ViewModels
             return true;
         }
 
-        // called in CoefficientAssessmentTabViewModel, after answering to last dialogue question
+        // called in CoefficientAssessmentTabViewModel, after clicking Indifferent in last dialogue question
         private void ShowPartialUtilityTabs(List<CriterionCoefficient> criteriaCoefficients)
         {
             Results.CriteriaCoefficients = criteriaCoefficients;
@@ -347,26 +308,6 @@ namespace UTA.ViewModels
             }
 
             if (PartialUtilityTabViewModels.Count > 0) ShowTab(PartialUtilityTabViewModels[0]);
-        }
-
-        private void AddTabIfNeeded(ITab tab)
-        {
-            if (!Tabs.Contains(tab)) Tabs.Add(tab);
-        }
-
-        private async void ShowCalculateErrorDialog(string message, string title = "Incomplete instance data.")
-        {
-            await _dialogCoordinator.ShowMessageAsync(this,
-                title,
-                message,
-                MessageDialogStyle.Affirmative,
-                new MetroDialogSettings
-                {
-                    AffirmativeButtonText = "OK",
-                    DefaultButtonFocus = MessageDialogResult.Affirmative,
-                    AnimateShow = false,
-                    AnimateHide = false
-                });
         }
 
         // xaml enforces void return type
@@ -399,13 +340,12 @@ namespace UTA.ViewModels
             if (saveDialogResult == MessageDialogResult.Negative)
                 await SaveTypeChooserDialog();
 
+            // TODO: clear every data
             Results.Reset();
-            ReferenceRanking.Reset();
             Alternatives.Reset();
             Criteria.Reset();
-            foreach (var chartTabViewModel in ChartTabViewModels)
-                Tabs.Remove(chartTabViewModel);
-            ChartTabViewModels.Clear();
+            //foreach (var chartTabViewModel in ChartTabViewModels)
+            //    Tabs.Remove(chartTabViewModel);
             _saveData.IsSavingWithResults = null;
             _saveData.FilePath = null;
             return true;
@@ -437,7 +377,8 @@ namespace UTA.ViewModels
         {
             var openFileDialog = new OpenFileDialog
             {
-                Filter = "UTA Input Files (*.xml; *.csv; *.utx)|*.xml;*.csv;*.utx",
+                // TODO: utx in Assess?
+                Filter = "Assess Input Files (*.xml; *.csv; *.utx)|*.xml;*.csv;*.utx",
                 InitialDirectory = AppDomain.CurrentDomain.BaseDirectory
             };
             if (openFileDialog.ShowDialog() != true) return;
@@ -478,15 +419,13 @@ namespace UTA.ViewModels
                 var dataLoader = new XMCDALoader();
                 dataLoader.LoadData(filePath);
                 Criteria.CriteriaCollection = new ObservableCollection<Criterion>(dataLoader.CriterionList);
-                // works assuming that CriteriaValuesList and ReferenceRank property are initialized properly
+                // works assuming that CriteriaValuesList are initialized properly
                 Alternatives.AlternativesCollection = new ObservableCollection<Alternative>(dataLoader.AlternativeList);
                 Results.PartialUtilityFunctions = dataLoader.Results.PartialUtilityFunctions;
                 if (Results.PartialUtilityFunctions.Count <= 0) return;
-                var alternativesDeepCopy = Alternatives.GetDeepCopyOfAlternatives();
-                var alternativesWithoutRanksCopy = alternativesDeepCopy.Where(alternative => alternative.ReferenceRank == null).ToList();
-                var referenceRankingDeepCopy = ReferenceRanking.GetDeepCopyOfReferenceRanking(alternativesDeepCopy);
-
                 // TODO: load state
+                //var alternativesDeepCopy = Alternatives.GetDeepCopyOfAlternatives();
+
                 //foreach (var partialUtility in Results.PartialUtilityFunctions)
                 //{
                 //    var viewModel = new ChartTabViewModel(_solver, partialUtility, SettingsTabViewModel, RefreshCharts);

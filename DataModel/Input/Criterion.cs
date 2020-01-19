@@ -58,7 +58,6 @@ namespace DataModel.Input
         public double MaxValue { get; set; } = double.MinValue;
         public bool IsEnum { get; set; } = false;
         public Dictionary<string, double> EnumDictionary { get; set; }
-        public int LinearSegments { get; set; } // TODO: remove
 
         public string Name
         {
@@ -96,7 +95,7 @@ namespace DataModel.Input
             }
         }
 
-        public double? Probability // lotteries comparison dialog, constant probability dialog
+        public double? Probability // used in lotteries comparison dialog, constant probability dialog
         {
             get => IsProbabilityIncluded ? _p : null;
             set

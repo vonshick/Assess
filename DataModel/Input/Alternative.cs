@@ -11,20 +11,17 @@ namespace DataModel.Input
     {
         private ObservableCollection<CriterionValue> _criteriaValuesList;
         private string _name;
-        private int? _referenceRank;
         public string ID;
 
 
         public Alternative()
         {
-            ReferenceRank = null;
             CriteriaValuesList = new ObservableCollection<CriterionValue>();
         }
 
         public Alternative(string name, IEnumerable<Criterion> criteriaCollection)
         {
             Name = name;
-            ReferenceRank = null;
             CriteriaValuesList = new ObservableCollection<CriterionValue>();
             foreach (var criterion in criteriaCollection) AddCriterionValue(new CriterionValue(criterion.Name, null));
         }
@@ -38,17 +35,6 @@ namespace DataModel.Input
                 if (_name == value) return;
                 _name = value;
                 OnPropertyChanged(nameof(Name));
-            }
-        }
-
-        public int? ReferenceRank
-        {
-            get => _referenceRank;
-            set
-            {
-                if (_referenceRank == value) return;
-                _referenceRank = value;
-                OnPropertyChanged(nameof(ReferenceRank));
             }
         }
 
