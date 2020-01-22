@@ -26,23 +26,26 @@ namespace CalculationsEngine.Assess.Assess
         public override void SetInitialValues()
         {
             DisplayObject.X = (DisplayObject.Lottery.LowerUtilityValue.X + DisplayObject.Lottery.UpperUtilityValue.X) / 2;
+            PointToAdd = new PartialUtilityValues(DisplayObject.X, DisplayObject.Lottery.NewPointUtility());
         }
 
         protected override void SetValuesIfLotteryChosen()
         {
             UpperUtilityBoundary = DisplayObject.Lottery.P;
             DisplayObject.Lottery.P = (LowerUtilityBoundary + UpperUtilityBoundary) / 2;
+            UpdateOtherMethodsPointToAdd();
         }
 
         protected override void SetValuesIfSureChosen()
         {
             LowerUtilityBoundary = DisplayObject.Lottery.P;
             DisplayObject.Lottery.P = (LowerUtilityBoundary + UpperUtilityBoundary) / 2;
+            UpdateOtherMethodsPointToAdd();
         }
 
         protected override void SetValuesIfEqualChosen()
         {
-            DisplayObject.PointsList.Add(new PartialUtilityValues(DisplayObject.X, DisplayObject.Lottery.NewPointUtility()));
+            DisplayObject.PointsList.Add(PointToAdd);
             DisplayObject.PointsList.Sort((first, second) => first.X.CompareTo(second.X));
         }
     }

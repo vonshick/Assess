@@ -1,10 +1,12 @@
 ﻿using System;
+using DataModel.Results;
 
 namespace CalculationsEngine.Assess.Assess
 {
     public class Dialog
     {
         public DisplayObject DisplayObject;
+        public PartialUtilityValues PointToAdd;
         protected double LowerUtilityBoundary;
         protected double UpperUtilityBoundary;
 
@@ -38,6 +40,18 @@ namespace CalculationsEngine.Assess.Assess
 
         protected virtual void SetValuesIfEqualChosen()
         {
+        }
+
+        protected void UpdateLotteryComparisonPointToAdd()
+        {
+            PointToAdd.X = DisplayObject.ComparisonLottery.UpperUtilityValue.X;
+            PointToAdd.Y = DisplayObject.EdgeValuesLottery.P / DisplayObject.ComparisonLottery.P;
+        }
+
+        protected void UpdateOtherMethodsPointToAdd()
+        {
+            PointToAdd.X = DisplayObject.X;
+            PointToAdd.Y = DisplayObject.Lottery.NewPointUtility();
         }
 
         //todo remove
