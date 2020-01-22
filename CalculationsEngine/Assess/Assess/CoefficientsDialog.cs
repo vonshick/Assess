@@ -39,6 +39,7 @@ namespace CalculationsEngine.Assess.Assess
                 }
         }
 
+
         public DisplayObject DisplayObject
         {
             get => _displayObject;

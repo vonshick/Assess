@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d"
              xmlns:viewModels="clr-namespace:UTA.ViewModels"
@@ -17,10 +16,10 @@
 
     <TextBlock Text="Dialogue - Scaling Coefficient" FontSize="18" Margin="0,0,0,16" />
 
-    <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-48,0,0">
+    <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,60">
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
-        <RowDefinition />
+        <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
       <Grid.ColumnDefinitions>
@@ -38,7 +37,7 @@
 
       <!--certainty option-->
       <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource PrimaryRoundButton}" Margin="0,0,12,12"
-              Padding="32,10,32,14">
+              Padding="30,10,30,14">
         <i:Interaction.Triggers>
           <i:EventTrigger EventName="Click">
             <i:CallMethodAction TargetObject="{Binding}" MethodName="CertaintyOptionChosen" />
@@ -82,7 +81,7 @@
 
       <!--lottery option-->
       <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource PrimaryRoundButton}" Margin="12,0,0,12"
-              Padding="32,10,32,14">
+              Padding="30,10,30,14">
         <i:Interaction.Triggers>
           <i:EventTrigger EventName="Click">
             <i:CallMethodAction TargetObject="{Binding}" MethodName="LotteryOptionChosen" />
@@ -100,7 +99,7 @@
             <DockPanel>
               <TextBlock DockPanel.Dock="Top" FontSize="{StaticResource CommonFontSize1}" Margin="0,0,0,2"
                          HorizontalAlignment="Center"
-                         Text="{Binding Dialog.DisplayObject.P, StringFormat=Probability: {0}, UpdateSourceTrigger=PropertyChanged}" />
+                         Text="{Binding Dialog.DisplayObject.P, StringFormat=Probability: {0:G8}, UpdateSourceTrigger=PropertyChanged}" />
 
               <ScrollViewer DockPanel.Dock="Top" Focusable="False" VerticalScrollBarVisibility="Auto"
                             HorizontalScrollBarVisibility="Disabled">
@@ -139,7 +138,7 @@
             <DockPanel>
               <TextBlock DockPanel.Dock="Top" FontSize="{StaticResource CommonFontSize1}" Margin="0,0,0,2"
                          HorizontalAlignment="Center"
-                         Text="{Binding Dialog.DisplayObject.ComplementaryP, StringFormat=Probability: {0}, UpdateSourceTrigger=PropertyChanged}" />
+                         Text="{Binding Dialog.DisplayObject.ComplementaryP, StringFormat=Probability: {0:G8}, UpdateSourceTrigger=PropertyChanged}" />
 
               <ScrollViewer DockPanel.Dock="Top" Focusable="False" VerticalScrollBarVisibility="Auto"
                             HorizontalScrollBarVisibility="Disabled">
@@ -175,8 +174,8 @@
       </Button>
 
 
-      <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,12,0,0" Padding="32,8"
-              FontSize="{StaticResource CommonFontSize1}"
+      <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,12,0,0" Padding="30,8"
+              FontSize="{StaticResource CommonFontSize0}"
               Style="{StaticResource PrimaryRoundButton}" Content="Indifferent">
         <i:Interaction.Triggers>
           <i:EventTrigger EventName="Click">

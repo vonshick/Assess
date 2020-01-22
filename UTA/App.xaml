@@ -51,7 +51,7 @@
       <SolidColorBrush x:Key="ColorPrimaryDisabled" Color="#333373f2" />
 
       <SolidColorBrush x:Key="ColorBorders1" Color="#AAAAAA" />
-      <SolidColorBrush x:Key="ColorBorders2" Color="#B9B9B9" />
+      <SolidColorBrush x:Key="ColorBorders2" Color="#C8C8C8" />
       <SolidColorBrush x:Key="ColorBorders3" Color="#E6E6E6" />
       <SolidColorBrush x:Key="ColorSeparator" Color="#969696" />
       <SolidColorBrush x:Key="ColorFontLight" Color="White" />

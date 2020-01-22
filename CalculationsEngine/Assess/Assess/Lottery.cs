@@ -1,18 +1,40 @@
-﻿using DataModel.Results;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using DataModel.Annotations;
+using DataModel.Results;
 
 namespace CalculationsEngine.Assess.Assess
 {
-    public class Lottery
+    public class Lottery : INotifyPropertyChanged
     {
-        public PartialUtilityValues LowerUtilityValue;
-        public double P;
-        public PartialUtilityValues UpperUtilityValue;
+        private double _p;
+
 
         public Lottery(PartialUtilityValues lowerUtilityValue, PartialUtilityValues upperUtilityValue)
         {
             LowerUtilityValue = lowerUtilityValue;
             UpperUtilityValue = upperUtilityValue;
         }
+
+
+        public double P
+        {
+            get => _p;
+            set
+            {
+                if (value.Equals(_p)) return;
+                _p = value;
+                OnPropertyChanged(nameof(P));
+                OnPropertyChanged(nameof(ComplementaryP));
+            }
+        }
+
+        public double ComplementaryP => 1 - P;
+        public PartialUtilityValues LowerUtilityValue { get; set; }
+        public PartialUtilityValues UpperUtilityValue { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
 
         public void SetProbability(double p)
         {
@@ -22,6 +44,12 @@ namespace CalculationsEngine.Assess.Assess
         public double NewPointUtility()
         {
             return P * UpperUtilityValue.Y + (1 - P) * LowerUtilityValue.Y;
+        }
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

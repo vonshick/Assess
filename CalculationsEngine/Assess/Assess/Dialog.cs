@@ -49,16 +49,19 @@ namespace CalculationsEngine.Assess.Assess
         public void ProcessDialog(int choice)
         {
             if (choice == 1)
+            {
                 SetValuesIfSureChosen();
+                SetInitialValues();
+            }
             else if (choice == 2)
+            {
                 SetValuesIfLotteryChosen();
+                SetInitialValues();
+            }
             else if (choice == 3)
+            {
                 SetValuesIfEqualChosen();
-            else
-                //TODO vonshick
-                // remove the warning - it's useful only for developers
-                throw new Exception("Assess: wrong choice ID passed to ProcessDialog()");
-            SetInitialValues();
+            }
         }
     }
 }

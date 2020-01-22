@@ -25,12 +25,12 @@ namespace UTA.ViewModels
     public class MainViewModel : INotifyPropertyChanged
     {
         private readonly IDialogCoordinator _dialogCoordinator;
-        private CoefficientAssessmentTabViewModel _coefficientAssessmentTabViewModel;
+        public readonly ObservableCollection<PartialUtilityTabViewModel> PartialUtilityTabViewModels;
         private List<Alternative> _currentCalculationAlternativesCopy;
         private List<Criterion> _currentCalculationCriteriaCopy;
         private SaveData _saveData;
         private ITab _tabToSelect;
-        public readonly ObservableCollection<PartialUtilityTabViewModel> PartialUtilityTabViewModels;
+        public CoefficientAssessmentTabViewModel CoefficientAssessmentTabViewModel;
 
         public MainViewModel(IDialogCoordinator dialogCoordinator)
         {
@@ -202,11 +202,11 @@ namespace UTA.ViewModels
 
             if (!await IsCriteriaValuesPrecisionAcceptable(Criteria.CriteriaCollection)) return;
 
-            if (_coefficientAssessmentTabViewModel != null || PartialUtilityTabViewModels.Count > 0)
+            if (CoefficientAssessmentTabViewModel != null || PartialUtilityTabViewModels.Count > 0)
                 if (await ShowLosingProgressWarning() == MessageDialogResult.Canceled)
                     return;
 
-            Tabs.Remove(_coefficientAssessmentTabViewModel);
+            Tabs.Remove(CoefficientAssessmentTabViewModel);
             foreach (var partialUtilityTabViewModel in PartialUtilityTabViewModels) Tabs.Remove(partialUtilityTabViewModel);
             foreach (var partialUtilityTabViewModel in PartialUtilityTabViewModels) Tabs.Remove(partialUtilityTabViewModel);
             PartialUtilityTabViewModels.Clear();
@@ -214,8 +214,9 @@ namespace UTA.ViewModels
             _currentCalculationCriteriaCopy = Criteria.GetDeepCopyOfCriteria();
             _currentCalculationAlternativesCopy = Alternatives.GetDeepCopyOfAlternatives();
 
-            _coefficientAssessmentTabViewModel = new CoefficientAssessmentTabViewModel(_currentCalculationCriteriaCopy, ShowPartialUtilityTabs);
-            ShowTab(_coefficientAssessmentTabViewModel);
+            CoefficientAssessmentTabViewModel =
+                new CoefficientAssessmentTabViewModel(_currentCalculationCriteriaCopy, ShowPartialUtilityTabs);
+            ShowTab(CoefficientAssessmentTabViewModel);
         }
 
         private void AddTabIfNeeded(ITab tab)
@@ -293,7 +294,7 @@ namespace UTA.ViewModels
         {
             Results.CriteriaCoefficients = criteriaCoefficients;
 
-            Tabs.Remove(_coefficientAssessmentTabViewModel);
+            Tabs.Remove(CoefficientAssessmentTabViewModel);
 
             var utilitiesCalculator =
                 new UtilitiesCalculator(_currentCalculationAlternativesCopy, Results, _currentCalculationCriteriaCopy);
@@ -340,12 +341,13 @@ namespace UTA.ViewModels
             if (saveDialogResult == MessageDialogResult.Negative)
                 await SaveTypeChooserDialog();
 
-            // TODO: clear every data
             Results.Reset();
             Alternatives.Reset();
             Criteria.Reset();
-            //foreach (var chartTabViewModel in ChartTabViewModels)
-            //    Tabs.Remove(chartTabViewModel);
+            Tabs.Remove(CoefficientAssessmentTabViewModel);
+            CoefficientAssessmentTabViewModel = null;
+            foreach (var partialUtilityTabViewModel in PartialUtilityTabViewModels) Tabs.Remove(partialUtilityTabViewModel);
+            PartialUtilityTabViewModels.Clear();
             _saveData.IsSavingWithResults = null;
             _saveData.FilePath = null;
             return true;

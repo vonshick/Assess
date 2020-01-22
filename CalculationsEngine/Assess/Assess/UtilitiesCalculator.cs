@@ -9,10 +9,10 @@ namespace CalculationsEngine.Assess.Assess
     public class UtilitiesCalculator
     {
         private readonly List<Alternative> _alternativesList;
-        private BaristowSolver _baristowSolver;
         private List<AlternativeUtility> _alternativesUtilitiesList;
-
+        private BaristowSolver _baristowSolver;
         public Results Results;
+
 
         public UtilitiesCalculator(List<Alternative> alternativesList, Results results, List<Criterion> criteriaList)
         {
@@ -23,11 +23,12 @@ namespace CalculationsEngine.Assess.Assess
             setScalingCoefficient(Results.CriteriaCoefficients);
         }
 
+
         private List<PartialUtility> InitPartialUtilityFunctions(List<Criterion> criteriaList)
         {
-            List<PartialUtility> partialUtilityFunctions = new List<PartialUtility>();
+            var partialUtilityFunctions = new List<PartialUtility>();
 
-            foreach (Criterion criterion in criteriaList)
+            foreach (var criterion in criteriaList)
             {
                 var pointsList = new List<PartialUtilityValues>();
                 if (criterion.CriterionDirection.Equals("Cost"))
@@ -56,6 +57,8 @@ namespace CalculationsEngine.Assess.Assess
 
         public void CalculateGlobalUtilities()
         {
+            _alternativesUtilitiesList.Clear();
+
             foreach (var alternative in _alternativesList)
             {
                 double product = 1;
@@ -77,12 +80,12 @@ namespace CalculationsEngine.Assess.Assess
                                 u = a * (double) criterionValue.Value + b;
                             }
 
-                    product *= (double)Results.K * k * u + 1;
+                    product *= (double) Results.K * k * u + 1;
                 }
 
                 var utility = (product - 1) / (double) Results.K;
 
-                _alternativesUtilitiesList.Add(new AlternativeUtility(alternative, (double) utility));
+                _alternativesUtilitiesList.Add(new AlternativeUtility(alternative, utility));
             }
 
             UpdateFinalRanking();
@@ -90,15 +93,14 @@ namespace CalculationsEngine.Assess.Assess
 
         private void UpdateFinalRanking()
         {
-            _alternativesUtilitiesList = _alternativesUtilitiesList.OrderBy(o => o.Utility).ToList();
-            ObservableCollection<FinalRankingEntry> finalRankingEntries = new ObservableCollection<FinalRankingEntry>();
+            _alternativesUtilitiesList = _alternativesUtilitiesList.OrderByDescending(o => o.Utility).ToList();
+            var finalRankingEntries = new ObservableCollection<FinalRankingEntry>();
 
             for (var i = 0; i < _alternativesUtilitiesList.Count; i++)
-                finalRankingEntries.Add(new FinalRankingEntry(_alternativesUtilitiesList.Count - i,
+                finalRankingEntries.Add(new FinalRankingEntry(i + 1,
                     _alternativesUtilitiesList[i].Alternative, _alternativesUtilitiesList[i].Utility));
 
             Results.FinalRanking.FinalRankingCollection = finalRankingEntries;
         }
-
     }
 }

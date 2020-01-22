@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using DataModel.Input;
 using DataModel.Results;
 
 namespace CalculationsEngine.Assess.Assess
@@ -10,13 +9,8 @@ namespace CalculationsEngine.Assess.Assess
         private readonly int _methodId;
         private readonly PartialUtilityValues _oneUtilityPoint;
         private readonly PartialUtilityValues _zeroUtilityPoint;
-        public ConstantProbabilityDialog ConstantProbabilityDialog;
-        public DisplayObject DisplayObject;
-        public LotteriesComparisonDialog LotteriesComparisonDialog;
+        public Dialog Dialog;
         public List<PartialUtilityValues> PointsList;
-        public ProbabilityComparisonDialog ProbabilityComparisonDialog;
-        public VariableProbabilityDialog VariableProbabilityDialog;
-
 
         // methodId - integer from 1 - 4
         // 1 - constant probability 
@@ -30,6 +24,8 @@ namespace CalculationsEngine.Assess.Assess
             PointsList = partialUtility.PointsValues;
             DisplayObject.PointsList = PointsList;
             DisplayObject.P = p;
+            _zeroUtilityPoint = partialUtility.PointsValues.Find(o => o.Y == 0);
+            _oneUtilityPoint = partialUtility.PointsValues.Find(o => o.Y == 1);
 
             switch (_methodId)
             {
@@ -49,6 +45,10 @@ namespace CalculationsEngine.Assess.Assess
                     throw new Exception("Assess error: wrong dialog method chosen.");
             }
         }
+
+
+        public DisplayObject DisplayObject { get; set; }
+
 
         // firstPoint and secondPoint are edges of chosen utility function segment
         public Dialog TriggerDialog(PartialUtilityValues firstPoint, PartialUtilityValues secondPoint)
@@ -88,14 +88,15 @@ namespace CalculationsEngine.Assess.Assess
         private void createLotteriesComparisonObject()
         {
             setLotteriesComparisonInput(_zeroUtilityPoint, _oneUtilityPoint);
-            LotteriesComparisonDialog = new LotteriesComparisonDialog(_zeroUtilityPoint.Y, DisplayObject.P, DisplayObject);
+            Dialog = new LotteriesComparisonDialog(_zeroUtilityPoint.Y, DisplayObject.P, DisplayObject);
+            Dialog.SetInitialValues();
         }
 
         public Dialog triggerLotteriesComparisonDialog(PartialUtilityValues firstPoint, PartialUtilityValues secondPoint)
         {
             setLotteriesComparisonInput(firstPoint, secondPoint);
-            return LotteriesComparisonDialog;
-//            LotteriesComparisonDialog.ProcessDialog();
+            Dialog.SetInitialValues();
+            return Dialog;
         }
 
 
@@ -111,14 +112,15 @@ namespace CalculationsEngine.Assess.Assess
         private void createProbabilityComparisonObject()
         {
             setProbabilityComparisonInput(_zeroUtilityPoint, _oneUtilityPoint);
-            ProbabilityComparisonDialog = new ProbabilityComparisonDialog(_zeroUtilityPoint.Y, _oneUtilityPoint.Y, DisplayObject);
+            Dialog = new ProbabilityComparisonDialog(_zeroUtilityPoint.Y, _oneUtilityPoint.Y, DisplayObject);
+            Dialog.SetInitialValues();
         }
 
         public Dialog triggerProbabilityComparisonDialog(PartialUtilityValues firstPoint, PartialUtilityValues secondPoint)
         {
             setProbabilityComparisonInput(firstPoint, secondPoint);
-            return ProbabilityComparisonDialog;
-//            ProbabilityComparisonDialog.ProcessDialog();
+            Dialog.SetInitialValues();
+            return Dialog;
         }
 
 
@@ -134,15 +136,15 @@ namespace CalculationsEngine.Assess.Assess
         private void createConstantProbabilityObject()
         {
             setConstantProbabilityInput(_zeroUtilityPoint, _oneUtilityPoint);
-            ConstantProbabilityDialog = new ConstantProbabilityDialog(_zeroUtilityPoint.X, _oneUtilityPoint.X, DisplayObject);
+            Dialog = new ConstantProbabilityDialog(_zeroUtilityPoint.X, _oneUtilityPoint.X, DisplayObject);
+            Dialog.SetInitialValues();
         }
 
         public Dialog triggerConstantProbabilityDialog(PartialUtilityValues firstPoint, PartialUtilityValues secondPoint)
         {
             setConstantProbabilityInput(firstPoint, secondPoint);
-            ConstantProbabilityDialog.SetInitialValues();
-            return ConstantProbabilityDialog;
-//            ConstantProbabilityDialog.ProcessDialog();
+            Dialog.SetInitialValues();
+            return Dialog;
         }
 
 
@@ -158,14 +160,15 @@ namespace CalculationsEngine.Assess.Assess
         private void createVariableProbabilityObject()
         {
             setVariableProbabilityInput(_zeroUtilityPoint, _oneUtilityPoint);
-            VariableProbabilityDialog = new VariableProbabilityDialog(_zeroUtilityPoint.X, _oneUtilityPoint.X, DisplayObject);
+            Dialog = new VariableProbabilityDialog(_zeroUtilityPoint.X, _oneUtilityPoint.X, DisplayObject);
+            Dialog.SetInitialValues();
         }
 
         public Dialog triggerVariableProbabilityDialog(PartialUtilityValues firstPoint, PartialUtilityValues secondPoint)
         {
             setVariableProbabilityInput(firstPoint, secondPoint);
-            return VariableProbabilityDialog;
-//            VariableProbabilityDialog.ProcessDialog();
+            Dialog.SetInitialValues();
+            return Dialog;
         }
     }
 }

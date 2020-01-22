@@ -12,7 +12,7 @@
                       xmlns:views="clr-namespace:UTA.Views"
                       xmlns:tabModel="clr-namespace:UTA.Models.Tab"
                       x:Class="UTA.Views.MainView" mc:Ignorable="d"
-                      d:DataContext="{d:DesignInstance viewModels:MainViewModel}" Title="UTA" WindowState="Maximized"
+                      d:DataContext="{d:DesignInstance viewModels:MainViewModel}" Title="Assess" WindowState="Maximized"
                       Width="1300" Height="700" MinWidth="840" MinHeight="600" Left="12" Top="12"
                       Closing="ApplicationClosing">
   <controls:MetroWindow.Resources>
@@ -665,7 +665,7 @@
                       Expanded="Expander_Toggled" IsExpanded="True"
                       HeaderTemplate="{StaticResource ExpanderPlainHeaderTemplate}">
               <DockPanel>
-                <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Left" Margin="8,2,0,2">
+                <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Left" Margin="8,0,0,2">
                   <TextBlock Text="Utility Scaling Coefficient:" FontSize="{StaticResource CommonFontSize2}" />
                   <TextBlock Text="{Binding Results.K, StringFormat=G10, UpdateSourceTrigger=PropertyChanged}"
                              FontSize="{StaticResource CommonFontSize2}" TextAlignment="Right">

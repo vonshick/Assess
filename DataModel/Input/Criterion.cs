@@ -44,7 +44,7 @@ namespace DataModel.Input
         [UsedImplicitly] public static string[] CriterionDirectionTypesList { get; } = {"Gain", "Cost"};
 
         [UsedImplicitly] // changing order of options or renaming them will break application
-        public static string[] MethodOptionsList { get; } =
+        public static List<string> MethodOptionsList { get; } = new List<string>
         {
             "Set during calculations",
             "Certainty equivalent with constant probability",
@@ -100,7 +100,7 @@ namespace DataModel.Input
             get => IsProbabilityIncluded ? _p : null;
             set
             {
-                if (value.Equals(_p)) return;
+                if (value.Equals(_p) || value == null) return;
                 if (IsProbabilityIncluded && (value == null || value <= 0 || value >= 1))
                     throw new ArgumentException("Value must be between 0 and 1 exclusive.");
                 _p = value;

@@ -13,10 +13,8 @@ namespace CalculationsEngine.Assess.Assess
         public override string displayDialog()
         {
             Console.WriteLine("Wpisz '1' jeśli wolisz LOTERIĘ:");
-            Console.WriteLine(DisplayObject.Lottery.UpperUtilityValue.X + " z prawdopodobienstwem " +
-                              DisplayObject.Lottery.P);
-            Console.WriteLine(DisplayObject.Lottery.LowerUtilityValue.X + " z prawdopodobienstwem " +
-                              (1 - DisplayObject.Lottery.P) + "\n");
+            Console.WriteLine(DisplayObject.Lottery.UpperUtilityValue.X + " z prawdopodobienstwem " + DisplayObject.Lottery.P);
+            Console.WriteLine(DisplayObject.Lottery.LowerUtilityValue.X + " z prawdopodobienstwem " + (1 - DisplayObject.Lottery.P) + "\n");
             Console.WriteLine("Wpisz '2' jeśli wolisz równoważnik pewności:");
             Console.WriteLine(DisplayObject.X + "\n");
             Console.WriteLine("Wpisz '3' jeśli loteria i równoważnik pewności są dla Ciebie nierozróżnialne\n");

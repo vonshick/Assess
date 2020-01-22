@@ -4,7 +4,6 @@
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                      xmlns:local="clr-namespace:UTA.Views"
                       mc:Ignorable="d"
                       Title="About" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
                       WindowStartupLocation="CenterOwner" Background="{StaticResource ColorInterface7}">
@@ -14,7 +13,7 @@
                 <Setter Property="FontSize" Value="{StaticResource CommonFontSize1}" />
             </Style>
         </StackPanel.Resources>
-        <TextBlock Text="UTA 1.0" FontSize="32" />
+        <TextBlock Text="Assess 1.0" FontSize="32" />
         <TextBlock Text="Copyright © 2020" />
         <TextBlock Text="GNU General Public License" />
         <TextBlock Text="Laboratory of Intelligent Decision Support Systems" Margin="0,0,0,12" />

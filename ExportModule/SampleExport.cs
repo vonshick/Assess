@@ -12,12 +12,12 @@ namespace ExportModule
         {
             var partialUtilities = new List<PartialUtility>();
             var pointsValuesList = new List<PartialUtilityValues>();
-            var pointsValues1 = new PartialUtilityValues(0, 0, 0, 0);
-            var pointsValues2 = new PartialUtilityValues(1, 0.5f, 0.55f, 0.6f);
-            var pointsValues3 = new PartialUtilityValues(2, 0.8f, 0.55f, 1);
-            pointsValuesList.Add(pointsValues1);
-            pointsValuesList.Add(pointsValues2);
-            pointsValuesList.Add(pointsValues3);
+            //var pointsValues1 = new PartialUtilityValues(0, 0, 0, 0);
+            //var pointsValues2 = new PartialUtilityValues(1, 0.5f, 0.55f, 0.6f);
+            //var pointsValues3 = new PartialUtilityValues(2, 0.8f, 0.55f, 1);
+            //pointsValuesList.Add(pointsValues1);
+            //pointsValuesList.Add(pointsValues2);
+            //pointsValuesList.Add(pointsValues3);
 
             foreach (var criterion in criterionList) partialUtilities.Add(new PartialUtility(criterion, pointsValuesList));
 
