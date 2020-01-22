@@ -31,7 +31,7 @@ namespace CalculationsEngine.Assess.Assess
             return "";
         }
 
-        public override void SetInitialValues()
+        protected override void SetInitialValues()
         {
             PointToAdd = new PartialUtilityValues(DisplayObject.ComparisonLottery.UpperUtilityValue.X,
                 DisplayObject.EdgeValuesLottery.P / DisplayObject.ComparisonLottery.P);

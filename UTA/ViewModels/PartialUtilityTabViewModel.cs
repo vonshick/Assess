@@ -51,7 +51,6 @@ namespace UTA.ViewModels
             {
                 DialogController = new DialogController(_partialUtility,
                     Criterion.MethodOptionsList.IndexOf(Criterion.Method), Criterion.Probability ?? 0);
-                DialogController.Dialog.SetInitialValues();
             }
             else
             {
@@ -270,7 +269,6 @@ namespace UTA.ViewModels
             IsMethodSet = true;
             DialogController = new DialogController(_partialUtility,
                 Criterion.MethodOptionsList.IndexOf(Criterion.Method), Criterion.Probability ?? 0);
-            DialogController.Dialog.SetInitialValues();
             SelectRectangle((RectangleAnnotation) PlotModel.Annotations[0], 0);
             OnPropertyChanged(nameof(IsLotteryComparison));
         }

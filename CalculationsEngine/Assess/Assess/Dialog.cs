@@ -26,11 +26,11 @@ namespace CalculationsEngine.Assess.Assess
         {
         }
 
-        public virtual void SetInitialValues()
+        public virtual void SetInitialDialogValues(double lowerUtilityBoundary, double upperUtilityBoundary)
         {
         }
 
-        public virtual void SetInitialDialogValues(double lowerUtilityBoundary, double upperUtilityBoundary)
+        protected virtual void SetInitialValues()
         {
         }
 

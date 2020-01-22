@@ -23,7 +23,7 @@ namespace CalculationsEngine.Assess.Assess
             return "";
         }
 
-        public override void SetInitialValues()
+        protected override void SetInitialValues()
         {
             DisplayObject.X = (LowerUtilityBoundary + UpperUtilityBoundary) / 2;
             PointToAdd = new PartialUtilityValues(DisplayObject.X, DisplayObject.Lottery.NewPointUtility());
