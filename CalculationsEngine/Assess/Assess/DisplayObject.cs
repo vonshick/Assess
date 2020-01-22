@@ -23,7 +23,7 @@ namespace CalculationsEngine.Assess.Assess
         }
 
         // used in CoefficientsDialog
-        public DisplayObject(List<Criterion> criterionList, double[] valuesToCompare, double p)
+        public DisplayObject(IReadOnlyList<Criterion> criterionList, IReadOnlyList<double> valuesToCompare, double p)
         {
             P = p;
             CoefficientsDialogValuesList = new List<CoefficientsDialogValues>();

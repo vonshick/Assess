@@ -20,7 +20,6 @@ namespace UTA.ViewModels
     {
         private const double AxesExtraSpace = 0.025f;
         private readonly Action _calculateUtilities;
-        private readonly OxyColor _colorPrimary = OxyColor.FromRgb(51, 115, 242); // ColorPrimary
         private readonly OxyColor _colorPrimarySelected = OxyColor.FromArgb(80, 51, 115, 242);
         private readonly OxyColor _colorPrimaryUnselected = OxyColor.FromArgb(30, 51, 115, 242);
         private readonly OxyColor _gridColor = OxyColor.FromRgb(240, 240, 240); // ColorInterface5
@@ -28,8 +27,9 @@ namespace UTA.ViewModels
         private readonly OxyColor _lineColor = OxyColor.FromRgb(110, 110, 110); // ColorSecondary
         private readonly PartialUtility _partialUtility;
         private readonly LineSeries _placeholderLine;
+        private readonly OxyColor _placeholderLineColor = OxyColor.FromArgb(70, 110, 110, 110); // ColorSecondary
+        private readonly OxyColor _placeholderMarkerColor = OxyColor.FromArgb(170, 51, 115, 242);
         private readonly List<PartialUtilityValues> _pointsValues;
-        private readonly Dictionary<double, RectangleAnnotation> _rectangles; // key == _pointsValues.X (MinimumX)
         private readonly SettingsTabViewModel _settings;
         private DialogController _dialogController;
         private bool _isMethodSet;
@@ -60,20 +60,27 @@ namespace UTA.ViewModels
             }
 
             // plot initializer
-            _rectangles = new Dictionary<double, RectangleAnnotation>();
-
             _line = new LineSeries
             {
                 Color = _lineColor,
                 StrokeThickness = 3,
-                MarkerFill = _colorPrimary,
+                MarkerFill = _lineColor,
+                MarkerType = MarkerType.Circle,
+                MarkerSize = 6
+            };
+
+            _placeholderLine = new LineSeries
+            {
+                Color = _placeholderLineColor,
+                StrokeThickness = 3,
+                MarkerFill = _placeholderMarkerColor,
                 MarkerType = MarkerType.Circle,
                 MarkerSize = 6
             };
 
             PlotModel = new PlotModel
             {
-                Series = {_line},
+                Series = {_line, _placeholderLine},
                 DefaultFont = "Segoe UI",
                 DefaultFontSize = 14,
                 Padding = new OxyThickness(0, 0, 0, 0),
@@ -112,10 +119,11 @@ namespace UTA.ViewModels
                 if (args.ChangedButton != OxyMouseButton.Left) return;
                 if (SelectedRectangle != null) SelectedRectangle.Fill = _colorPrimaryUnselected;
                 SelectedRectangle = null;
+                _placeholderLine.Points.Clear();
                 PlotModel.InvalidatePlot(false);
             };
             GeneratePlotData();
-            HighlightRectangle((RectangleAnnotation) PlotModel.Annotations[0]);
+            if (IsMethodSet) SelectRectangle((RectangleAnnotation) PlotModel.Annotations[0], 0);
             PlotModel.InvalidatePlot(false);
         }
 
@@ -164,8 +172,8 @@ namespace UTA.ViewModels
 
         public void GeneratePlotData()
         {
-            _rectangles.Clear();
             _line.Points.Clear();
+            _placeholderLine.Points.Clear();
             PlotModel.Annotations.Clear();
             SelectedRectangle = null;
 
@@ -186,31 +194,11 @@ namespace UTA.ViewModels
                         MinimumY = _pointsValues[i].Y,
                         MaximumY = _pointsValues[i + 1].Y,
                         Fill = _colorPrimaryUnselected,
-                        ClipByXAxis = true,
-                        ClipByYAxis = true,
                         Layer = AnnotationLayer.BelowSeries
                     };
-                    _rectangles.Add(_pointsValues[i].X, rectangle);
                     rectangle.MouseDown += RectangleOnMouseDown;
-                    rectangle.MouseUp += RectangleOnMouseUp;
                     PlotModel.Annotations.Add(rectangle);
                 }
-
-                //var range = new LineAnnotation
-                //{
-                //    Type = LineAnnotationType.Vertical,
-                //    X = pointValues.X,
-                //    MinimumY = pointValues.MinValue,
-                //    MaximumY = pointValues.MaxValue,
-                //    StrokeThickness = 4,
-                //    Color = _rangesColor,
-                //    LineStyle = LineStyle.Solid
-                //};
-                //_ranges.Add(pointValues.X, range);
-                //range.MouseDown += AnnotationOnMouseDown;
-                //range.MouseMove += AnnotationOnMouseMove;
-                //range.MouseUp += AnnotationOnMouseUp;
-                //PlotModel.Annotations.Add(range);
 
                 _line.Points.Add(new DataPoint(_pointsValues[i].X, _pointsValues[i].Y));
             }
@@ -222,82 +210,28 @@ namespace UTA.ViewModels
         {
             if (e.ChangedButton != OxyMouseButton.Left) return;
             var rectangle = (RectangleAnnotation) sender;
-            HighlightRectangle(rectangle);
+            if (SelectedRectangle == rectangle)
+            {
+                PlotEventHandler(e);
+                return;
+            }
             var firstPointIndex = _pointsValues.FindIndex(partialUtilityValue => partialUtilityValue.X == rectangle.MinimumX);
             DialogController.TriggerDialog(_pointsValues[firstPointIndex], _pointsValues[firstPointIndex + 1]);
+            SelectRectangle(rectangle, firstPointIndex);
             PlotEventHandler(e);
         }
 
-        private void RectangleOnMouseUp(object sender, OxyMouseEventArgs e)
-        {
-            //var rectangle = (RectangleAnnotation)sender;
-            //SelectedRectangle = rectangle;
-            //rectangle.Fill = _colorPrimarySelected;
-            //PlotEventHandler(e);
-        }
-
-        private void HighlightRectangle(RectangleAnnotation rectangle)
+        private void SelectRectangle(RectangleAnnotation rectangle, int firstPointIndex)
         {
             if (SelectedRectangle != null) SelectedRectangle.Fill = _colorPrimaryUnselected;
             SelectedRectangle = rectangle;
             rectangle.Fill = _colorPrimarySelected;
+
+            _placeholderLine.Points.Clear();
+            _placeholderLine.Points.Add(new DataPoint(_pointsValues[firstPointIndex].X, _pointsValues[firstPointIndex].Y));
+            _placeholderLine.Points.Add(new DataPoint(DialogController.Dialog.PointToAdd.X, DialogController.Dialog.PointToAdd.Y));
+            _placeholderLine.Points.Add(new DataPoint(_pointsValues[firstPointIndex + 1].X, _pointsValues[firstPointIndex + 1].Y));
         }
-
-        //private void AnnotationOnMouseDown(object sender, OxyMouseDownEventArgs e)
-        //{
-        //    if (e.ChangedButton != OxyMouseButton.Left) return;
-        //    Mouse.OverrideCursor = Cursors.Hand;
-        //    GetLineAndPointAnnotation(sender, out var lineAnnotation, out var pointAnnotation);
-        //    pointAnnotation.Fill = OxyColor.FromRgb(97, 149, 250);
-        //    if (sender is LineAnnotation)
-        //    {
-        //        var cursorCoords = lineAnnotation.InverseTransform(e.Position);
-        //        if (cursorCoords.Y >= lineAnnotation.MinimumY && cursorCoords.Y <= lineAnnotation.MaximumY)
-        //            pointAnnotation.Y = cursorCoords.Y;
-        //        else if (cursorCoords.Y > lineAnnotation.MaximumY) pointAnnotation.Y = lineAnnotation.MaximumY;
-        //        else pointAnnotation.Y = lineAnnotation.MinimumY;
-        //        var linePointIndex = _line.Points.FindIndex(point => point.X == pointAnnotation.X);
-        //        // initializing new datapoint, because it doesn't have a setter
-        //        _line.Points[linePointIndex] = new DataPoint(pointAnnotation.X, pointAnnotation.Y);
-        //    }
-
-        //    PlotEventHandler(e);
-        //}
-
-        //private void AnnotationOnMouseMove(object sender, OxyMouseEventArgs e)
-        //{
-        //    GetLineAndPointAnnotation(sender, out var lineAnnotation, out var pointAnnotation);
-        //    var cursorCoords = pointAnnotation.InverseTransform(e.Position);
-        //    if (cursorCoords.Y >= lineAnnotation.MinimumY && cursorCoords.Y <= lineAnnotation.MaximumY)
-        //        pointAnnotation.Y = cursorCoords.Y;
-        //    else if (cursorCoords.Y > lineAnnotation.MaximumY) pointAnnotation.Y = lineAnnotation.MaximumY;
-        //    else pointAnnotation.Y = lineAnnotation.MinimumY;
-        //    var linePointIndex = _line.Points.FindIndex(point => point.X == pointAnnotation.X);
-        //    _line.Points[linePointIndex] = new DataPoint(pointAnnotation.X, pointAnnotation.Y);
-        //    PlotEventHandler(e);
-        //}
-
-        //private void AnnotationOnMouseUp(object sender, OxyMouseEventArgs e)
-        //{
-        //    GetLineAndPointAnnotation(sender, out _, out var pointAnnotation);
-        //    Mouse.OverrideCursor = null;
-        //    pointAnnotation.Fill = _colorPrimaryUnselected;
-        //    PlotEventHandler(e);
-        //}
-
-        //private void GetLineAndPointAnnotation(object sender, out LineAnnotation outLineAnnotation, out PointAnnotation outPointAnnotation)
-        //{
-        //    if (sender is PointAnnotation)
-        //    {
-        //        outPointAnnotation = (PointAnnotation) sender;
-        //        outLineAnnotation = _ranges[outPointAnnotation.X];
-        //    }
-        //    else
-        //    {
-        //        outLineAnnotation = (LineAnnotation) sender;
-        //        outPointAnnotation = _rectangles[outLineAnnotation.X];
-        //    }
-        //}
 
         private void PlotEventHandler(OxyInputEventArgs e)
         {
@@ -310,12 +244,16 @@ namespace UTA.ViewModels
         public void CertaintyOptionChosen(object sender, RoutedEventArgs e)
         {
             DialogController.Dialog.ProcessDialog(1);
+            _placeholderLine.Points[1] = new DataPoint(DialogController.Dialog.PointToAdd.X, DialogController.Dialog.PointToAdd.Y);
+            PlotModel.InvalidatePlot(false);
         }
 
         [UsedImplicitly]
         public void LotteryOptionChosen(object sender, RoutedEventArgs e)
         {
             DialogController.Dialog.ProcessDialog(2);
+            _placeholderLine.Points[1] = new DataPoint(DialogController.Dialog.PointToAdd.X, DialogController.Dialog.PointToAdd.Y);
+            PlotModel.InvalidatePlot(false);
         }
 
         [UsedImplicitly]
@@ -324,7 +262,6 @@ namespace UTA.ViewModels
             DialogController.Dialog.ProcessDialog(3);
             GeneratePlotData();
             _calculateUtilities();
-            // TODO: hide dialogue
         }
 
         [UsedImplicitly]
@@ -334,6 +271,7 @@ namespace UTA.ViewModels
             DialogController = new DialogController(_partialUtility,
                 Criterion.MethodOptionsList.IndexOf(Criterion.Method), Criterion.Probability ?? 0);
             DialogController.Dialog.SetInitialValues();
+            SelectRectangle((RectangleAnnotation) PlotModel.Annotations[0], 0);
             OnPropertyChanged(nameof(IsLotteryComparison));
         }
 
