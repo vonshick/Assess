@@ -30,6 +30,10 @@ namespace CalculationsEngine.Assess.Assess
         {
         }
 
+        public virtual void SetInitialDialogValues(double lowerUtilityBoundary, double upperUtilityBoundary)
+        {
+        }
+
         protected virtual void SetValuesIfLotteryChosen()
         {
         }

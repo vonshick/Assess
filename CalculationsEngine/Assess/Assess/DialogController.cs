@@ -131,19 +131,19 @@ namespace CalculationsEngine.Assess.Assess
 
             DisplayObject.Lottery = new Lottery(lowerUtilityPoint, upperUtilityPoint);
             DisplayObject.Lottery.SetProbability(DisplayObject.P);
+
+            Dialog.SetInitialDialogValues(lowerUtilityPoint.X, upperUtilityPoint.X);
         }
 
         private void createConstantProbabilityObject()
         {
-            setConstantProbabilityInput(_zeroUtilityPoint, _oneUtilityPoint);
             Dialog = new ConstantProbabilityDialog(_zeroUtilityPoint.X, _oneUtilityPoint.X, DisplayObject);
-            Dialog.SetInitialValues();
+            setConstantProbabilityInput(_zeroUtilityPoint, _oneUtilityPoint);
         }
 
         public Dialog triggerConstantProbabilityDialog(PartialUtilityValues firstPoint, PartialUtilityValues secondPoint)
         {
             setConstantProbabilityInput(firstPoint, secondPoint);
-            Dialog.SetInitialValues();
             return Dialog;
         }
 
@@ -155,19 +155,19 @@ namespace CalculationsEngine.Assess.Assess
 
             DisplayObject.Lottery = new Lottery(lowerUtilityPoint, upperUtilityPoint);
             DisplayObject.Lottery.SetProbability((lowerUtilityPoint.Y + upperUtilityPoint.Y) / 2);
+
+            Dialog.SetInitialDialogValues(lowerUtilityPoint.X, upperUtilityPoint.X);
         }
 
         private void createVariableProbabilityObject()
         {
-            setVariableProbabilityInput(_zeroUtilityPoint, _oneUtilityPoint);
             Dialog = new VariableProbabilityDialog(_zeroUtilityPoint.X, _oneUtilityPoint.X, DisplayObject);
-            Dialog.SetInitialValues();
+            setVariableProbabilityInput(_zeroUtilityPoint, _oneUtilityPoint);
         }
 
         public Dialog triggerVariableProbabilityDialog(PartialUtilityValues firstPoint, PartialUtilityValues secondPoint)
         {
             setVariableProbabilityInput(firstPoint, secondPoint);
-            Dialog.SetInitialValues();
             return Dialog;
         }
     }

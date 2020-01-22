@@ -31,6 +31,13 @@ namespace CalculationsEngine.Assess.Assess
             PointToAdd = new PartialUtilityValues(DisplayObject.X, DisplayObject.Lottery.NewPointUtility());
         }
 
+        public override void SetInitialDialogValues(double lowerUtilityBoundary, double upperUtilityBoundary)
+        {
+            LowerUtilityBoundary = lowerUtilityBoundary;
+            UpperUtilityBoundary = upperUtilityBoundary;
+            SetInitialValues();
+        }
+
         protected override void SetValuesIfLotteryChosen()
         {
             LowerUtilityBoundary = DisplayObject.X;
