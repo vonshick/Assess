@@ -83,19 +83,19 @@ namespace CalculationsEngine.Assess.Assess
 
             DisplayObject.EdgeValuesLottery = edgeValuesLottery;
             DisplayObject.ComparisonLottery = comparisonLottery;
+
+            Dialog.SetInitialDialogValues(lowerUtilityPoint.Y, DisplayObject.P);
         }
 
         private void createLotteriesComparisonObject()
         {
-            setLotteriesComparisonInput(_zeroUtilityPoint, _oneUtilityPoint);
             Dialog = new LotteriesComparisonDialog(_zeroUtilityPoint.Y, DisplayObject.P, DisplayObject);
-            Dialog.SetInitialValues();
+            setLotteriesComparisonInput(_zeroUtilityPoint, _oneUtilityPoint);
         }
 
         public Dialog triggerLotteriesComparisonDialog(PartialUtilityValues firstPoint, PartialUtilityValues secondPoint)
         {
-            setLotteriesComparisonInput(firstPoint, secondPoint);
-            Dialog.SetInitialValues();
+            setLotteriesComparisonInput(firstPoint, secondPoint); ;
             return Dialog;
         }
 
@@ -107,19 +107,19 @@ namespace CalculationsEngine.Assess.Assess
 
             DisplayObject.Lottery = new Lottery(lowerUtilityPoint, upperUtilityPoint);
             DisplayObject.Lottery.SetProbability((lowerUtilityPoint.Y + upperUtilityPoint.Y) / 2);
+
+            Dialog.SetInitialDialogValues(lowerUtilityPoint.Y, upperUtilityPoint.Y);
         }
 
         private void createProbabilityComparisonObject()
         {
-            setProbabilityComparisonInput(_zeroUtilityPoint, _oneUtilityPoint);
             Dialog = new ProbabilityComparisonDialog(_zeroUtilityPoint.Y, _oneUtilityPoint.Y, DisplayObject);
-            Dialog.SetInitialValues();
+            setProbabilityComparisonInput(_zeroUtilityPoint, _oneUtilityPoint);
         }
 
         public Dialog triggerProbabilityComparisonDialog(PartialUtilityValues firstPoint, PartialUtilityValues secondPoint)
         {
             setProbabilityComparisonInput(firstPoint, secondPoint);
-            Dialog.SetInitialValues();
             return Dialog;
         }
 

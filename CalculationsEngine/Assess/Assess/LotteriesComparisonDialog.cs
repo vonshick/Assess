@@ -37,6 +37,13 @@ namespace CalculationsEngine.Assess.Assess
                 DisplayObject.EdgeValuesLottery.P / DisplayObject.ComparisonLottery.P);
         }
 
+        public override void SetInitialDialogValues(double lowerUtilityBoundary, double upperUtilityBoundary)
+        {
+            LowerUtilityBoundary = lowerUtilityBoundary;
+            UpperUtilityBoundary = upperUtilityBoundary;
+            SetInitialValues();
+        }
+
         protected override void SetValuesIfLotteryChosen()
         {
             UpperUtilityBoundary = DisplayObject.EdgeValuesLottery.P;
