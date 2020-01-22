@@ -185,7 +185,7 @@
                                           <i:Interaction.Triggers>
                                             <i:EventTrigger EventName="Click">
                                               <i:CallMethodAction TargetObject="{Binding}"
-                                                                  MethodName="LotteryOptionChosen" />
+                                                                  MethodName="CertaintyOptionChosen" />
                                             </i:EventTrigger>
                                           </i:Interaction.Triggers>
 
