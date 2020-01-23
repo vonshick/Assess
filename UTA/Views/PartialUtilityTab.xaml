@@ -138,12 +138,14 @@
                           FontSize="{StaticResource CommonFontSize0}" TextWrapping="Wrap"
                           HorizontalAlignment="Left" />
                         <TextBlock Text="Make a choice:"
-                                   FontSize="{StaticResource CommonFontSize0}" HorizontalAlignment="Center" Margin="0,2,0,4">
+                                   FontSize="{StaticResource CommonFontSize0}" HorizontalAlignment="Center"
+                                   Margin="0,2,0,4">
                           <TextBlock.Style>
                             <Style TargetType="{x:Type TextBlock}">
                               <Style.Triggers>
-                                <DataTrigger Binding="{Binding SelectedRectangle, UpdateSourceTrigger=PropertyChanged}" Value="{x:Null}">
-                                  <Setter Property="Visibility" Value="Hidden"></Setter>
+                                <DataTrigger Binding="{Binding SelectedRectangle, UpdateSourceTrigger=PropertyChanged}"
+                                             Value="{x:Null}">
+                                  <Setter Property="Visibility" Value="Hidden" />
                                 </DataTrigger>
                               </Style.Triggers>
                             </Style>
@@ -419,8 +421,21 @@
                               <TextBlock Text="Click on a blue area on the chart to start dialogue..."
                                          Foreground="{StaticResource ColorPlaceholder}"
                                          FontSize="{StaticResource CommonFontSize0}"
-                                         VerticalAlignment="Center" Margin="0,0,0,36"
-                                         TextAlignment="Center" TextWrapping="Wrap" />
+                                         VerticalAlignment="Center"
+                                         TextAlignment="Center" TextWrapping="Wrap">
+                                <TextBlock.Style>
+                                  <Style TargetType="{x:Type TextBlock}">
+                                    <Style.Triggers>
+                                      <DataTrigger
+                                        Binding="{Binding IsLotteryComparison, UpdateSourceTrigger=PropertyChanged}"
+                                        Value="True">
+                                        <Setter Property="Margin" Value="0,0,0,52" />
+                                      </DataTrigger>
+                                    </Style.Triggers>
+                                    <Setter Property="Margin" Value="0,0,0,36" />
+                                  </Style>
+                                </TextBlock.Style>
+                              </TextBlock>
                             </Border>
                           </DockPanel>
                         </ScrollViewer>
