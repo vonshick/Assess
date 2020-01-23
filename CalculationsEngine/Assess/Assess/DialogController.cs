@@ -84,12 +84,12 @@ namespace CalculationsEngine.Assess.Assess
             DisplayObject.EdgeValuesLottery = edgeValuesLottery;
             DisplayObject.ComparisonLottery = comparisonLottery;
 
-            Dialog.SetInitialDialogValues(lowerUtilityPoint.Y, DisplayObject.P);
+            Dialog.SetInitialDialogValues(lowerUtilityPoint.Y * DisplayObject.P, upperUtilityPoint.Y * DisplayObject.P);
         }
 
         private void createLotteriesComparisonObject()
         {
-            Dialog = new LotteriesComparisonDialog(_zeroUtilityPoint.Y, DisplayObject.P, DisplayObject);
+            Dialog = new LotteriesComparisonDialog(0, DisplayObject.P, DisplayObject);
             setLotteriesComparisonInput(_zeroUtilityPoint, _oneUtilityPoint);
         }
 

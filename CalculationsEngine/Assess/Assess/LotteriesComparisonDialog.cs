@@ -47,14 +47,14 @@ namespace CalculationsEngine.Assess.Assess
         protected override void SetValuesIfLotteryChosen()
         {
             UpperUtilityBoundary = DisplayObject.EdgeValuesLottery.P;
-            DisplayObject.EdgeValuesLottery.P = (DisplayObject.EdgeValuesLottery.P + LowerUtilityBoundary) / 2;
+            DisplayObject.EdgeValuesLottery.P = (LowerUtilityBoundary + UpperUtilityBoundary) / 2;
             UpdateLotteryComparisonPointToAdd();
         }
 
         protected override void SetValuesIfSureChosen()
         {
             LowerUtilityBoundary = DisplayObject.EdgeValuesLottery.P;
-            DisplayObject.EdgeValuesLottery.P = (DisplayObject.EdgeValuesLottery.P + UpperUtilityBoundary) / 2;
+            DisplayObject.EdgeValuesLottery.P = (LowerUtilityBoundary + UpperUtilityBoundary) / 2;
             UpdateLotteryComparisonPointToAdd();
         }
 
