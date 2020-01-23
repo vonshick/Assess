@@ -12,6 +12,7 @@ using OxyPlot.Annotations;
 using OxyPlot.Axes;
 using OxyPlot.Series;
 using UTA.Annotations;
+using UTA.Helpers;
 using UTA.Models.Tab;
 
 namespace UTA.ViewModels
@@ -43,20 +44,16 @@ namespace UTA.ViewModels
             Criterion = partialUtility.Criterion;
             _pointsValues = partialUtility.PointsValues;
 
-            Name = $"Utility - {Criterion.Name}";
+            Name = $"{Criterion.Name} - Utility";
             Title = $"{Criterion.Name} - Partial Utility Function";
             IsMethodSet = Criterion.Method != Criterion.MethodOptionsList[0];
 
             if (IsMethodSet)
-            {
                 DialogController = new DialogController(_partialUtility,
                     Criterion.MethodOptionsList.IndexOf(Criterion.Method), Criterion.Probability ?? 0);
-            }
             else
-            {
                 // choose first method as default, to prevent from not selecting any method at all in radio buttons
                 Criterion.Method = Criterion.MethodOptionsList[1];
-            }
 
             // plot initializer
             _line = new LineSeries
@@ -77,7 +74,7 @@ namespace UTA.ViewModels
                 MarkerSize = 6
             };
 
-            PlotModel = new PlotModel
+            PlotModel = new ViewResolvingPlotModel
             {
                 Series = {_line, _placeholderLine},
                 DefaultFont = "Segoe UI",
@@ -121,9 +118,7 @@ namespace UTA.ViewModels
                 _placeholderLine.Points.Clear();
                 PlotModel.InvalidatePlot(false);
             };
-            GeneratePlotData();
-            if (IsMethodSet) SelectRectangle((RectangleAnnotation) PlotModel.Annotations[0], 0);
-            PlotModel.InvalidatePlot(false);
+            InitializePlotWhenIfIsSet();
         }
 
 
@@ -133,7 +128,7 @@ namespace UTA.ViewModels
         public IEnumerable<string> Methods { get; } = Criterion.MethodOptionsList.Skip(1);
         public Criterion Criterion { get; }
         public string Title { get; }
-        public PlotModel PlotModel { get; }
+        public ViewResolvingPlotModel PlotModel { get; }
 
         public DialogController DialogController
         {
@@ -168,6 +163,13 @@ namespace UTA.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private void InitializePlotWhenIfIsSet()
+        {
+            if (!IsMethodSet) return;
+            GeneratePlotData();
+            SelectRectangle((RectangleAnnotation) PlotModel.Annotations[0], 0);
+            PlotModel.InvalidatePlot(false);
+        }
 
         public void GeneratePlotData()
         {
@@ -214,6 +216,7 @@ namespace UTA.ViewModels
                 PlotEventHandler(e);
                 return;
             }
+
             var firstPointIndex = _pointsValues.FindIndex(partialUtilityValue => partialUtilityValue.X == rectangle.MinimumX);
             DialogController.TriggerDialog(_pointsValues[firstPointIndex], _pointsValues[firstPointIndex + 1]);
             SelectRectangle(rectangle, firstPointIndex);
@@ -237,7 +240,6 @@ namespace UTA.ViewModels
             PlotModel.InvalidatePlot(false);
             e.Handled = true;
         }
-
 
         [UsedImplicitly]
         public void CertaintyOptionChosen(object sender, RoutedEventArgs e)
@@ -269,7 +271,7 @@ namespace UTA.ViewModels
             IsMethodSet = true;
             DialogController = new DialogController(_partialUtility,
                 Criterion.MethodOptionsList.IndexOf(Criterion.Method), Criterion.Probability ?? 0);
-            SelectRectangle((RectangleAnnotation) PlotModel.Annotations[0], 0);
+            InitializePlotWhenIfIsSet();
             OnPropertyChanged(nameof(IsLotteryComparison));
         }
 

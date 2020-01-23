@@ -11,7 +11,7 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:PartialUtilityTabViewModel}"
              d:DesignHeight="700" d:DesignWidth="900">
-  <Grid Background="{StaticResource ColorInterface7}" Margin="12,8,12,12">
+  <Grid Background="{StaticResource ColorInterface7}" Margin="12,8,12,10">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
       <RowDefinition />
@@ -130,7 +130,7 @@
                       </oxy:PlotView>
 
 
-                      <StackPanel Grid.Row="1" HorizontalAlignment="Stretch">
+                      <StackPanel Grid.Row="1">
                         <Border BorderThickness="0,1,0,0" BorderBrush="{StaticResource ColorBorders2}"
                                 Margin="-4,2,-4,4" />
                         <TextBlock
@@ -138,264 +138,292 @@
                           FontSize="{StaticResource CommonFontSize0}" TextWrapping="Wrap"
                           HorizontalAlignment="Left" />
                         <TextBlock Text="Make a choice:"
-                                   FontSize="{StaticResource CommonFontSize0}" TextWrapping="Wrap"
-                                   HorizontalAlignment="Center" Margin="0,6,0,0">
+                                   FontSize="{StaticResource CommonFontSize0}" HorizontalAlignment="Center" Margin="0,2,0,4">
                           <TextBlock.Style>
                             <Style TargetType="{x:Type TextBlock}">
                               <Style.Triggers>
                                 <DataTrigger Binding="{Binding SelectedRectangle, UpdateSourceTrigger=PropertyChanged}" Value="{x:Null}">
-                                  <Setter Property="Foreground" Value="{StaticResource ColorInterface0}"></Setter>
+                                  <Setter Property="Visibility" Value="Hidden"></Setter>
                                 </DataTrigger>
                               </Style.Triggers>
-                              <Setter Property="Foreground" Value="Black"></Setter>
                             </Style>
                           </TextBlock.Style>
                         </TextBlock>
 
-                        <!--dialogue buttons-->
-                        <ContentControl>
-                          <ContentControl.Style>
-                            <Style TargetType="{x:Type ContentControl}">
-                              <Style.Triggers>
-                                <DataTrigger
-                                  Binding="{Binding IsLotteryComparison, UpdateSourceTrigger=PropertyChanged}"
-                                  Value="True">
-                                  <Setter Property="Content">
-                                    <Setter.Value>
-                                      <!--lottery comparison method dialogue-->
-                                      <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <WrapPanel.Resources>
-                                          <Style TargetType="{x:Type Button}"
-                                                 BasedOn="{StaticResource PrimaryRoundButton}">
-                                            <Style.Triggers>
-                                              <DataTrigger
-                                                Binding="{Binding SelectedRectangle, UpdateSourceTrigger=PropertyChanged}"
-                                                Value="{x:Null}">
-                                                <Setter Property="IsEnabled" Value="False" />
-                                              </DataTrigger>
-                                            </Style.Triggers>
-                                            <Setter Property="Margin" Value="0,8,16,0" />
-                                            <Setter Property="Padding" Value="24,8,24,10" />
-                                            <Setter Property="IsEnabled" Value="True" />
-                                          </Style>
-                                        </WrapPanel.Resources>
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                          <DockPanel HorizontalAlignment="Center" Margin="0,0,0,2">
+                            <DockPanel.Style>
+                              <Style TargetType="{x:Type DockPanel}">
+                                <Style.Triggers>
+                                  <DataTrigger
+                                    Binding="{Binding IsLotteryComparison, UpdateSourceTrigger=PropertyChanged}"
+                                    Value="False">
+                                    <Setter Property="Height" Value="73" />
+                                  </DataTrigger>
+                                </Style.Triggers>
+                                <Setter Property="Height" Value="115" />
+                              </Style>
+                            </DockPanel.Style>
 
-                                        <!--lottery1 option-->
-                                        <Button>
-                                          <i:Interaction.Triggers>
-                                            <i:EventTrigger EventName="Click">
-                                              <i:CallMethodAction TargetObject="{Binding}"
-                                                                  MethodName="CertaintyOptionChosen" />
-                                            </i:EventTrigger>
-                                          </i:Interaction.Triggers>
+                            <!--dialogue buttons-->
+                            <ContentControl>
+                              <ContentControl.Resources>
+                                <Style TargetType="{x:Type Button}"
+                                       BasedOn="{StaticResource PrimaryRoundButton}">
+                                  <Setter Property="Margin" Value="0,0,16,0" />
+                                  <Setter Property="Padding" Value="24,8,24,10" />
+                                </Style>
+                              </ContentControl.Resources>
 
-                                          <StackPanel>
-                                            <Border BorderBrush="White" BorderThickness="0,0,0,1" Margin="-8,0,-8,4">
-                                              <TextBlock Text="Lottery 1" FontSize="{StaticResource CommonFontSize0}"
-                                                         Margin="0,0,0,4"
-                                                         HorizontalAlignment="Center" />
-                                            </Border>
+                              <ContentControl.Style>
+                                <Style TargetType="{x:Type ContentControl}">
+                                  <Style.Triggers>
+                                    <DataTrigger
+                                      Binding="{Binding SelectedRectangle, UpdateSourceTrigger=PropertyChanged}"
+                                      Value="{x:Null}">
+                                      <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
 
-                                            <StackPanel>
-                                              <StackPanel Orientation="Horizontal">
+                                    <DataTrigger
+                                      Binding="{Binding IsLotteryComparison, UpdateSourceTrigger=PropertyChanged}"
+                                      Value="False">
+                                      <Setter Property="Content">
+                                        <Setter.Value>
+                                          <!--other methods dialogue-->
+                                          <StackPanel Orientation="Horizontal">
+                                            <!--certainty option-->
+                                            <Button>
+                                              <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="Click">
+                                                  <i:CallMethodAction TargetObject="{Binding}"
+                                                                      MethodName="CertaintyOptionChosen" />
+                                                </i:EventTrigger>
+                                              </i:Interaction.Triggers>
+
+                                              <StackPanel>
+                                                <Border BorderBrush="White" BorderThickness="0,0,0,1"
+                                                        Margin="-8,0,-8,4">
+                                                  <TextBlock Text="Certainty"
+                                                             FontSize="{StaticResource CommonFontSize0}"
+                                                             Margin="0,0,0,4" HorizontalAlignment="Center" />
+                                                </Border>
                                                 <TextBlock
-                                                  Text="{Binding DialogController.DisplayObject.ComparisonLottery.P, 
-                                              StringFormat=Probability: {0:G6}\,, 
-                                              UpdateSourceTrigger=PropertyChanged}"
-                                                  FontSize="{StaticResource CommonFontSize1}" Margin="0,0,4,0" />
-                                                <TextBlock
-                                                  Text="{Binding DialogController.DisplayObject.ComparisonLottery.UpperUtilityValue.X, 
-                                              StringFormat=Value: {0:G6}, 
-                                              UpdateSourceTrigger=PropertyChanged}"
+                                                  Text="{Binding 
+                                                    DialogController.DisplayObject.X,
+                                                    StringFormat=Value: {0:G6},
+                                                    UpdateSourceTrigger=PropertyChanged}"
                                                   FontSize="{StaticResource CommonFontSize1}" />
                                               </StackPanel>
-                                              <TextBlock Text="&amp;" TextAlignment="Center"
-                                                         FontSize="{StaticResource CommonFontSize1}" />
-                                              <StackPanel Orientation="Horizontal">
-                                                <TextBlock
-                                                  Text="{Binding DialogController.DisplayObject.ComparisonLottery.ComplementaryP, 
+                                            </Button>
+
+                                            <!--lottery option-->
+                                            <Button>
+                                              <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="Click">
+                                                  <i:CallMethodAction TargetObject="{Binding}"
+                                                                      MethodName="LotteryOptionChosen" />
+                                                </i:EventTrigger>
+                                              </i:Interaction.Triggers>
+
+                                              <StackPanel>
+                                                <Border BorderBrush="White"
+                                                        BorderThickness="0,0,0,1"
+                                                        Margin="-8,0,-8,4">
+                                                  <TextBlock Text="Lottery" FontSize="{StaticResource CommonFontSize0}"
+                                                             Margin="0,0,0,4"
+                                                             HorizontalAlignment="Center" />
+                                                </Border>
+
+                                                <StackPanel Orientation="Horizontal">
+                                                  <TextBlock
+                                                    Text="{Binding DialogController.DisplayObject.Lottery.P, 
                                               StringFormat=Probability: {0:G6}\,, 
                                               UpdateSourceTrigger=PropertyChanged}"
-                                                  FontSize="{StaticResource CommonFontSize1}" Margin="0,0,4,0" />
-                                                <TextBlock
-                                                  Text="{Binding DialogController.DisplayObject.ComparisonLottery.LowerUtilityValue.X, 
+                                                    FontSize="{StaticResource CommonFontSize1}" Margin="0,0,4,0" />
+                                                  <TextBlock
+                                                    Text="{Binding DialogController.DisplayObject.Lottery.UpperUtilityValue.X, 
                                               StringFormat=Value: {0:G6}, 
                                               UpdateSourceTrigger=PropertyChanged}"
-                                                  FontSize="{StaticResource CommonFontSize1}" />
+                                                    FontSize="{StaticResource CommonFontSize1}" />
+                                                  <TextBlock Text="&amp;" Margin="10,0"
+                                                             FontSize="{StaticResource CommonFontSize1}" />
+                                                  <TextBlock
+                                                    Text="{Binding DialogController.DisplayObject.Lottery.ComplementaryP, 
+                                              StringFormat=Probability: {0:G6}\,, 
+                                              UpdateSourceTrigger=PropertyChanged}"
+                                                    FontSize="{StaticResource CommonFontSize1}" Margin="0,0,4,0" />
+                                                  <TextBlock
+                                                    Text="{Binding DialogController.DisplayObject.Lottery.LowerUtilityValue.X, 
+                                              StringFormat=Value: {0:G6}, 
+                                              UpdateSourceTrigger=PropertyChanged}"
+                                                    FontSize="{StaticResource CommonFontSize1}" />
+                                                </StackPanel>
                                               </StackPanel>
-                                            </StackPanel>
+                                            </Button>
+
+                                            <!--indifferent option-->
+                                            <Button FontSize="{StaticResource CommonFontSize0}" Content="Indifferent"
+                                                    Margin="0">
+                                              <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="Click">
+                                                  <i:CallMethodAction TargetObject="{Binding}"
+                                                                      MethodName="IndifferentOptionChosen" />
+                                                </i:EventTrigger>
+                                              </i:Interaction.Triggers>
+                                            </Button>
                                           </StackPanel>
-                                        </Button>
+                                        </Setter.Value>
+                                      </Setter>
+                                    </DataTrigger>
 
-                                        <!--lottery2 option-->
-                                        <Button>
-                                          <i:Interaction.Triggers>
-                                            <i:EventTrigger EventName="Click">
-                                              <i:CallMethodAction TargetObject="{Binding}"
-                                                                  MethodName="LotteryOptionChosen" />
-                                            </i:EventTrigger>
-                                          </i:Interaction.Triggers>
+                                    <DataTrigger
+                                      Binding="{Binding IsLotteryComparison, UpdateSourceTrigger=PropertyChanged}"
+                                      Value="True">
+                                      <Setter Property="Content">
+                                        <Setter.Value>
+                                          <!--lottery comparison method dialogue-->
+                                          <StackPanel Orientation="Horizontal">
+                                            <!--lottery1 option-->
+                                            <Button>
+                                              <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="Click">
+                                                  <i:CallMethodAction TargetObject="{Binding}"
+                                                                      MethodName="CertaintyOptionChosen" />
+                                                </i:EventTrigger>
+                                              </i:Interaction.Triggers>
 
-                                          <StackPanel>
-                                            <Border BorderBrush="White" BorderThickness="0,0,0,1" Margin="-8,0,-8,4">
-                                              <TextBlock Text="Lottery 2" FontSize="{StaticResource CommonFontSize0}"
-                                                         Margin="0,0,0,4"
-                                                         HorizontalAlignment="Center" />
-                                            </Border>
+                                              <StackPanel>
+                                                <Border BorderBrush="White"
+                                                        BorderThickness="0,0,0,1"
+                                                        Margin="-8,0,-8,4">
+                                                  <TextBlock Text="Lottery 1"
+                                                             FontSize="{StaticResource CommonFontSize0}"
+                                                             Margin="0,0,0,4"
+                                                             HorizontalAlignment="Center" />
+                                                </Border>
 
-                                            <StackPanel>
-                                              <StackPanel Orientation="Horizontal">
-                                                <TextBlock
-                                                  Text="{Binding DialogController.DisplayObject.EdgeValuesLottery.P, 
+                                                <StackPanel>
+                                                  <StackPanel Orientation="Horizontal">
+                                                    <TextBlock
+                                                      Text="{Binding DialogController.DisplayObject.ComparisonLottery.P, 
                                               StringFormat=Probability: {0:G6}\,, 
                                               UpdateSourceTrigger=PropertyChanged}"
-                                                  FontSize="{StaticResource CommonFontSize1}" Margin="0,0,4,0" />
-                                                <TextBlock
-                                                  Text="{Binding DialogController.DisplayObject.EdgeValuesLottery.UpperUtilityValue.X, 
+                                                      FontSize="{StaticResource CommonFontSize1}" Margin="0,0,4,0" />
+                                                    <TextBlock
+                                                      Text="{Binding DialogController.DisplayObject.ComparisonLottery.UpperUtilityValue.X, 
                                               StringFormat=Value: {0:G6}, 
                                               UpdateSourceTrigger=PropertyChanged}"
-                                                  FontSize="{StaticResource CommonFontSize1}" />
+                                                      FontSize="{StaticResource CommonFontSize1}" />
+                                                  </StackPanel>
+                                                  <TextBlock Text="&amp;" TextAlignment="Center"
+                                                             FontSize="{StaticResource CommonFontSize1}" />
+                                                  <StackPanel Orientation="Horizontal">
+                                                    <TextBlock
+                                                      Text="{Binding DialogController.DisplayObject.ComparisonLottery.ComplementaryP, 
+                                              StringFormat=Probability: {0:G6}\,, 
+                                              UpdateSourceTrigger=PropertyChanged}"
+                                                      FontSize="{StaticResource CommonFontSize1}" Margin="0,0,4,0" />
+                                                    <TextBlock
+                                                      Text="{Binding DialogController.DisplayObject.ComparisonLottery.LowerUtilityValue.X, 
+                                              StringFormat=Value: {0:G6}, 
+                                              UpdateSourceTrigger=PropertyChanged}"
+                                                      FontSize="{StaticResource CommonFontSize1}" />
+                                                  </StackPanel>
+                                                </StackPanel>
                                               </StackPanel>
-                                              <TextBlock Text="&amp;" TextAlignment="Center"
-                                                         FontSize="{StaticResource CommonFontSize1}" />
-                                              <StackPanel Orientation="Horizontal">
-                                                <TextBlock
-                                                  Text="{Binding DialogController.DisplayObject.EdgeValuesLottery.ComplementaryP, 
+                                            </Button>
+
+                                            <!--lottery2 option-->
+                                            <Button>
+                                              <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="Click">
+                                                  <i:CallMethodAction TargetObject="{Binding}"
+                                                                      MethodName="LotteryOptionChosen" />
+                                                </i:EventTrigger>
+                                              </i:Interaction.Triggers>
+
+                                              <StackPanel>
+                                                <Border BorderBrush="White" BorderThickness="0,0,0,1"
+                                                        Margin="-8,0,-8,4">
+                                                  <TextBlock Text="Lottery 2"
+                                                             FontSize="{StaticResource CommonFontSize0}"
+                                                             Margin="0,0,0,4"
+                                                             HorizontalAlignment="Center" />
+                                                </Border>
+
+                                                <StackPanel>
+                                                  <StackPanel Orientation="Horizontal">
+                                                    <TextBlock
+                                                      Text="{Binding DialogController.DisplayObject.EdgeValuesLottery.P, 
                                               StringFormat=Probability: {0:G6}\,, 
                                               UpdateSourceTrigger=PropertyChanged}"
-                                                  FontSize="{StaticResource CommonFontSize1}" Margin="0,0,4,0" />
-                                                <TextBlock
-                                                  Text="{Binding DialogController.DisplayObject.EdgeValuesLottery.LowerUtilityValue.X, 
+                                                      FontSize="{StaticResource CommonFontSize1}" Margin="0,0,4,0" />
+                                                    <TextBlock
+                                                      Text="{Binding DialogController.DisplayObject.EdgeValuesLottery.UpperUtilityValue.X, 
                                               StringFormat=Value: {0:G6}, 
                                               UpdateSourceTrigger=PropertyChanged}"
-                                                  FontSize="{StaticResource CommonFontSize1}" />
+                                                      FontSize="{StaticResource CommonFontSize1}" />
+                                                  </StackPanel>
+                                                  <TextBlock Text="&amp;" TextAlignment="Center"
+                                                             FontSize="{StaticResource CommonFontSize1}" />
+                                                  <StackPanel Orientation="Horizontal">
+                                                    <TextBlock
+                                                      Text="{Binding DialogController.DisplayObject.EdgeValuesLottery.ComplementaryP, 
+                                              StringFormat=Probability: {0:G6}\,, 
+                                              UpdateSourceTrigger=PropertyChanged}"
+                                                      FontSize="{StaticResource CommonFontSize1}" Margin="0,0,4,0" />
+                                                    <TextBlock
+                                                      Text="{Binding DialogController.DisplayObject.EdgeValuesLottery.LowerUtilityValue.X, 
+                                              StringFormat=Value: {0:G6}, 
+                                              UpdateSourceTrigger=PropertyChanged}"
+                                                      FontSize="{StaticResource CommonFontSize1}" />
+                                                  </StackPanel>
+                                                </StackPanel>
                                               </StackPanel>
-                                            </StackPanel>
+                                            </Button>
+
+                                            <!--indifferent option-->
+                                            <Button FontSize="{StaticResource CommonFontSize0}" Content="Indifferent"
+                                                    Margin="0">
+                                              <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="Click">
+                                                  <i:CallMethodAction TargetObject="{Binding}"
+                                                                      MethodName="IndifferentOptionChosen" />
+                                                </i:EventTrigger>
+                                              </i:Interaction.Triggers>
+                                            </Button>
                                           </StackPanel>
-                                        </Button>
+                                        </Setter.Value>
+                                      </Setter>
+                                    </DataTrigger>
+                                  </Style.Triggers>
+                                </Style>
+                              </ContentControl.Style>
+                            </ContentControl>
 
-                                        <!--indifferent option-->
-                                        <Button FontSize="{StaticResource CommonFontSize0}" Content="Indifferent"
-                                                Margin="0,8,0,0">
-                                          <i:Interaction.Triggers>
-                                            <i:EventTrigger EventName="Click">
-                                              <i:CallMethodAction TargetObject="{Binding}"
-                                                                  MethodName="IndifferentOptionChosen" />
-                                            </i:EventTrigger>
-                                          </i:Interaction.Triggers>
-                                        </Button>
-                                      </WrapPanel>
-                                    </Setter.Value>
-                                  </Setter>
-                                </DataTrigger>
 
-                                <DataTrigger
-                                  Binding="{Binding IsLotteryComparison, UpdateSourceTrigger=PropertyChanged}"
-                                  Value="False">
-                                  <Setter Property="Content">
-                                    <Setter.Value>
-                                      <!--other methods dialogue-->
-                                      <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <WrapPanel.Resources>
-                                          <Style TargetType="{x:Type Button}"
-                                                 BasedOn="{StaticResource PrimaryRoundButton}">
-                                            <Style.Triggers>
-                                              <DataTrigger
-                                                Binding="{Binding SelectedRectangle, UpdateSourceTrigger=PropertyChanged}"
-                                                Value="{x:Null}">
-                                                <Setter Property="IsEnabled" Value="False" />
-                                              </DataTrigger>
-                                            </Style.Triggers>
-                                            <Setter Property="Margin" Value="0,8,16,0" />
-                                            <Setter Property="Padding" Value="24,8,24,10" />
-                                            <Setter Property="IsEnabled" Value="True" />
-                                          </Style>
-                                        </WrapPanel.Resources>
+                            <Border>
+                              <Border.Style>
+                                <Style TargetType="{x:Type Border}">
+                                  <Style.Triggers>
+                                    <DataTrigger
+                                      Binding="{Binding SelectedRectangle, UpdateSourceTrigger=PropertyChanged}"
+                                      Value="{x:Null}">
+                                      <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                  </Style.Triggers>
+                                  <Setter Property="Visibility" Value="Collapsed" />
+                                </Style>
+                              </Border.Style>
 
-                                        <!--certainty option-->
-                                        <Button>
-                                          <i:Interaction.Triggers>
-                                            <i:EventTrigger EventName="Click">
-                                              <i:CallMethodAction TargetObject="{Binding}"
-                                                                  MethodName="CertaintyOptionChosen" />
-                                            </i:EventTrigger>
-                                          </i:Interaction.Triggers>
-
-                                          <StackPanel>
-                                            <Border DockPanel.Dock="Top" BorderBrush="White" BorderThickness="0,0,0,1"
-                                                    Margin="-8,0,-8,4">
-                                              <TextBlock Text="Certainty" FontSize="{StaticResource CommonFontSize0}"
-                                                         Margin="0,0,0,4" HorizontalAlignment="Center" />
-                                            </Border>
-                                            <TextBlock
-                                              Text="{Binding DialogController.DisplayObject.X,
-                                            StringFormat=Value: {0:G6},
-                                            UpdateSourceTrigger=PropertyChanged}"
-                                              FontSize="{StaticResource CommonFontSize1}" />
-                                          </StackPanel>
-                                        </Button>
-
-                                        <!--lottery option-->
-                                        <Button>
-                                          <i:Interaction.Triggers>
-                                            <i:EventTrigger EventName="Click">
-                                              <i:CallMethodAction TargetObject="{Binding}"
-                                                                  MethodName="LotteryOptionChosen" />
-                                            </i:EventTrigger>
-                                          </i:Interaction.Triggers>
-
-                                          <StackPanel>
-                                            <Border BorderBrush="White" BorderThickness="0,0,0,1" Margin="-8,0,-8,4">
-                                              <TextBlock Text="Lottery" FontSize="{StaticResource CommonFontSize0}"
-                                                         Margin="0,0,0,4"
-                                                         HorizontalAlignment="Center" />
-                                            </Border>
-
-                                            <StackPanel Orientation="Horizontal">
-                                              <TextBlock
-                                                Text="{Binding DialogController.DisplayObject.Lottery.P, 
-                                              StringFormat=Probability: {0:G6}\,, 
-                                              UpdateSourceTrigger=PropertyChanged}"
-                                                FontSize="{StaticResource CommonFontSize1}" Margin="0,0,4,0" />
-                                              <TextBlock
-                                                Text="{Binding DialogController.DisplayObject.Lottery.UpperUtilityValue.X, 
-                                              StringFormat=Value: {0:G6}, 
-                                              UpdateSourceTrigger=PropertyChanged}"
-                                                FontSize="{StaticResource CommonFontSize1}" />
-                                              <TextBlock Text="&amp;" Margin="10,0"
-                                                         FontSize="{StaticResource CommonFontSize1}" />
-                                              <TextBlock
-                                                Text="{Binding DialogController.DisplayObject.Lottery.ComplementaryP, 
-                                              StringFormat=Probability: {0:G6}\,, 
-                                              UpdateSourceTrigger=PropertyChanged}"
-                                                FontSize="{StaticResource CommonFontSize1}" Margin="0,0,4,0" />
-                                              <TextBlock
-                                                Text="{Binding DialogController.DisplayObject.Lottery.LowerUtilityValue.X, 
-                                              StringFormat=Value: {0:G6}, 
-                                              UpdateSourceTrigger=PropertyChanged}"
-                                                FontSize="{StaticResource CommonFontSize1}" />
-                                            </StackPanel>
-                                          </StackPanel>
-                                        </Button>
-
-                                        <!--indifferent option-->
-                                        <Button FontSize="{StaticResource CommonFontSize0}" Content="Indifferent"
-                                                Margin="0,8,0,0">
-                                          <i:Interaction.Triggers>
-                                            <i:EventTrigger EventName="Click">
-                                              <i:CallMethodAction TargetObject="{Binding}"
-                                                                  MethodName="IndifferentOptionChosen" />
-                                            </i:EventTrigger>
-                                          </i:Interaction.Triggers>
-                                        </Button>
-                                      </WrapPanel>
-                                    </Setter.Value>
-                                  </Setter>
-                                </DataTrigger>
-                              </Style.Triggers>
-                            </Style>
-                          </ContentControl.Style>
-                        </ContentControl>
+                              <TextBlock Text="Click on a blue area on the chart to start dialogue..."
+                                         Foreground="{StaticResource ColorPlaceholder}"
+                                         FontSize="{StaticResource CommonFontSize0}"
+                                         VerticalAlignment="Center" Margin="0,0,0,36"
+                                         TextAlignment="Center" TextWrapping="Wrap" />
+                            </Border>
+                          </DockPanel>
+                        </ScrollViewer>
                       </StackPanel>
                     </Grid>
                   </Setter.Value>

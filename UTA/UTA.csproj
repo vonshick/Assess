@@ -84,10 +84,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Views\AssessmentMethodDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Views\CoefficientAssessmentTab.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -130,7 +126,7 @@
     </Compile>
     <Compile Include="Helpers\DataValidation\AlternativeNameValidationRule.cs" />
     <Compile Include="Helpers\DataValidation\CriterionNameValidationRule.cs" />
-    <Compile Include="Converters\AssessMethodConverter.cs" />
+    <Compile Include="Helpers\ViewResolvingPlotModel.cs" />
     <Compile Include="ViewModels\AlternativesTabViewModel.cs" />
     <Compile Include="ViewModels\CriteriaTabViewModel.cs" />
     <Compile Include="ViewModels\AssessmentMethodTabViewModel.cs" />
@@ -138,9 +134,6 @@
     <Compile Include="ViewModels\WelcomeTabViewModel.cs" />
     <Compile Include="ViewModels\PartialUtilityTabViewModel.cs" />
     <Compile Include="ViewModels\SettingsTabViewModel.cs" />
-    <Compile Include="Views\AssessmentMethodDialog.xaml.cs">
-      <DependentUpon>AssessmentMethodDialog.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\CoefficientAssessmentTab.xaml.cs">
       <DependentUpon>CoefficientAssessmentTab.xaml</DependentUpon>
     </Compile>
