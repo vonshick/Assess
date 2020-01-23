@@ -161,6 +161,27 @@ namespace ImportModule
             }
         }
 
+        private string GetDialogMethod(XmlNode xmlNode)
+        {
+            if (xmlNode.Attributes["concept"] != null)
+            {
+                switch (xmlNode.Attributes["concept"].Value)
+                {
+                    case "constantProbability":
+                        return Criterion.MethodOptionsList[1];
+                    case "variableProbability":
+                        return Criterion.MethodOptionsList[2];
+                    case "lotteriesComparison":
+                        return Criterion.MethodOptionsList[3];
+                    case "probabilityComparison":
+                        return Criterion.MethodOptionsList[4];
+                    default:
+                        return Criterion.MethodOptionsList[0];
+                }
+            }
+            return Criterion.MethodOptionsList[0];
+        }
+
         private void LoadValueFunctions()
         {
             currentlyProcessedFile = Path.Combine(xmcdaDirectory, "value_functions.xml");
@@ -182,6 +203,8 @@ namespace ImportModule
                     }
                     else
                     {
+                        var dialogMethod = GetDialogMethod(criterionFunction);
+
                         foreach (XmlNode point in criterionFunction.FirstChild.ChildNodes)
                         {
                             var argument = double.PositiveInfinity;
@@ -206,6 +229,7 @@ namespace ImportModule
                         }
 
                         var matchingCriterion = criterionList.Find(criterion => criterion.ID == criterionID);
+                        matchingCriterion.Method = dialogMethod;
                         results.PartialUtilityFunctions.Add(new PartialUtility(matchingCriterion, argumentsValues));
                     }
             }

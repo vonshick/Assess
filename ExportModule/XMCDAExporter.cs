@@ -184,6 +184,27 @@ namespace ExportModule
             xmcdaWriter.Close();
         }
 
+        private string GetMethodId(string method)
+        {
+            var index = Criterion.MethodOptionsList.IndexOf(method);
+
+            switch(index)
+            {
+                case 0:
+                    return "";
+                case 1:
+                    return "constantProbability";
+                case 2:
+                    return "variableProbability";
+                case 3:
+                    return "lotteriesComparison";
+                case 4:
+                    return "probabilityComparison";
+                default:
+                    throw new System.Exception("Improper dialog method passed.");
+            }
+        }
+
         private void saveValueFunctions()
         {
             initializeWriter(Path.Combine(outputDirectory, "value_functions.xml"));
@@ -197,6 +218,12 @@ namespace ExportModule
                 xmcdaWriter.WriteString(partialUtility.Criterion.ID != null ? partialUtility.Criterion.ID : partialUtility.Criterion.Name);
                 xmcdaWriter.WriteEndElement();
                 xmcdaWriter.WriteStartElement("criterionFunction");
+
+                var methodId = GetMethodId(partialUtility.Criterion.Method);
+
+                if (!partialUtility.Criterion.Method.Equals(""))
+                    xmcdaWriter.WriteAttributeString("concept", GetMethodId(partialUtility.Criterion.Method));
+                
                 xmcdaWriter.WriteStartElement("points");
                 foreach (var pointValue in partialUtility.PointsValues)
                 {
