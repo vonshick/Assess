@@ -254,6 +254,34 @@ namespace ExportModule
             xmcdaWriter.Close();
         }
 
+        private void saveWeights()
+        {
+            initializeWriter(Path.Combine(outputDirectory, "weights.xml"));
+            xmcdaWriter.WriteStartElement("criteriaValues");
+
+            foreach (var criterionCoefficient in results.CriteriaCoefficients)
+            {
+                var criterion = criterionList.Find(o => o.Name.Equals(criterionCoefficient.CriterionName));
+
+                xmcdaWriter.WriteStartElement("criterionValue");
+                xmcdaWriter.WriteStartElement("criterionID");
+                xmcdaWriter.WriteString(criterion.ID != null ? criterion.ID : criterion.Name);
+                xmcdaWriter.WriteEndElement();
+                xmcdaWriter.WriteStartElement("values");
+                xmcdaWriter.WriteStartElement("value");
+                xmcdaWriter.WriteStartElement("real");
+                xmcdaWriter.WriteString(criterionCoefficient.Coefficient.ToString("G", CultureInfo.InvariantCulture));
+                xmcdaWriter.WriteEndElement();
+                xmcdaWriter.WriteEndElement();
+                xmcdaWriter.WriteEndElement();
+                xmcdaWriter.WriteEndElement();
+            }
+
+            xmcdaWriter.WriteEndElement();
+            xmcdaWriter.WriteEndDocument();
+            xmcdaWriter.Close();
+        }
+
         public void saveInput()
         {
             checkIfInputFilesExists();
@@ -269,6 +297,7 @@ namespace ExportModule
             if (results != null)
             {
                 saveValueFunctions();
+                saveWeights();
             }
             else
             {

@@ -235,6 +235,43 @@ namespace ImportModule
             }
         }
 
+        private void LoadWeights()
+        {
+            currentlyProcessedFile = Path.Combine(xmcdaDirectory, "weights.xml");
+
+            if (!File.Exists(currentlyProcessedFile))
+                return;
+
+            var xmlDocument = new XmlDocument();
+            xmlDocument.Load(currentlyProcessedFile);
+
+            // this file contains only one main block - <criteriaScales>
+            foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
+            {
+                var criterionID = xmlNode.ChildNodes[0].InnerText;
+
+                double coefficient = -1;
+
+                if (xmlNode.ChildNodes[1].FirstChild.FirstChild != null)
+                {
+                    if (!double.TryParse(xmlNode.ChildNodes[1].FirstChild.FirstChild.InnerText, NumberStyles.Any,
+                        CultureInfo.InvariantCulture, out coefficient))
+                        throw new ImproperFileStructureException("Improper criterion coefficient format " +
+                                                                 xmlNode.ChildNodes[1].FirstChild.FirstChild.InnerText +
+                                                                 " - it should be floating point.");
+                }
+                else
+                {
+                    throw new ImproperFileStructureException(
+                        "Improper structure of weights.xml file. Please compare it to the documentation.");
+                }
+
+                var index = criterionList.FindIndex(criterion => criterion.ID == criterionID);
+                var criterionName = criterionList.Find(o => o.ID.Equals(criterionID)).Name;
+                results.CriteriaCoefficients.Add(new CriterionCoefficient(criterionName, coefficient));
+            }
+        }
+
         protected override void ProcessFile(string xmcdaDirectory)
         {
             this.xmcdaDirectory = xmcdaDirectory;
@@ -247,6 +284,7 @@ namespace ImportModule
             LoadPerformanceTable();
 
             LoadValueFunctions();
+            LoadWeights();
 
             setMinAndMaxCriterionValues();
         }
