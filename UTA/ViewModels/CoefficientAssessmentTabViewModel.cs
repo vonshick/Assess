@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using CalculationsEngine.Assess.Assess;
+using CalculationsEngine.Dialogs;
 using DataModel.Input;
 using DataModel.Results;
 using UTA.Annotations;

@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using DataModel.Annotations;
 using DataModel.Results;
 
-namespace CalculationsEngine.Assess.Assess
+namespace CalculationsEngine.Models
 {
     public class Lottery : INotifyPropertyChanged
     {

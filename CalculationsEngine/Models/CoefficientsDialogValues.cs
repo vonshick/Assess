@@ -1,4 +1,4 @@
-﻿namespace CalculationsEngine.Assess.Assess
+﻿namespace CalculationsEngine.Models
 {
     public class CoefficientsDialogValues
     {

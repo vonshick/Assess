@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using CalculationsEngine.Models;
 using DataModel.Annotations;
 using DataModel.Input;
 using DataModel.Results;
 
-namespace CalculationsEngine.Assess.Assess
+namespace CalculationsEngine.Maintenance
 {
     public class DisplayObject : INotifyPropertyChanged
     {

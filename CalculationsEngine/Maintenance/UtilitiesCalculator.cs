@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using CalculationsEngine.Models;
 using DataModel.Input;
 using DataModel.Results;
 
-namespace CalculationsEngine.Assess.Assess
+namespace CalculationsEngine.Maintenance
 {
     public class UtilitiesCalculator
     {

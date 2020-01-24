@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using CalculationsEngine.Maintenance;
 using DataModel.Annotations;
 using DataModel.Input;
 using DataModel.Results;
 
-namespace CalculationsEngine.Assess.Assess
+namespace CalculationsEngine.Dialogs
 {
     public class CoefficientsDialog : INotifyPropertyChanged
     {

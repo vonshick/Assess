@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalculationsEngine.Models;
 
-namespace CalculationsEngine.Assess.Assess
+namespace CalculationsEngine.Maintenance
 {
     public class BaristowSolver
     {

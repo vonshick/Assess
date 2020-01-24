@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CalculationsEngine.Assess.Assess
+﻿namespace CalculationsEngine.Models
 {
     public struct ComplexNumber
     {

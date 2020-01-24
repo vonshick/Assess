@@ -1,7 +1,8 @@
 ﻿using System;
+using CalculationsEngine.Maintenance;
 using DataModel.Results;
 
-namespace CalculationsEngine.Assess.Assess
+namespace CalculationsEngine.Dialogs
 {
     public class VariableProbabilityDialog : Dialog
     {

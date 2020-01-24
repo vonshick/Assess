@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Data;
-using DataModel.Annotations;
+using UTA.Annotations;
 using DataModel.Input;
 using UTA.Helpers;
 using UTA.Models;

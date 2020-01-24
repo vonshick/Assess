@@ -1,6 +1,6 @@
 ﻿using DataModel.Input;
 
-namespace CalculationsEngine.Assess.Assess
+namespace CalculationsEngine.Models
 {
     public struct AlternativeUtility
     {
