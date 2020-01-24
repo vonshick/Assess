@@ -211,8 +211,8 @@
       <Grid.Resources>
         <GridLength x:Key="LeftPanelWidth">192</GridLength>
         <sys:Double x:Key="LeftPanelMinWidth">130</sys:Double>
-        <GridLength x:Key="RightPanelWidth">198</GridLength>
-        <sys:Double x:Key="RightPanelMinWidth">190</sys:Double>
+        <GridLength x:Key="RightPanelWidth">250</GridLength>
+        <sys:Double x:Key="RightPanelMinWidth">200</sys:Double>
       </Grid.Resources>
 
       <Grid.RowDefinitions>
@@ -641,23 +641,23 @@
                       Expanded="Expander_Toggled" IsExpanded="True"
                       HeaderTemplate="{StaticResource ExpanderPlainHeaderTemplate}">
               <DockPanel>
-                <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Left" Margin="8,0,0,2">
-                  <TextBlock Text="Utility Scaling Coefficient:" FontSize="{StaticResource CommonFontSize2}" />
-                  <TextBlock Text="{Binding Results.K, StringFormat=G10, UpdateSourceTrigger=PropertyChanged}"
-                             FontSize="{StaticResource CommonFontSize2}" TextAlignment="Right">
+                <WrapPanel DockPanel.Dock="Top" Margin="8,0,0,2">
+                  <TextBlock Text="Utility Scaling Coefficient: " FontSize="{StaticResource CommonFontSize2}" />
+                  <TextBlock FontSize="{StaticResource CommonFontSize2}">
                     <TextBlock.Style>
                       <Style TargetType="{x:Type TextBlock}">
                         <Style.Triggers>
                           <DataTrigger Binding="{Binding Results.K, UpdateSourceTrigger=PropertyChanged}"
                                        Value="{x:Null}">
-                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Setter Property="Text" Value="-" />
                           </DataTrigger>
                         </Style.Triggers>
-                        <Setter Property="Visibility" Value="Visible" />
+                        <Setter Property="Text"
+                                Value="{Binding Results.K, StringFormat=G10, UpdateSourceTrigger=PropertyChanged}" />
                       </Style>
                     </TextBlock.Style>
                   </TextBlock>
-                </StackPanel>
+                </WrapPanel>
 
                 <ListView
                   ItemsSource="{Binding Results.CriteriaCoefficients, UpdateSourceTrigger=PropertyChanged}"
@@ -670,7 +670,7 @@
 
                   <ListView.View>
                     <GridView AllowsColumnReorder="False">
-                      <GridViewColumn Header="Criterion" Width="120"
+                      <GridViewColumn Header="Criterion" Width="160"
                                       DisplayMemberBinding="{Binding CriterionName, UpdateSourceTrigger=PropertyChanged}" />
                       <GridViewColumn Header="Weight" DisplayMemberBinding="{Binding Coefficient, StringFormat=G15}"
                                       Width="9999" />

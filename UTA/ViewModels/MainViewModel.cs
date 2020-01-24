@@ -26,12 +26,12 @@ namespace UTA.ViewModels
     {
         private readonly IDialogCoordinator _dialogCoordinator;
         public readonly ObservableCollection<PartialUtilityTabViewModel> PartialUtilityTabViewModels;
+        private CoefficientAssessmentTabViewModel _coefficientAssessmentTabViewModel;
         private List<Alternative> _currentCalculationAlternativesCopy;
         private List<Criterion> _currentCalculationCriteriaCopy;
         private SaveData _saveData;
         private ITab _tabToSelect;
         private UtilitiesCalculator _utilitiesCalculator;
-        public CoefficientAssessmentTabViewModel CoefficientAssessmentTabViewModel;
 
 
         public MainViewModel(IDialogCoordinator dialogCoordinator)
@@ -75,49 +75,6 @@ namespace UTA.ViewModels
                 InstancePropertyChanged();
                 Results.FinalRanking.FinalRankingCollection.CollectionChanged += InstancePropertyChanged;
             };
-
-            // TODO: remove. for testing purposes
-            // WARNING: using these crashes application at some point
-            Criteria.CriteriaCollection.Add(new Criterion("Price", "", "Cost"));
-            Criteria.CriteriaCollection.Add(new Criterion("Time", "", "Cost"));
-            Criteria.CriteriaCollection.Add(new Criterion("Comfort", "", "Gain"));
-
-            Criteria.CriteriaCollection[0].MinValue = 2;
-            Criteria.CriteriaCollection[0].MaxValue = 30;
-            Criteria.CriteriaCollection[1].MinValue = 10;
-            Criteria.CriteriaCollection[1].MaxValue = 40;
-            Criteria.CriteriaCollection[2].MinValue = 0;
-            Criteria.CriteriaCollection[2].MaxValue = 3;
-
-            Alternatives.AlternativesCollection.Add(new Alternative("RER", Criteria.CriteriaCollection));
-            Alternatives.AlternativesCollection.Add(new Alternative("Metro 1", Criteria.CriteriaCollection));
-            Alternatives.AlternativesCollection.Add(new Alternative("Metro 2", Criteria.CriteriaCollection));
-            Alternatives.AlternativesCollection.Add(new Alternative("Bus", Criteria.CriteriaCollection));
-            Alternatives.AlternativesCollection.Add(new Alternative("Taxi", Criteria.CriteriaCollection));
-            Alternatives.AlternativesCollection.Add(new Alternative("Car", Criteria.CriteriaCollection));
-            Alternatives.AlternativesCollection.Add(new Alternative("Train", Criteria.CriteriaCollection));
-
-            Alternatives.AlternativesCollection[0].CriteriaValuesList[0].Value = 3;
-            Alternatives.AlternativesCollection[0].CriteriaValuesList[1].Value = 10;
-            Alternatives.AlternativesCollection[0].CriteriaValuesList[2].Value = 1;
-            Alternatives.AlternativesCollection[1].CriteriaValuesList[0].Value = 4;
-            Alternatives.AlternativesCollection[1].CriteriaValuesList[1].Value = 20;
-            Alternatives.AlternativesCollection[1].CriteriaValuesList[2].Value = 2;
-            Alternatives.AlternativesCollection[2].CriteriaValuesList[0].Value = 2;
-            Alternatives.AlternativesCollection[2].CriteriaValuesList[1].Value = 20;
-            Alternatives.AlternativesCollection[2].CriteriaValuesList[2].Value = 0;
-            Alternatives.AlternativesCollection[3].CriteriaValuesList[0].Value = 6;
-            Alternatives.AlternativesCollection[3].CriteriaValuesList[1].Value = 40;
-            Alternatives.AlternativesCollection[3].CriteriaValuesList[2].Value = 0;
-            Alternatives.AlternativesCollection[4].CriteriaValuesList[0].Value = 30;
-            Alternatives.AlternativesCollection[4].CriteriaValuesList[1].Value = 30;
-            Alternatives.AlternativesCollection[4].CriteriaValuesList[2].Value = 3;
-            Alternatives.AlternativesCollection[5].CriteriaValuesList[0].Value = 8;
-            Alternatives.AlternativesCollection[5].CriteriaValuesList[1].Value = 24;
-            Alternatives.AlternativesCollection[5].CriteriaValuesList[2].Value = 2;
-            Alternatives.AlternativesCollection[6].CriteriaValuesList[0].Value = 16;
-            Alternatives.AlternativesCollection[6].CriteriaValuesList[1].Value = 36;
-            Alternatives.AlternativesCollection[6].CriteriaValuesList[2].Value = 3;
         }
 
         public Alternatives Alternatives { get; set; }
@@ -131,6 +88,16 @@ namespace UTA.ViewModels
         public AlternativesTabViewModel AlternativesTabViewModel { get; }
         public WelcomeTabViewModel WelcomeTabViewModel { get; }
 
+        public CoefficientAssessmentTabViewModel CoefficientAssessmentTabViewModel
+        {
+            get => _coefficientAssessmentTabViewModel;
+            set
+            {
+                _coefficientAssessmentTabViewModel = value;
+                OnPropertyChanged(nameof(CoefficientAssessmentTabViewModel));
+            }
+        }
+
         public ITab TabToSelect
         {
             get => _tabToSelect;
@@ -143,7 +110,6 @@ namespace UTA.ViewModels
 
         public bool IsThereAnyApplicationProgress =>
             Results.FinalRanking.FinalRankingCollection.Count != 0
-            || Results.PartialUtilityFunctions.Count != 0
             || Alternatives.AlternativesCollection.Count != 0
             || Criteria.CriteriaCollection.Count != 0;
 
@@ -291,6 +257,7 @@ namespace UTA.ViewModels
         private void ShowPartialUtilityTabs()
         {
             Tabs.Remove(CoefficientAssessmentTabViewModel);
+            CoefficientAssessmentTabViewModel = null;
 
             _utilitiesCalculator = new UtilitiesCalculator(_currentCalculationAlternativesCopy, Results, _currentCalculationCriteriaCopy);
             _utilitiesCalculator.CalculateGlobalUtilities();
@@ -317,6 +284,7 @@ namespace UTA.ViewModels
         private void UpdateScalingCoefficients()
         {
             Tabs.Remove(CoefficientAssessmentTabViewModel);
+            CoefficientAssessmentTabViewModel = null;
             _utilitiesCalculator?.UpdateScalingCoefficients();
         }
 
@@ -349,7 +317,7 @@ namespace UTA.ViewModels
             if (saveDialogResult == MessageDialogResult.FirstAuxiliary) return false;
             if (saveDialogResult == MessageDialogResult.Negative)
                 await SaveTypeChooserDialog();
-            
+
             ResetProgress();
             return true;
         }
@@ -530,7 +498,11 @@ namespace UTA.ViewModels
             if (saveXMCDADialog.ShowDialog() != true) return;
 
             var directoryPath = saveXMCDADialog.SelectedPath;
-            var dataSaver = new XMCDAExporter(directoryPath, _currentCalculationCriteriaCopy, _currentCalculationAlternativesCopy, Results);
+            var dataSaver = new XMCDAExporter(
+                directoryPath,
+                _currentCalculationCriteriaCopy ?? new List<Criterion>(Criteria.CriteriaCollection),
+                _currentCalculationAlternativesCopy ?? new List<Alternative>(Alternatives.AlternativesCollection),
+                Results);
 
             await TryToSave(true, dataSaver, directoryPath);
         }

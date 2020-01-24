@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -27,14 +27,15 @@ namespace UTA.Views
             InitializeComponent();
             DataContext = _viewmodel;
             Loaded += (sender, args) => { _viewmodel.ShowTab(_viewmodel.WelcomeTabViewModel); };
+            _menuItemBottomMargin = (Thickness) ShowMenu.FindResource("MenuItemBottomMargin");
+
             _viewmodel.PartialUtilityTabViewModels.CollectionChanged += PartialUtilityTabsCollectionChanged;
+
             var tabViewSource = CollectionViewSource.GetDefaultView(TabControl.Items);
             tabViewSource.CollectionChanged += (sender, args) =>
             {
                 if (args.Action == NotifyCollectionChangedAction.Add) TabControl.SelectedIndex = _viewmodel.Tabs.Count - 1;
             };
-
-            _menuItemBottomMargin = (Thickness) ShowMenu.FindResource("MenuItemBottomMargin");
 
             _viewmodel.PropertyChanged += (s, e) =>
             {
@@ -42,6 +43,10 @@ namespace UTA.Views
                 {
                     if (TabControl.SelectedItem == _viewmodel.TabToSelect) BringCurrentTabIntoView();
                     else TabControl.SelectedItem = _viewmodel.TabToSelect;
+                }
+                else if (e.PropertyName == nameof(_viewmodel.CoefficientAssessmentTabViewModel))
+                {
+                    CoefficientAssessmentTabPropertyChanged();
                 }
             };
         }
@@ -173,7 +178,6 @@ namespace UTA.Views
             }
         }
 
-        // updates Show MenuItem with dialogue tabs
         private void PartialUtilityTabsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
@@ -181,62 +185,56 @@ namespace UTA.Views
                 if (ShowMenu.Items[ShowMenu.Items.Count - 1] is MenuItem lastMenuItem)
                 {
                     lastMenuItem.Margin = new Thickness(0);
-                    if ((string) lastMenuItem.Tag != "Dialogue") ShowMenu.Items.Add(new Separator());
+                    if ((string) lastMenuItem.Tag != "Utility") ShowMenu.Items.Add(new Separator());
                 }
 
-                var newUserDialogueTabViewModel = (PartialUtilityTabViewModel) e.NewItems[0];
+                var newPartialUtilityTabViewModel = (PartialUtilityTabViewModel) e.NewItems[0];
                 var newMenuItem = new MenuItem
-                    {Header = newUserDialogueTabViewModel.Name, Margin = _menuItemBottomMargin, Tag = "Dialogue"};
-                newMenuItem.Click += (s, args) => _viewmodel.ShowTab(newUserDialogueTabViewModel);
+                    {Header = newPartialUtilityTabViewModel.Name, Margin = _menuItemBottomMargin, Tag = "Utility"};
+                newMenuItem.Click += (s, args) => _viewmodel.ShowTab(newPartialUtilityTabViewModel);
                 ShowMenu.Items.Add(newMenuItem);
             }
-            else if (e.Action == NotifyCollectionChangedAction.Remove)
+            else if (e.Action == NotifyCollectionChangedAction.Reset)
             {
-                var removedUserDialogueTabViewModel = (PartialUtilityTabViewModel) e.OldItems[0];
-                var menuItemToRemove = ShowMenu.Items.OfType<MenuItem>()
-                    .First(menuItem => (string) menuItem.Header == removedUserDialogueTabViewModel.Name);
-                ShowMenu.Items.Remove(menuItemToRemove);
+                var itemsToRemove = new List<MenuItem>();
+                foreach (var item in ShowMenu.Items)
+                    if (item is MenuItem menuItem && (string) menuItem.Tag == "Utility")
+                        itemsToRemove.Add(menuItem);
+                foreach (var menuItem in itemsToRemove) ShowMenu.Items.Remove(menuItem);
 
                 if (ShowMenu.Items[ShowMenu.Items.Count - 1] is Separator separator) ShowMenu.Items.Remove(separator);
                 ((MenuItem) ShowMenu.Items[ShowMenu.Items.Count - 1]).Margin = _menuItemBottomMargin;
             }
         }
 
-        // updates Show MenuItem with chart tabs and manages right panel expanders
-        // TODO
-        //private void ChartTabsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        //{
-        //    if (e.Action == NotifyCollectionChangedAction.Reset)
-        //    {
-        //        FinalRankingExpander.IsExpanded = false;
-        //        CoefficientsExpander.IsExpanded = true;
+        private void CoefficientAssessmentTabPropertyChanged()
+        {
+            if (_viewmodel.CoefficientAssessmentTabViewModel != null)
+            {
+                if (ShowMenu.Items[ShowMenu.Items.Count - 1] is MenuItem lastMenuItem)
+                {
+                    lastMenuItem.Margin = new Thickness(0);
+                    ShowMenu.Items.Add(new Separator());
+                }
 
-        //        var itemsToRemove = new List<MenuItem>();
-        //        foreach (var item in ShowMenu.Items)
-        //            if (item is MenuItem menuItem && (string) menuItem.Tag == "Chart")
-        //                itemsToRemove.Add(menuItem);
-        //        foreach (var menuItem in itemsToRemove) ShowMenu.Items.Remove(menuItem);
+                var newMenuItem = new MenuItem
+                    {Header = _viewmodel.CoefficientAssessmentTabViewModel.Name, Margin = _menuItemBottomMargin, Tag = "Coefficient"};
+                newMenuItem.Click += (s, args) => _viewmodel.ShowTab(_viewmodel.CoefficientAssessmentTabViewModel);
+                ShowMenu.Items.Add(newMenuItem);
+            }
+            else
+            {
+                foreach (var item in ShowMenu.Items)
+                    if (item is MenuItem menuItem && (string) menuItem.Tag == "Coefficient")
+                    {
+                        ShowMenu.Items.Remove(item);
+                        break;
+                    }
 
-        //        if (ShowMenu.Items[ShowMenu.Items.Count - 1] is Separator separator) ShowMenu.Items.Remove(separator);
-        //        ((MenuItem) ShowMenu.Items[ShowMenu.Items.Count - 1]).Margin = _menuItemBottomMargin;
-        //    }
-        //    else if (e.Action == NotifyCollectionChangedAction.Add)
-        //    {
-        //        FinalRankingExpander.IsExpanded = true;
-        //        CoefficientsExpander.IsExpanded = false;
-
-        //        if (ShowMenu.Items[ShowMenu.Items.Count - 1] is MenuItem lastMenuItem)
-        //        {
-        //            lastMenuItem.Margin = new Thickness(0);
-        //            if ((string) lastMenuItem.Tag != "Chart") ShowMenu.Items.Add(new Separator());
-        //        }
-
-        //        var newChartTabViewModel = (ChartTabViewModel) e.NewItems[0];
-        //        var newMenuItem = new MenuItem {Header = newChartTabViewModel.Name, Margin = _menuItemBottomMargin, Tag = "Chart"};
-        //        newMenuItem.Click += (s, args) => _viewmodel.ShowTab(newChartTabViewModel);
-        //        ShowMenu.Items.Add(newMenuItem);
-        //    }
-        //}
+                if (ShowMenu.Items[ShowMenu.Items.Count - 1] is Separator separator) ShowMenu.Items.Remove(separator);
+                ((MenuItem) ShowMenu.Items[ShowMenu.Items.Count - 1]).Margin = _menuItemBottomMargin;
+            }
+        }
 
         private void ExitMenuItemClicked(object sender, RoutedEventArgs e)
         {
