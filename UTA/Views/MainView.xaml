@@ -12,7 +12,8 @@
                       xmlns:views="clr-namespace:UTA.Views"
                       xmlns:tabModel="clr-namespace:UTA.Models.Tab"
                       x:Class="UTA.Views.MainView" mc:Ignorable="d"
-                      d:DataContext="{d:DesignInstance viewModels:MainViewModel}" Title="Assess" WindowState="Maximized"
+                      d:DataContext="{d:DesignInstance viewModels:MainViewModel}" Title="Assess"
+                      WindowState="Maximized"
                       Width="1300" Height="700" MinWidth="840" MinHeight="600" Left="12" Top="12"
                       Closing="ApplicationClosing">
   <controls:MetroWindow.Resources>
@@ -150,15 +151,6 @@
           </i:Interaction.Triggers>
         </MenuItem>
         <Separator />
-        <MenuItem Header="Settings">
-          <i:Interaction.Triggers>
-            <i:EventTrigger EventName="Click">
-              <i:InvokeCommandAction Command="{Binding ShowTabCommand}"
-                                     CommandParameter="{Binding SettingsTabViewModel}" />
-            </i:EventTrigger>
-          </i:Interaction.Triggers>
-        </MenuItem>
-        <Separator />
         <MenuItem Margin="{StaticResource MenuItemBottomMargin}" Header="Exit" Click="ExitMenuItemClicked" />
       </MenuItem>
 
@@ -238,8 +230,8 @@
       <!--top bar-->
       <Border Height="36" Grid.ColumnSpan="5" Background="{StaticResource ColorInterface4}" BorderThickness="1,0,1,1"
               BorderBrush="{StaticResource ColorBorders1}" Padding="12,0,12,0">
-        <DockPanel Height="28" LastChildFill="False">
-          <Button Content="Calculate" Style="{StaticResource PrimaryRoundButton}" DockPanel.Dock="Left"
+        <StackPanel Orientation="Horizontal" Height="28">
+          <Button Content="Calculate" Style="{StaticResource PrimaryRoundButton}"
                   FontSize="{StaticResource CommonFontSize1}" Margin="0,0,8,0" Padding="20,0,20,1">
             <i:Interaction.Triggers>
               <i:EventTrigger EventName="Click">
@@ -248,12 +240,10 @@
             </i:Interaction.Triggers>
           </Button>
 
-          <Rectangle Focusable="False" Margin="0,0,8,0" Width="1" Fill="{StaticResource ColorSeparator}"
-                     DockPanel.Dock="Left" />
+          <Rectangle Focusable="False" Margin="0,0,8,0" Width="1" Fill="{StaticResource ColorSeparator}" />
 
           <Button Content="Criteria" Style="{StaticResource SecondaryRoundButton}"
-                  FontSize="{StaticResource CommonFontSize1}" DockPanel.Dock="Left" Margin="0,0,8,0"
-                  Padding="16,0,16,1">
+                  FontSize="{StaticResource CommonFontSize1}" Margin="0,0,8,0" Padding="16,0,16,1">
             <i:Interaction.Triggers>
               <i:EventTrigger EventName="Click">
                 <i:InvokeCommandAction Command="{Binding ShowTabCommand}"
@@ -263,8 +253,7 @@
           </Button>
 
           <Button Content="Alternatives" Style="{StaticResource SecondaryRoundButton}"
-                  FontSize="{StaticResource CommonFontSize1}" DockPanel.Dock="Left" Margin="0,0,8,0"
-                  Padding="16,0,16,1">
+                  FontSize="{StaticResource CommonFontSize1}" Margin="0,0,8,0" Padding="16,0,16,1">
             <i:Interaction.Triggers>
               <i:EventTrigger EventName="Click">
                 <i:InvokeCommandAction Command="{Binding ShowTabCommand}"
@@ -272,17 +261,7 @@
               </i:EventTrigger>
             </i:Interaction.Triggers>
           </Button>
-
-          <Button Content="Settings" Style="{StaticResource SecondaryRoundButton}" Margin="0" Padding="16,0,16,1"
-                  DockPanel.Dock="Right" FontSize="{StaticResource CommonFontSize1}">
-            <i:Interaction.Triggers>
-              <i:EventTrigger EventName="Click">
-                <i:InvokeCommandAction Command="{Binding ShowTabCommand}"
-                                       CommandParameter="{Binding SettingsTabViewModel}" />
-              </i:EventTrigger>
-            </i:Interaction.Triggers>
-          </Button>
-        </DockPanel>
+        </StackPanel>
       </Border>
 
 
@@ -502,9 +481,6 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewModels:AlternativesTabViewModel}">
               <views:AlternativesTab />
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type viewModels:SettingsTabViewModel}">
-              <views:SettingsTab />
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewModels:WelcomeTabViewModel}">
               <views:WelcomeTab />

@@ -112,10 +112,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\SettingsTab.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\MainView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -129,11 +125,9 @@
     <Compile Include="Helpers\ViewResolvingPlotModel.cs" />
     <Compile Include="ViewModels\AlternativesTabViewModel.cs" />
     <Compile Include="ViewModels\CriteriaTabViewModel.cs" />
-    <Compile Include="ViewModels\AssessmentMethodTabViewModel.cs" />
     <Compile Include="ViewModels\CoefficientAssessmentTabViewModel.cs" />
     <Compile Include="ViewModels\WelcomeTabViewModel.cs" />
     <Compile Include="ViewModels\PartialUtilityTabViewModel.cs" />
-    <Compile Include="ViewModels\SettingsTabViewModel.cs" />
     <Compile Include="Views\CoefficientAssessmentTab.xaml.cs">
       <DependentUpon>CoefficientAssessmentTab.xaml</DependentUpon>
     </Compile>
@@ -160,9 +154,6 @@
     </Compile>
     <Compile Include="Views\WelcomeTab.xaml.cs">
       <DependentUpon>WelcomeTab.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\SettingsTab.xaml.cs">
-      <DependentUpon>SettingsTab.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\MainView.xaml.cs">

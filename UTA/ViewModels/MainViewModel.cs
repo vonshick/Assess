@@ -49,7 +49,6 @@ namespace UTA.ViewModels
 
             CriteriaTabViewModel = new CriteriaTabViewModel(Criteria);
             AlternativesTabViewModel = new AlternativesTabViewModel(Criteria, Alternatives);
-            SettingsTabViewModel = new SettingsTabViewModel();
             WelcomeTabViewModel = new WelcomeTabViewModel();
 
             PartialUtilityTabViewModels = new ObservableCollection<PartialUtilityTabViewModel>();
@@ -130,9 +129,7 @@ namespace UTA.ViewModels
 
         public CriteriaTabViewModel CriteriaTabViewModel { get; }
         public AlternativesTabViewModel AlternativesTabViewModel { get; }
-        public SettingsTabViewModel SettingsTabViewModel { get; }
         public WelcomeTabViewModel WelcomeTabViewModel { get; }
-
 
         public ITab TabToSelect
         {
@@ -352,7 +349,13 @@ namespace UTA.ViewModels
             if (saveDialogResult == MessageDialogResult.FirstAuxiliary) return false;
             if (saveDialogResult == MessageDialogResult.Negative)
                 await SaveTypeChooserDialog();
+            
+            ResetProgress();
+            return true;
+        }
 
+        private void ResetProgress()
+        {
             Results.Reset();
             Alternatives.Reset();
             Criteria.Reset();
@@ -365,7 +368,6 @@ namespace UTA.ViewModels
             _currentCalculationCriteriaCopy?.Clear();
             _saveData.IsSavingWithResults = null;
             _saveData.FilePath = null;
-            return true;
         }
 
         private async Task SaveTypeChooserDialog()
@@ -418,6 +420,7 @@ namespace UTA.ViewModels
             }
             catch (Exception exception)
             {
+                ResetProgress();
                 ShowLoadErrorDialog(exception);
             }
         }
@@ -449,6 +452,7 @@ namespace UTA.ViewModels
             }
             catch (Exception exception)
             {
+                ResetProgress();
                 ShowLoadErrorDialog(exception);
             }
         }
