@@ -24,29 +24,35 @@ namespace UTA.ViewModels
         private readonly OxyColor _colorPrimarySelected = OxyColor.FromArgb(80, 51, 115, 242);
         private readonly OxyColor _colorPrimaryUnselected = OxyColor.FromArgb(30, 51, 115, 242);
         private readonly OxyColor _gridColor = OxyColor.FromRgb(240, 240, 240); // ColorInterface5
+        private readonly List<PartialUtilityValues> _initialPointsValues;
         private readonly LineSeries _line;
         private readonly OxyColor _lineColor = OxyColor.FromRgb(110, 110, 110); // ColorSecondary
         private readonly PartialUtility _partialUtility;
         private readonly LineSeries _placeholderLine;
         private readonly OxyColor _placeholderLineColor = OxyColor.FromArgb(70, 110, 110, 110); // ColorSecondary
         private readonly OxyColor _placeholderMarkerColor = OxyColor.FromArgb(170, 51, 115, 242);
-        private readonly List<PartialUtilityValues> _pointsValues;
+        private readonly Action _restartCoefficientsAssessment;
         private readonly SettingsTabViewModel _settings;
         private DialogController _dialogController;
         private bool _isMethodSet;
         private RectangleAnnotation _selectedRectangle;
 
 
-        public PartialUtilityTabViewModel(PartialUtility partialUtility, Action calculateUtilities)
+        public PartialUtilityTabViewModel(PartialUtility partialUtility, Action calculateUtilities, Action restartCoefficientsAssessment)
         {
             _partialUtility = partialUtility;
             _calculateUtilities = calculateUtilities;
-            Criterion = partialUtility.Criterion;
-            _pointsValues = partialUtility.PointsValues;
+            _restartCoefficientsAssessment = restartCoefficientsAssessment;
 
             Name = $"{Criterion.Name} - Utility";
             Title = $"{Criterion.Name} - Partial Utility Function";
+
             IsMethodSet = Criterion.Method != Criterion.MethodOptionsList[0];
+            _initialPointsValues = new List<PartialUtilityValues>
+            {
+                new PartialUtilityValues(PointsValues[0].X, PointsValues[0].Y),
+                new PartialUtilityValues(PointsValues[1].X, PointsValues[1].Y)
+            };
 
             if (IsMethodSet)
                 DialogController = new DialogController(_partialUtility,
@@ -118,7 +124,7 @@ namespace UTA.ViewModels
                 _placeholderLine.Points.Clear();
                 PlotModel.InvalidatePlot(false);
             };
-            InitializePlotWhenIfIsSet();
+            InitializePlotIfMethodIsSet();
         }
 
 
@@ -126,9 +132,10 @@ namespace UTA.ViewModels
         // nullable because it only switches ContentControl when DisplayObject is initialized and data is bound
         public bool? IsLotteryComparison => DialogController == null ? (bool?) null : Criterion.Method == Criterion.MethodOptionsList[3];
         public IEnumerable<string> Methods { get; } = Criterion.MethodOptionsList.Skip(1);
-        public Criterion Criterion { get; }
         public string Title { get; }
         public ViewResolvingPlotModel PlotModel { get; }
+        public Criterion Criterion => _partialUtility.Criterion;
+        private List<PartialUtilityValues> PointsValues => _partialUtility.PointsValues;
 
         public DialogController DialogController
         {
@@ -163,7 +170,7 @@ namespace UTA.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void InitializePlotWhenIfIsSet()
+        private void InitializePlotIfMethodIsSet()
         {
             if (!IsMethodSet) return;
             GeneratePlotData();
@@ -184,16 +191,16 @@ namespace UTA.ViewModels
             PlotModel.Axes[1].Minimum = Criterion.MinValue - extraSpace;
             PlotModel.Axes[1].Maximum = Criterion.MaxValue + extraSpace;
 
-            for (var i = 0; i < _pointsValues.Count; i++)
+            for (var i = 0; i < PointsValues.Count; i++)
             {
-                if (i < _pointsValues.Count - 1)
+                if (i < PointsValues.Count - 1)
                 {
                     var rectangle = new RectangleAnnotation
                     {
-                        MinimumX = _pointsValues[i].X,
-                        MaximumX = _pointsValues[i + 1].X,
-                        MinimumY = _pointsValues[i].Y,
-                        MaximumY = _pointsValues[i + 1].Y,
+                        MinimumX = PointsValues[i].X,
+                        MaximumX = PointsValues[i + 1].X,
+                        MinimumY = PointsValues[i].Y,
+                        MaximumY = PointsValues[i + 1].Y,
                         Fill = _colorPrimaryUnselected,
                         Layer = AnnotationLayer.BelowSeries
                     };
@@ -201,7 +208,7 @@ namespace UTA.ViewModels
                     PlotModel.Annotations.Add(rectangle);
                 }
 
-                _line.Points.Add(new DataPoint(_pointsValues[i].X, _pointsValues[i].Y));
+                _line.Points.Add(new DataPoint(PointsValues[i].X, PointsValues[i].Y));
             }
 
             PlotModel.InvalidatePlot(false);
@@ -217,8 +224,8 @@ namespace UTA.ViewModels
                 return;
             }
 
-            var firstPointIndex = _pointsValues.FindIndex(partialUtilityValue => partialUtilityValue.X == rectangle.MinimumX);
-            DialogController.TriggerDialog(_pointsValues[firstPointIndex], _pointsValues[firstPointIndex + 1]);
+            var firstPointIndex = PointsValues.FindIndex(partialUtilityValue => partialUtilityValue.X == rectangle.MinimumX);
+            DialogController.TriggerDialog(PointsValues[firstPointIndex], PointsValues[firstPointIndex + 1]);
             SelectRectangle(rectangle, firstPointIndex);
             PlotEventHandler(e);
         }
@@ -230,9 +237,9 @@ namespace UTA.ViewModels
             rectangle.Fill = _colorPrimarySelected;
 
             _placeholderLine.Points.Clear();
-            _placeholderLine.Points.Add(new DataPoint(_pointsValues[firstPointIndex].X, _pointsValues[firstPointIndex].Y));
+            _placeholderLine.Points.Add(new DataPoint(PointsValues[firstPointIndex].X, PointsValues[firstPointIndex].Y));
             _placeholderLine.Points.Add(new DataPoint(DialogController.Dialog.PointToAdd.X, DialogController.Dialog.PointToAdd.Y));
-            _placeholderLine.Points.Add(new DataPoint(_pointsValues[firstPointIndex + 1].X, _pointsValues[firstPointIndex + 1].Y));
+            _placeholderLine.Points.Add(new DataPoint(PointsValues[firstPointIndex + 1].X, PointsValues[firstPointIndex + 1].Y));
         }
 
         private void PlotEventHandler(OxyInputEventArgs e)
@@ -271,8 +278,38 @@ namespace UTA.ViewModels
             IsMethodSet = true;
             DialogController = new DialogController(_partialUtility,
                 Criterion.MethodOptionsList.IndexOf(Criterion.Method), Criterion.Probability ?? 0);
-            InitializePlotWhenIfIsSet();
+            InitializePlotIfMethodIsSet();
             OnPropertyChanged(nameof(IsLotteryComparison));
+        }
+
+        [UsedImplicitly]
+        public void ResetScalingCoefficients(object sender = null, RoutedEventArgs e = null)
+        {
+            _restartCoefficientsAssessment();
+        }
+
+        [UsedImplicitly]
+        public void ResetUtility(object sender = null, RoutedEventArgs e = null)
+        {
+            RestorePointsValuesToInitialValue();
+            DialogController = new DialogController(_partialUtility,
+                Criterion.MethodOptionsList.IndexOf(Criterion.Method), Criterion.Probability ?? 0);
+            InitializePlotIfMethodIsSet();
+        }
+
+        [UsedImplicitly]
+        public void ChangeMethodButtonClicked(object sender = null, RoutedEventArgs e = null)
+        {
+            IsMethodSet = false;
+            RestorePointsValuesToInitialValue();
+        }
+
+        private void RestorePointsValuesToInitialValue()
+        {
+            _partialUtility.PointsValues.Clear();
+            foreach (var pointValues in _initialPointsValues)
+                _partialUtility.PointsValues.Add(new PartialUtilityValues(pointValues.X, pointValues.Y));
+            _calculateUtilities();
         }
 
         [NotifyPropertyChangedInvocator]

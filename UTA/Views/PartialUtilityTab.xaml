@@ -17,7 +17,47 @@
       <RowDefinition />
     </Grid.RowDefinitions>
 
-    <TextBlock Text="{Binding Title}" FontSize="18" Margin="0,0,0,8" />
+    <DockPanel LastChildFill="False" Margin="0,0,0,8">
+
+      <TextBlock Text="{Binding Title}" FontSize="{StaticResource CommonFontSize0}" />
+      <ScrollViewer DockPanel.Dock="Right" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="8,0,0,0">
+        <ScrollViewer.Style>
+          <Style TargetType="{x:Type ScrollViewer}">
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding IsMethodSet, UpdateSourceTrigger=PropertyChanged}" Value="False">
+                <Setter Property="Visibility" Value="Hidden"></Setter>
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </ScrollViewer.Style>
+
+        <DockPanel LastChildFill="False">
+          <Button Content="Reset utility" Style="{StaticResource SecondaryOutlineRoundButton}" Margin="0,0,8,0">
+            <i:Interaction.Triggers>
+              <i:EventTrigger EventName="Click">
+                <i:CallMethodAction TargetObject="{Binding}" MethodName="ResetUtility" />
+              </i:EventTrigger>
+            </i:Interaction.Triggers>
+          </Button>
+
+          <Button Content="Change method" Style="{StaticResource SecondaryOutlineRoundButton}" Margin="0,0,8,0">
+            <i:Interaction.Triggers>
+              <i:EventTrigger EventName="Click">
+                <i:CallMethodAction TargetObject="{Binding}" MethodName="ChangeMethodButtonClicked" />
+              </i:EventTrigger>
+            </i:Interaction.Triggers>
+          </Button>
+
+          <Button Content="Reset scaling coefficients" Style="{StaticResource SecondaryOutlineRoundButton}">
+            <i:Interaction.Triggers>
+              <i:EventTrigger EventName="Click">
+                <i:CallMethodAction TargetObject="{Binding}" MethodName="ResetScalingCoefficients" />
+              </i:EventTrigger>
+            </i:Interaction.Triggers>
+          </Button>
+        </DockPanel>
+      </ScrollViewer>
+    </DockPanel>
 
     <Grid Grid.Row="1">
       <ContentControl>
@@ -59,27 +99,41 @@
                       </ListBox>
 
                       <StackPanel Margin="0,0,0,12">
-                        <StackPanel.Style>
-                          <Style TargetType="{x:Type StackPanel}">
-                            <Style.Triggers>
-                              <DataTrigger
-                                Binding="{Binding Criterion.IsProbabilityIncluded, UpdateSourceTrigger=PropertyChanged}"
-                                Value="True">
-                                <Setter Property="Visibility" Value="Visible" />
-                              </DataTrigger>
-                            </Style.Triggers>
-                            <Setter Property="Visibility" Value="Collapsed" />
-                          </Style>
-                        </StackPanel.Style>
-
                         <TextBlock Text="Probability of obtaining a more favorable option in lottery" Margin="0,0,0,2"
-                                   FontSize="{StaticResource CommonFontSize2}" />
-                        <controls:NumericUpDown
-                          Value="{Binding Criterion.Probability, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
-                          Minimum="{x:Static criterion:Criterion.MinimumProbability}"
-                          Maximum="{x:Static criterion:Criterion.MaximumProbability}"
-                          NumericInputMode="All" Interval="0.01" StringFormat="G15"
-                          FontSize="{StaticResource CommonFontSize2}" />
+                                   FontSize="{StaticResource CommonFontSize2}">
+                          <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                              <Style.Triggers>
+                                <DataTrigger
+                                  Binding="{Binding Criterion.IsProbabilityIncluded, UpdateSourceTrigger=PropertyChanged}"
+                                  Value="True">
+                                  <Setter Property="Foreground" Value="Black" />
+                                </DataTrigger>
+                              </Style.Triggers>
+                              <Setter Property="Foreground" Value="{StaticResource ColorTertiary}" />
+                            </Style>
+                          </TextBlock.Style>
+                        </TextBlock>
+
+                        <controls:NumericUpDown 
+                                                Value="{Binding Criterion.Probability, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                                                Minimum="{x:Static criterion:Criterion.MinimumProbability}"
+                                                Maximum="{x:Static criterion:Criterion.MaximumProbability}"
+                                                NumericInputMode="All" Interval="0.01" StringFormat="G15"
+                                                FontSize="{StaticResource CommonFontSize2}">
+                          <controls:NumericUpDown.Style>
+                            <Style TargetType="{x:Type controls:NumericUpDown}">
+                              <Style.Triggers>
+                                <DataTrigger
+                                  Binding="{Binding Criterion.IsProbabilityIncluded, UpdateSourceTrigger=PropertyChanged}"
+                                  Value="True">
+                                  <Setter Property="IsEnabled" Value="True" />
+                                </DataTrigger>
+                              </Style.Triggers>
+                              <Setter Property="IsEnabled" Value="False" />
+                            </Style>
+                          </controls:NumericUpDown.Style>
+                        </controls:NumericUpDown>
                       </StackPanel>
 
                       <Button Content="Confirm" Style="{StaticResource PrimaryRoundButton}" Padding="12,8"
@@ -106,7 +160,7 @@
                       </Grid.RowDefinitions>
 
                       <!--partial utility plot-->
-                      <oxy:PlotView Model="{Binding PlotModel}" Background="Transparent" Margin="-8,0,4,0">
+                      <oxy:PlotView Model="{Binding PlotModel}" Background="Transparent" Margin="-10,0,1,0">
                         <oxy:PlotView.DefaultTrackerTemplate>
                           <ControlTemplate>
                             <oxy:TrackerControl Position="{Binding Position}"
@@ -419,7 +473,7 @@
                               </Border.Style>
 
                               <TextBlock Text="Click on a blue area on the chart to start dialogue..."
-                                         Foreground="{StaticResource ColorPlaceholder}"
+                                         Foreground="{StaticResource ColorTertiary}"
                                          FontSize="{StaticResource CommonFontSize0}"
                                          VerticalAlignment="Center"
                                          TextAlignment="Center" TextWrapping="Wrap">

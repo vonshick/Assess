@@ -34,18 +34,19 @@
       <SolidColorBrush x:Key="ColorInterface6Hover" Color="#EAEAEA" />
       <SolidColorBrush x:Key="ColorInterface7Hover" Color="#EEEEEE" />
 
-      <SolidColorBrush x:Key="ColorPlaceholder" Color="#8C8C8C" />
-
       <SolidColorBrush x:Key="ColorPrimary" Color="#3373f2" />
       <SolidColorBrush x:Key="ColorSecondary" Color="#6E6E6E" />
+      <SolidColorBrush x:Key="ColorTertiary" Color="#8C8C8C" />
       <SolidColorBrush x:Key="ColorDanger" Color="#DC000C" />
 
       <SolidColorBrush x:Key="ColorPrimaryHover" Color="#4680f2" />
       <SolidColorBrush x:Key="ColorSecondaryHover" Color="#7C7C7C" />
+      <SolidColorBrush x:Key="ColorTertiaryHover" Color="#FF9A9A9A" />
       <SolidColorBrush x:Key="ColorDangerHover" Color="#dc3b44" />
 
       <SolidColorBrush x:Key="ColorPrimaryPressed" Color="#2660D4" />
       <SolidColorBrush x:Key="ColorSecondaryPressed" Color="#555555" />
+      <SolidColorBrush x:Key="ColorTertiaryPressed" Color="#737373" />
       <SolidColorBrush x:Key="ColorDangerPressed" Color="#BE000C" />
 
       <SolidColorBrush x:Key="ColorPrimaryDisabled" Color="#333373f2" />
@@ -135,6 +136,29 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Foreground" Value="{StaticResource ColorFontLight}" />
         <Setter Property="Background" Value="{StaticResource ColorSecondary}" />
+        <Setter Property="Padding" Value="12,4,12,5" />
+        <Setter Property="FontSize" Value="14" />
+      </Style>
+
+      <Style x:Key="SecondaryOutlineRoundButton" BasedOn="{StaticResource RoundButton}" TargetType="{x:Type Button}">
+        <Style.Triggers>
+          <Trigger Property="IsMouseOver" Value="True">
+            <Setter Property="Background" Value="{StaticResource ColorSecondaryHover}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ColorSecondaryHover}"></Setter>
+            <Setter Property="Foreground" Value="White" />
+          </Trigger>
+          <Trigger Property="IsPressed" Value="True">
+            <Setter Property="Background" Value="{StaticResource ColorSecondaryPressed}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ColorSecondaryPressed}"></Setter>
+            <Setter Property="Foreground" Value="White" />
+          </Trigger>
+        </Style.Triggers>
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{StaticResource ColorSecondary}"></Setter>
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{StaticResource ColorSecondary}" />
+        <Setter Property="Padding" Value="12,4,12,5" />
+        <Setter Property="FontSize" Value="14" />
       </Style>
 
       <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource MetroDataGridColumnHeader}"

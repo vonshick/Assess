@@ -20,7 +20,7 @@ namespace CalculationsEngine.Assess.Assess
             Results.PartialUtilityFunctions = InitPartialUtilityFunctions(criteriaList);
             _alternativesUtilitiesList = new List<AlternativeUtility>();
             _alternativesList = alternativesList;
-            setScalingCoefficient(Results.CriteriaCoefficients);
+            SetScalingCoefficient();
         }
 
 
@@ -48,10 +48,10 @@ namespace CalculationsEngine.Assess.Assess
             return partialUtilityFunctions;
         }
 
-        private void setScalingCoefficient(List<CriterionCoefficient> criteriaCoefficientsList)
+        private void SetScalingCoefficient()
         {
             _baristowSolver = new BaristowSolver();
-            var kCoefficients = criteriaCoefficientsList.Select(o => o.Coefficient).ToList();
+            var kCoefficients = Results.CriteriaCoefficients.Select(o => o.Coefficient).ToList();
             Results.K = _baristowSolver.GetScalingCoefficient(kCoefficients);
         }
 
@@ -101,6 +101,12 @@ namespace CalculationsEngine.Assess.Assess
                     _alternativesUtilitiesList[i].Alternative, _alternativesUtilitiesList[i].Utility));
 
             Results.FinalRanking.FinalRankingCollection = finalRankingEntries;
+        }
+
+        public void UpdateScalingCoefficients()
+        {
+            SetScalingCoefficient();
+            CalculateGlobalUtilities();
         }
     }
 }

@@ -30,7 +30,9 @@ namespace UTA.ViewModels
         private List<Criterion> _currentCalculationCriteriaCopy;
         private SaveData _saveData;
         private ITab _tabToSelect;
+        private UtilitiesCalculator _utilitiesCalculator;
         public CoefficientAssessmentTabViewModel CoefficientAssessmentTabViewModel;
+
 
         public MainViewModel(IDialogCoordinator dialogCoordinator)
         {
@@ -208,14 +210,13 @@ namespace UTA.ViewModels
 
             Tabs.Remove(CoefficientAssessmentTabViewModel);
             foreach (var partialUtilityTabViewModel in PartialUtilityTabViewModels) Tabs.Remove(partialUtilityTabViewModel);
-            foreach (var partialUtilityTabViewModel in PartialUtilityTabViewModels) Tabs.Remove(partialUtilityTabViewModel);
             PartialUtilityTabViewModels.Clear();
 
             _currentCalculationCriteriaCopy = Criteria.GetDeepCopyOfCriteria();
             _currentCalculationAlternativesCopy = Alternatives.GetDeepCopyOfAlternatives();
 
             CoefficientAssessmentTabViewModel =
-                new CoefficientAssessmentTabViewModel(_currentCalculationCriteriaCopy, ShowPartialUtilityTabs);
+                new CoefficientAssessmentTabViewModel(_currentCalculationCriteriaCopy, Results, ShowPartialUtilityTabs);
             ShowTab(CoefficientAssessmentTabViewModel);
         }
 
@@ -289,26 +290,37 @@ namespace UTA.ViewModels
             return true;
         }
 
-        // called in CoefficientAssessmentTabViewModel, after clicking Indifferent in last dialogue question
-        private void ShowPartialUtilityTabs(List<CriterionCoefficient> criteriaCoefficients)
+        // called in CoefficientAssessmentTabViewModel after clicking Indifferent in last dialogue question on calculations start
+        private void ShowPartialUtilityTabs()
         {
-            Results.CriteriaCoefficients = criteriaCoefficients;
-
             Tabs.Remove(CoefficientAssessmentTabViewModel);
 
-            var utilitiesCalculator =
-                new UtilitiesCalculator(_currentCalculationAlternativesCopy, Results, _currentCalculationCriteriaCopy);
-            utilitiesCalculator.CalculateGlobalUtilities();
+            _utilitiesCalculator = new UtilitiesCalculator(_currentCalculationAlternativesCopy, Results, _currentCalculationCriteriaCopy);
+            _utilitiesCalculator.CalculateGlobalUtilities();
 
             foreach (var partialUtility in Results.PartialUtilityFunctions)
             {
                 var partialUtilityTabViewModel =
-                    new PartialUtilityTabViewModel(partialUtility, utilitiesCalculator.CalculateGlobalUtilities);
+                    new PartialUtilityTabViewModel(partialUtility, _utilitiesCalculator.CalculateGlobalUtilities,
+                        RestartCoefficientAssessmentDialogue);
                 PartialUtilityTabViewModels.Add(partialUtilityTabViewModel);
                 Tabs.Add(partialUtilityTabViewModel);
             }
 
             if (PartialUtilityTabViewModels.Count > 0) ShowTab(PartialUtilityTabViewModels[0]);
+        }
+
+        private void RestartCoefficientAssessmentDialogue()
+        {
+            CoefficientAssessmentTabViewModel =
+                new CoefficientAssessmentTabViewModel(_currentCalculationCriteriaCopy, Results, UpdateScalingCoefficients);
+            ShowTab(CoefficientAssessmentTabViewModel);
+        }
+
+        private void UpdateScalingCoefficients()
+        {
+            Tabs.Remove(CoefficientAssessmentTabViewModel);
+            _utilitiesCalculator.UpdateScalingCoefficients();
         }
 
         // xaml enforces void return type
@@ -348,6 +360,7 @@ namespace UTA.ViewModels
             CoefficientAssessmentTabViewModel = null;
             foreach (var partialUtilityTabViewModel in PartialUtilityTabViewModels) Tabs.Remove(partialUtilityTabViewModel);
             PartialUtilityTabViewModels.Clear();
+            _utilitiesCalculator = null;
             _saveData.IsSavingWithResults = null;
             _saveData.FilePath = null;
             return true;
@@ -379,7 +392,6 @@ namespace UTA.ViewModels
         {
             var openFileDialog = new OpenFileDialog
             {
-                // TODO: utx in Assess?
                 Filter = "Assess Input Files (*.xml; *.csv; *.utx)|*.xml;*.csv;*.utx",
                 InitialDirectory = AppDomain.CurrentDomain.BaseDirectory
             };

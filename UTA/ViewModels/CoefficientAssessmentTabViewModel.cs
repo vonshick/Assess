@@ -7,7 +7,6 @@ using CalculationsEngine.Assess.Assess;
 using DataModel.Input;
 using DataModel.Results;
 using UTA.Annotations;
-using UTA.Helpers;
 using UTA.Models.Tab;
 
 namespace UTA.ViewModels
@@ -15,16 +14,18 @@ namespace UTA.ViewModels
     public class CoefficientAssessmentTabViewModel : Tab, INotifyPropertyChanged
     {
         private readonly List<Criterion> _criteriaCollection;
-        private readonly Action<List<CriterionCoefficient>> _showPartialUtilityTabs;
+        private Results _results;
+        private readonly Action _dialogEndAction;
         private int _currentCriterionIndex;
 
 
         public CoefficientAssessmentTabViewModel(List<Criterion> criteriaCollection,
-            Action<List<CriterionCoefficient>> showPartialUtilityTabs)
+            Results results, Action dialogEndAction)
         {
-            Name = "Dialogue - Scaling Coefficient";
+            Name = "Scaling Coefficient - Dialogue";
             _criteriaCollection = criteriaCollection;
-            _showPartialUtilityTabs = showPartialUtilityTabs;
+            _results = results;
+            _dialogEndAction = dialogEndAction;
             Dialog = new CoefficientsDialog(criteriaCollection);
             Dialog.SetInitialValues(_criteriaCollection[_currentCriterionIndex = 0]);
         }
@@ -59,7 +60,9 @@ namespace UTA.ViewModels
             }
             else
             {
-                _showPartialUtilityTabs(Dialog.CriteriaCoefficientsList);
+                // update Results.CriteriaCoefficients with new coefficients
+                _results.CriteriaCoefficients = Dialog.CriteriaCoefficientsList;
+                _dialogEndAction();
             }
         }
 

@@ -641,7 +641,7 @@
               </Style>
             </Grid.Resources>
 
-            <Expander Name="FinalRankingExpander" Header="Final" Collapsed="Expander_Toggled"
+            <Expander Name="FinalRankingExpander" Header="Final Ranking" Collapsed="Expander_Toggled"
                       Expanded="Expander_Toggled" IsExpanded="True"
                       HeaderTemplate="{StaticResource ExpanderPlainHeaderTemplate}">
               <ListView
@@ -660,7 +660,7 @@
               </ListView>
             </Expander>
 
-            <Expander Name="CoefficientsExpander" Header="Scaling coefficients" Grid.Row="1"
+            <Expander Name="CoefficientsExpander" Header="Scaling Coefficients" Grid.Row="1"
                       Collapsed="Expander_Toggled"
                       Expanded="Expander_Toggled" IsExpanded="True"
                       HeaderTemplate="{StaticResource ExpanderPlainHeaderTemplate}">
