@@ -17,7 +17,7 @@ namespace CalculationsEngine.Assess.Assess
         public UtilitiesCalculator(List<Alternative> alternativesList, Results results, List<Criterion> criteriaList)
         {
             Results = results;
-            Results.PartialUtilityFunctions = InitPartialUtilityFunctions(criteriaList);
+            if (Results.PartialUtilityFunctions.Count <= 0) Results.PartialUtilityFunctions = InitPartialUtilityFunctions(criteriaList);
             _alternativesUtilitiesList = new List<AlternativeUtility>();
             _alternativesList = alternativesList;
             SetScalingCoefficient();
@@ -66,7 +66,7 @@ namespace CalculationsEngine.Assess.Assess
                 {
                     var points = Results.PartialUtilityFunctions.Find(o => o.Criterion.Name == criterionValue.Name).PointsValues;
                     points = points.OrderBy(o => o.X).ToList();
-                    var k = Results.CriteriaCoefficients.Find(element => element.CriterionName == criterionValue.Name).Coefficient;
+                    var k = Results.CriteriaCoefficients.First(element => element.CriterionName == criterionValue.Name).Coefficient;
                     double u = 1;
 
                     if (points[0].X == criterionValue.Value)

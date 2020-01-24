@@ -262,7 +262,7 @@ namespace UTA.ViewModels
         {
             var invalidCriteriaValuesNames = new List<string>();
             foreach (var criterion in criteriaList)
-                if (Math.Abs(criterion.MaxValue - criterion.MinValue) < 1E-14)
+                if (Math.Abs(criterion.MaxValue - criterion.MinValue) < 1E-15)
                     invalidCriteriaValuesNames.Add(criterion.Name);
 
             if (invalidCriteriaValuesNames.Count != 0)
@@ -320,7 +320,7 @@ namespace UTA.ViewModels
         private void UpdateScalingCoefficients()
         {
             Tabs.Remove(CoefficientAssessmentTabViewModel);
-            _utilitiesCalculator.UpdateScalingCoefficients();
+            _utilitiesCalculator?.UpdateScalingCoefficients();
         }
 
         // xaml enforces void return type
@@ -361,6 +361,8 @@ namespace UTA.ViewModels
             foreach (var partialUtilityTabViewModel in PartialUtilityTabViewModels) Tabs.Remove(partialUtilityTabViewModel);
             PartialUtilityTabViewModels.Clear();
             _utilitiesCalculator = null;
+            _currentCalculationAlternativesCopy?.Clear();
+            _currentCalculationCriteriaCopy?.Clear();
             _saveData.IsSavingWithResults = null;
             _saveData.FilePath = null;
             return true;
@@ -410,6 +412,7 @@ namespace UTA.ViewModels
                 if (dataLoader == null) return;
 
                 dataLoader.LoadData(filePath);
+                if (!await IsCriteriaValuesPrecisionAcceptable(dataLoader.CriterionList)) return;
                 Criteria.CriteriaCollection = new ObservableCollection<Criterion>(dataLoader.CriterionList);
                 Alternatives.AlternativesCollection = new ObservableCollection<Alternative>(dataLoader.AlternativeList);
             }
@@ -432,23 +435,17 @@ namespace UTA.ViewModels
             {
                 var dataLoader = new XMCDALoader();
                 dataLoader.LoadData(filePath);
+                if (!await IsCriteriaValuesPrecisionAcceptable(dataLoader.CriterionList)) return;
                 Criteria.CriteriaCollection = new ObservableCollection<Criterion>(dataLoader.CriterionList);
+                _currentCalculationCriteriaCopy = Criteria.GetDeepCopyOfCriteria();
                 // works assuming that CriteriaValuesList are initialized properly
                 Alternatives.AlternativesCollection = new ObservableCollection<Alternative>(dataLoader.AlternativeList);
-                Results.PartialUtilityFunctions = dataLoader.Results.PartialUtilityFunctions;
+                _currentCalculationAlternativesCopy = Alternatives.GetDeepCopyOfAlternatives();
                 Results.CriteriaCoefficients = dataLoader.Results.CriteriaCoefficients;
-                if (Results.PartialUtilityFunctions.Count <= 0) return;
-                // TODO: load state
-                //var alternativesDeepCopy = Alternatives.GetDeepCopyOfAlternatives();
+                if (dataLoader.Results.PartialUtilityFunctions.Count <= 0) return;
+                Results.PartialUtilityFunctions = dataLoader.Results.PartialUtilityFunctions;
 
-                //foreach (var partialUtility in Results.PartialUtilityFunctions)
-                //{
-                //    var viewModel = new ChartTabViewModel(_solver, partialUtility, SettingsTabViewModel, RefreshCharts);
-                //    ChartTabViewModels.Add(viewModel);
-                //    Tabs.Add(viewModel);
-                //}
-
-                //if (ChartTabViewModels.Count > 0) ShowTab(ChartTabViewModels[0]);
+                ShowPartialUtilityTabs();
             }
             catch (Exception exception)
             {
@@ -479,6 +476,7 @@ namespace UTA.ViewModels
             await SaveMenuItemClicked();
         }
 
+        // Task return type isn't allowed in XAML
         public async Task SaveMenuItemClicked()
         {
             if (_saveData.IsSavingWithResults == null || _saveData.FilePath == null)
@@ -528,8 +526,7 @@ namespace UTA.ViewModels
             if (saveXMCDADialog.ShowDialog() != true) return;
 
             var directoryPath = saveXMCDADialog.SelectedPath;
-            var dataSaver = new XMCDAExporter(directoryPath, new List<Criterion>(Criteria.CriteriaCollection),
-                new List<Alternative>(Alternatives.AlternativesCollection), Results);
+            var dataSaver = new XMCDAExporter(directoryPath, _currentCalculationCriteriaCopy, _currentCalculationAlternativesCopy, Results);
 
             await TryToSave(true, dataSaver, directoryPath);
         }

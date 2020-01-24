@@ -32,7 +32,6 @@ namespace UTA.ViewModels
         private readonly OxyColor _placeholderLineColor = OxyColor.FromArgb(70, 110, 110, 110); // ColorSecondary
         private readonly OxyColor _placeholderMarkerColor = OxyColor.FromArgb(170, 51, 115, 242);
         private readonly Action _restartCoefficientsAssessment;
-        private readonly SettingsTabViewModel _settings;
         private DialogController _dialogController;
         private bool _isMethodSet;
         private RectangleAnnotation _selectedRectangle;
@@ -44,16 +43,16 @@ namespace UTA.ViewModels
             _calculateUtilities = calculateUtilities;
             _restartCoefficientsAssessment = restartCoefficientsAssessment;
 
+            _initialPointsValues = new List<PartialUtilityValues>
+            {
+                new PartialUtilityValues(PointsValues[0].X, PointsValues[0].Y),
+                new PartialUtilityValues(PointsValues.Last().X, PointsValues.Last().Y)
+            };
+
             Name = $"{Criterion.Name} - Utility";
             Title = $"{Criterion.Name} - Partial Utility Function";
 
             IsMethodSet = Criterion.Method != Criterion.MethodOptionsList[0];
-            _initialPointsValues = new List<PartialUtilityValues>
-            {
-                new PartialUtilityValues(PointsValues[0].X, PointsValues[0].Y),
-                new PartialUtilityValues(PointsValues[1].X, PointsValues[1].Y)
-            };
-
             if (IsMethodSet)
                 DialogController = new DialogController(_partialUtility,
                     Criterion.MethodOptionsList.IndexOf(Criterion.Method), Criterion.Probability ?? 0);
@@ -174,7 +173,7 @@ namespace UTA.ViewModels
         {
             if (!IsMethodSet) return;
             GeneratePlotData();
-            SelectRectangle((RectangleAnnotation) PlotModel.Annotations[0], 0);
+            if (PlotModel.Annotations.Count == 1) SelectRectangle((RectangleAnnotation) PlotModel.Annotations[0], 0);
             PlotModel.InvalidatePlot(false);
         }
 
@@ -234,7 +233,7 @@ namespace UTA.ViewModels
         {
             if (SelectedRectangle != null) SelectedRectangle.Fill = _colorPrimaryUnselected;
             SelectedRectangle = rectangle;
-            rectangle.Fill = _colorPrimarySelected;
+            SelectedRectangle.Fill = _colorPrimarySelected;
 
             _placeholderLine.Points.Clear();
             _placeholderLine.Points.Add(new DataPoint(PointsValues[firstPointIndex].X, PointsValues[firstPointIndex].Y));

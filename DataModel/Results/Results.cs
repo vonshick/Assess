@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using DataModel.Annotations;
@@ -8,7 +9,7 @@ namespace DataModel.Results
 {
     public class Results : INotifyPropertyChanged
     {
-        private List<CriterionCoefficient> _criteriaCoefficients;
+        private ObservableCollection<CriterionCoefficient> _criteriaCoefficients;
         private double? _k;
         private List<PartialUtility> _partialUtilityFunctions;
 
@@ -16,7 +17,7 @@ namespace DataModel.Results
         {
             FinalRanking = new FinalRanking();
             PartialUtilityFunctions = new List<PartialUtility>();
-            CriteriaCoefficients = new List<CriterionCoefficient>();
+            CriteriaCoefficients = new ObservableCollection<CriterionCoefficient>();
         }
 
         public FinalRanking FinalRanking { get; set; }
@@ -32,7 +33,7 @@ namespace DataModel.Results
             }
         }
 
-        public List<CriterionCoefficient> CriteriaCoefficients
+        public ObservableCollection<CriterionCoefficient> CriteriaCoefficients
         {
             get => _criteriaCoefficients;
             set

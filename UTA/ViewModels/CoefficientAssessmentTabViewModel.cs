@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -14,9 +15,9 @@ namespace UTA.ViewModels
     public class CoefficientAssessmentTabViewModel : Tab, INotifyPropertyChanged
     {
         private readonly List<Criterion> _criteriaCollection;
-        private Results _results;
         private readonly Action _dialogEndAction;
         private int _currentCriterionIndex;
+        private readonly Results _results;
 
 
         public CoefficientAssessmentTabViewModel(List<Criterion> criteriaCollection,
@@ -61,7 +62,7 @@ namespace UTA.ViewModels
             else
             {
                 // update Results.CriteriaCoefficients with new coefficients
-                _results.CriteriaCoefficients = Dialog.CriteriaCoefficientsList;
+                _results.CriteriaCoefficients = new ObservableCollection<CriterionCoefficient>(Dialog.CriteriaCoefficientsList);
                 _dialogEndAction();
             }
         }

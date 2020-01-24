@@ -7,7 +7,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using DataModel.Input;
 using DataModel.PropertyChangedExtended;
-using DataModel.Results;
 using UTA.Annotations;
 
 namespace UTA.Models
@@ -15,7 +14,8 @@ namespace UTA.Models
     public class Alternatives : INotifyPropertyChanged
     {
         private ObservableCollection<Alternative> _alternativesCollection;
-
+        public Criteria Criteria;
+        
 
         public Alternatives(Criteria criteria)
         {
@@ -48,8 +48,6 @@ namespace UTA.Models
                 OnPropertyChanged(nameof(AlternativesCollection));
             }
         }
-
-        public Criteria Criteria { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
