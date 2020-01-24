@@ -424,6 +424,7 @@ namespace UTA.ViewModels
                 // works assuming that CriteriaValuesList are initialized properly
                 Alternatives.AlternativesCollection = new ObservableCollection<Alternative>(dataLoader.AlternativeList);
                 Results.PartialUtilityFunctions = dataLoader.Results.PartialUtilityFunctions;
+                Results.CriteriaCoefficients = dataLoader.Results.CriteriaCoefficients;
                 if (Results.PartialUtilityFunctions.Count <= 0) return;
                 // TODO: load state
                 //var alternativesDeepCopy = Alternatives.GetDeepCopyOfAlternatives();
