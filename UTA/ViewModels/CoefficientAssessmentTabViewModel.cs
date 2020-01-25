@@ -47,7 +47,7 @@ namespace UTA.ViewModels
         [UsedImplicitly]
         public void LotteryOptionChosen(object sender, RoutedEventArgs e)
         {
-            Dialog.ProcessDialog(1);
+            Dialog.ProcessDialog(2);
         }
 
         [UsedImplicitly]
