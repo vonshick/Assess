@@ -38,6 +38,8 @@ namespace DataModel.Input
             }
         }
 
+        // order of criteria in this list has to be the same as in Criteria.CriteriaCollection
+        // otherwise it will break some watchers in Alternatives.cs
         public ObservableCollection<CriterionValue> CriteriaValuesList
         {
             get => _criteriaValuesList;

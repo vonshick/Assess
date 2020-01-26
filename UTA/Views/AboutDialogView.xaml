@@ -13,13 +13,13 @@
                 <Setter Property="FontSize" Value="{StaticResource CommonFontSize1}" />
             </Style>
         </StackPanel.Resources>
-        <TextBlock Text="Assess 1.0" FontSize="32" />
+        <TextBlock Text="Assess Extended 1.0" FontSize="32" />
         <TextBlock Text="Copyright © 2020" />
         <TextBlock Text="GNU General Public License" />
         <TextBlock Text="Laboratory of Intelligent Decision Support Systems" Margin="0,0,0,12" />
         <TextBlock Text="Authors:" />
-        <TextBlock Text="Piotr Hełminiak" Margin="12,0,0,0" />
         <TextBlock Text="Tomasz Pućka" Margin="12,0,0,0" />
+        <TextBlock Text="Piotr Hełminiak" Margin="12,0,0,0" />
         <TextBlock Text="Marcin Rochowiak" Margin="12,0,0,0" />
         <TextBlock Text="Jakub Wąsik" Margin="12,0,0,12" />
         <TextBlock Text="Supervisor:" />

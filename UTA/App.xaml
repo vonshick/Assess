@@ -55,15 +55,6 @@
       <SolidColorBrush x:Key="ColorBorders2" Color="#C8C8C8" />
       <SolidColorBrush x:Key="ColorBorders3" Color="#E6E6E6" />
       <SolidColorBrush x:Key="ColorSeparator" Color="#969696" />
-      <SolidColorBrush x:Key="ColorFontLight" Color="White" />
-      <SolidColorBrush x:Key="ColorFontDark" Color="Black" />
-
-
-      <sys:Double x:Key="CommonPadding">12</sys:Double>
-
-      <Thickness x:Key="CommonLayoutPadding" Left="{StaticResource CommonPadding}"
-                 Right="{StaticResource CommonPadding}" Top="{StaticResource CommonPadding}"
-                 Bottom="{StaticResource CommonPadding}" />
 
       <sys:Double x:Key="CommonFontSize0">18</sys:Double>
       <sys:Double x:Key="CommonFontSize1">16</sys:Double>
@@ -118,7 +109,7 @@
           </Trigger>
         </Style.Triggers>
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Foreground" Value="{StaticResource ColorFontLight}" />
+        <Setter Property="Foreground" Value="White" />
         <Setter Property="Background" Value="{StaticResource ColorPrimary}" />
         <Setter Property="Padding" Value="12,4,12,5" />
         <Setter Property="FontSize" Value="14" />
@@ -134,7 +125,7 @@
           </Trigger>
         </Style.Triggers>
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Foreground" Value="{StaticResource ColorFontLight}" />
+        <Setter Property="Foreground" Value="White" />
         <Setter Property="Background" Value="{StaticResource ColorSecondary}" />
         <Setter Property="Padding" Value="12,4,12,5" />
         <Setter Property="FontSize" Value="14" />
@@ -194,31 +185,6 @@
 
 
       <!--keyed templates-->
-      <ControlTemplate x:Key="TransparentButtonTemplateInterface0" TargetType="{x:Type ButtonBase}">
-        <Border x:Name="Border" BorderThickness="0" Background="Transparent" CornerRadius="2"
-                VerticalAlignment="Center">
-          <ContentPresenter Margin="4" HorizontalAlignment="Center" VerticalAlignment="Center" />
-        </Border>
-        <ControlTemplate.Triggers>
-          <Trigger Property="IsMouseOver" Value="True">
-            <Setter Property="Background" TargetName="Border" Value="{StaticResource ColorInterface0Hover}" />
-          </Trigger>
-        </ControlTemplate.Triggers>
-      </ControlTemplate>
-
-
-      <ControlTemplate x:Key="TransparentButtonTemplateInterface1" TargetType="{x:Type ButtonBase}">
-        <Border x:Name="Border" BorderThickness="0" Background="Transparent" CornerRadius="2"
-                VerticalAlignment="Center">
-          <ContentPresenter Margin="4" HorizontalAlignment="Center" VerticalAlignment="Center" />
-        </Border>
-        <ControlTemplate.Triggers>
-          <Trigger Property="IsMouseOver" Value="True">
-            <Setter Property="Background" TargetName="Border" Value="{StaticResource ColorInterface1Hover}" />
-          </Trigger>
-        </ControlTemplate.Triggers>
-      </ControlTemplate>
-
       <ControlTemplate x:Key="TransparentButtonTemplateInterface2" TargetType="{x:Type ButtonBase}">
         <Border x:Name="Border" BorderThickness="0" Background="Transparent" CornerRadius="2"
                 VerticalAlignment="Center">
@@ -243,43 +209,6 @@
         </ControlTemplate.Triggers>
       </ControlTemplate>
 
-      <ControlTemplate x:Key="TransparentButtonTemplateInterface4" TargetType="{x:Type ButtonBase}">
-        <Border x:Name="Border" BorderThickness="0" Background="Transparent" CornerRadius="2"
-                VerticalAlignment="Center">
-          <ContentPresenter Margin="4" HorizontalAlignment="Center" VerticalAlignment="Center" />
-        </Border>
-        <ControlTemplate.Triggers>
-          <Trigger Property="IsMouseOver" Value="True">
-            <Setter Property="Background" TargetName="Border" Value="{StaticResource ColorInterface4Hover}" />
-          </Trigger>
-        </ControlTemplate.Triggers>
-      </ControlTemplate>
-
-
-      <ControlTemplate x:Key="TransparentButtonTemplateInterface5" TargetType="{x:Type ButtonBase}">
-        <Border x:Name="Border" BorderThickness="0" Background="Transparent" CornerRadius="2"
-                VerticalAlignment="Center">
-          <ContentPresenter Margin="4" HorizontalAlignment="Center" VerticalAlignment="Center" />
-        </Border>
-        <ControlTemplate.Triggers>
-          <Trigger Property="IsMouseOver" Value="True">
-            <Setter Property="Background" TargetName="Border" Value="{StaticResource ColorInterface5Hover}" />
-          </Trigger>
-        </ControlTemplate.Triggers>
-      </ControlTemplate>
-
-      <ControlTemplate x:Key="TransparentButtonTemplateInterface6" TargetType="{x:Type ButtonBase}">
-        <Border x:Name="Border" BorderThickness="0" Background="Transparent" CornerRadius="2"
-                VerticalAlignment="Center">
-          <ContentPresenter Margin="4" HorizontalAlignment="Center" VerticalAlignment="Center" />
-        </Border>
-        <ControlTemplate.Triggers>
-          <Trigger Property="IsMouseOver" Value="True">
-            <Setter Property="Background" TargetName="Border" Value="{StaticResource ColorInterface6Hover}" />
-          </Trigger>
-        </ControlTemplate.Triggers>
-      </ControlTemplate>
-
       <ControlTemplate x:Key="TransparentButtonTemplateInterface7" TargetType="{x:Type ButtonBase}">
         <Border x:Name="Border" BorderThickness="0" Background="Transparent" CornerRadius="2"
                 VerticalAlignment="Center">
@@ -291,6 +220,7 @@
           </Trigger>
         </ControlTemplate.Triggers>
       </ControlTemplate>
+
 
       <ControlTemplate x:Key="RemoveButton" TargetType="{x:Type ButtonBase}">
         <Border Name="Border" BorderThickness="1" BorderBrush="{StaticResource ColorDanger}" Padding="4"
@@ -306,9 +236,6 @@
           </Trigger>
         </ControlTemplate.Triggers>
       </ControlTemplate>
-
-      <!--global templates-->
-
     </ResourceDictionary>
   </Application.Resources>
 </Application>

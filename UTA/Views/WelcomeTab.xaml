@@ -7,20 +7,20 @@
              d:DesignHeight="700" d:DesignWidth="900">
   <Grid Background="{StaticResource ColorInterface7}">
     <ScrollViewer>
-      <StackPanel Margin="16,8,16,12">
-        <TextBlock TextAlignment="Center" FontSize="26">Witamy w UTA 1.0!</TextBlock>
+      <StackPanel Margin="16,8,16,12" MaxWidth="900">
+        <TextBlock TextAlignment="Center" FontSize="26">UTA Extended</TextBlock>
         <TextBlock TextAlignment="Center" FontSize="{StaticResource CommonFontSize1}" TextWrapping="Wrap"
                    Margin="0,0,0,8">
-          Mamy nadzieję, że dzięki naszej aplikacji, podejmowanie złożonych decyzji i trudnych wyborów stanie
-          się łatwiejsze niż kiedykolwiek.
+          Wielokryterialne porządkowanie wariantów przy użyciu metody UTA.
         </TextBlock>
 
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="0,8" TextAlignment="Justify">
-          Interfejs użytkownika składa się z dwóch głównych komponentów: <LineBreak />
+          Interfejs aplikacji składa się z trzech głównych elementów: <LineBreak />
           <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0"
                      TextAlignment="Justify">
             1. Paneli bocznych, będących stałym elementem dostępnym z poziomu każdego widoku w aplikacji. <LineBreak />
-            2. Przestrzeni roboczej w centralnej części okna, zarządzanej przy użyciu zakładek, między którymi można dowolnie się przełączać, zamykać i otwierać ponownie.
+            2. Przestrzeni roboczej w centralnej części okna, zarządzanej przy użyciu kart, między którymi można dowolnie się przełączać, zamykać i otwierać ponownie.<LineBreak />
+            3. Pasków w górnej części okna, dzięki którym można zarządzać stanem aplikacji.
           </TextBlock>
         </TextBlock>
 
@@ -29,18 +29,18 @@
         </TextBlock>
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
                    TextAlignment="Justify">
-          Panele boczne można ukrywać/pokazywać przy pomocy zakładki "View" paska menu. Można także zmieniać ich szerokość, zwijać i rozwijać znajdujące się w nich przewijalne listy z podglądem danych, klikając w odpowiedni nagłówek.
-          Po lewej stronie umieszczono informacje o instancji: zbiór wariantów i kryteriów. Kliknięcie w dowolny wariant/kryterium otworzy odpowiednią zakładkę umożliwiającą edycję danych.
+          Panele boczne można ukrywać/pokazywać przy pomocy przycisku "View" na pasku Menu. Można także zmieniać ich szerokość, zwijać i rozwijać znajdujące się w nich przewijalne listy z podglądem danych, klikając w odpowiedni nagłówek.<LineBreak/>
+          Po lewej stronie umieszczono informacje o instancji: zbiór wariantów i kryteriów. Kliknięcie w dowolny wariant/kryterium otworzy odpowiednią kartę umożliwiającą edycję danych.
           <LineBreak />
-          Po prawej stronie umieszczono panel z podglądem rankingu referencyjnego, tworzonego w zakładce "Reference Ranking", oraz rankingu wynikowego, generowanego w oparciu o wyliczony model preferencji po uruchomieniu modułu obliczeniowego.
+          Po prawej stronie umieszczono panel z podglądem rankingu referencyjnego, tworzonego w karcie "Reference Ranking", oraz rankingu wynikowego, generowanego w oparciu o wyliczony model preferencji po uruchomieniu modułu obliczeniowego.
         </TextBlock>
 
         <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
-          Zakładki:
+          Karty:
         </TextBlock>
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
                    TextAlignment="Justify">
-          Lista otwartych zakładek wyświetlana jest na górze okna przestrzeni roboczej. Każdą zakładkę można w dowolnej chwili zamknąć i ponownie otworzyć przy pomocy przycisków na górnym pasku lub z poziomu zakładki "Show" paska menu.
+          Lista otwartych kart wyświetlana jest bezpośrednio nad przestrzenią roboczą. Każdą kartę można w dowolnej chwili zamknąć i ponownie otworzyć przy pomocy przycisków na górnym pasku lub z poziomu przycisku "Show" na pasku Menu.
         </TextBlock>
 
         <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
@@ -48,7 +48,7 @@
         </TextBlock>
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
                    TextAlignment="Justify">
-          Kliknięcie w wariant/kryterium w panelu bocznym przeniesie widok bezpośrednio na wybrany obiekt w odpowiedniej zakładce. Owe dane edytować i usuwać można bezpośrednio z poziomu tabeli, dodawanie natomiast odbywa się przy pomocy
+          Kliknięcie w wariant/kryterium w panelu bocznym przeniesie widok bezpośrednio na wybrany obiekt w odpowiedniej karcie. Owe dane edytować i usuwać można bezpośrednio z poziomu tabeli, dodawanie natomiast odbywa się przy pomocy
           formularza w górnej części obszaru roboczego.
         </TextBlock>
 
@@ -57,28 +57,28 @@
         </TextBlock>
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
                    TextAlignment="Justify">
-          W lewej części przestrzeni roboczej zakładki "Reference Ranking" umieszczono listę wariantów nie znajdujących się w rankingu referencyjnym. 
+          W lewej części przestrzeni roboczej karty "Reference Ranking" umieszczono listę wariantów nie znajdujących się w rankingu referencyjnym. 
           Po prawej widoczne są okna reprezentujące poszczególne rangi rankingu. 
           Przy pomocy przycisku "Add Rank" możemy dodawać kolejne, początkowo puste rangi. 
-          Ranking referencyjny budujemy przeciągając warianty między listą, a oknami poszczególnych rang. 
-          Zbędne pozycje usuwamy czerwonym przyciskiem z symbolem kosza.
+          Ranking referencyjny budujemy przeciągając warianty między listą, a oknami poszczególnych rang.
         </TextBlock>
 
         <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
-          Ustawienia:
+          Pomoc:
         </TextBlock>
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
-                   TextAlignment="Justify" />
+                   TextAlignment="Justify">
+          Przy pomocy przycisku "Help" na pasku Menu, można uzyskać instrukcję obsługi programu lub dowiedzieć się o szczegółach aplikacji.
+        </TextBlock>
 
         <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
           Do dzieła!
         </TextBlock>
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
                    TextAlignment="Justify">
-          Po kliknięciu w niebieski przycisk "Calculate" znajdującym się po lewej stronie górnego paska, uruchomione zostanie serce aplikacji — moduł obliczeniowy implementujący metodę wielokryterialnego wspomagania decyzji UTA,
+          Po kliknięciu w niebieski przycisk "Calculate", który znajduje się się po lewej stronie górnego paska, uruchomione zostanie serce aplikacji — moduł obliczeniowy implementujący metodę wielokryterialnego porządkowania wariantów — UTA,
           który przy użyciu algorytmu sympleksowego wygeneruje model preferencji decydenta.
         </TextBlock>
-
       </StackPanel>
     </ScrollViewer>
   </Grid>

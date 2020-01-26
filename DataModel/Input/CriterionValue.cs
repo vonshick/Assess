@@ -2,10 +2,11 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using DataModel.Annotations;
+using DataModel.PropertyChangedExtended;
 
 namespace DataModel.Input
 {
-    public class CriterionValue : INotifyPropertyChanged
+    public class CriterionValue : INotifyPropertyChanged, INotifyPropertyChangedExtended<double?>
     {
         private string _name;
         private double? _value;
@@ -29,6 +30,7 @@ namespace DataModel.Input
             }
         }
 
+        // null is acceptable only during initialization
         public double? Value
         {
             get => _value;
@@ -36,19 +38,29 @@ namespace DataModel.Input
             {
                 if (Nullable.Equals(value, _value)) return;
                 if (value == null) throw new ArgumentException("Value is required!");
-                // TODO: check if assigning Infinity breaks something, check if decimals work (solver)
+                var oldValue = _value;
                 _value = value;
-                OnPropertyChanged(nameof(Value));
+                OnPropertyChangedExtended(nameof(Value), oldValue, value);
             }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
 
+        protected void OnPropertyChangedExtended(string propertyName, double? oldValue, double? newValue)
+        {
+            OnPropertyChanged(new PropertyChangedExtendedEventArgs<double?>(propertyName, oldValue, newValue));
+        }
+
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public virtual void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            PropertyChanged?.Invoke(this, e);
         }
     }
 }

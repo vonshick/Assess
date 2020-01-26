@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -273,9 +274,28 @@ namespace UTA.Views
             }
         }
 
-        private void ShowDocumentationDialog(object sender, RoutedEventArgs e)
+        private async void ShowDocumentation(object sender, RoutedEventArgs e)
         {
-            new DocumentationDialogView().ShowDialog();
+            try
+            {
+                // TODO: change to proper filepath
+                Process.Start(@"Documentation.pdf");
+            }
+            catch (Exception exception)
+            {
+                await this.ShowMessageAsync("Opening file error.",
+                    exception.Message != null
+                        ? $"Can't open documentation. An error was encountered with a following message:\n\"{exception.Message}\""
+                        : "Can't open documentation.",
+                    MessageDialogStyle.Affirmative,
+                    new MetroDialogSettings
+                    {
+                        AffirmativeButtonText = "OK",
+                        AnimateShow = false,
+                        AnimateHide = false,
+                        DefaultButtonFocus = MessageDialogResult.Affirmative
+                    });
+            }
         }
 
         private void ShowAboutDialog(object sender, RoutedEventArgs e)

@@ -67,7 +67,7 @@
                         Focusable="False" Margin="0,0,0,2">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
-                <VirtualizingStackPanel Orientation="Horizontal" />
+                <StackPanel Orientation="Horizontal" />
               </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
 
@@ -96,9 +96,8 @@
     </StackPanel>
 
     <DataGrid Name="AlternativesDataGrid" Grid.Row="1" ItemsSource="{Binding Alternatives.AlternativesCollection}"
-              AutoGenerateColumns="False" SelectionMode="Single" EnableRowVirtualization="True"
+              AutoGenerateColumns="False" SelectionMode="Single" 
               BorderBrush="{StaticResource ColorBorders1}" BorderThickness="1" IsReadOnly="True"
-              EnableColumnVirtualization="True"
               CanUserAddRows="False" CanUserReorderColumns="False" CanUserResizeRows="False"
               IsSynchronizedWithCurrentItem="True" HorizontalGridLinesBrush="{StaticResource ColorInterface2}"
               VerticalGridLinesBrush="{StaticResource ColorInterface2}"
@@ -138,7 +137,7 @@
                           Focusable="False">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                  <VirtualizingStackPanel Orientation="Horizontal" />
+                  <StackPanel Orientation="Horizontal" />
                 </ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
 

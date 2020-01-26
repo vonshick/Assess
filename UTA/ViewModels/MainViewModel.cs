@@ -50,7 +50,6 @@ namespace UTA.ViewModels
             CriteriaTabViewModel = new CriteriaTabViewModel(Criteria);
             AlternativesTabViewModel = new AlternativesTabViewModel(Criteria, Alternatives);
             WelcomeTabViewModel = new WelcomeTabViewModel();
-
             PartialUtilityTabViewModels = new ObservableCollection<PartialUtilityTabViewModel>();
 
             Criteria.CriteriaCollection.CollectionChanged += InstancePropertyChanged;
@@ -138,42 +137,19 @@ namespace UTA.ViewModels
         [UsedImplicitly]
         public async void CalculateButtonClicked(object sender, RoutedEventArgs e)
         {
-            if (Criteria.CriteriaCollection.Count == 0)
-            {
-                ShowCalculateErrorDialog("It's required to provide at least 1 criterion to begin Assess calculations.");
-                AddTabIfNeeded(CriteriaTabViewModel);
-                AddTabIfNeeded(AlternativesTabViewModel);
-                ShowTab(CriteriaTabViewModel);
-                return;
-            }
+            if (!await IsInstanceCorrectToRunCalculations()) return;
 
-            if (Alternatives.AlternativesCollection.Count <= 1)
-            {
-                ShowCalculateErrorDialog("It's required to provide at least 2 alternatives to begin Assess calculations.");
-                AddTabIfNeeded(AlternativesTabViewModel);
-                ShowTab(AlternativesTabViewModel);
-                return;
-            }
-
-            var isAnyCriterionValueNull = Alternatives.AlternativesCollection.Any(alternative =>
-                alternative.CriteriaValuesList.Any(criterionValue => criterionValue.Value == null));
-            if (isAnyCriterionValueNull)
-            {
-                ShowCalculateErrorDialog(
-                    "It's required to provide data to every criterion value to all alternatives to begin Assess calculations.");
-                ShowTab(AlternativesTabViewModel);
-                return;
-            }
-
-            if (!await IsCriteriaValuesPrecisionAcceptable(Criteria.CriteriaCollection)) return;
-
-            if (CoefficientAssessmentTabViewModel != null || PartialUtilityTabViewModels.Count > 0)
-                if (await ShowLosingProgressWarning() == MessageDialogResult.Canceled)
-                    return;
+            if ((CoefficientAssessmentTabViewModel != null || PartialUtilityTabViewModels.Count > 0) &&
+                await ShowLosingProgressWarning() == MessageDialogResult.Negative) return;
 
             Tabs.Remove(CoefficientAssessmentTabViewModel);
+            CoefficientAssessmentTabViewModel = null;
             foreach (var partialUtilityTabViewModel in PartialUtilityTabViewModels) Tabs.Remove(partialUtilityTabViewModel);
             PartialUtilityTabViewModels.Clear();
+            Results.FinalRanking.FinalRankingCollection.Clear();
+            Results.PartialUtilityFunctions.Clear();
+            Results.CriteriaCoefficients.Clear();
+            Results.K = null;
 
             _currentCalculationCriteriaCopy = Criteria.GetDeepCopyOfCriteria();
             _currentCalculationAlternativesCopy = Alternatives.GetDeepCopyOfAlternatives();
@@ -183,9 +159,56 @@ namespace UTA.ViewModels
             ShowTab(CoefficientAssessmentTabViewModel);
         }
 
-        private void AddTabIfNeeded(ITab tab)
+        private async Task<MessageDialogResult> ShowLosingProgressWarning()
         {
-            if (!Tabs.Contains(tab)) Tabs.Add(tab);
+            var dialogResult = await _dialogCoordinator.ShowMessageAsync(this, "Losing current progress.",
+                "Your current calculations progress will be lost.\n" +
+                "If you accidentally closed some tabs, you can show them again by using \"Show\" menu option.\n" +
+                "Do you want to continue?",
+                MessageDialogStyle.AffirmativeAndNegative,
+                new MetroDialogSettings
+                {
+                    AffirmativeButtonText = "Yes",
+                    NegativeButtonText = "Cancel",
+                    DefaultButtonFocus = MessageDialogResult.Affirmative,
+                    AnimateShow = false,
+                    AnimateHide = false
+                });
+            return dialogResult;
+        }
+
+        private async Task<bool> IsInstanceCorrectToRunCalculations()
+        {
+            if (Criteria.CriteriaCollection.Count < 2)
+            {
+                ShowCalculateErrorDialog("It's required to provide at least 2 criteria to begin Assess calculations.");
+                AddTabIfNeeded(CriteriaTabViewModel);
+                AddTabIfNeeded(AlternativesTabViewModel);
+                ShowTab(CriteriaTabViewModel);
+                return false;
+            }
+
+            if (Alternatives.AlternativesCollection.Count <= 1)
+            {
+                ShowCalculateErrorDialog("It's required to provide at least 2 alternatives to begin Assess calculations.");
+                AddTabIfNeeded(AlternativesTabViewModel);
+                ShowTab(AlternativesTabViewModel);
+                return false;
+            }
+
+            if (!await IsCriteriaValuesPrecisionAcceptable(Criteria.CriteriaCollection)) return false;
+
+            var isAnyCriterionValueNull = Alternatives.AlternativesCollection.Any(alternative =>
+                alternative.CriteriaValuesList.Any(criterionValue => criterionValue.Value == null));
+            if (isAnyCriterionValueNull)
+            {
+                ShowCalculateErrorDialog(
+                    "It's required to provide data to every criterion value to all alternatives to begin Assess calculations.");
+                ShowTab(AlternativesTabViewModel);
+                return false;
+            }
+
+            return true;
         }
 
         private async void ShowCalculateErrorDialog(string message, string title = "Incomplete instance data.")
@@ -203,54 +226,37 @@ namespace UTA.ViewModels
                 });
         }
 
-        private async Task<MessageDialogResult> ShowLosingProgressWarning()
+        private void AddTabIfNeeded(ITab tab)
         {
-            var dialogResult = await _dialogCoordinator.ShowMessageAsync(this, "Losing current progress.",
-                "Your current calculations progress will be lost.\n" +
-                "If you accidentally closed some tabs, you can show them again by using Show menu option.\n" +
-                "Do you want to continue?",
-                MessageDialogStyle.AffirmativeAndNegative,
-                new MetroDialogSettings
-                {
-                    AffirmativeButtonText = "Yes",
-                    NegativeButtonText = "Cancel",
-                    DefaultButtonFocus = MessageDialogResult.Affirmative,
-                    AnimateShow = false,
-                    AnimateHide = false
-                });
-            return dialogResult;
+            if (!Tabs.Contains(tab)) Tabs.Add(tab);
         }
 
         private async Task<bool> IsCriteriaValuesPrecisionAcceptable(IEnumerable<Criterion> criteriaList)
         {
             var invalidCriteriaValuesNames = new List<string>();
             foreach (var criterion in criteriaList)
-                if (Math.Abs(criterion.MaxValue - criterion.MinValue) < 1E-15)
+                if (Math.Abs(criterion.MaxValue - criterion.MinValue) < 1E-14)
                     invalidCriteriaValuesNames.Add(criterion.Name);
 
-            if (invalidCriteriaValuesNames.Count != 0)
-            {
-                ShowTab(AlternativesTabViewModel);
+            if (invalidCriteriaValuesNames.Count == 0) return true;
 
-                var warningMessage = "Alternatives values on the following criteria have too high precision or are the same:\n";
-                foreach (var criterionName in invalidCriteriaValuesNames) warningMessage += $"{criterionName},\n";
-                warningMessage +=
-                    "Please provide lower precision values or at least two unique values on a whole set of alternatives values.";
-                await _dialogCoordinator.ShowMessageAsync(this,
-                    "Invalid alternatives values.",
-                    warningMessage,
-                    MessageDialogStyle.Affirmative,
-                    new MetroDialogSettings
-                    {
-                        AffirmativeButtonText = "OK",
-                        DefaultButtonFocus = MessageDialogResult.Affirmative,
-                        AnimateShow = false,
-                        AnimateHide = false
-                    });
-                return false;
-            }
-
-            return true;
+            ShowTab(AlternativesTabViewModel);
+            var warningMessage = "Alternatives values on the following criteria have too high precision or are the same:\n";
+            foreach (var criterionName in invalidCriteriaValuesNames) warningMessage += $"{criterionName},\n";
+            warningMessage +=
+                "Please provide lower precision values or at least two unique values on a whole set of alternatives values.";
+            await _dialogCoordinator.ShowMessageAsync(this,
+                "Invalid alternatives values.",
+                warningMessage,
+                MessageDialogStyle.Affirmative,
+                new MetroDialogSettings
+                {
+                    AffirmativeButtonText = "OK",
+                    DefaultButtonFocus = MessageDialogResult.Affirmative,
+                    AnimateShow = false,
+                    AnimateHide = false
+                });
+            return false;
         }
 
         // called in CoefficientAssessmentTabViewModel after clicking Indifferent in last dialogue question on calculations start
@@ -322,22 +328,6 @@ namespace UTA.ViewModels
             return true;
         }
 
-        private void ResetProgress()
-        {
-            Results.Reset();
-            Alternatives.Reset();
-            Criteria.Reset();
-            Tabs.Remove(CoefficientAssessmentTabViewModel);
-            CoefficientAssessmentTabViewModel = null;
-            foreach (var partialUtilityTabViewModel in PartialUtilityTabViewModels) Tabs.Remove(partialUtilityTabViewModel);
-            PartialUtilityTabViewModels.Clear();
-            _utilitiesCalculator = null;
-            _currentCalculationAlternativesCopy?.Clear();
-            _currentCalculationCriteriaCopy?.Clear();
-            _saveData.IsSavingWithResults = null;
-            _saveData.FilePath = null;
-        }
-
         private async Task SaveTypeChooserDialog()
         {
             var saveFileWithResultsDialog = await _dialogCoordinator.ShowMessageAsync(this,
@@ -359,12 +349,28 @@ namespace UTA.ViewModels
             else if (saveFileWithResultsDialog == MessageDialogResult.Negative) SaveAsMenuItemClicked();
         }
 
+        private void ResetProgress()
+        {
+            Results.Reset();
+            Alternatives.Reset();
+            Criteria.Reset();
+            Tabs.Remove(CoefficientAssessmentTabViewModel);
+            CoefficientAssessmentTabViewModel = null;
+            foreach (var partialUtilityTabViewModel in PartialUtilityTabViewModels) Tabs.Remove(partialUtilityTabViewModel);
+            PartialUtilityTabViewModels.Clear();
+            _utilitiesCalculator = null;
+            _currentCalculationAlternativesCopy?.Clear();
+            _currentCalculationCriteriaCopy?.Clear();
+            _saveData.IsSavingWithResults = null;
+            _saveData.FilePath = null;
+        }
+
         [UsedImplicitly]
         public async void OpenFileMenuItemClicked(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog
             {
-                Filter = "Assess Input Files (*.xml; *.csv; *.utx)|*.xml;*.csv;*.utx",
+                Filter = "Assess Extended Input Files (*.xml; *.csv; *.utx)|*.xml;*.csv;*.utx",
                 InitialDirectory = AppDomain.CurrentDomain.BaseDirectory
             };
             if (openFileDialog.ShowDialog() != true) return;
@@ -382,7 +388,6 @@ namespace UTA.ViewModels
                 if (dataLoader == null) return;
 
                 dataLoader.LoadData(filePath);
-                if (!await IsCriteriaValuesPrecisionAcceptable(dataLoader.CriterionList)) return;
                 Criteria.CriteriaCollection = new ObservableCollection<Criterion>(dataLoader.CriterionList);
                 Alternatives.AlternativesCollection = new ObservableCollection<Alternative>(dataLoader.AlternativeList);
             }
@@ -402,19 +407,20 @@ namespace UTA.ViewModels
             if (!await NewSolution()) return;
 
             var filePath = openDirectoryDialog.SelectedPath;
+            var dataLoader = new XMCDALoader();
             try
             {
-                var dataLoader = new XMCDALoader();
                 dataLoader.LoadData(filePath);
-                if (!await IsCriteriaValuesPrecisionAcceptable(dataLoader.CriterionList)) return;
                 Criteria.CriteriaCollection = new ObservableCollection<Criterion>(dataLoader.CriterionList);
-                _currentCalculationCriteriaCopy = Criteria.GetDeepCopyOfCriteria();
                 // works assuming that CriteriaValuesList are initialized properly
                 Alternatives.AlternativesCollection = new ObservableCollection<Alternative>(dataLoader.AlternativeList);
-                _currentCalculationAlternativesCopy = Alternatives.GetDeepCopyOfAlternatives();
+                if (dataLoader.Results.CriteriaCoefficients.Count != Criteria.CriteriaCollection.Count || 
+                    dataLoader.Results.PartialUtilityFunctions.Count != Criteria.CriteriaCollection.Count ||
+                    !await IsInstanceCorrectToRunCalculations()) return;
                 Results.CriteriaCoefficients = dataLoader.Results.CriteriaCoefficients;
-                if (dataLoader.Results.PartialUtilityFunctions.Count <= 0) return;
                 Results.PartialUtilityFunctions = dataLoader.Results.PartialUtilityFunctions;
+                _currentCalculationCriteriaCopy = Criteria.GetDeepCopyOfCriteria();
+                _currentCalculationAlternativesCopy = Alternatives.GetDeepCopyOfAlternatives();
 
                 ShowPartialUtilityTabs();
             }
@@ -457,8 +463,13 @@ namespace UTA.ViewModels
                 return;
             }
 
-            var dataSaver = new XMCDAExporter(_saveData.FilePath, new List<Criterion>(Criteria.CriteriaCollection),
-                new List<Alternative>(Alternatives.AlternativesCollection), Results) {OverwriteFile = true};
+            var dataSaver = new XMCDAExporter(
+                _saveData.FilePath,
+                (bool) _saveData.IsSavingWithResults ? _currentCalculationCriteriaCopy : new List<Criterion>(Criteria.CriteriaCollection),
+                (bool) _saveData.IsSavingWithResults
+                    ? _currentCalculationAlternativesCopy
+                    : new List<Alternative>(Alternatives.AlternativesCollection),
+                Results) {OverwriteFile = true};
             try
             {
                 if (_saveData.IsSavingWithResults == true) dataSaver.saveSession();
@@ -526,7 +537,7 @@ namespace UTA.ViewModels
                     {
                         AffirmativeButtonText = "Yes",
                         NegativeButtonText = "Cancel",
-                        DefaultButtonFocus = MessageDialogResult.Negative,
+                        DefaultButtonFocus = MessageDialogResult.Affirmative,
                         AnimateShow = false,
                         AnimateHide = false
                     });
@@ -545,6 +556,10 @@ namespace UTA.ViewModels
                         ShowSaveErrorDialog(exception);
                     }
                 }
+            }
+            catch (Exception exception)
+            {
+                ShowSaveErrorDialog(exception);
             }
         }
 

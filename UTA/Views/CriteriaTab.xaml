@@ -145,7 +145,7 @@
 
     <DataGrid Name="CriteriaDataGrid" Grid.Row="1"
               ItemsSource="{Binding Criteria.CriteriaCollection, UpdateSourceTrigger=PropertyChanged}"
-              AutoGenerateColumns="False" SelectionMode="Single" EnableRowVirtualization="True"
+              AutoGenerateColumns="False" SelectionMode="Single" 
               BorderBrush="{StaticResource ColorBorders1}" BorderThickness="1" IsReadOnly="True"
               CanUserAddRows="False" CanUserReorderColumns="False" CanUserResizeRows="False"
               IsSynchronizedWithCurrentItem="True" HorizontalGridLinesBrush="{StaticResource ColorInterface2}"
