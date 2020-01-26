@@ -75,12 +75,6 @@ namespace CalculationsEngine.Dialogs
             PointToAdd.Y = DisplayObject.Lottery.NewPointUtility();
         }
 
-        //todo remove
-        public virtual string displayDialog()
-        {
-            return "";
-        }
-
         public void ProcessDialog(int choice)
         {
             if (choice == 1)

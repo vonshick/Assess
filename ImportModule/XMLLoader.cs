@@ -162,8 +162,6 @@ namespace ImportModule
                         case "SEGMENTS":
                             break;
                         default:
-                            //TODO vonshick warnings
-                            // maybe instead of throwing exception just do nothing
                             throw new Exception("Attribute " + attributePart.Name + " is not compatible with application.");
                     }
                 }

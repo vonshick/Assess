@@ -76,7 +76,6 @@ namespace ImportModule
         protected void ValidateFilePath(string path)
         {
             if (!File.Exists(path))
-                //TODO vonshick WARNINGS
                 throw new FileNotFoundException("File " + Path.GetFileName(path) + " does not exist.");
         }
 
@@ -84,7 +83,6 @@ namespace ImportModule
         protected void ValidateFileExtension(string path, string expectedExtension)
         {
             if (!Path.GetExtension(path).Equals(expectedExtension))
-                //TODO vonshick WARNINGS
                 throw new ImproperFileStructureException("Wrong extension of the file " + Path.GetFileName(path) +
                                                          ". Expected extension: " + expectedExtension + ".");
         }

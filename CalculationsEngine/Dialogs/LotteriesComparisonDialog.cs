@@ -28,27 +28,6 @@ namespace CalculationsEngine.Dialogs
         {
         }
 
-        public override string displayDialog()
-        {
-            Console.WriteLine("Wpisz '1' jeśli wolisz loterię:");
-            Console.WriteLine(DisplayObject.ComparisonLottery.UpperUtilityValue.X + " z prawdopodobienstwem " +
-                              DisplayObject.ComparisonLottery.P);
-            Console.WriteLine(DisplayObject.ComparisonLottery.LowerUtilityValue.X + " z prawdopodobienstwem " +
-                              (1 - DisplayObject.ComparisonLottery.P) + "\n");
-
-            Console.WriteLine("Wpisz '2' jeśli wolisz loterię:");
-            Console.WriteLine(DisplayObject.EdgeValuesLottery.UpperUtilityValue.X + " z prawdopodobienstwem " +
-                              DisplayObject.EdgeValuesLottery.P);
-            Console.WriteLine(DisplayObject.EdgeValuesLottery.LowerUtilityValue.X + " z prawdopodobienstwem " +
-                              (1 - DisplayObject.EdgeValuesLottery.P) + "\n");
-
-
-            Console.WriteLine("Wpisz '3' jeśli loterie są dla Ciebie nierozróżnialne\n");
-            Console.WriteLine("'1', '2' lub '3' :\n");
-
-            return "";
-        }
-
         protected override void SetInitialValues()
         {
             PointToAdd = new PartialUtilityValues(DisplayObject.ComparisonLottery.UpperUtilityValue.X,

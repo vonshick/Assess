@@ -83,29 +83,6 @@ namespace CalculationsEngine.Dialogs
             _upperProbabilityBoundary = 1;
         }
 
-        //todo remove
-        //public string displayDialog()
-        //{
-        //    Console.WriteLine("Wpisz '1' jeśli wolisz WARIANT:");
-        //    for (var i = 0; i < DisplayObject.CriterionNames.Length; i++)
-        //        Console.WriteLine(DisplayObject.CriterionNames[i] + " = " + DisplayObject.ValuesToCompare[i]);
-
-        //    Console.WriteLine("\nWpisz '2' jeśli wolisz LOTERIĘ");
-        //    for (var i = 0; i < DisplayObject.CriterionNames.Length; i++)
-        //        Console.WriteLine(DisplayObject.CriterionNames[i] + " = " + DisplayObject.BestValues[i]);
-
-        //    Console.WriteLine("z prawdopodobienstwem " + DisplayObject.P + "\n");
-
-        //    for (var i = 0; i < DisplayObject.CriterionNames.Length; i++)
-        //        Console.WriteLine(DisplayObject.CriterionNames[i] + " = " + DisplayObject.WorstValues[i]);
-
-        //    Console.WriteLine("z prawdopodobienstwem " + (1 - DisplayObject.P) + "\n");
-
-        //    Console.WriteLine("'1', '2' lub 'n' :\n");
-
-        //    return Console.ReadLine();
-        //}
-
         public void ProcessDialog(int choice)
         {
             if (choice == 1)
@@ -125,9 +102,6 @@ namespace CalculationsEngine.Dialogs
             }
             else
             {
-                //TODO vonshick
-                // remove the warning - it's useful only for developers
-                throw new Exception("Assess: wrong choice ID passed to ProcessDialog()");
             }
         }
 
