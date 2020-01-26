@@ -203,27 +203,6 @@ namespace ExportModule
             xmcdaWriter.Close();
         }
 
-        private string GetMethodId(string method)
-        {
-            var index = Criterion.MethodOptionsList.IndexOf(method);
-
-            switch(index)
-            {
-                case 0:
-                    return "";
-                case 1:
-                    return "constantProbability";
-                case 2:
-                    return "variableProbability";
-                case 3:
-                    return "lotteriesComparison";
-                case 4:
-                    return "probabilityComparison";
-                default:
-                    throw new System.Exception("Improper dialog method passed.");
-            }
-        }
-
         private void saveValueFunctions()
         {
             initializeWriter(Path.Combine(outputDirectory, "value_functions.xml"));
@@ -237,12 +216,6 @@ namespace ExportModule
                 xmcdaWriter.WriteString(partialUtility.Criterion.ID != null ? partialUtility.Criterion.ID : partialUtility.Criterion.Name);
                 xmcdaWriter.WriteEndElement();
                 xmcdaWriter.WriteStartElement("criterionFunction");
-
-                var methodId = GetMethodId(partialUtility.Criterion.Method);
-
-                if (!partialUtility.Criterion.Method.Equals(""))
-                    xmcdaWriter.WriteAttributeString("mcdaConcept", GetMethodId(partialUtility.Criterion.Method));
-                
                 xmcdaWriter.WriteStartElement("points");
                 foreach (var pointValue in partialUtility.PointsValues)
                 {
@@ -301,23 +274,51 @@ namespace ExportModule
             xmcdaWriter.Close();
         }
 
-        private void saveMethodProbabilities()
+        private string GetMethodId(string method)
+        {
+            var index = Criterion.MethodOptionsList.IndexOf(method);
+
+            switch (index)
+            {
+                case 0:
+                    return "";
+                case 1:
+                    return "constantProbability";
+                case 2:
+                    return "variableProbability";
+                case 3:
+                    return "lotteriesComparison";
+                case 4:
+                    return "probabilityComparison";
+                default:
+                    throw new System.Exception("Improper dialog method passed.");
+            }
+        }
+
+        private void saveMethodData()
         {
             initializeWriter(Path.Combine(outputDirectory, "method_parameters.xml"));
             xmcdaWriter.WriteStartElement("programParameters");
 
             foreach (var criterion in criterionList)
             {
-                if(criterion.Probability != null)
+                if(!criterion.Method.Equals(""))
                 {
                     xmcdaWriter.WriteStartElement("parameter");
                     xmcdaWriter.WriteAttributeString("id", criterion.ID != null ? criterion.ID : criterion.Name);
                     xmcdaWriter.WriteStartElement("values");
                     xmcdaWriter.WriteStartElement("value");
-                    xmcdaWriter.WriteStartElement("real");
-                    xmcdaWriter.WriteString(((double)criterion.Probability).ToString("G", CultureInfo.InvariantCulture));
+                    xmcdaWriter.WriteStartElement("label");
+                    xmcdaWriter.WriteString(GetMethodId(criterion.Method));
                     xmcdaWriter.WriteEndElement();
+                    if(criterion.Probability != null)
+                    {
+                        xmcdaWriter.WriteStartElement("real");
+                        xmcdaWriter.WriteString(((double)criterion.Probability).ToString("G", CultureInfo.InvariantCulture));
+                        xmcdaWriter.WriteEndElement();
+                    }
                     xmcdaWriter.WriteEndElement();
+
                     xmcdaWriter.WriteEndElement();
                     xmcdaWriter.WriteEndElement();
                 }
@@ -335,7 +336,7 @@ namespace ExportModule
             saveAlternatives();
             saveCriterionScales();
             savePerformanceTable();
-            saveMethodProbabilities();
+            saveMethodData();
         }
 
         public void saveResults()

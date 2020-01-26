@@ -179,27 +179,6 @@ namespace ImportModule
             }
         }
 
-        private string GetDialogMethod(XmlNode xmlNode)
-        {
-            if (xmlNode.Attributes["mcdaConcept"] != null)
-            {
-                switch (xmlNode.Attributes["mcdaConcept"].Value)
-                {
-                    case "constantProbability":
-                        return Criterion.MethodOptionsList[1];
-                    case "variableProbability":
-                        return Criterion.MethodOptionsList[2];
-                    case "lotteriesComparison":
-                        return Criterion.MethodOptionsList[3];
-                    case "probabilityComparison":
-                        return Criterion.MethodOptionsList[4];
-                    default:
-                        return Criterion.MethodOptionsList[0];
-                }
-            }
-            return Criterion.MethodOptionsList[0];
-        }
-
         private void CheckFunctionMonotonicity(PartialUtility partialUtility)
         {
             var criterionId = partialUtility.Criterion.ID;
@@ -306,8 +285,6 @@ namespace ImportModule
                     }
                     else
                     {
-                        var dialogMethod = GetDialogMethod(criterionFunction);
-
                         foreach (XmlNode point in criterionFunction.FirstChild.ChildNodes)
                         {
                             var argument = double.PositiveInfinity;
@@ -332,7 +309,6 @@ namespace ImportModule
                         }
 
                         var matchingCriterion = criterionList.Find(criterion => criterion.ID == criterionID);
-                        matchingCriterion.Method = dialogMethod;
                         results.PartialUtilityFunctions.Add(new PartialUtility(matchingCriterion, argumentsValues));
                     }
             }
@@ -377,7 +353,24 @@ namespace ImportModule
             }
         }
 
-        private void LoadDialogProbabilities()
+        private string GetDialogMethod(string method)
+        {
+            switch (method)
+            {
+                case "constantProbability":
+                    return Criterion.MethodOptionsList[1];
+                case "variableProbability":
+                    return Criterion.MethodOptionsList[2];
+                case "lotteriesComparison":
+                    return Criterion.MethodOptionsList[3];
+                case "probabilityComparison":
+                    return Criterion.MethodOptionsList[4];
+                default:
+                    return Criterion.MethodOptionsList[0];
+            }
+        }
+
+        private void LoadDialogMethods()
         {
             CurrentlyProcessedFile = Path.Combine(xmcdaDirectory, "method_parameters.xml");
 
@@ -393,14 +386,23 @@ namespace ImportModule
                 var criterionID = xmlNode.Attributes["id"].Value;
 
                 double probability = -1;
+                string method = "";
 
-                if (xmlNode.FirstChild.FirstChild.FirstChild != null)
+                if (xmlNode.SelectSingleNode(".//label") != null)
                 {
-                    if (!double.TryParse(xmlNode.FirstChild.FirstChild.FirstChild.InnerText, NumberStyles.Any,
-                        CultureInfo.InvariantCulture, out probability))
-                        throw new ImproperFileStructureException("Improper criterion coefficient format " +
-                                                                 xmlNode.ChildNodes[1].FirstChild.FirstChild.InnerText +
-                                                                 " - it should be floating point.");
+                    method = xmlNode.SelectSingleNode(".//label").InnerText;
+
+                    if (method.Equals("constantProbability") || method.Equals("lotteriesComparison"))
+                    {
+                        if (xmlNode.SelectSingleNode(".//real") != null)
+                        {
+                            if (!double.TryParse(xmlNode.SelectSingleNode(".//real").InnerText, NumberStyles.Any,
+                                CultureInfo.InvariantCulture, out probability))
+                                throw new ImproperFileStructureException("criterion " + criterionID + " - Improper criterion coefficient format " +
+                                                                         xmlNode.SelectSingleNode(".//real").InnerText +
+                                                                         " - it should be floating point.");
+                        }
+                    }
                 }
                 else
                 {
@@ -410,6 +412,7 @@ namespace ImportModule
 
                 var matchingCriterion = criterionList.Find(criterion => criterion.ID == criterionID);
                 matchingCriterion.Probability = probability;
+                matchingCriterion.Method = GetDialogMethod(method);
             }
         }
 
@@ -427,7 +430,7 @@ namespace ImportModule
 
             LoadValueFunctions();
             LoadWeights();
-            LoadDialogProbabilities();
+            LoadDialogMethods();
             CurrentlyProcessedFile = "";
         }
     }
