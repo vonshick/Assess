@@ -54,6 +54,8 @@ namespace ExportModule
             checkIfFileExists(Path.Combine(outputDirectory, "alternatives.xml"));
             checkIfFileExists(Path.Combine(outputDirectory, "performance_table.xml"));
             checkIfFileExists(Path.Combine(outputDirectory, "criteria_scales.xml"));
+            checkIfFileExists(Path.Combine(outputDirectory, "weights.xml"));
+            checkIfFileExists(Path.Combine(outputDirectory, "method_parameters.xml"));
         }
 
         private void checkIfResultFilesExists()
@@ -282,6 +284,33 @@ namespace ExportModule
             xmcdaWriter.Close();
         }
 
+        private void saveMethodProbabilities()
+        {
+            initializeWriter(Path.Combine(outputDirectory, "method_parameters.xml"));
+            xmcdaWriter.WriteStartElement("programParameters");
+
+            foreach (var criterion in criterionList)
+            {
+                if(criterion.Probability != null)
+                {
+                    xmcdaWriter.WriteStartElement("parameter");
+                    xmcdaWriter.WriteAttributeString("id", criterion.ID != null ? criterion.ID : criterion.Name);
+                    xmcdaWriter.WriteStartElement("values");
+                    xmcdaWriter.WriteStartElement("value");
+                    xmcdaWriter.WriteStartElement("real");
+                    xmcdaWriter.WriteString(((double)criterion.Probability).ToString("G", CultureInfo.InvariantCulture));
+                    xmcdaWriter.WriteEndElement();
+                    xmcdaWriter.WriteEndElement();
+                    xmcdaWriter.WriteEndElement();
+                    xmcdaWriter.WriteEndElement();
+                }
+            }
+
+            xmcdaWriter.WriteEndElement();
+            xmcdaWriter.WriteEndDocument();
+            xmcdaWriter.Close();
+        }
+
         public void saveInput()
         {
             checkIfInputFilesExists();
@@ -289,6 +318,7 @@ namespace ExportModule
             saveAlternatives();
             saveCriterionScales();
             savePerformanceTable();
+            saveMethodProbabilities();
         }
 
         public void saveResults()
