@@ -164,9 +164,9 @@ namespace ImportModule
 
         private string GetDialogMethod(XmlNode xmlNode)
         {
-            if (xmlNode.Attributes["concept"] != null)
+            if (xmlNode.Attributes["mcdaConcept"] != null)
             {
-                switch (xmlNode.Attributes["concept"].Value)
+                switch (xmlNode.Attributes["mcdaConcept"].Value)
                 {
                     case "constantProbability":
                         return Criterion.MethodOptionsList[1];

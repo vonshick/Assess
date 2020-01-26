@@ -222,7 +222,7 @@ namespace ExportModule
                 var methodId = GetMethodId(partialUtility.Criterion.Method);
 
                 if (!partialUtility.Criterion.Method.Equals(""))
-                    xmcdaWriter.WriteAttributeString("concept", GetMethodId(partialUtility.Criterion.Method));
+                    xmcdaWriter.WriteAttributeString("mcdaConcept", GetMethodId(partialUtility.Criterion.Method));
                 
                 xmcdaWriter.WriteStartElement("points");
                 foreach (var pointValue in partialUtility.PointsValues)
