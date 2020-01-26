@@ -262,6 +262,14 @@ namespace CalculationsEngine.Maintenance
         {
             var minImComplexNumber = new ComplexNumber(double.PositiveInfinity, double.PositiveInfinity);
 
+            if (z.Length == 2)
+                return 1;
+
+            double firstCoefficient = z[1].re;
+            bool allCoefficientsEqual = z.Skip(2).All(z => z.re == firstCoefficient);
+            if (firstCoefficient == 0 && allCoefficientsEqual)
+                return 1;
+
             // choose the complex number with min imaginary part and min index
             for (var i = z.Length - 1; i >= 1; i--)
                 if (Math.Abs(z[i].im) <= Math.Abs(minImComplexNumber.im))
