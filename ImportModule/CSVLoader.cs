@@ -21,6 +21,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using DataModel.Input;
 
 namespace ImportModule
@@ -30,6 +31,7 @@ namespace ImportModule
         private int lineNumber;
         private int numberOfColumns;
         private char separator;
+        private CultureInfo _cultureInfo;
 
         public CSVLoader()
         {
@@ -61,6 +63,9 @@ namespace ImportModule
                     "Improper criteria directions row - it should contain only 'c', 'g' and separator (e.g. ',', ';') characters.");
 
             separator = separators[0];
+
+            _cultureInfo = separator == ',' ? CultureInfo.InvariantCulture : Thread.CurrentThread.CurrentCulture;
+
             numberOfColumns = separators.Length + 1;
         }
 
@@ -104,9 +109,9 @@ namespace ImportModule
 
                 var criterionNamesArray = ReadNewLine(reader);
                 // iterating from 1 because first column is empty
-                for (var i = 1; i < criterionDirectionsArray.Length; i++)
+                for (var i = 1; i < criterionNamesArray.Length; i++)
                     // for CSV ID and Name are the same value
-                    criterionList.Add(new Criterion(checkCriteriaNamesUniqueness(criterionNamesArray[i]), criterionDirectionsArray[i])
+                    criterionList.Add(new Criterion(checkCriteriaNamesUniqueness(criterionNamesArray[i]), criterionDirectionsArray[i - 1])
                         {ID = checkCriteriaNamesUniqueness(criterionNamesArray[i])});
 
                 while (!reader.EndOfStream)
@@ -123,7 +128,7 @@ namespace ImportModule
                     {
                         checkIfValueIsValid(values[i + 1], criterionList[i].Name, alternative.Name);
                         alternative.CriteriaValuesList.Add(new CriterionValue(criterionList[i].Name,
-                            double.Parse(values[i + 1], CultureInfo.InvariantCulture)));
+                            double.Parse(values[i + 1], _cultureInfo)));
                     }
 
                     alternativeList.Add(alternative);
