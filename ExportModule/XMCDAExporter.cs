@@ -70,10 +70,10 @@ namespace ExportModule
             xmcdaWriter.Indentation = 2;
             xmcdaWriter.WriteStartDocument(false);
             xmcdaWriter.WriteStartElement("xmcda:XMCDA");
-            xmcdaWriter.WriteAttributeString("xmlns:xmcda", "http://www.decision-deck.org/2016/XMCDA-3.0.2");
+            xmcdaWriter.WriteAttributeString("xmlns:xmcda", "http://www.decision-deck.org/2019/XMCDA-3.1.1");
             xmcdaWriter.WriteAttributeString("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
             xmcdaWriter.WriteAttributeString("xsi:schemaLocation",
-                "http://www.decision-deck.org/2016/XMCDA-3.0.2 http://www.decision-deck.org/xmcda/_downloads/XMCDA-3.0.2.xsd");
+                "http://www.decision-deck.org/2019/XMCDA-3.1.1 http://www.decision-deck.org/xmcda/_downloads/XMCDA-3.1.1.xsd");
         }
 
         private void saveCriterions()
