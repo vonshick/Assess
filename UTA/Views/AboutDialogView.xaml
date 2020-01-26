@@ -13,7 +13,7 @@
                 <Setter Property="FontSize" Value="{StaticResource CommonFontSize1}" />
             </Style>
         </StackPanel.Resources>
-        <TextBlock Text="Assess Extended 1.0" FontSize="32" />
+        <TextBlock Text="Assess Extended" FontSize="32" />
         <TextBlock Text="Copyright © 2020" />
         <TextBlock Text="GNU General Public License" />
         <TextBlock Text="Laboratory of Intelligent Decision Support Systems" Margin="0,0,0,12" />

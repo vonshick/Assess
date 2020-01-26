@@ -8,10 +8,10 @@
   <Grid Background="{StaticResource ColorInterface7}">
     <ScrollViewer>
       <StackPanel Margin="16,8,16,12" MaxWidth="900">
-        <TextBlock TextAlignment="Center" FontSize="26">UTA Extended</TextBlock>
+        <TextBlock TextAlignment="Center" FontSize="26">Assess Extended</TextBlock>
         <TextBlock TextAlignment="Center" FontSize="{StaticResource CommonFontSize1}" TextWrapping="Wrap"
                    Margin="0,0,0,8">
-          Wielokryterialne porządkowanie wariantów przy użyciu metody UTA.
+          Wielokryterialne porządkowanie wariantów przy użyciu metody Assess.
         </TextBlock>
 
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="0,8" TextAlignment="Justify">
@@ -32,7 +32,7 @@
           Panele boczne można ukrywać/pokazywać przy pomocy przycisku "View" na pasku Menu. Można także zmieniać ich szerokość, zwijać i rozwijać znajdujące się w nich przewijalne listy z podglądem danych, klikając w odpowiedni nagłówek.<LineBreak/>
           Po lewej stronie umieszczono informacje o instancji: zbiór wariantów i kryteriów. Kliknięcie w dowolny wariant/kryterium otworzy odpowiednią kartę umożliwiającą edycję danych.
           <LineBreak />
-          Po prawej stronie umieszczono panel z podglądem rankingu referencyjnego, tworzonego w karcie "Reference Ranking", oraz rankingu wynikowego, generowanego w oparciu o wyliczony model preferencji po uruchomieniu modułu obliczeniowego.
+          Po prawej stronie umieszczono panel z podglądem wartości wag kryteriów i współczynnika skalującego oraz rankingu wynikowego, generowanego w oparciu o wyliczony model preferencji po uruchomieniu modułu obliczeniowego.
         </TextBlock>
 
         <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
@@ -53,14 +53,14 @@
         </TextBlock>
 
         <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
-          Ranking Referencyjny:
+          Mechanizm dialogów:
         </TextBlock>
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
                    TextAlignment="Justify">
-          W lewej części przestrzeni roboczej karty "Reference Ranking" umieszczono listę wariantów nie znajdujących się w rankingu referencyjnym. 
-          Po prawej widoczne są okna reprezentujące poszczególne rangi rankingu. 
-          Przy pomocy przycisku "Add Rank" możemy dodawać kolejne, początkowo puste rangi. 
-          Ranking referencyjny budujemy przeciągając warianty między listą, a oknami poszczególnych rang.
+          Proces dialogu z użytkownikiem, na którym oparta jest metoda Assess, złożony jest z dwóch etapów: <LineBreak />
+          1. Ustalanie wartości współczynnika skalującego i wag kryetriów. <LineBreak />
+          2. Konstrukcja przebiegu cząstkowych funkcji użyteczności dla każego kryterium. <LineBreak />
+          Dialogi otwierają się automatycznie w nowych zakładkach. Etap pierwszy rozpoczyna się po kliknięciu przycisku "Calculate", etap drugi natomiast po zakończeniu etapu pierwszego.
         </TextBlock>
 
         <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
@@ -76,8 +76,8 @@
         </TextBlock>
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
                    TextAlignment="Justify">
-          Po kliknięciu w niebieski przycisk "Calculate", który znajduje się się po lewej stronie górnego paska, uruchomione zostanie serce aplikacji — moduł obliczeniowy implementujący metodę wielokryterialnego porządkowania wariantów — UTA,
-          który przy użyciu algorytmu sympleksowego wygeneruje model preferencji decydenta.
+          Po kliknięciu w niebieski przycisk "Calculate", który znajduje się się po lewej stronie górnego paska, uruchomione zostanie serce aplikacji&#160;—&#160;moduł obliczeniowy implementujący metodę wielokryterialnego porządkowania wariantów "Assess",
+          który przy pomocy mechanizmu dialogu z użytkownikiem oraz metody Bairstowa wygeneruje model preferencji decydenta.
         </TextBlock>
       </StackPanel>
     </ScrollViewer>
