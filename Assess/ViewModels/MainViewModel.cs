@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -427,7 +428,13 @@ namespace Assess.ViewModels
             catch (Exception exception)
             {
                 ResetProgress();
-                ShowLoadErrorDialog(exception);
+                if (exception is ImproperFileStructureException || dataLoader.CurrentlyProcessedFile == null)
+                    ShowLoadErrorDialog(exception);
+                else if (exception is ImproperFileStructureException || dataLoader.CurrentlyProcessedFile.Equals(""))
+                    ShowLoadErrorDialog(exception);
+                else
+                    ShowLoadErrorDialog(new Exception(Path.GetFileName(dataLoader.CurrentlyProcessedFile) +
+                                                      (exception.Message != null ? $": {exception.Message}" : "")));
             }
         }
 

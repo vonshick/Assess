@@ -13,7 +13,7 @@ namespace ImportModule
     public class XMCDALoader : DataLoader
     {
         private string currentlyProcessedAlternativeId;
-        private string currentlyProcessedFile;
+        public string CurrentlyProcessedFile;
         private string xmcdaDirectory;
 
         private void validateInputFilesSet()
@@ -46,11 +46,11 @@ namespace ImportModule
 
         private XmlDocument loadFile(string fileName)
         {
-            currentlyProcessedFile = Path.Combine(xmcdaDirectory, fileName);
-            ValidateFilePath(currentlyProcessedFile);
+            CurrentlyProcessedFile = Path.Combine(xmcdaDirectory, fileName);
+            ValidateFilePath(CurrentlyProcessedFile);
 
             var xmlDocument = new XmlDocument();
-            xmlDocument.Load(currentlyProcessedFile);
+            xmlDocument.Load(CurrentlyProcessedFile);
 
             return xmlDocument;
         }
@@ -271,13 +271,13 @@ namespace ImportModule
 
         private void LoadValueFunctions()
         {
-            currentlyProcessedFile = Path.Combine(xmcdaDirectory, "value_functions.xml");
+            CurrentlyProcessedFile = Path.Combine(xmcdaDirectory, "value_functions.xml");
 
-            if (!File.Exists(currentlyProcessedFile))
+            if (!File.Exists(CurrentlyProcessedFile))
                 return;
 
             var xmlDocument = new XmlDocument();
-            xmlDocument.Load(currentlyProcessedFile);
+            xmlDocument.Load(CurrentlyProcessedFile);
 
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
             {
@@ -326,13 +326,13 @@ namespace ImportModule
 
         private void LoadWeights()
         {
-            currentlyProcessedFile = Path.Combine(xmcdaDirectory, "weights.xml");
+            CurrentlyProcessedFile = Path.Combine(xmcdaDirectory, "weights.xml");
 
-            if (!File.Exists(currentlyProcessedFile))
+            if (!File.Exists(CurrentlyProcessedFile))
                 return;
 
             var xmlDocument = new XmlDocument();
-            xmlDocument.Load(currentlyProcessedFile);
+            xmlDocument.Load(CurrentlyProcessedFile);
 
             // this file contains only one main block - <criteriaScales>
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
@@ -375,6 +375,7 @@ namespace ImportModule
 
             LoadValueFunctions();
             LoadWeights();
+            CurrentlyProcessedFile = "";
         }
     }
 }
