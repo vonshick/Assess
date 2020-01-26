@@ -445,13 +445,11 @@ namespace Assess.ViewModels
             catch (Exception exception)
             {
                 ResetProgress();
-                if (exception is ImproperFileStructureException || dataLoader.CurrentlyProcessedFile == null)
-                    ShowLoadErrorDialog(exception);
-                else if (exception is ImproperFileStructureException || dataLoader.CurrentlyProcessedFile.Equals(""))
+                if (dataLoader.CurrentlyProcessedFile == null || dataLoader.CurrentlyProcessedFile.Equals(""))
                     ShowLoadErrorDialog(exception);
                 else
                     ShowLoadErrorDialog(new Exception(Path.GetFileName(dataLoader.CurrentlyProcessedFile) +
-                                                      (exception.Message != null ? $": {exception.Message}" : "")));
+                                                      (exception.Message != null ? $" - {exception.Message}" : "")));
             }
         }
 

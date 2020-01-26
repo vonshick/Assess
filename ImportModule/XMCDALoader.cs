@@ -188,12 +188,12 @@ namespace ImportModule
                 if (criterionDirection.Equals("Gain"))
                 {
                     if (partialUtility.PointsValues[i].Y < partialUtility.PointsValues[i - 1].Y)
-                        throw new ImproperFileStructureException("criterion " + criterionId + " - Utility function has to be increasing for criterion direction '" + criterionDirection + "'.");
+                        throw new ImproperFileStructureException("criterion " + criterionId + " - data set is not valid for Assess method. Utility function has to be increasing for criterion direction '" + criterionDirection + "'.");
                 }
                 else if (criterionDirection.Equals("Cost"))
                 {
                     if (partialUtility.PointsValues[i].Y > partialUtility.PointsValues[i - 1].Y)
-                        throw new ImproperFileStructureException("criterion " + criterionId + " - Utility function has to be descending  for criterion direction '" + criterionDirection + "'.");
+                        throw new ImproperFileStructureException("criterion " + criterionId + " - data set is not valid for Assess method. Utility function has to be descending  for criterion direction '" + criterionDirection + "'.");
 
                 }
             }
@@ -214,19 +214,19 @@ namespace ImportModule
 
             if(lowestAbscissa != criterionMin)
                 throw new ImproperFileStructureException("criterion " + criterionId +
-                                                             " - lowest abscissa equals "  + lowestAbscissa.ToString("G", CultureInfo.InvariantCulture) +
+                                                             " - data set is not valid for Assess method. Lowest abscissa equals " + lowestAbscissa.ToString("G", CultureInfo.InvariantCulture) +
                                                              " and it should be the same like the lowest value for this criterion in performance_table.xml: " +
                                                              criterionMin.ToString("G", CultureInfo.InvariantCulture) + ".");
 
             if (lowestAbscissa != criterionMin)
                 throw new ImproperFileStructureException("criterion " + criterionId +
-                                                         " - lowest abscissa equals " + lowestAbscissa.ToString("G", CultureInfo.InvariantCulture) +
+                                                         " - data set is not valid for Assess method. Lowest abscissa equals " + lowestAbscissa.ToString("G", CultureInfo.InvariantCulture) +
                                                          " and it should be the same like the lowest value for this criterion in performance_table.xml: " +
                                                          criterionMin.ToString("G", CultureInfo.InvariantCulture) + ".");
 
             if (highestAbscissa != criterionMax)
                 throw new ImproperFileStructureException("criterion " + criterionId +
-                                                         " - highest abscissa equals " + lowestAbscissa.ToString("G", CultureInfo.InvariantCulture) +
+                                                         " - data set is not valid for Assess method. Highest abscissa equals " + lowestAbscissa.ToString("G", CultureInfo.InvariantCulture) +
                                                          " and it should be the same like the highest value for this criterion performance_table.xml: " +
                                                          criterionMax.ToString("G", CultureInfo.InvariantCulture) + ".");
 
@@ -234,22 +234,22 @@ namespace ImportModule
             {
                 if (lowestAbscissaUtility != 0)
                     throw new ImproperFileStructureException("criterion " + criterionId +
-                                                             " - Lowest utility value of each function should be equal to 0 and it is " +
+                                                             " - data set is not valid for Assess method. Lowest utility value of each function should be equal to 0 and it is " +
                                                              lowestAbscissaUtility.ToString("G", CultureInfo.InvariantCulture) + ".");
                 if (highestAbscissaUtility != 1)
                     throw new ImproperFileStructureException("criterion " + criterionId +
-                                                             " - Highest utility value of each function should be equal to 1 and it is " +
+                                                             " - data set is not valid for Assess method. Highest utility value of each function should be equal to 1 and it is " +
                                                              highestAbscissaUtility.ToString("G", CultureInfo.InvariantCulture) + ".");
             }
             else if (criterionDirection.Equals("Cost"))
             {
                 if (lowestAbscissaUtility != 1)
                     throw new ImproperFileStructureException("criterion " + criterionId +
-                                                             " - Highest utility value of each function should be equal to 1 and it is " +
+                                                             " - data set is not valid for Assess method. Highest utility value of each function should be equal to 1 and it is " +
                                                              lowestAbscissaUtility.ToString("G", CultureInfo.InvariantCulture) + ".");
                 if (highestAbscissaUtility != 0)
                     throw new ImproperFileStructureException("criterion " + criterionId +
-                                                             " - Lowest utility value of each function should be equal to 0 and it is " +
+                                                             " - data set is not valid for Assess method. Lowest utility value of each function should be equal to 0 and it is " +
                                                              highestAbscissaUtility.ToString("G", CultureInfo.InvariantCulture) + ".");
             }
         }
@@ -300,7 +300,7 @@ namespace ImportModule
                                     value = double.Parse(coordinate.FirstChild.InnerText, CultureInfo.InvariantCulture);
                                     if (argument == double.PositiveInfinity || value == double.PositiveInfinity)
                                     {
-                                        Trace.WriteLine("Format of value_functions.xml file is not valid");
+                                        Trace.WriteLine("Format of the file is not valid");
                                         return;
                                     }
 
@@ -344,7 +344,7 @@ namespace ImportModule
                 else
                 {
                     throw new ImproperFileStructureException(
-                        "Improper structure of weights.xml file. Please compare it to the documentation.");
+                        "Improper structure of the file. Please compare it to the documentation.");
                 }
 
                 var index = criterionList.FindIndex(criterion => criterion.ID == criterionID);
@@ -407,7 +407,7 @@ namespace ImportModule
                 else
                 {
                     throw new ImproperFileStructureException(
-                        "Improper structure of method_parameters.xml file. Please compare it to the documentation.");
+                        "Improper structure of the file. Please compare it to the documentation.");
                 }
 
                 var matchingCriterion = criterionList.Find(criterion => criterion.ID == criterionID);
