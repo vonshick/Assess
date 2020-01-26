@@ -70,7 +70,6 @@ namespace DataModel.Input
         }
 
         public bool IsEnum { get; set; } = false;
-        public Dictionary<string, double> EnumDictionary { get; set; }
 
         public string Name
         {

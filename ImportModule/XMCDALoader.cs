@@ -201,7 +201,7 @@ namespace ImportModule
 
                 }
             }
-        }   
+        }
 
         private void CheckEdgePoints(PartialUtility partialUtility)
         {
@@ -243,7 +243,7 @@ namespace ImportModule
                 if (highestAbscissaUtility != 1)
                     throw new ImproperFileStructureException("criterion " + criterionId +
                                                              " - Highest utility value of each function should be equal to 1 and it is " +
-                                                             lowestAbscissaUtility.ToString("G", CultureInfo.InvariantCulture) + ".");
+                                                             highestAbscissaUtility.ToString("G", CultureInfo.InvariantCulture) + ".");
             }
             else if (criterionDirection.Equals("Cost"))
             {
@@ -254,9 +254,8 @@ namespace ImportModule
                 if (highestAbscissaUtility != 0)
                     throw new ImproperFileStructureException("criterion " + criterionId +
                                                              " - Lowest utility value of each function should be equal to 0 and it is " +
-                                                             lowestAbscissaUtility.ToString("G", CultureInfo.InvariantCulture) + ".");
+                                                             highestAbscissaUtility.ToString("G", CultureInfo.InvariantCulture) + ".");
             }
-
         }
 
         private void ValidateUtilityFunctions()

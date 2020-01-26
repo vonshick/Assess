@@ -9,6 +9,13 @@ namespace ImportModule
 {
     public class UTXLoader : DataLoader
     {
+        public UTXLoader() : base()
+        {
+            _criterionEnumsList = new List<CriterionEnum>();
+        }
+
+        private List<CriterionEnum> _criterionEnumsList;
+
         private void checkEnumValue(string criterionName, string enumID, string enumValue)
         {
             if (enumValue.Equals(""))
@@ -27,14 +34,17 @@ namespace ImportModule
         {
             if (criterion.IsEnum)
             {
-                criterion.EnumDictionary = new Dictionary<string, double>();
+                var criterionEnum = new CriterionEnum(criterion.ID);
+
                 foreach (var entry in enumNames)
                 {
                     var enumID = entry.Key;
                     var enumName = entry.Value;
                     var enumValue = enumValues[enumID];
-                    criterion.EnumDictionary.Add(enumName, enumValue);
+                    criterionEnum.EnumDictionary.Add(enumName, enumValue);
                 }
+
+                _criterionEnumsList.Add(criterionEnum);
             }
 
             if (criterion.Name == null || criterion.Name.Equals(""))
@@ -171,7 +181,8 @@ namespace ImportModule
 
                             if (criterion.IsEnum)
                             {
-                                criteriaValuesList.Add(new CriterionValue(criterion.Name, criterion.EnumDictionary[value]));
+                                var enumValue = _criterionEnumsList.Find(o => o.CriterionId == criterion.ID).EnumDictionary[value];
+                                criteriaValuesList.Add(new CriterionValue(criterion.Name, enumValue));
                             }
                             else
                             {
