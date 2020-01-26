@@ -360,6 +360,42 @@ namespace ImportModule
             }
         }
 
+        private void LoadDialogProbabilities()
+        {
+            CurrentlyProcessedFile = Path.Combine(xmcdaDirectory, "method_parameters.xml");
+
+            if (!File.Exists(CurrentlyProcessedFile))
+                return;
+
+            var xmlDocument = new XmlDocument();
+            xmlDocument.Load(CurrentlyProcessedFile);
+
+            // this file contains only one main block - <criteriaScales>
+            foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
+            {
+                var criterionID = xmlNode.Attributes["id"].Value;
+
+                double probability = -1;
+
+                if (xmlNode.FirstChild.FirstChild.FirstChild != null)
+                {
+                    if (!double.TryParse(xmlNode.FirstChild.FirstChild.FirstChild.InnerText, NumberStyles.Any,
+                        CultureInfo.InvariantCulture, out probability))
+                        throw new ImproperFileStructureException("Improper criterion coefficient format " +
+                                                                 xmlNode.ChildNodes[1].FirstChild.FirstChild.InnerText +
+                                                                 " - it should be floating point.");
+                }
+                else
+                {
+                    throw new ImproperFileStructureException(
+                        "Improper structure of weights.xml file. Please compare it to the documentation.");
+                }
+
+                var matchingCriterion = criterionList.Find(criterion => criterion.ID == criterionID);
+                matchingCriterion.Probability = probability;
+            }
+        }
+
         protected override void ProcessFile(string xmcdaDirectory)
         {
             this.xmcdaDirectory = xmcdaDirectory;
@@ -374,6 +410,7 @@ namespace ImportModule
 
             LoadValueFunctions();
             LoadWeights();
+            LoadDialogProbabilities();
             CurrentlyProcessedFile = "";
         }
     }
