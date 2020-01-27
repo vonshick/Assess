@@ -148,18 +148,18 @@
               AutoGenerateColumns="False" SelectionMode="Single" 
               BorderBrush="{StaticResource ColorBorders1}" BorderThickness="1" IsReadOnly="True"
               CanUserAddRows="False" CanUserReorderColumns="False" CanUserResizeRows="False"
-              IsSynchronizedWithCurrentItem="True" HorizontalGridLinesBrush="{StaticResource ColorInterface2}"
-              VerticalGridLinesBrush="{StaticResource ColorInterface2}"
+              IsSynchronizedWithCurrentItem="True" HorizontalGridLinesBrush="{StaticResource ColorInterface1}"
+              VerticalGridLinesBrush="{StaticResource ColorInterface1}"
               PreviewKeyDown="CriteriaDataGridPreviewKeyDown" LoadingRowDetails="DataGridRowClicked"
               GridLinesVisibility="All">
       <DataGrid.RowStyle>
         <Style TargetType="{x:Type DataGridRow}">
           <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-              <Setter Property="Background" Value="{StaticResource ColorInterface6}" />
+              <Setter Property="Background" Value="{StaticResource ColorPrimaryOpacity1}" />
             </Trigger>
             <Trigger Property="IsSelected" Value="True">
-              <Setter Property="Background" Value="{StaticResource ColorInterface6}" />
+              <Setter Property="Background" Value="{StaticResource ColorPrimaryOpacity1}" />
             </Trigger>
           </Style.Triggers>
           <Setter Property="Background" Value="White" />

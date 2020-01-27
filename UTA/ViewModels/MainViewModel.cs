@@ -244,7 +244,7 @@ namespace UTA.ViewModels
             var warningMessage = "Alternatives values on the following criteria have too high precision or are the same:\n";
             foreach (var criterionName in invalidCriteriaValuesNames) warningMessage += $"{criterionName},\n";
             warningMessage +=
-                "Please provide lower precision values or at least two unique values on a whole set of alternatives values.";
+                "Please provide lower precision values or at least two unique values on a whole set of alternatives values. Maximal allowed criteria values precision is 14.";
             await _dialogCoordinator.ShowMessageAsync(this,
                 "Invalid alternatives values.",
                 warningMessage,
@@ -414,7 +414,7 @@ namespace UTA.ViewModels
                 Criteria.CriteriaCollection = new ObservableCollection<Criterion>(dataLoader.CriterionList);
                 // works assuming that CriteriaValuesList are initialized properly
                 Alternatives.AlternativesCollection = new ObservableCollection<Alternative>(dataLoader.AlternativeList);
-                if (dataLoader.Results.CriteriaCoefficients.Count != Criteria.CriteriaCollection.Count || 
+                if (dataLoader.Results.CriteriaCoefficients.Count != Criteria.CriteriaCollection.Count ||
                     dataLoader.Results.PartialUtilityFunctions.Count != Criteria.CriteriaCollection.Count ||
                     !await IsInstanceCorrectToRunCalculations()) return;
                 Results.CriteriaCoefficients = dataLoader.Results.CriteriaCoefficients;
@@ -464,12 +464,15 @@ namespace UTA.ViewModels
             }
 
             var dataSaver = new XMCDAExporter(
-                _saveData.FilePath,
-                (bool) _saveData.IsSavingWithResults ? _currentCalculationCriteriaCopy : new List<Criterion>(Criteria.CriteriaCollection),
-                (bool) _saveData.IsSavingWithResults
-                    ? _currentCalculationAlternativesCopy
-                    : new List<Alternative>(Alternatives.AlternativesCollection),
-                Results) {OverwriteFile = true};
+                    _saveData.FilePath,
+                    (bool) _saveData.IsSavingWithResults && _currentCalculationCriteriaCopy != null
+                        ? _currentCalculationCriteriaCopy
+                        : new List<Criterion>(Criteria.CriteriaCollection),
+                    (bool) _saveData.IsSavingWithResults && _currentCalculationAlternativesCopy != null
+                        ? _currentCalculationAlternativesCopy
+                        : new List<Alternative>(Alternatives.AlternativesCollection),
+                    Results)
+                {OverwriteFile = true};
             try
             {
                 if (_saveData.IsSavingWithResults == true) dataSaver.saveSession();

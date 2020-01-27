@@ -39,8 +39,8 @@ namespace DataModel.Input
                 if (Nullable.Equals(value, _value)) return;
                 if (value == null) throw new ArgumentException("Value is required!");
                 var oldValue = _value;
-                _value = value;
-                OnPropertyChangedExtended(nameof(Value), oldValue, value);
+                _value = Math.Round((double) value, 14);
+                OnPropertyChangedExtended(nameof(Value), oldValue, _value);
             }
         }
 

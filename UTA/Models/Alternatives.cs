@@ -150,13 +150,15 @@ namespace UTA.Models
                 if (e.PropertyName != nameof(criterionValue.Value)) return;
                 var extendedArgs = (PropertyChangedExtendedEventArgs<double?>) e;
                 var oldCriterionValueValue = extendedArgs.OldValue;
-                if (oldCriterionValueValue == null) return;
-                UpdateCriterionMinMaxValueIfNeeded((double) oldCriterionValueValue, criterionIndex);
+                if (oldCriterionValueValue == null || criterionValue.Value == null) return;
+                UpdateCriterionMinMaxValueIfNeeded((double) oldCriterionValueValue, criterionIndex, (double)criterionValue.Value);
             };
         }
 
-        // sets new criterion min/max values when given changedCriterionValueOldValue was and is no longer min/max in given criterion
-        private void UpdateCriterionMinMaxValueIfNeeded(double changedCriterionValueOldValue, int criterionIndex)
+        // sets new criterion min/max values when given oldCriterionValueValue was and is no longer min/max in given criterion
+        // or newCriterionValueValue is new min/max
+        private void UpdateCriterionMinMaxValueIfNeeded(double oldCriterionValueValue, int criterionIndex,
+            double? newCriterionValueValue = null)
         {
             var criterion = _criteria.CriteriaCollection[criterionIndex];
             if (AlternativesCollection.Count == 0)
@@ -166,16 +168,29 @@ namespace UTA.Models
             }
             else
             {
-                if (changedCriterionValueOldValue == criterion.MinValue || criterion.MinValue == double.MaxValue)
+                if (oldCriterionValueValue <= criterion.MinValue || criterion.MinValue == double.MaxValue)
+                {
                     criterion.MinValue = AlternativesCollection.Select(alternative =>
                         alternative.CriteriaValuesList[criterionIndex].Value is double criterionValueValue
                             ? criterionValueValue
                             : double.MaxValue).Min();
-                if (changedCriterionValueOldValue == criterion.MaxValue || criterion.MaxValue == double.MinValue)
+                }
+                else if (newCriterionValueValue != null && newCriterionValueValue < criterion.MinValue)
+                {
+                    criterion.MinValue = (double)newCriterionValueValue;
+                }
+
+                if (oldCriterionValueValue >= criterion.MaxValue || criterion.MaxValue == double.MinValue)
+                {
                     criterion.MaxValue = AlternativesCollection.Select(alternative =>
                         alternative.CriteriaValuesList[criterionIndex].Value is double criterionValueValue
                             ? criterionValueValue
                             : double.MinValue).Max();
+                }
+                else if (newCriterionValueValue != null && newCriterionValueValue > criterion.MaxValue)
+                {
+                    criterion.MaxValue = (double)newCriterionValueValue;
+                }
             }
         }
 

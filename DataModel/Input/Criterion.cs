@@ -12,6 +12,8 @@ namespace DataModel.Input
     {
         private string _criterionDirection;
         private string _description;
+        private double _minValue = double.MaxValue;
+        private double _maxValue = double.MinValue;
         private string _method = "Set during calculations";
         private string _name;
         private double? _p = 0.3;
@@ -54,8 +56,19 @@ namespace DataModel.Input
         };
 
         public string ID { get; set; }
-        public double MinValue { get; set; } = double.MaxValue;
-        public double MaxValue { get; set; } = double.MinValue;
+
+        public double MinValue
+        {
+            get => _minValue;
+            set => _minValue = Math.Round(value, 14);
+        }
+
+        public double MaxValue
+        {
+            get => _maxValue;
+            set => _maxValue = Math.Round(value, 14);
+        }
+
         public bool IsEnum { get; set; } = false;
         public Dictionary<string, double> EnumDictionary { get; set; }
 
@@ -67,7 +80,7 @@ namespace DataModel.Input
                 if (value == _name) return;
                 var oldValue = _name;
                 _name = value;
-                OnPropertyChangedExtended(nameof(Name), oldValue, value);
+                OnPropertyChangedExtended(nameof(Name), oldValue, _name);
             }
         }
 

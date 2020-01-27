@@ -50,6 +50,7 @@
       <SolidColorBrush x:Key="ColorDangerPressed" Color="#BE000C" />
 
       <SolidColorBrush x:Key="ColorPrimaryDisabled" Color="#333373f2" />
+      <SolidColorBrush x:Key="ColorPrimaryOpacity1" Color="#203373f2" />
 
       <SolidColorBrush x:Key="ColorBorders1" Color="#AAAAAA" />
       <SolidColorBrush x:Key="ColorBorders2" Color="#C8C8C8" />
