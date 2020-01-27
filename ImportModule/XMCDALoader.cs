@@ -383,36 +383,34 @@ namespace ImportModule
             // this file contains only one main block - <criteriaScales>
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
             {
-                var criterionID = xmlNode.Attributes["id"].Value;
-
-                double probability = -1;
-                string method = "";
-
-                if (xmlNode.SelectSingleNode(".//label") != null)
+                if(xmlNode.Attributes["id"] != null)
                 {
-                    method = xmlNode.SelectSingleNode(".//label").InnerText;
+                    var criterionID = xmlNode.Attributes["id"].Value;
+                    var matchingCriterion = criterionList.Find(criterion => criterion.ID == criterionID);
 
-                    if (method.Equals("constantProbability") || method.Equals("lotteriesComparison"))
+                    double probability = -1;
+                    string method = "";
+
+                    if (xmlNode.SelectSingleNode(".//label") != null)
                     {
-                        if (xmlNode.SelectSingleNode(".//real") != null)
+                        method = xmlNode.SelectSingleNode(".//label").InnerText;
+
+                        if (method.Equals("constantProbability") || method.Equals("lotteriesComparison"))
                         {
-                            if (!double.TryParse(xmlNode.SelectSingleNode(".//real").InnerText, NumberStyles.Any,
-                                CultureInfo.InvariantCulture, out probability))
-                                throw new ImproperFileStructureException("criterion " + criterionID + " - Improper criterion coefficient format " +
-                                                                         xmlNode.SelectSingleNode(".//real").InnerText +
-                                                                         " - it should be floating point.");
+                            if (xmlNode.SelectSingleNode(".//real") != null)
+                            {
+                                if (!double.TryParse(xmlNode.SelectSingleNode(".//real").InnerText, NumberStyles.Any,
+                                    CultureInfo.InvariantCulture, out probability))
+                                    throw new ImproperFileStructureException("criterion " + criterionID + " - Improper criterion coefficient format " +
+                                                                            xmlNode.SelectSingleNode(".//real").InnerText +
+                                                                            " - it should be floating point.");
+                                matchingCriterion.Probability = probability;
+                            }
                         }
+                        
+                        matchingCriterion.Method = GetDialogMethod(method);
                     }
                 }
-                else
-                {
-                    throw new ImproperFileStructureException(
-                        "Improper structure of the file for the Assess method. Please compare it to the documentation.");
-                }
-
-                var matchingCriterion = criterionList.Find(criterion => criterion.ID == criterionID);
-                matchingCriterion.Probability = probability;
-                matchingCriterion.Method = GetDialogMethod(method);
             }
         }
 
