@@ -71,13 +71,13 @@ namespace ExportModule
             checkIfFileExists(Path.Combine(outputDirectory, "alternatives.xml"));
             checkIfFileExists(Path.Combine(outputDirectory, "performance_table.xml"));
             checkIfFileExists(Path.Combine(outputDirectory, "criteria_scales.xml"));
-            checkIfFileExists(Path.Combine(outputDirectory, "Assess", "weights.xml"));
             checkIfFileExists(Path.Combine(outputDirectory, "Assess", "method_parameters.xml"));
         }
 
         private void checkIfResultFilesExists()
         {
-            checkIfFileExists(Path.Combine(outputDirectory, "value_functions.xml"));
+            checkIfFileExists(Path.Combine(outputDirectory, "Assess", "value_functions.xml"));
+            checkIfFileExists(Path.Combine(outputDirectory, "Assess", "weights.xml"));
         }
 
         private void initializeWriter(string filePath)
@@ -299,7 +299,9 @@ namespace ExportModule
 
         private void saveMethodData()
         {
-            initializeWriter(Path.Combine(outputDirectory, "method_parameters.xml"));
+            Directory.CreateDirectory(Path.Combine(outputDirectory, "Assess"));
+            initializeWriter(Path.Combine(outputDirectory, "Assess", "method_parameters.xml"));
+
             xmcdaWriter.WriteStartElement("programParameters");
 
             foreach (var criterion in criterionList)

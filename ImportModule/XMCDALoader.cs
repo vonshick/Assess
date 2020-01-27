@@ -372,7 +372,7 @@ namespace ImportModule
 
         private void LoadDialogMethods()
         {
-            CurrentlyProcessedFile = Path.Combine(xmcdaDirectory, "method_parameters.xml");
+            CurrentlyProcessedFile = Path.Combine(xmcdaDirectory, "Assess", "method_parameters.xml");
 
             if (!File.Exists(CurrentlyProcessedFile))
                 return;
