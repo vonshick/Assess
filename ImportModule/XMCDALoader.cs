@@ -266,7 +266,7 @@ namespace ImportModule
 
         private void LoadValueFunctions()
         {
-            CurrentlyProcessedFile = Path.Combine(xmcdaDirectory, "value_functions.xml");
+            CurrentlyProcessedFile = Path.Combine(xmcdaDirectory, "Assess", "value_functions.xml");
 
             if (!File.Exists(CurrentlyProcessedFile))
                 return;
@@ -318,7 +318,7 @@ namespace ImportModule
 
         private void LoadWeights()
         {
-            CurrentlyProcessedFile = Path.Combine(xmcdaDirectory, "weights.xml");
+            CurrentlyProcessedFile = Path.Combine(xmcdaDirectory, "Assess", "weights.xml");
 
             if (!File.Exists(CurrentlyProcessedFile))
                 return;

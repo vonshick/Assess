@@ -71,8 +71,8 @@ namespace ExportModule
             checkIfFileExists(Path.Combine(outputDirectory, "alternatives.xml"));
             checkIfFileExists(Path.Combine(outputDirectory, "performance_table.xml"));
             checkIfFileExists(Path.Combine(outputDirectory, "criteria_scales.xml"));
-            checkIfFileExists(Path.Combine(outputDirectory, "weights.xml"));
-            checkIfFileExists(Path.Combine(outputDirectory, "method_parameters.xml"));
+            checkIfFileExists(Path.Combine(outputDirectory, "Assess", "weights.xml"));
+            checkIfFileExists(Path.Combine(outputDirectory, "Assess", "method_parameters.xml"));
         }
 
         private void checkIfResultFilesExists()
@@ -205,7 +205,8 @@ namespace ExportModule
 
         private void saveValueFunctions()
         {
-            initializeWriter(Path.Combine(outputDirectory, "value_functions.xml"));
+            Directory.CreateDirectory(Path.Combine(outputDirectory, "Assess"));
+            initializeWriter(Path.Combine(outputDirectory, "Assess", "value_functions.xml"));
             xmcdaWriter.WriteStartElement("criteria");
             xmcdaWriter.WriteAttributeString("mcdaConcept", "criteria");
 
@@ -248,7 +249,8 @@ namespace ExportModule
 
         private void saveWeights()
         {
-            initializeWriter(Path.Combine(outputDirectory, "weights.xml"));
+            Directory.CreateDirectory(Path.Combine(outputDirectory, "Assess"));
+            initializeWriter(Path.Combine(outputDirectory, "Assess", "weights.xml"));
             xmcdaWriter.WriteStartElement("criteriaValues");
 
             foreach (var criterionCoefficient in results.CriteriaCoefficients)
