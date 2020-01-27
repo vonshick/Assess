@@ -407,7 +407,7 @@ namespace ImportModule
                 else
                 {
                     throw new ImproperFileStructureException(
-                        "Improper structure of the file. Please compare it to the documentation.");
+                        "Improper structure of the file for the Assess method. Please compare it to the documentation.");
                 }
 
                 var matchingCriterion = criterionList.Find(criterion => criterion.ID == criterionID);
