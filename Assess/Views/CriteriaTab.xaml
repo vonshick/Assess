@@ -1,0 +1,264 @@
+﻿<UserControl x:Class="Assess.Views.CriteriaTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+             xmlns:criterion="clr-namespace:DataModel.Input;assembly=DataModel"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:dataValidation="clr-namespace:Assess.Helpers.DataValidation"
+             mc:Ignorable="d"
+             d:DesignHeight="700" d:DesignWidth="900" Unloaded="TabUnloaded">
+  <Grid Margin="12,8,12,12" Background="{StaticResource ColorInterface7}">
+    <Grid.Resources>
+      <CollectionViewSource x:Key="CriteriaCollectionViewSource"
+                            Source="{Binding Criteria.CriteriaCollection, UpdateSourceTrigger=PropertyChanged}" />
+    </Grid.Resources>
+
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+    <StackPanel>
+      <TextBlock Text="Add Criterion" FontSize="{StaticResource CommonFontSize1}" Margin="0,0,0,8" />
+
+      <Grid Name="AddCriterionContainer"
+            DataContext="{Binding NewCriterion, UpdateSourceTrigger=PropertyChanged}"
+            Margin="0,0,0,12" Validation.ErrorTemplate="{x:Null}">
+        <Grid.BindingGroup>
+          <BindingGroup />
+        </Grid.BindingGroup>
+
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition MaxWidth="500"/>
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <i:Interaction.Triggers>
+          <i:KeyTrigger Key="Enter" FiredOn="KeyUp">
+            <i:InvokeCommandAction
+              Command="{Binding ElementName=CriteriaDataGrid, Path=DataContext.AddCriterionCommand}"
+              CommandParameter="{Binding ElementName=AddCriterionContainer, Path=BindingGroup}" />
+          </i:KeyTrigger>
+        </i:Interaction.Triggers>
+
+        <!--name, type, description, probability-->
+        <Grid Grid.Column="0" Margin="0,0,20,0">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="*" MinWidth="80" />
+          </Grid.ColumnDefinitions>
+
+          <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,12,0">
+            <TextBlock Text="Name" Margin="0,0,0,2" />
+            <TextBox Name="NameTextBox" TextChanged="NameTextBoxTextChanged">
+              <Binding Path="Name" UpdateSourceTrigger="PropertyChanged">
+                <Binding.ValidationRules>
+                  <dataValidation:CriterionNameValidationRule
+                    CriteriaCollectionViewSource="{StaticResource CriteriaCollectionViewSource}"
+                    ValidationStep="RawProposedValue" />
+                </Binding.ValidationRules>
+              </Binding>
+            </TextBox>
+          </StackPanel>
+
+          <StackPanel Grid.Row="0" Grid.Column="1">
+            <TextBlock Text="Type" Margin="0,0,0,2" />
+            <ComboBox ItemsSource="{Binding CriterionDirectionTypesList}"
+                      SelectedItem="{Binding CriterionDirection, UpdateSourceTrigger=PropertyChanged}" />
+          </StackPanel>
+
+          <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,6,0,0">
+            <TextBlock Text="Description" Margin="0,0,0,2" />
+            <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
+          </StackPanel>
+
+          <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,6,0,0" HorizontalAlignment="Left">
+            <StackPanel.Style>
+              <Style TargetType="{x:Type StackPanel}">
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding IsProbabilityIncluded, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                    <Setter Property="Visibility" Value="Visible" />
+                  </DataTrigger>
+                </Style.Triggers>
+                <Setter Property="Visibility" Value="Collapsed" />
+              </Style>
+            </StackPanel.Style>
+
+            <TextBlock Text="Probability of obtaining a more favorable option in lottery" Margin="0,0,0,2" />
+            <controls:NumericUpDown Width="350"
+                                    Value="{Binding Probability, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                                    Minimum="{x:Static criterion:Criterion.MinimumProbability}"
+                                    Maximum="{x:Static criterion:Criterion.MaximumProbability}"
+                                    NumericInputMode="All" Interval="0.01" StringFormat="G15" />
+          </StackPanel>
+        </Grid>
+
+        <!--Partial utility construction method-->
+        <Grid Grid.Column="1">
+          <StackPanel>
+            <TextBlock Text="Partial utility construction method" Margin="0,0,0,2" />
+            <!--listbox is used, because radiobuttons doesn't support itemssource-->
+            <ListBox ItemsSource="{Binding MethodOptionsList}"
+                     SelectedItem="{Binding Method, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Background="Transparent">
+              <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                  <Setter Property="Focusable" Value="False"></Setter>
+                  <Setter Property="Template">
+                    <Setter.Value>
+                      <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                        <ContentPresenter />
+                      </ControlTemplate>
+                    </Setter.Value>
+                  </Setter>
+                </Style>
+              </ListBox.ItemContainerStyle>
+
+              <ListBox.ItemTemplate>
+                <DataTemplate>
+                  <RadioButton Content="{Binding}" GroupName="Methods" Margin="0,0,0,4"
+                               IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected, Mode=TwoWay}" />
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </StackPanel>
+        </Grid>
+      </Grid>
+
+      <Border Margin="0,0,0,16">
+        <Button Name="AddButton" Content="Add Criterion"
+                Style="{StaticResource PrimaryRoundButton}"
+                Command="{Binding ElementName=CriteriaDataGrid, Path=DataContext.AddCriterionCommand}"
+                CommandParameter="{Binding ElementName=AddCriterionContainer, Path=BindingGroup}" />
+      </Border>
+
+      <TextBlock Text="Criteria Editor" FontSize="{StaticResource CommonFontSize1}" Margin="0,0,0,4" />
+    </StackPanel>
+
+
+    <DataGrid Name="CriteriaDataGrid" Grid.Row="1"
+              ItemsSource="{Binding Criteria.CriteriaCollection, UpdateSourceTrigger=PropertyChanged}"
+              AutoGenerateColumns="False" SelectionMode="Single" 
+              BorderBrush="{StaticResource ColorBorders1}" BorderThickness="1" IsReadOnly="True"
+              CanUserAddRows="False" CanUserReorderColumns="False" CanUserResizeRows="False"
+              IsSynchronizedWithCurrentItem="True" HorizontalGridLinesBrush="{StaticResource ColorInterface1}"
+              VerticalGridLinesBrush="{StaticResource ColorInterface1}"
+              PreviewKeyDown="CriteriaDataGridPreviewKeyDown" LoadingRowDetails="DataGridRowClicked"
+              GridLinesVisibility="All">
+      <DataGrid.RowStyle>
+        <Style TargetType="{x:Type DataGridRow}">
+          <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter Property="Background" Value="{StaticResource ColorPrimaryOpacity1}" />
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+              <Setter Property="Background" Value="{StaticResource ColorPrimaryOpacity1}" />
+            </Trigger>
+          </Style.Triggers>
+          <Setter Property="Background" Value="White" />
+        </Style>
+      </DataGrid.RowStyle>
+
+      <DataGrid.RowDetailsTemplate>
+        <DataTemplate>
+          <StackPanel Orientation="Horizontal" DataContext="{Binding}" Margin="34,8,12,8">
+            <StackPanel.Resources>
+              <Style TargetType="{x:Type StackPanel}">
+                <Setter Property="Margin" Value="0,0,12,0" />
+              </Style>
+            </StackPanel.Resources>
+
+            <StackPanel MinWidth="100" Margin="0,0,12,0">
+              <TextBlock Text="Name" Margin="0,0,0,2" />
+              <TextBox>
+                <Binding Path="Name" UpdateSourceTrigger="PropertyChanged">
+                  <Binding.ValidationRules>
+                    <dataValidation:CriterionNameValidationRule
+                      CriteriaCollectionViewSource="{StaticResource CriteriaCollectionViewSource}"
+                      ValidationStep="RawProposedValue" />
+                  </Binding.ValidationRules>
+                </Binding>
+              </TextBox>
+            </StackPanel>
+
+            <StackPanel MinWidth="80" Margin="0,0,12,0">
+              <TextBlock Text="Type" Margin="0,0,0,2" />
+              <ComboBox ItemsSource="{Binding CriterionDirectionTypesList}"
+                        SelectedItem="{Binding CriterionDirection, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+
+            <StackPanel Margin="0,0,12,0">
+              <TextBlock Text="Partial utility construction method" Margin="0,0,0,2" />
+              <ComboBox ItemsSource="{Binding MethodOptionsList}"
+                        SelectedItem="{Binding Method, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+
+            <StackPanel Margin="0,0,12,0">
+              <StackPanel.Style>
+                <Style TargetType="{x:Type StackPanel}">
+                  <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsProbabilityIncluded, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                      <Setter Property="Visibility" Value="Visible" />
+                    </DataTrigger>
+                  </Style.Triggers>
+                  <Setter Property="Visibility" Value="Collapsed" />
+                </Style>
+              </StackPanel.Style>
+
+              <TextBlock Text="Probability of obtaining a more favorable option in lottery" Margin="0,0,0,2" />
+              <controls:NumericUpDown Value="{Binding Probability, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                                      Minimum="{x:Static criterion:Criterion.MinimumProbability}"
+                                      Maximum="{x:Static criterion:Criterion.MaximumProbability}"
+                                      NumericInputMode="All" Interval="0.01" StringFormat="G15" />
+            </StackPanel>
+
+            <StackPanel MinWidth="150">
+              <TextBlock Text="Description" Margin="0,0,0,2" />
+              <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+          </StackPanel>
+        </DataTemplate>
+      </DataGrid.RowDetailsTemplate>
+
+      <DataGrid.Columns>
+        <DataGridTemplateColumn CanUserResize="False">
+          <DataGridTemplateColumn.CellTemplate>
+            <ItemContainerTemplate>
+              <Button Command="{Binding ElementName=CriteriaDataGrid, Path=DataContext.RemoveCriterionCommand}"
+                      CommandParameter="{Binding}" Template="{StaticResource RemoveButton}">
+                <i:Interaction.Triggers>
+                  <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                    <i:InvokeCommandAction
+                      Command="{Binding ElementName=CriteriaDataGrid, Path=DataContext.RemoveCriterionCommand}"
+                      CommandParameter="{Binding}" />
+                  </i:EventTrigger>
+                </i:Interaction.Triggers>
+              </Button>
+            </ItemContainerTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+
+        <DataGridTextColumn Header="Name" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                            CellStyle="{StaticResource LeftSidedDataGridCell}" MinWidth="100" />
+        <DataGridTextColumn Header="Type" Binding="{Binding CriterionDirection, UpdateSourceTrigger=PropertyChanged}"
+                            CellStyle="{StaticResource CenteredDataGridCell}"
+                            HeaderStyle="{StaticResource CenteredDataGridColumnHeader}" />
+        <DataGridTextColumn Header="Method"
+                            CellStyle="{StaticResource LeftSidedDataGridCell}"
+                            Binding="{Binding Method, UpdateSourceTrigger=PropertyChanged}" />
+        <DataGridTextColumn Header="Probability" Binding="{Binding Probability, UpdateSourceTrigger=PropertyChanged}"
+                            CellStyle="{StaticResource CenteredDataGridCell}"
+                            HeaderStyle="{StaticResource CenteredDataGridColumnHeader}" />
+        <DataGridTextColumn Header="Description" Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
+                            CellStyle="{StaticResource LeftSidedDataGridCell}" />
+      </DataGrid.Columns>
+    </DataGrid>
+  </Grid>
+</UserControl>

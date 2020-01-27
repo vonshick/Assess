@@ -1,0 +1,85 @@
+﻿<UserControl x:Class="Assess.Views.WelcomeTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="700" d:DesignWidth="900">
+  <Grid Background="{StaticResource ColorInterface7}">
+    <ScrollViewer>
+      <StackPanel Margin="16,8,16,12" MaxWidth="900">
+        <TextBlock TextAlignment="Center" FontSize="26">Assess Extended</TextBlock>
+        <TextBlock TextAlignment="Center" FontSize="{StaticResource CommonFontSize1}" TextWrapping="Wrap"
+                   Margin="0,0,0,8">
+          Wielokryterialne porządkowanie wariantów przy użyciu metody Assess.
+        </TextBlock>
+
+        <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="0,8" TextAlignment="Justify">
+          Interfejs aplikacji składa się z trzech głównych elementów: <LineBreak />
+          <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0"
+                     TextAlignment="Justify">
+            1. Paneli bocznych, będących stałym elementem dostępnym z poziomu każdego widoku w aplikacji. <LineBreak />
+            2. Przestrzeni roboczej w centralnej części okna, zarządzanej przy użyciu kart, między którymi można dowolnie się przełączać, zamykać i otwierać ponownie.<LineBreak />
+            3. Pasków w górnej części okna, dzięki którym można zarządzać stanem aplikacji.
+          </TextBlock>
+        </TextBlock>
+
+        <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
+          Panele boczne:
+        </TextBlock>
+        <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
+                   TextAlignment="Justify">
+          Po lewej stronie umieszczono informacje o instancji: zbiór wariantów i kryteriów. Kliknięcie w dowolny wariant/kryterium otworzy odpowiednią kartę umożliwiającą edycję danych.
+          <LineBreak />
+          Po prawej stronie umieszczono panel z podglądem wartości wag kryteriów i współczynnika skalującego oraz rankingu wynikowego, generowanego w oparciu o wyliczony model preferencji po uruchomieniu modułu obliczeniowego.<LineBreak/>
+          Panele boczne można ukrywać/pokazywać przy pomocy przycisku "View" na pasku Menu. Można także zmieniać ich szerokość, zwijać i rozwijać znajdujące się w nich przewijalne listy z podglądem danych, klikając w odpowiedni nagłówek.
+        </TextBlock>
+
+        <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
+          Karty:
+        </TextBlock>
+        <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
+                   TextAlignment="Justify">
+          Lista otwartych kart wyświetlana jest bezpośrednio nad przestrzenią roboczą. Każdą kartę można w dowolnej chwili zamknąć i ponownie otworzyć przy pomocy przycisków na górnym pasku lub z poziomu przycisku "Show" na pasku Menu.
+        </TextBlock>
+
+        <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
+          Warianty i kryteria:
+        </TextBlock>
+        <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
+                   TextAlignment="Justify">
+          Kliknięcie w wariant/kryterium w panelu bocznym przeniesie widok bezpośrednio na wybrany obiekt w odpowiedniej karcie. Owe dane edytować i usuwać można bezpośrednio z poziomu tabeli, dodawanie natomiast odbywa się przy pomocy
+          formularza w górnej części obszaru roboczego.
+        </TextBlock>
+
+        <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
+          Mechanizm dialogów:
+        </TextBlock>
+        <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
+                   TextAlignment="Justify">
+          Proces dialogu z użytkownikiem, na którym oparta jest metoda Assess, złożony jest z dwóch etapów: <LineBreak />
+          1. Ustalanie wartości współczynnika skalującego i wag kryteriów. <LineBreak />
+          2. Konstrukcja przebiegu cząstkowych funkcji użyteczności dla każdego kryterium. <LineBreak />
+          Dialogi otwierają się automatycznie w nowych kartach. Etap pierwszy rozpoczyna się po kliknięciu przycisku "Calculate", etap drugi natomiast po znalezieniu równoważnika pewności w ostatnim dialogu.
+        </TextBlock>
+
+        <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
+          Pomoc:
+        </TextBlock>
+        <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
+                   TextAlignment="Justify">
+          Przy pomocy przycisku "Help" na pasku Menu, można uzyskać instrukcję obsługi programu lub dowiedzieć się o szczegółach aplikacji.
+        </TextBlock>
+
+        <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
+          Do dzieła!
+        </TextBlock>
+        <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
+                   TextAlignment="Justify">
+          Po kliknięciu w niebieski przycisk "Calculate", który znajduje się się po lewej stronie górnego paska, uruchomione zostanie serce aplikacji&#160;—&#160;moduł obliczeniowy implementujący metodę wielokryterialnego porządkowania wariantów "Assess",
+          który przy pomocy mechanizmu dialogu z użytkownikiem oraz metody Bairstowa wygeneruje model preferencji decydenta.
+        </TextBlock>
+      </StackPanel>
+    </ScrollViewer>
+  </Grid>
+</UserControl>
