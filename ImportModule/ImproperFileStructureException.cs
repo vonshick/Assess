@@ -1,4 +1,4 @@
-// Copyright © 2020 Tomasz Pućka, Piotr Hełminiak, Marcin Rochowiak, Jakub Wąsik
+﻿// Copyright © 2020 Tomasz Pućka, Piotr Hełminiak, Marcin Rochowiak, Jakub Wąsik
 
 // This file is part of Assess Extended.
 
@@ -16,21 +16,13 @@
 // along with Assess Extended.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using Assess.Helpers;
 
-namespace Assess.Models.Tab
+namespace ImportModule
 {
-    public class Tab : ITab
+    public class ImproperFileStructureException : Exception
     {
-        public Tab()
+        public ImproperFileStructureException(string message) : base(message)
         {
-            CloseCommand = new RelayCommand(_ => CloseRequested?.Invoke(this, EventArgs.Empty), _ => IsCloseable);
         }
-
-        public bool IsCloseable { get; set; } = true;
-
-        public string Name { get; set; }
-        public RelayCommand CloseCommand { get; }
-        public event EventHandler CloseRequested;
     }
 }

@@ -1,4 +1,4 @@
-// Copyright © 2020 Tomasz Pućka, Piotr Hełminiak, Marcin Rochowiak, Jakub Wąsik
+﻿// Copyright © 2020 Tomasz Pućka, Piotr Hełminiak, Marcin Rochowiak, Jakub Wąsik
 
 // This file is part of Assess Extended.
 
@@ -16,21 +16,20 @@
 // along with Assess Extended.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using Assess.Helpers;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Assess.Models.Tab
+namespace DataModel.Input
 {
-    public class Tab : ITab
+    public class CriterionEnum
     {
-        public Tab()
+        public string CriterionId { get; set; }
+        public Dictionary<string, double> EnumDictionary { get; set; }
+
+        public CriterionEnum(string criterionId)
         {
-            CloseCommand = new RelayCommand(_ => CloseRequested?.Invoke(this, EventArgs.Empty), _ => IsCloseable);
+            CriterionId = criterionId;
+            EnumDictionary = new Dictionary<string, double>();
         }
-
-        public bool IsCloseable { get; set; } = true;
-
-        public string Name { get; set; }
-        public RelayCommand CloseCommand { get; }
-        public event EventHandler CloseRequested;
     }
 }

@@ -1,5 +1,23 @@
-﻿using System.Collections.Generic;
+﻿// Copyright © 2020 Tomasz Pućka, Piotr Hełminiak, Marcin Rochowiak, Jakub Wąsik
+
+// This file is part of Assess Extended.
+
+// Assess Extended is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
+
+// Assess Extended is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Assess Extended.  If not, see <http://www.gnu.org/licenses/>.
+
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -12,7 +30,7 @@ namespace ImportModule
     public class XMCDALoader : DataLoader
     {
         private string currentlyProcessedAlternativeId;
-        private string currentlyProcessedFile;
+        public string CurrentlyProcessedFile;
         private string xmcdaDirectory;
 
         private void validateInputFilesSet()
@@ -45,11 +63,11 @@ namespace ImportModule
 
         private XmlDocument loadFile(string fileName)
         {
-            currentlyProcessedFile = Path.Combine(xmcdaDirectory, fileName);
-            ValidateFilePath(currentlyProcessedFile);
+            CurrentlyProcessedFile = Path.Combine(xmcdaDirectory, fileName);
+            ValidateFilePath(CurrentlyProcessedFile);
 
             var xmlDocument = new XmlDocument();
-            xmlDocument.Load(currentlyProcessedFile);
+            xmlDocument.Load(CurrentlyProcessedFile);
 
             return xmlDocument;
         }
@@ -161,36 +179,100 @@ namespace ImportModule
             }
         }
 
-        private string GetDialogMethod(XmlNode xmlNode)
+        private void CheckFunctionMonotonicity(PartialUtility partialUtility)
         {
-            if (xmlNode.Attributes["concept"] != null)
+            var criterionId = partialUtility.Criterion.ID;
+            var criterionDirection = partialUtility.Criterion.CriterionDirection;
+            for (var i = 1; i < partialUtility.PointsValues.Count; i++)
             {
-                switch (xmlNode.Attributes["concept"].Value)
+                if (criterionDirection.Equals("Gain"))
                 {
-                    case "constantProbability":
-                        return Criterion.MethodOptionsList[1];
-                    case "variableProbability":
-                        return Criterion.MethodOptionsList[2];
-                    case "lotteriesComparison":
-                        return Criterion.MethodOptionsList[3];
-                    case "probabilityComparison":
-                        return Criterion.MethodOptionsList[4];
-                    default:
-                        return Criterion.MethodOptionsList[0];
+                    if (partialUtility.PointsValues[i].Y < partialUtility.PointsValues[i - 1].Y)
+                        throw new ImproperFileStructureException("criterion " + criterionId + " - data set is not valid for Assess method. Utility function has to be increasing for criterion direction '" + criterionDirection + "'.");
+                }
+                else if (criterionDirection.Equals("Cost"))
+                {
+                    if (partialUtility.PointsValues[i].Y > partialUtility.PointsValues[i - 1].Y)
+                        throw new ImproperFileStructureException("criterion " + criterionId + " - data set is not valid for Assess method. Utility function has to be descending  for criterion direction '" + criterionDirection + "'.");
+
                 }
             }
-            return Criterion.MethodOptionsList[0];
+        }
+
+        private void CheckEdgePoints(PartialUtility partialUtility)
+        {
+            var criterionId = partialUtility.Criterion.ID;
+            var criterionDirection = partialUtility.Criterion.CriterionDirection;
+            var criterionMax = partialUtility.Criterion.MaxValue;
+            var criterionMin = partialUtility.Criterion.MinValue;
+
+            var lowestAbscissa = partialUtility.PointsValues[0].X;
+            var highestAbscissa = partialUtility.PointsValues[partialUtility.PointsValues.Count - 1].X;
+
+            var lowestAbscissaUtility = partialUtility.PointsValues[0].Y;
+            var highestAbscissaUtility = partialUtility.PointsValues[partialUtility.PointsValues.Count - 1].Y;
+
+            if(lowestAbscissa != criterionMin)
+                throw new ImproperFileStructureException("criterion " + criterionId +
+                                                             " - data set is not valid for Assess method. Lowest abscissa equals " + lowestAbscissa.ToString("G", CultureInfo.InvariantCulture) +
+                                                             " and it should be the same like the lowest value for this criterion in performance_table.xml: " +
+                                                             criterionMin.ToString("G", CultureInfo.InvariantCulture) + ".");
+
+            if (lowestAbscissa != criterionMin)
+                throw new ImproperFileStructureException("criterion " + criterionId +
+                                                         " - data set is not valid for Assess method. Lowest abscissa equals " + lowestAbscissa.ToString("G", CultureInfo.InvariantCulture) +
+                                                         " and it should be the same like the lowest value for this criterion in performance_table.xml: " +
+                                                         criterionMin.ToString("G", CultureInfo.InvariantCulture) + ".");
+
+            if (highestAbscissa != criterionMax)
+                throw new ImproperFileStructureException("criterion " + criterionId +
+                                                         " - data set is not valid for Assess method. Highest abscissa equals " + lowestAbscissa.ToString("G", CultureInfo.InvariantCulture) +
+                                                         " and it should be the same like the highest value for this criterion performance_table.xml: " +
+                                                         criterionMax.ToString("G", CultureInfo.InvariantCulture) + ".");
+
+            if (criterionDirection.Equals("Gain"))
+            {
+                if (lowestAbscissaUtility != 0)
+                    throw new ImproperFileStructureException("criterion " + criterionId +
+                                                             " - data set is not valid for Assess method. Lowest utility value of each function should be equal to 0 and it is " +
+                                                             lowestAbscissaUtility.ToString("G", CultureInfo.InvariantCulture) + ".");
+                if (highestAbscissaUtility != 1)
+                    throw new ImproperFileStructureException("criterion " + criterionId +
+                                                             " - data set is not valid for Assess method. Highest utility value of each function should be equal to 1 and it is " +
+                                                             highestAbscissaUtility.ToString("G", CultureInfo.InvariantCulture) + ".");
+            }
+            else if (criterionDirection.Equals("Cost"))
+            {
+                if (lowestAbscissaUtility != 1)
+                    throw new ImproperFileStructureException("criterion " + criterionId +
+                                                             " - data set is not valid for Assess method. Highest utility value of each function should be equal to 1 and it is " +
+                                                             lowestAbscissaUtility.ToString("G", CultureInfo.InvariantCulture) + ".");
+                if (highestAbscissaUtility != 0)
+                    throw new ImproperFileStructureException("criterion " + criterionId +
+                                                             " - data set is not valid for Assess method. Lowest utility value of each function should be equal to 0 and it is " +
+                                                             highestAbscissaUtility.ToString("G", CultureInfo.InvariantCulture) + ".");
+            }
+        }
+
+        private void ValidateUtilityFunctions()
+        {
+            foreach (var utilityFunction in results.PartialUtilityFunctions)
+            {
+                utilityFunction.PointsValues.Sort((first, second) => first.X.CompareTo(second.X));
+                CheckEdgePoints(utilityFunction);
+                CheckFunctionMonotonicity(utilityFunction);
+            }
         }
 
         private void LoadValueFunctions()
         {
-            currentlyProcessedFile = Path.Combine(xmcdaDirectory, "value_functions.xml");
+            CurrentlyProcessedFile = Path.Combine(xmcdaDirectory, "Assess", "value_functions.xml");
 
-            if (!File.Exists(currentlyProcessedFile))
+            if (!File.Exists(CurrentlyProcessedFile))
                 return;
 
             var xmlDocument = new XmlDocument();
-            xmlDocument.Load(currentlyProcessedFile);
+            xmlDocument.Load(CurrentlyProcessedFile);
 
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
             {
@@ -203,8 +285,6 @@ namespace ImportModule
                     }
                     else
                     {
-                        var dialogMethod = GetDialogMethod(criterionFunction);
-
                         foreach (XmlNode point in criterionFunction.FirstChild.ChildNodes)
                         {
                             var argument = double.PositiveInfinity;
@@ -220,7 +300,7 @@ namespace ImportModule
                                     value = double.Parse(coordinate.FirstChild.InnerText, CultureInfo.InvariantCulture);
                                     if (argument == double.PositiveInfinity || value == double.PositiveInfinity)
                                     {
-                                        Trace.WriteLine("Format of value_functions.xml file is not valid");
+                                        Trace.WriteLine("Format of the file is not valid");
                                         return;
                                     }
 
@@ -229,21 +309,22 @@ namespace ImportModule
                         }
 
                         var matchingCriterion = criterionList.Find(criterion => criterion.ID == criterionID);
-                        matchingCriterion.Method = dialogMethod;
                         results.PartialUtilityFunctions.Add(new PartialUtility(matchingCriterion, argumentsValues));
                     }
             }
+
+            ValidateUtilityFunctions();
         }
 
         private void LoadWeights()
         {
-            currentlyProcessedFile = Path.Combine(xmcdaDirectory, "weights.xml");
+            CurrentlyProcessedFile = Path.Combine(xmcdaDirectory, "Assess", "weights.xml");
 
-            if (!File.Exists(currentlyProcessedFile))
+            if (!File.Exists(CurrentlyProcessedFile))
                 return;
 
             var xmlDocument = new XmlDocument();
-            xmlDocument.Load(currentlyProcessedFile);
+            xmlDocument.Load(CurrentlyProcessedFile);
 
             // this file contains only one main block - <criteriaScales>
             foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
@@ -263,12 +344,73 @@ namespace ImportModule
                 else
                 {
                     throw new ImproperFileStructureException(
-                        "Improper structure of weights.xml file. Please compare it to the documentation.");
+                        "Improper structure of the file. Please compare it to the documentation.");
                 }
 
                 var index = criterionList.FindIndex(criterion => criterion.ID == criterionID);
                 var criterionName = criterionList.Find(o => o.ID.Equals(criterionID)).Name;
                 results.CriteriaCoefficients.Add(new CriterionCoefficient(criterionName, coefficient));
+            }
+        }
+
+        private string GetDialogMethod(string method)
+        {
+            switch (method)
+            {
+                case "constantProbability":
+                    return Criterion.MethodOptionsList[1];
+                case "variableProbability":
+                    return Criterion.MethodOptionsList[2];
+                case "lotteriesComparison":
+                    return Criterion.MethodOptionsList[3];
+                case "probabilityComparison":
+                    return Criterion.MethodOptionsList[4];
+                default:
+                    return Criterion.MethodOptionsList[0];
+            }
+        }
+
+        private void LoadDialogMethods()
+        {
+            CurrentlyProcessedFile = Path.Combine(xmcdaDirectory, "method_parameters.xml");
+
+            if (!File.Exists(CurrentlyProcessedFile))
+                return;
+
+            var xmlDocument = new XmlDocument();
+            xmlDocument.Load(CurrentlyProcessedFile);
+
+            // this file contains only one main block - <criteriaScales>
+            foreach (XmlNode xmlNode in xmlDocument.DocumentElement.ChildNodes[0])
+            {
+                if(xmlNode.Attributes["id"] != null)
+                {
+                    var criterionID = xmlNode.Attributes["id"].Value;
+                    var matchingCriterion = criterionList.Find(criterion => criterion.ID == criterionID);
+
+                    double probability = -1;
+                    string method = "";
+
+                    if (xmlNode.SelectSingleNode(".//label") != null)
+                    {
+                        method = xmlNode.SelectSingleNode(".//label").InnerText;
+
+                        if (method.Equals("constantProbability") || method.Equals("lotteriesComparison"))
+                        {
+                            if (xmlNode.SelectSingleNode(".//real") != null)
+                            {
+                                if (!double.TryParse(xmlNode.SelectSingleNode(".//real").InnerText, NumberStyles.Any,
+                                    CultureInfo.InvariantCulture, out probability))
+                                    throw new ImproperFileStructureException("criterion " + criterionID + " - Improper criterion coefficient format " +
+                                                                            xmlNode.SelectSingleNode(".//real").InnerText +
+                                                                            " - it should be floating point.");
+                                matchingCriterion.Probability = probability;
+                            }
+                        }
+                        
+                        matchingCriterion.Method = GetDialogMethod(method);
+                    }
+                }
             }
         }
 
@@ -282,11 +424,12 @@ namespace ImportModule
             LoadCriteriaScales();
             LoadAlternatives();
             LoadPerformanceTable();
+            setMinAndMaxCriterionValues();
 
             LoadValueFunctions();
             LoadWeights();
-
-            setMinAndMaxCriterionValues();
+            LoadDialogMethods();
+            CurrentlyProcessedFile = "";
         }
     }
 }
