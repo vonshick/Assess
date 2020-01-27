@@ -11,7 +11,7 @@ namespace CalculationsEngine.Maintenance
     {
         private readonly List<Alternative> _alternativesList;
         private List<AlternativeUtility> _alternativesUtilitiesList;
-        private BaristowSolver _baristowSolver;
+        private BairstowSolver _bairstowSolver;
         public Results Results;
 
 
@@ -51,9 +51,9 @@ namespace CalculationsEngine.Maintenance
 
         private void SetScalingCoefficient()
         {
-            _baristowSolver = new BaristowSolver();
+            _bairstowSolver = new BairstowSolver();
             var kCoefficients = Results.CriteriaCoefficients.Select(o => o.Coefficient).ToList();
-            Results.K = _baristowSolver.GetScalingCoefficient(kCoefficients);
+            Results.K = _bairstowSolver.GetScalingCoefficient(kCoefficients);
         }
 
         public void CalculateGlobalUtilities()

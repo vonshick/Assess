@@ -5,7 +5,7 @@ using CalculationsEngine.Models;
 
 namespace CalculationsEngine.Maintenance
 {
-    public class BaristowSolver
+    public class BairstowSolver
     {
         private double[] a;
         public int it;
@@ -17,7 +17,7 @@ namespace CalculationsEngine.Maintenance
         public ComplexNumber[] z;
         private readonly double zerodet;
 
-        public BaristowSolver()
+        public BairstowSolver()
         {
             mit = (int) 1E6;
             mincorr = 1E-6;
