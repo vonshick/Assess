@@ -33,7 +33,7 @@ namespace DataModel.Input
         private double _maxValue = double.MinValue;
         private string _method = "Set during calculations";
         private string _name;
-        private double? _p = 0.3;
+        private double? _p = 0.5;
 
 
         public Criterion()
@@ -46,7 +46,7 @@ namespace DataModel.Input
             CriterionDirection = criterionDirection;
         }
 
-        public Criterion(string name, string description, string criterionDirection, double? probability = 0.3,
+        public Criterion(string name, string description, string criterionDirection, double? probability = 0.5,
             string method = "Set during calculations")
         {
             Name = name;

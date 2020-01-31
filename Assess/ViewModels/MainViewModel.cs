@@ -497,7 +497,7 @@ namespace Assess.ViewModels
                 {OverwriteFile = true};
             try
             {
-                if (_saveData.IsSavingWithResults == true) dataSaver.saveSession();
+                if (_saveData.IsSavingWithResults == true && _currentCalculationCriteriaCopy != null) dataSaver.saveSession();
                 else dataSaver.saveInput();
             }
             catch (Exception exception)
@@ -540,6 +540,7 @@ namespace Assess.ViewModels
                 _currentCalculationAlternativesCopy ?? new List<Alternative>(Alternatives.AlternativesCollection),
                 Results);
 
+            // results are available when copies had been made
             await TryToSave(true, dataSaver, directoryPath);
         }
 
@@ -547,7 +548,7 @@ namespace Assess.ViewModels
         {
             try
             {
-                if (shouldSaveWithResults) dataSaver.saveSession();
+                if (shouldSaveWithResults && _currentCalculationCriteriaCopy != null) dataSaver.saveSession();
                 else dataSaver.saveInput();
                 _saveData.IsSavingWithResults = shouldSaveWithResults;
                 _saveData.FilePath = directoryPath;
@@ -571,7 +572,7 @@ namespace Assess.ViewModels
                     dataSaver.OverwriteFile = true;
                     try
                     {
-                        if (shouldSaveWithResults) dataSaver.saveSession();
+                        if (shouldSaveWithResults && _currentCalculationCriteriaCopy != null) dataSaver.saveSession();
                         else dataSaver.saveInput();
                         _saveData.IsSavingWithResults = shouldSaveWithResults;
                         _saveData.FilePath = directoryPath;
