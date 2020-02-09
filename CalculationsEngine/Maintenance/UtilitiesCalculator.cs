@@ -76,10 +76,13 @@ namespace CalculationsEngine.Maintenance
         public void CalculateGlobalUtilities()
         {
             _alternativesUtilitiesList.Clear();
-
+            // if sum of k weights equals one than our utility function is simply linear
+            // U = sum(k_i * u_i)
+            bool isCoefficientSumOne = Results.CriteriaCoefficients.Sum(o => o.Coefficient) == 1;
             foreach (var alternative in _alternativesList)
             {
-                double product = 1;
+                double product = 1, sum = 0;
+
                 foreach (var criterionValue in alternative.CriteriaValuesList)
                 {
                     var points = Results.PartialUtilityFunctions.Find(o => o.Criterion.Name == criterionValue.Name).PointsValues;
@@ -95,13 +98,16 @@ namespace CalculationsEngine.Maintenance
                             {
                                 var a = (points[i + 1].Y - points[i].Y) / (points[i + 1].X - points[i].X);
                                 var b = points[i].Y - a * points[i].X;
-                                u = a * (double) criterionValue.Value + b;
+                                u = a * (double)criterionValue.Value + b;
                             }
 
-                    product *= (double) Results.K * k * u + 1;
+                    if (!isCoefficientSumOne)
+                        product *= (double) Results.K * k * u + 1;
+                    else
+                        sum += k * u;
                 }
 
-                var utility = (product - 1) / (double) Results.K;
+                var utility = isCoefficientSumOne ? sum : (product - 1) / (double)Results.K;
 
                 _alternativesUtilitiesList.Add(new AlternativeUtility(alternative, utility));
             }
