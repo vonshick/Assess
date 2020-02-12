@@ -30,7 +30,6 @@ namespace CalculationsEngine.Dialogs
 
         protected override void SetInitialValues()
         {
-            DisplayObject.X = (LowerUtilityBoundary + UpperUtilityBoundary) / 2;
             PointToAdd = new PartialUtilityValues(DisplayObject.X, DisplayObject.Lottery.NewPointUtility());
         }
 
@@ -44,12 +43,14 @@ namespace CalculationsEngine.Dialogs
         protected override void SetValuesIfLotteryChosen()
         {
             LowerUtilityBoundary = DisplayObject.X;
+            DisplayObject.X = (LowerUtilityBoundary + UpperUtilityBoundary) / 2;
             UpdateOtherMethodsPointToAdd();
         }
 
         protected override void SetValuesIfSureChosen()
         {
             UpperUtilityBoundary = DisplayObject.X;
+            DisplayObject.X = (LowerUtilityBoundary + UpperUtilityBoundary) / 2;
             UpdateOtherMethodsPointToAdd();
         }
 

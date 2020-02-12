@@ -124,7 +124,8 @@ namespace CalculationsEngine.Maintenance
             var upperUtilityPoint = firstPoint.Y > secondPoint.Y ? firstPoint : secondPoint;
             var lowerUtilityPoint = firstPoint.Y < secondPoint.Y ? firstPoint : secondPoint;
 
-            DisplayObject.Lottery = new Lottery(lowerUtilityPoint, upperUtilityPoint);
+            DisplayObject.Lottery = new Lottery(_zeroUtilityPoint, _oneUtilityPoint);
+            DisplayObject.X = (firstPoint.X + secondPoint.X) / 2;
             DisplayObject.Lottery.SetProbability((lowerUtilityPoint.Y + upperUtilityPoint.Y) / 2);
 
             Dialog.SetInitialDialogValues(lowerUtilityPoint.Y, upperUtilityPoint.Y);
@@ -172,7 +173,8 @@ namespace CalculationsEngine.Maintenance
             var upperUtilityPoint = firstPoint.Y > secondPoint.Y ? firstPoint : secondPoint;
             var lowerUtilityPoint = firstPoint.Y < secondPoint.Y ? firstPoint : secondPoint;
 
-            DisplayObject.Lottery = new Lottery(lowerUtilityPoint, upperUtilityPoint);
+            DisplayObject.Lottery = new Lottery(_zeroUtilityPoint, _oneUtilityPoint);
+            DisplayObject.X = (firstPoint.X + secondPoint.X) / 2;
             DisplayObject.Lottery.SetProbability((lowerUtilityPoint.Y + upperUtilityPoint.Y) / 2);
 
             Dialog.SetInitialDialogValues(lowerUtilityPoint.X, upperUtilityPoint.X);

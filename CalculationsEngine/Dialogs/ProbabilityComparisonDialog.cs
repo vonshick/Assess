@@ -30,8 +30,7 @@ namespace CalculationsEngine.Dialogs
 
         protected override void SetInitialValues()
         {
-            DisplayObject.X = (DisplayObject.Lottery.LowerUtilityValue.X + DisplayObject.Lottery.UpperUtilityValue.X) / 2;
-            PointToAdd = new PartialUtilityValues(DisplayObject.X, DisplayObject.Lottery.NewPointUtility());
+            PointToAdd = new PartialUtilityValues(DisplayObject.X, (LowerUtilityBoundary + UpperUtilityBoundary) / 2);
         }
 
         public override void SetInitialDialogValues(double lowerUtilityBoundary, double upperUtilityBoundary)
