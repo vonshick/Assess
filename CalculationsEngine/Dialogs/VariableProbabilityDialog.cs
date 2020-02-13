@@ -1,4 +1,21 @@
-﻿using System;
+﻿// Copyright © 2020 Tomasz Pućka, Piotr Hełminiak, Marcin Rochowiak, Jakub Wąsik
+
+// This file is part of Assess Extended.
+
+// Assess Extended is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
+
+// Assess Extended is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Assess Extended.  If not, see <http://www.gnu.org/licenses/>.
+
+using System;
 using CalculationsEngine.Maintenance;
 using DataModel.Results;
 
@@ -11,22 +28,8 @@ namespace CalculationsEngine.Dialogs
         {
         }
 
-        public override string displayDialog()
-        {
-            Console.WriteLine("Wpisz '1' jeśli wolisz LOTERIĘ:");
-            Console.WriteLine(DisplayObject.Lottery.UpperUtilityValue.X + " z prawdopodobienstwem " + DisplayObject.Lottery.P);
-            Console.WriteLine(DisplayObject.Lottery.LowerUtilityValue.X + " z prawdopodobienstwem " + (1 - DisplayObject.Lottery.P) + "\n");
-            Console.WriteLine("Wpisz '2' jeśli wolisz równoważnik pewności:");
-            Console.WriteLine(DisplayObject.X + "\n");
-            Console.WriteLine("Wpisz '3' jeśli loteria i równoważnik pewności są dla Ciebie nierozróżnialne\n");
-            Console.WriteLine("'1', '2' lub '3' :\n");
-
-            return "";
-        }
-
         protected override void SetInitialValues()
         {
-            DisplayObject.X = (LowerUtilityBoundary + UpperUtilityBoundary) / 2;
             PointToAdd = new PartialUtilityValues(DisplayObject.X, DisplayObject.Lottery.NewPointUtility());
         }
 
@@ -40,12 +43,14 @@ namespace CalculationsEngine.Dialogs
         protected override void SetValuesIfLotteryChosen()
         {
             LowerUtilityBoundary = DisplayObject.X;
+            DisplayObject.X = (LowerUtilityBoundary + UpperUtilityBoundary) / 2;
             UpdateOtherMethodsPointToAdd();
         }
 
         protected override void SetValuesIfSureChosen()
         {
             UpperUtilityBoundary = DisplayObject.X;
+            DisplayObject.X = (LowerUtilityBoundary + UpperUtilityBoundary) / 2;
             UpdateOtherMethodsPointToAdd();
         }
 

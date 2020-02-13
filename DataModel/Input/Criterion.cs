@@ -1,4 +1,21 @@
-﻿using System;
+﻿// Copyright © 2020 Tomasz Pućka, Piotr Hełminiak, Marcin Rochowiak, Jakub Wąsik
+
+// This file is part of Assess Extended.
+
+// Assess Extended is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
+
+// Assess Extended is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Assess Extended.  If not, see <http://www.gnu.org/licenses/>.
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -16,7 +33,7 @@ namespace DataModel.Input
         private double _maxValue = double.MinValue;
         private string _method = "Set during calculations";
         private string _name;
-        private double? _p = 0.3;
+        private double? _p = 0.5;
 
 
         public Criterion()
@@ -29,7 +46,7 @@ namespace DataModel.Input
             CriterionDirection = criterionDirection;
         }
 
-        public Criterion(string name, string description, string criterionDirection, double? probability = 0.3,
+        public Criterion(string name, string description, string criterionDirection, double? probability = 0.5,
             string method = "Set during calculations")
         {
             Name = name;
@@ -70,7 +87,6 @@ namespace DataModel.Input
         }
 
         public bool IsEnum { get; set; } = false;
-        public Dictionary<string, double> EnumDictionary { get; set; }
 
         public string Name
         {

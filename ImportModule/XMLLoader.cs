@@ -1,3 +1,20 @@
+// Copyright © 2020 Tomasz Pućka, Piotr Hełminiak, Marcin Rochowiak, Jakub Wąsik
+
+// This file is part of Assess Extended.
+
+// Assess Extended is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
+
+// Assess Extended is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Assess Extended.  If not, see <http://www.gnu.org/licenses/>.
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,6 +26,13 @@ namespace ImportModule
 {
     public class XMLLoader : DataLoader
     {
+        public XMLLoader() : base()
+        {
+            _criterionEnumsList = new List<CriterionEnum>();
+        }
+
+        private List<CriterionEnum> _criterionEnumsList;
+
         private void checkEnumValue(string criterionName, string enumID, string enumValue)
         {
             if (enumValue.Equals(""))
@@ -27,14 +51,17 @@ namespace ImportModule
         {
             if (criterion.IsEnum)
             {
-                criterion.EnumDictionary = new Dictionary<string, double>();
+                var criterionEnum = new CriterionEnum(criterion.ID);
+
                 foreach (var entry in enumNames)
                 {
                     var enumID = entry.Key;
                     var enumName = entry.Value;
                     var enumValue = enumValues[enumID];
-                    criterion.EnumDictionary.Add(enumName, enumValue);
+                    criterionEnum.EnumDictionary.Add(enumName, enumValue);
                 }
+
+                _criterionEnumsList.Add(criterionEnum);
             }
 
             if (criterion.Name == null || criterion.Name.Equals(""))
@@ -135,8 +162,6 @@ namespace ImportModule
                         case "SEGMENTS":
                             break;
                         default:
-                            //TODO vonshick warnings
-                            // maybe instead of throwing exception just do nothing
                             throw new Exception("Attribute " + attributePart.Name + " is not compatible with application.");
                     }
                 }
@@ -184,7 +209,8 @@ namespace ImportModule
 
                         if (criterion.IsEnum)
                         {
-                            criteriaValuesList.Add(new CriterionValue(criterion.Name, criterion.EnumDictionary[value]));
+                            var enumValue = _criterionEnumsList.Find(o => o.CriterionId == criterion.ID).EnumDictionary[value];
+                            criteriaValuesList.Add(new CriterionValue(criterion.Name, enumValue));
                         }
                         else
                         {

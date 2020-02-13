@@ -1,3 +1,20 @@
+// Copyright © 2020 Tomasz Pućka, Piotr Hełminiak, Marcin Rochowiak, Jakub Wąsik
+
+// This file is part of Assess Extended.
+
+// Assess Extended is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
+
+// Assess Extended is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Assess Extended.  If not, see <http://www.gnu.org/licenses/>.
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -59,7 +76,6 @@ namespace ImportModule
         protected void ValidateFilePath(string path)
         {
             if (!File.Exists(path))
-                //TODO vonshick WARNINGS
                 throw new FileNotFoundException("File " + Path.GetFileName(path) + " does not exist.");
         }
 
@@ -67,7 +83,6 @@ namespace ImportModule
         protected void ValidateFileExtension(string path, string expectedExtension)
         {
             if (!Path.GetExtension(path).Equals(expectedExtension))
-                //TODO vonshick WARNINGS
                 throw new ImproperFileStructureException("Wrong extension of the file " + Path.GetFileName(path) +
                                                          ". Expected extension: " + expectedExtension + ".");
         }

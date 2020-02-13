@@ -1,4 +1,21 @@
-﻿using System;
+﻿// Copyright © 2020 Tomasz Pućka, Piotr Hełminiak, Marcin Rochowiak, Jakub Wąsik
+
+// This file is part of Assess Extended.
+
+// Assess Extended is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
+
+// Assess Extended is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with Assess Extended.  If not, see <http://www.gnu.org/licenses/>.
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -66,29 +83,6 @@ namespace CalculationsEngine.Dialogs
             _upperProbabilityBoundary = 1;
         }
 
-        //todo remove
-        //public string displayDialog()
-        //{
-        //    Console.WriteLine("Wpisz '1' jeśli wolisz WARIANT:");
-        //    for (var i = 0; i < DisplayObject.CriterionNames.Length; i++)
-        //        Console.WriteLine(DisplayObject.CriterionNames[i] + " = " + DisplayObject.ValuesToCompare[i]);
-
-        //    Console.WriteLine("\nWpisz '2' jeśli wolisz LOTERIĘ");
-        //    for (var i = 0; i < DisplayObject.CriterionNames.Length; i++)
-        //        Console.WriteLine(DisplayObject.CriterionNames[i] + " = " + DisplayObject.BestValues[i]);
-
-        //    Console.WriteLine("z prawdopodobienstwem " + DisplayObject.P + "\n");
-
-        //    for (var i = 0; i < DisplayObject.CriterionNames.Length; i++)
-        //        Console.WriteLine(DisplayObject.CriterionNames[i] + " = " + DisplayObject.WorstValues[i]);
-
-        //    Console.WriteLine("z prawdopodobienstwem " + (1 - DisplayObject.P) + "\n");
-
-        //    Console.WriteLine("'1', '2' lub 'n' :\n");
-
-        //    return Console.ReadLine();
-        //}
-
         public void ProcessDialog(int choice)
         {
             if (choice == 1)
@@ -108,9 +102,6 @@ namespace CalculationsEngine.Dialogs
             }
             else
             {
-                //TODO vonshick
-                // remove the warning - it's useful only for developers
-                throw new Exception("Assess: wrong choice ID passed to ProcessDialog()");
             }
         }
 
