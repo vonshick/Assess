@@ -7,6 +7,7 @@
              xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:oxy="http://oxyplot.org/wpf"
              xmlns:criterion="clr-namespace:DataModel.Input;assembly=DataModel"
+             xmlns:viewModels="clr-namespace:Assess.ViewModels"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:PartialUtilityTabViewModel}"
              d:DesignHeight="700" d:DesignWidth="900">
@@ -19,12 +20,13 @@
     <DockPanel LastChildFill="False" Margin="0,0,0,8">
 
       <TextBlock Text="{Binding Title}" FontSize="{StaticResource CommonFontSize0}" />
-      <ScrollViewer DockPanel.Dock="Right" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="8,0,0,0">
+      <ScrollViewer DockPanel.Dock="Right" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
+                    Margin="8,0,0,0">
         <ScrollViewer.Style>
           <Style TargetType="{x:Type ScrollViewer}">
             <Style.Triggers>
               <DataTrigger Binding="{Binding IsMethodSet, UpdateSourceTrigger=PropertyChanged}" Value="False">
-                <Setter Property="Visibility" Value="Hidden"></Setter>
+                <Setter Property="Visibility" Value="Hidden" />
               </DataTrigger>
             </Style.Triggers>
           </Style>
@@ -114,12 +116,12 @@
                           </TextBlock.Style>
                         </TextBlock>
 
-                        <controls:NumericUpDown 
-                                                Value="{Binding Criterion.Probability, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
-                                                Minimum="{x:Static criterion:Criterion.MinimumProbability}"
-                                                Maximum="{x:Static criterion:Criterion.MaximumProbability}"
-                                                NumericInputMode="All" Interval="0.01" StringFormat="G15"
-                                                FontSize="{StaticResource CommonFontSize2}">
+                        <controls:NumericUpDown
+                          Value="{Binding Criterion.Probability, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                          Minimum="{x:Static criterion:Criterion.MinimumProbability}"
+                          Maximum="{x:Static criterion:Criterion.MaximumProbability}"
+                          NumericInputMode="All" Interval="0.01" StringFormat="G15"
+                          FontSize="{StaticResource CommonFontSize2}">
                           <controls:NumericUpDown.Style>
                             <Style TargetType="{x:Type controls:NumericUpDown}">
                               <Style.Triggers>
@@ -185,25 +187,34 @@
 
                       <StackPanel Grid.Row="1">
                         <Border BorderThickness="0,1,0,0" BorderBrush="{StaticResource ColorBorders2}"
-                                Margin="-4,2,-4,4" />
-                        <TextBlock
-                          Text="{Binding Criterion.Method, StringFormat=Dialogue - {0}, UpdateSourceTrigger=PropertyChanged}"
-                          FontSize="{StaticResource CommonFontSize0}" TextWrapping="Wrap"
-                          HorizontalAlignment="Left" />
-                        <TextBlock Text="Make a choice:"
-                                   FontSize="{StaticResource CommonFontSize0}" HorizontalAlignment="Center"
-                                   Margin="0,2,0,4">
-                          <TextBlock.Style>
-                            <Style TargetType="{x:Type TextBlock}">
-                              <Style.Triggers>
-                                <DataTrigger Binding="{Binding SelectedRectangle, UpdateSourceTrigger=PropertyChanged}"
-                                             Value="{x:Null}">
-                                  <Setter Property="Visibility" Value="Hidden" />
-                                </DataTrigger>
-                              </Style.Triggers>
-                            </Style>
-                          </TextBlock.Style>
-                        </TextBlock>
+                                Margin="-4,2,-4,6" />
+                        <DockPanel LastChildFill="False">
+                          <TextBlock
+                            Text="{Binding Criterion.Method, StringFormat=Dialogue - {0}, UpdateSourceTrigger=PropertyChanged}"
+                            FontSize="{StaticResource CommonFontSize0}" TextWrapping="Wrap" DockPanel.Dock="Left" />
+                          <Button DockPanel.Dock="Right" Content="Set exact value" Margin="0,0,4,0">
+                            <Button.Style>
+                              <Style TargetType="{x:Type Button}" BasedOn="{StaticResource SecondaryOutlineRoundButton}">
+                                <Style.Triggers>
+                                  <DataTrigger Binding="{Binding SelectedRectangle, UpdateSourceTrigger=PropertyChanged}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Hidden"></Setter>
+                                  </DataTrigger>
+                                  <DataTrigger Binding="{Binding IsSettingExactValue, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                    <Setter Property="Visibility" Value="Hidden"></Setter>
+                                  </DataTrigger>
+                                </Style.Triggers>
+                                <Setter Property="Visibility" Value="Visible"></Setter>
+                              </Style>
+                            </Button.Style>
+
+                            <i:Interaction.Triggers>
+                              <i:EventTrigger EventName="Click">
+                                <i:CallMethodAction TargetObject="{Binding}"
+                                                    MethodName="SwitchToSettingExactValue" />
+                              </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                          </Button>
+                        </DockPanel>
 
                         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                           <DockPanel HorizontalAlignment="Center" Margin="0,0,0,2">
@@ -213,12 +224,33 @@
                                   <DataTrigger
                                     Binding="{Binding IsLotteryComparison, UpdateSourceTrigger=PropertyChanged}"
                                     Value="False">
-                                    <Setter Property="Height" Value="73" />
+                                    <Setter Property="Height" Value="102" />
                                   </DataTrigger>
                                 </Style.Triggers>
-                                <Setter Property="Height" Value="115" />
+                                <Setter Property="Height" Value="144" />
                               </Style>
                             </DockPanel.Style>
+
+                            <TextBlock Text="Make a choice:" DockPanel.Dock="Top"
+                                       FontSize="{StaticResource CommonFontSize0}" HorizontalAlignment="Center"
+                                       Margin="0,0,0,4">
+                              <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                  <Style.Triggers>
+                                    <DataTrigger
+                                      Binding="{Binding SelectedRectangle, UpdateSourceTrigger=PropertyChanged}"
+                                      Value="{x:Null}">
+                                      <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                    <DataTrigger
+                                      Binding="{Binding IsSettingExactValue, UpdateSourceTrigger=PropertyChanged}"
+                                      Value="True">
+                                      <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                  </Style.Triggers>
+                                </Style>
+                              </TextBlock.Style>
+                            </TextBlock>
 
                             <!--dialogue buttons-->
                             <ContentControl>
@@ -451,6 +483,71 @@
                                         </Setter.Value>
                                       </Setter>
                                     </DataTrigger>
+
+                                    <DataTrigger
+                                      Binding="{Binding IsSettingExactValue, UpdateSourceTrigger=PropertyChanged}"
+                                      Value="True">
+                                      <Setter Property="Content">
+                                        <Setter.Value>
+                                          <Grid VerticalAlignment="Center">
+                                            <Grid.RowDefinitions>
+                                              <RowDefinition Height="Auto" />
+                                              <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                              <ColumnDefinition Width="Auto" />
+                                              <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <i:Interaction.Triggers>
+                                              <i:KeyTrigger Key="Enter" FiredOn="KeyUp">
+                                                <i:CallMethodAction TargetObject="{Binding}" MethodName="IndifferentOptionChosen" />
+                                              </i:KeyTrigger>
+                                            </i:Interaction.Triggers>
+
+                                            <StackPanel Grid.Column="0" Grid.ColumnSpan="2">
+                                              <TextBlock
+                                                Text="Set value of certainty equivalent:"
+                                                FontSize="{StaticResource CommonFontSize2}" Margin="0,0,0,2" />
+                                              <WrapPanel Orientation="Horizontal">
+                                                <TextBlock
+                                                  Text="{Binding SelectedRectangle.MinimumX, StringFormat='Value must be greater than {0}, ', UpdateSourceTrigger=PropertyChanged}"
+                                                  FontSize="{StaticResource CommonFontSize2}" Margin="0,0,0,2" />
+                                                <TextBlock
+                                                  Text="{Binding SelectedRectangle.MaximumX, StringFormat='and lower than {0}.', UpdateSourceTrigger=PropertyChanged}"
+                                                  FontSize="{StaticResource CommonFontSize2}" Margin="0,0,0,4" />
+                                              </WrapPanel>
+
+                                              <controls:NumericUpDown
+                                                Value="{Binding DialogController.Dialog.PointToAdd.X, UpdateSourceTrigger=PropertyChanged}"
+                                                Minimum="{Binding SelectedRectangle.MinimumX, UpdateSourceTrigger=PropertyChanged}"
+                                                Maximum="{Binding SelectedRectangle.MaximumX, UpdateSourceTrigger=PropertyChanged}"
+                                                NumericInputMode="All" StringFormat="G15" Margin="0,0,0,4" />
+                                            </StackPanel>
+
+                                            <Button Style="{StaticResource SecondaryRoundButton}" Grid.Row="1"
+                                                    Grid.Column="0" Content="Cancel" Margin="0,0,8,0">
+                                              <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="Click">
+                                                  <i:CallMethodAction TargetObject="{Binding}"
+                                                                      MethodName="SwitchToDialogue" />
+                                                </i:EventTrigger>
+                                              </i:Interaction.Triggers>
+                                            </Button>
+
+                                            <Button Style="{StaticResource PrimaryRoundButton}" Grid.Row="1"
+                                                    Grid.Column="1" Content="Submit">
+                                              <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="Click">
+                                                  <i:CallMethodAction TargetObject="{Binding}"
+                                                                      MethodName="IndifferentOptionChosen" />
+                                                </i:EventTrigger>
+                                              </i:Interaction.Triggers>
+                                            </Button>
+                                          </Grid>
+                                        </Setter.Value>
+                                      </Setter>
+                                    </DataTrigger>
                                   </Style.Triggers>
                                 </Style>
                               </ContentControl.Style>
@@ -474,20 +571,8 @@
                               <TextBlock Text="Click on a blue area on the chart to start dialogue..."
                                          Foreground="{StaticResource ColorTertiary}"
                                          FontSize="{StaticResource CommonFontSize0}"
-                                         VerticalAlignment="Center"
+                                         VerticalAlignment="Center" Margin="0,0,0,20"
                                          TextAlignment="Center" TextWrapping="Wrap">
-                                <TextBlock.Style>
-                                  <Style TargetType="{x:Type TextBlock}">
-                                    <Style.Triggers>
-                                      <DataTrigger
-                                        Binding="{Binding IsLotteryComparison, UpdateSourceTrigger=PropertyChanged}"
-                                        Value="True">
-                                        <Setter Property="Margin" Value="0,0,0,52" />
-                                      </DataTrigger>
-                                    </Style.Triggers>
-                                    <Setter Property="Margin" Value="0,0,0,36" />
-                                  </Style>
-                                </TextBlock.Style>
                               </TextBlock>
                             </Border>
                           </DockPanel>

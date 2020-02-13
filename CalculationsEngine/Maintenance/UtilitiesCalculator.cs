@@ -34,13 +34,13 @@ namespace CalculationsEngine.Maintenance
                 var pointsList = new List<PartialUtilityValues>();
                 if (criterion.CriterionDirection.Equals("Cost"))
                 {
-                    pointsList.Add(new PartialUtilityValues(criterion.MaxValue, 0));
                     pointsList.Add(new PartialUtilityValues(criterion.MinValue, 1));
+                    pointsList.Add(new PartialUtilityValues(criterion.MaxValue, 0));
                 }
                 else
                 {
-                    pointsList.Add(new PartialUtilityValues(criterion.MaxValue, 1));
                     pointsList.Add(new PartialUtilityValues(criterion.MinValue, 0));
+                    pointsList.Add(new PartialUtilityValues(criterion.MaxValue, 1));
                 }
 
                 partialUtilityFunctions.Add(new PartialUtility(criterion, pointsList));

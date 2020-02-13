@@ -19,7 +19,6 @@ namespace Assess.ViewModels
 {
     public class PartialUtilityTabViewModel : Tab, INotifyPropertyChanged
     {
-        private const double AxesExtraSpace = 0.025f;
         private readonly Action _calculateUtilities;
         private readonly OxyColor _colorPrimarySelected = OxyColor.FromArgb(80, 51, 115, 242);
         private readonly OxyColor _colorPrimaryUnselected = OxyColor.FromArgb(30, 51, 115, 242);
@@ -30,10 +29,11 @@ namespace Assess.ViewModels
         private readonly PartialUtility _partialUtility;
         private readonly LineSeries _placeholderLine;
         private readonly OxyColor _placeholderLineColor = OxyColor.FromArgb(70, 110, 110, 110); // ColorSecondary
-        private readonly OxyColor _placeholderMarkerColor = OxyColor.FromArgb(170, 51, 115, 242);
+        private readonly OxyColor _placeholderMarkerColor = OxyColor.FromRgb(51, 115, 242); // ColorPrimary
         private readonly Action _restartCoefficientsAssessment;
         private DialogController _dialogController;
         private bool _isMethodSet;
+        private bool _isSettingExactValue;
         private RectangleAnnotation _selectedRectangle;
 
 
@@ -60,6 +60,8 @@ namespace Assess.ViewModels
                 // choose first method as default, to prevent from not selecting any method at all in radio buttons
                 Criterion.Method = Criterion.MethodOptionsList[1];
 
+            const double verticalAxisExtraSpace = 0.02;
+            var horizontalAxisExtraSpace = (Criterion.MaxValue - Criterion.MinValue) * 0.006;
             // plot initializer
             _line = new LineSeries
             {
@@ -74,9 +76,11 @@ namespace Assess.ViewModels
             {
                 Color = _placeholderLineColor,
                 StrokeThickness = 3,
-                MarkerFill = _placeholderMarkerColor,
+                MarkerStroke = _placeholderMarkerColor,
+                MarkerStrokeThickness = 2,
+                MarkerFill = OxyColors.Transparent,
                 MarkerType = MarkerType.Circle,
-                MarkerSize = 6
+                MarkerSize = 9
             };
 
             PlotModel = new ViewResolvingPlotModel
@@ -95,10 +99,10 @@ namespace Assess.ViewModels
                         FontSize = 16,
                         MajorGridlineStyle = LineStyle.Solid,
                         MajorGridlineColor = _gridColor,
-                        AbsoluteMinimum = 0 - AxesExtraSpace,
-                        AbsoluteMaximum = 1 + AxesExtraSpace,
-                        Minimum = 0 - AxesExtraSpace,
-                        Maximum = 1 + AxesExtraSpace,
+                        AbsoluteMinimum = 0 - verticalAxisExtraSpace,
+                        AbsoluteMaximum = 1 + verticalAxisExtraSpace,
+                        Minimum = 0 - verticalAxisExtraSpace,
+                        Maximum = 1 + verticalAxisExtraSpace,
                         MajorTickSize = 8,
                         IntervalLength = 30,
                         AxisTitleDistance = 12
@@ -110,6 +114,10 @@ namespace Assess.ViewModels
                         FontSize = 16,
                         MajorGridlineStyle = LineStyle.Solid,
                         MajorGridlineColor = _gridColor,
+                        AbsoluteMinimum = Criterion.MinValue - horizontalAxisExtraSpace,
+                        AbsoluteMaximum = Criterion.MaxValue + horizontalAxisExtraSpace,
+                        Minimum = Criterion.MinValue - horizontalAxisExtraSpace,
+                        Maximum = Criterion.MaxValue + horizontalAxisExtraSpace,
                         MajorTickSize = 8,
                         AxisTitleDistance = 4
                     }
@@ -130,6 +138,11 @@ namespace Assess.ViewModels
         // switches ContentControl content for dialogue.
         // nullable because it only switches ContentControl when DisplayObject is initialized and data is bound
         public bool? IsLotteryComparison => DialogController == null ? (bool?) null : Criterion.Method == Criterion.MethodOptionsList[3];
+
+        public bool? IsNewPointProcessedVertically => DialogController == null
+            ? (bool?) null
+            : Criterion.Method == Criterion.MethodOptionsList[3] || Criterion.Method == Criterion.MethodOptionsList[4];
+
         public IEnumerable<string> Methods { get; } = Criterion.MethodOptionsList.Skip(1);
         public string Title { get; }
         public ViewResolvingPlotModel PlotModel { get; }
@@ -143,6 +156,8 @@ namespace Assess.ViewModels
             {
                 _dialogController = value;
                 OnPropertyChanged(nameof(DialogController));
+                OnPropertyChanged(nameof(IsLotteryComparison));
+                OnPropertyChanged(nameof(IsNewPointProcessedVertically));
             }
         }
 
@@ -167,6 +182,17 @@ namespace Assess.ViewModels
             }
         }
 
+        public bool IsSettingExactValue
+        {
+            get => _isSettingExactValue;
+            set
+            {
+                if (value == _isSettingExactValue) return;
+                _isSettingExactValue = value;
+                OnPropertyChanged(nameof(IsSettingExactValue));
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void InitializePlotIfMethodIsSet()
@@ -183,12 +209,6 @@ namespace Assess.ViewModels
             _placeholderLine.Points.Clear();
             PlotModel.Annotations.Clear();
             SelectedRectangle = null;
-
-            var extraSpace = (Criterion.MaxValue - Criterion.MinValue) * AxesExtraSpace;
-            PlotModel.Axes[1].AbsoluteMinimum = Criterion.MinValue - extraSpace;
-            PlotModel.Axes[1].AbsoluteMaximum = Criterion.MaxValue + extraSpace;
-            PlotModel.Axes[1].Minimum = Criterion.MinValue - extraSpace;
-            PlotModel.Axes[1].Maximum = Criterion.MaxValue + extraSpace;
 
             for (var i = 0; i < PointsValues.Count; i++)
             {
@@ -239,6 +259,12 @@ namespace Assess.ViewModels
             _placeholderLine.Points.Add(new DataPoint(PointsValues[firstPointIndex].X, PointsValues[firstPointIndex].Y));
             _placeholderLine.Points.Add(new DataPoint(DialogController.Dialog.PointToAdd.X, DialogController.Dialog.PointToAdd.Y));
             _placeholderLine.Points.Add(new DataPoint(PointsValues[firstPointIndex + 1].X, PointsValues[firstPointIndex + 1].Y));
+
+            DialogController.Dialog.PointToAdd.PropertyChanged += (o, args) =>
+            {
+                _placeholderLine.Points[1] = new DataPoint(DialogController.Dialog.PointToAdd.X, DialogController.Dialog.PointToAdd.Y);
+                PlotModel.InvalidatePlot(false);
+            };
         }
 
         private void PlotEventHandler(OxyInputEventArgs e)
@@ -278,7 +304,6 @@ namespace Assess.ViewModels
             DialogController = new DialogController(_partialUtility,
                 Criterion.MethodOptionsList.IndexOf(Criterion.Method), Criterion.Probability ?? 0);
             InitializePlotIfMethodIsSet();
-            OnPropertyChanged(nameof(IsLotteryComparison));
         }
 
         [UsedImplicitly]
@@ -301,6 +326,18 @@ namespace Assess.ViewModels
         {
             IsMethodSet = false;
             RestorePointsValuesToInitialValue();
+        }
+
+        [UsedImplicitly]
+        public void SwitchToSettingExactValue(object sender = null, RoutedEventArgs e = null)
+        {
+            IsSettingExactValue = true;
+        }
+
+        [UsedImplicitly]
+        public void SwitchToDialogue(object sender = null, RoutedEventArgs e = null)
+        {
+            IsSettingExactValue = false;
         }
 
         private void RestorePointsValuesToInitialValue()

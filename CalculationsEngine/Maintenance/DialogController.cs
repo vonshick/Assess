@@ -11,7 +11,6 @@ namespace CalculationsEngine.Maintenance
         private readonly int _methodId;
         private readonly PartialUtilityValues _oneUtilityPoint;
         private readonly PartialUtilityValues _zeroUtilityPoint;
-        public Dialog Dialog;
         public List<PartialUtilityValues> PointsList;
 
         // methodId - integer from 1 - 4
@@ -48,7 +47,7 @@ namespace CalculationsEngine.Maintenance
             }
         }
 
-
+        public Dialog Dialog { get; set; }
         public DisplayObject DisplayObject { get; set; }
 
 
@@ -97,7 +96,8 @@ namespace CalculationsEngine.Maintenance
 
         public Dialog triggerLotteriesComparisonDialog(PartialUtilityValues firstPoint, PartialUtilityValues secondPoint)
         {
-            setLotteriesComparisonInput(firstPoint, secondPoint); ;
+            setLotteriesComparisonInput(firstPoint, secondPoint);
+            ;
             return Dialog;
         }
 

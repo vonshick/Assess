@@ -1,14 +1,18 @@
-﻿using CalculationsEngine.Maintenance;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using CalculationsEngine.Maintenance;
+using DataModel.Annotations;
 using DataModel.Results;
 
 namespace CalculationsEngine.Dialogs
 {
-    public class Dialog
+    public class Dialog : INotifyPropertyChanged
     {
+        private PartialUtilityValues _pointToAdd;
         public DisplayObject DisplayObject;
-        public PartialUtilityValues PointToAdd;
         protected double LowerUtilityBoundary;
         protected double UpperUtilityBoundary;
+
 
         public Dialog(DisplayObject displayObject)
         {
@@ -25,6 +29,21 @@ namespace CalculationsEngine.Dialogs
         protected Dialog()
         {
         }
+
+
+        public PartialUtilityValues PointToAdd
+        {
+            get => _pointToAdd;
+            set
+            {
+                if (Equals(value, _pointToAdd)) return;
+                _pointToAdd = value;
+                OnPropertyChanged(nameof(PointToAdd));
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
 
         public virtual void SetInitialDialogValues(double lowerUtilityBoundary, double upperUtilityBoundary)
         {
@@ -80,6 +99,13 @@ namespace CalculationsEngine.Dialogs
             {
                 SetValuesIfEqualChosen();
             }
+        }
+
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
