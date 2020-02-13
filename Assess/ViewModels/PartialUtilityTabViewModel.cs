@@ -77,8 +77,8 @@ namespace Assess.ViewModels
                 // choose first method as default, to prevent from not selecting any method at all in radio buttons
                 Criterion.Method = Criterion.MethodOptionsList[1];
 
-            const double verticalAxisExtraSpace = 0.02;
-            var horizontalAxisExtraSpace = (Criterion.MaxValue - Criterion.MinValue) * 0.006;
+            const double verticalAxisExtraSpace = 0.0001; // TODO: consider change
+            var horizontalAxisExtraSpace = (Criterion.MaxValue - Criterion.MinValue) * 0.0001;
             // plot initializer
             _line = new LineSeries
             {
