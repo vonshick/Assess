@@ -15,54 +15,49 @@
 // You should have received a copy of the GNU General Public License
 // along with Assess Extended.  If not, see <http://www.gnu.org/licenses/>.
 
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using DataModel.Annotations;
+using System;
 
 namespace DataModel.Results
 {
-    public class PartialUtilityValues : INotifyPropertyChanged
+    public class PointToAdd : PartialUtilityValues
     {
-        protected double _x;
-        protected double _y;
+        private readonly bool _isProcessedHorizontally;
+        private readonly double _max;
+        private readonly double _min;
 
 
-        public PartialUtilityValues(double x, double y)
+        public PointToAdd(double x, double y, double min, double max, bool isProcessedHorizontally) : base(x, y)
         {
-            X = x;
-            Y = y;
+            _min = min;
+            _max = max;
+            _isProcessedHorizontally = isProcessedHorizontally;
         }
 
 
-        public virtual double X
+        public override double X
         {
             get => _x;
             set
             {
                 if (value.Equals(_x)) return;
+                if (_isProcessedHorizontally && (value <= _min || value >= _max))
+                    throw new ArgumentException($"Value must be greater than {_min} and lower than {_max}.");
                 _x = value;
                 OnPropertyChanged(nameof(X));
             }
         }
 
-        public virtual double Y
+        public override double Y
         {
             get => _y;
             set
             {
                 if (value.Equals(_y)) return;
+                if (!_isProcessedHorizontally && (value <= _min || value >= _max))
+                    throw new ArgumentException($"Value must be greater than {_min} and lower than {_max}.");
                 _y = value;
                 OnPropertyChanged(nameof(Y));
             }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-
-        [NotifyPropertyChangedInvocator]
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

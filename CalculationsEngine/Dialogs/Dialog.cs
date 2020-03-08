@@ -31,20 +31,11 @@ namespace CalculationsEngine.Dialogs
         protected double UpperUtilityBoundary;
 
 
-        public Dialog(DisplayObject displayObject)
-        {
-            DisplayObject = displayObject;
-        }
-
         public Dialog(double lowerUtilityBoundary, double upperUtilityBoundary, DisplayObject displayObject)
         {
             LowerUtilityBoundary = lowerUtilityBoundary;
             UpperUtilityBoundary = upperUtilityBoundary;
             DisplayObject = displayObject;
-        }
-
-        protected Dialog()
-        {
         }
 
 
@@ -63,10 +54,6 @@ namespace CalculationsEngine.Dialogs
 
 
         public virtual void SetInitialDialogValues(double lowerUtilityBoundary, double upperUtilityBoundary)
-        {
-        }
-
-        protected virtual void SetInitialValues()
         {
         }
 
@@ -96,20 +83,9 @@ namespace CalculationsEngine.Dialogs
 
         public void ProcessDialog(int choice)
         {
-            if (choice == 1)
-            {
-                SetValuesIfSureChosen();
-                SetInitialValues();
-            }
-            else if (choice == 2)
-            {
-                SetValuesIfLotteryChosen();
-                SetInitialValues();
-            }
-            else if (choice == 3)
-            {
-                SetValuesIfEqualChosen();
-            }
+            if (choice == 1) SetValuesIfSureChosen();
+            else if (choice == 2) SetValuesIfLotteryChosen();
+            else if (choice == 3) SetValuesIfEqualChosen();
         }
 
 

@@ -15,27 +15,32 @@
 // You should have received a copy of the GNU General Public License
 // along with Assess Extended.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using CalculationsEngine.Dialogs;
 using CalculationsEngine.Models;
+using DataModel.Annotations;
 using DataModel.Results;
 
 namespace CalculationsEngine.Maintenance
 {
-    public class DialogController
+    public class DialogController : INotifyPropertyChanged
     {
         private readonly int _methodId;
         private readonly PartialUtilityValues _oneUtilityPoint;
         private readonly PartialUtilityValues _zeroUtilityPoint;
+        private Dialog _dialog;
+        private DisplayObject _displayObject;
         public List<PartialUtilityValues> PointsList;
+
 
         // methodId - integer from 1 - 4
         // 1 - constant probability 
         // 2 - variable probability
         // 3 - lotteries comparison
         // 4 - probability comparison
-        public DialogController(PartialUtility partialUtility, int methodId, double p = 0)
+        public DialogController(PartialUtility partialUtility, int methodId, double p = 0.5)
         {
             _methodId = methodId;
             DisplayObject = new DisplayObject();
@@ -45,45 +50,46 @@ namespace CalculationsEngine.Maintenance
             _zeroUtilityPoint = partialUtility.PointsValues.Find(o => o.Y == 0);
             _oneUtilityPoint = partialUtility.PointsValues.Find(o => o.Y == 1);
 
-            switch (_methodId)
+            if (_methodId == 1) createConstantProbabilityObject();
+            else if (_methodId == 2) createVariableProbabilityObject();
+            else if (_methodId == 3) createLotteriesComparisonObject();
+            else if (_methodId == 4) createProbabilityComparisonObject();
+        }
+
+
+        public Dialog Dialog
+        {
+            get => _dialog;
+            set
             {
-                case 1:
-                    createConstantProbabilityObject();
-                    break;
-                case 2:
-                    createVariableProbabilityObject();
-                    break;
-                case 3:
-                    createLotteriesComparisonObject();
-                    break;
-                case 4:
-                    createProbabilityComparisonObject();
-                    break;
-                default:
-                    throw new Exception("Assess error: wrong dialog method chosen.");
+                if (Equals(value, _dialog)) return;
+                _dialog = value;
+                OnPropertyChanged(nameof(Dialog));
             }
         }
 
-        public Dialog Dialog { get; set; }
-        public DisplayObject DisplayObject { get; set; }
+        public DisplayObject DisplayObject
+        {
+            get => _displayObject;
+            set
+            {
+                if (Equals(value, _displayObject)) return;
+                _displayObject = value;
+                OnPropertyChanged(nameof(DisplayObject));
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
 
         // firstPoint and secondPoint are edges of chosen utility function segment
         public Dialog TriggerDialog(PartialUtilityValues firstPoint, PartialUtilityValues secondPoint)
         {
-            switch (_methodId)
-            {
-                case 1:
-                    return triggerConstantProbabilityDialog(firstPoint, secondPoint);
-                case 2:
-                    return triggerVariableProbabilityDialog(firstPoint, secondPoint);
-                case 3:
-                    return triggerLotteriesComparisonDialog(firstPoint, secondPoint);
-                case 4:
-                    return triggerProbabilityComparisonDialog(firstPoint, secondPoint);
-                default:
-                    throw new Exception("Assess error: wrong dialog method chosen.");
-            }
+            if (_methodId == 1) return triggerConstantProbabilityDialog(firstPoint, secondPoint);
+            if (_methodId == 2) return triggerVariableProbabilityDialog(firstPoint, secondPoint);
+            if (_methodId == 3) return triggerLotteriesComparisonDialog(firstPoint, secondPoint);
+            if (_methodId == 4) return triggerProbabilityComparisonDialog(firstPoint, secondPoint);
+            return null;
         }
 
 
@@ -114,7 +120,6 @@ namespace CalculationsEngine.Maintenance
         public Dialog triggerLotteriesComparisonDialog(PartialUtilityValues firstPoint, PartialUtilityValues secondPoint)
         {
             setLotteriesComparisonInput(firstPoint, secondPoint);
-            ;
             return Dialog;
         }
 
@@ -190,6 +195,12 @@ namespace CalculationsEngine.Maintenance
         {
             setVariableProbabilityInput(firstPoint, secondPoint);
             return Dialog;
+        }
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

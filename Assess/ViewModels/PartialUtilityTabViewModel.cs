@@ -66,18 +66,25 @@ namespace Assess.ViewModels
                 new PartialUtilityValues(PointsValues.Last().X, PointsValues.Last().Y)
             };
 
+            SubmitExactValueCommand = new RelayCommand(
+                o => IndifferentOptionChosen(),
+                _ => SelectedRectangle != null && PointToAdd != null && (IsNewPointProcessedHorizontally
+                    ? PointToAdd.X > SelectedRectangle.MinimumX && PointToAdd.X < SelectedRectangle.MaximumX
+                    : PointToAdd.Y > SelectedRectangle.MinimumY && PointToAdd.Y < SelectedRectangle.MaximumY)
+            );
+
             Name = $"{Criterion.Name} - Utility";
             Title = $"{Criterion.Name} - Partial Utility Function";
 
             IsMethodSet = Criterion.Method != Criterion.MethodOptionsList[0];
             if (IsMethodSet)
                 DialogController = new DialogController(_partialUtility,
-                    Criterion.MethodOptionsList.IndexOf(Criterion.Method), Criterion.Probability ?? 0);
+                    Criterion.MethodOptionsList.IndexOf(Criterion.Method), Criterion.Probability ?? 0.5);
             else
                 // choose first method as default, to prevent from not selecting any method at all in radio buttons
                 Criterion.Method = Criterion.MethodOptionsList[1];
 
-            const double verticalAxisExtraSpace = 0.0001; // TODO: consider change
+            const double verticalAxisExtraSpace = 0.0001;
             var horizontalAxisExtraSpace = (Criterion.MaxValue - Criterion.MinValue) * 0.0001;
             // plot initializer
             _line = new LineSeries
@@ -152,19 +159,19 @@ namespace Assess.ViewModels
         }
 
 
-        // switches ContentControl content for dialogue.
-        // nullable because it only switches ContentControl when DisplayObject is initialized and data is bound
-        public bool? IsLotteryComparison => DialogController == null ? (bool?) null : Criterion.Method == Criterion.MethodOptionsList[3];
-
-        public bool? IsNewPointProcessedVertically => DialogController == null
-            ? (bool?) null
-            : Criterion.Method == Criterion.MethodOptionsList[3] || Criterion.Method == Criterion.MethodOptionsList[4];
-
         public IEnumerable<string> Methods { get; } = Criterion.MethodOptionsList.Skip(1);
         public string Title { get; }
         public ViewResolvingPlotModel PlotModel { get; }
+        public RelayCommand SubmitExactValueCommand { get; }
         public Criterion Criterion => _partialUtility.Criterion;
         private List<PartialUtilityValues> PointsValues => _partialUtility.PointsValues;
+        public PartialUtilityValues PointToAdd => DialogController.Dialog.PointToAdd;
+
+        // switches ContentControl content for dialogue.
+        public bool IsLotteryComparison => Criterion.Method == Criterion.MethodOptionsList[3];
+
+        public bool IsNewPointProcessedHorizontally =>
+            Criterion.Method == Criterion.MethodOptionsList[1] || Criterion.Method == Criterion.MethodOptionsList[2];
 
         public DialogController DialogController
         {
@@ -174,7 +181,7 @@ namespace Assess.ViewModels
                 _dialogController = value;
                 OnPropertyChanged(nameof(DialogController));
                 OnPropertyChanged(nameof(IsLotteryComparison));
-                OnPropertyChanged(nameof(IsNewPointProcessedVertically));
+                OnPropertyChanged(nameof(IsNewPointProcessedHorizontally));
             }
         }
 
@@ -217,7 +224,6 @@ namespace Assess.ViewModels
             if (!IsMethodSet) return;
             GeneratePlotData();
             if (PlotModel.Annotations.Count == 1) SelectRectangle((RectangleAnnotation) PlotModel.Annotations[0], 0);
-            PlotModel.InvalidatePlot(false);
         }
 
         public void GeneratePlotData()
@@ -268,20 +274,19 @@ namespace Assess.ViewModels
 
         private void SelectRectangle(RectangleAnnotation rectangle, int firstPointIndex)
         {
+            IsSettingExactValue = false;
+
             if (SelectedRectangle != null) SelectedRectangle.Fill = _colorPrimaryUnselected;
             SelectedRectangle = rectangle;
             SelectedRectangle.Fill = _colorPrimarySelected;
 
             _placeholderLine.Points.Clear();
             _placeholderLine.Points.Add(new DataPoint(PointsValues[firstPointIndex].X, PointsValues[firstPointIndex].Y));
-            _placeholderLine.Points.Add(new DataPoint(DialogController.Dialog.PointToAdd.X, DialogController.Dialog.PointToAdd.Y));
+            _placeholderLine.Points.Add(new DataPoint(PointToAdd.X, PointToAdd.Y));
             _placeholderLine.Points.Add(new DataPoint(PointsValues[firstPointIndex + 1].X, PointsValues[firstPointIndex + 1].Y));
 
-            DialogController.Dialog.PointToAdd.PropertyChanged += (o, args) =>
-            {
-                _placeholderLine.Points[1] = new DataPoint(DialogController.Dialog.PointToAdd.X, DialogController.Dialog.PointToAdd.Y);
-                PlotModel.InvalidatePlot(false);
-            };
+            PointToAdd.PropertyChanged += PointToAddCoordinatesChanged;
+            PlotModel.InvalidatePlot(false);
         }
 
         private void PlotEventHandler(OxyInputEventArgs e)
@@ -290,25 +295,28 @@ namespace Assess.ViewModels
             e.Handled = true;
         }
 
+        private void PointToAddCoordinatesChanged(object sender, PropertyChangedEventArgs e)
+        {
+            _placeholderLine.Points[1] = new DataPoint(PointToAdd.X, PointToAdd.Y);
+            PlotModel.InvalidatePlot(false);
+        }
+
         [UsedImplicitly]
         public void CertaintyOptionChosen(object sender, RoutedEventArgs e)
         {
             DialogController.Dialog.ProcessDialog(1);
-            _placeholderLine.Points[1] = new DataPoint(DialogController.Dialog.PointToAdd.X, DialogController.Dialog.PointToAdd.Y);
-            PlotModel.InvalidatePlot(false);
         }
 
         [UsedImplicitly]
         public void LotteryOptionChosen(object sender, RoutedEventArgs e)
         {
             DialogController.Dialog.ProcessDialog(2);
-            _placeholderLine.Points[1] = new DataPoint(DialogController.Dialog.PointToAdd.X, DialogController.Dialog.PointToAdd.Y);
-            PlotModel.InvalidatePlot(false);
         }
 
         [UsedImplicitly]
-        public void IndifferentOptionChosen(object sender, RoutedEventArgs e)
+        public void IndifferentOptionChosen(object sender = null, RoutedEventArgs e = null)
         {
+            PointToAdd.PropertyChanged -= PointToAddCoordinatesChanged;
             DialogController.Dialog.ProcessDialog(3);
             GeneratePlotData();
             _calculateUtilities();
@@ -319,13 +327,14 @@ namespace Assess.ViewModels
         {
             IsMethodSet = true;
             DialogController = new DialogController(_partialUtility,
-                Criterion.MethodOptionsList.IndexOf(Criterion.Method), Criterion.Probability ?? 0);
+                Criterion.MethodOptionsList.IndexOf(Criterion.Method), Criterion.Probability ?? 0.5);
             InitializePlotIfMethodIsSet();
         }
 
         [UsedImplicitly]
         public void ResetScalingCoefficients(object sender = null, RoutedEventArgs e = null)
         {
+            IsSettingExactValue = false;
             _restartCoefficientsAssessment();
         }
 
@@ -334,7 +343,7 @@ namespace Assess.ViewModels
         {
             RestorePointsValuesToInitialValue();
             DialogController = new DialogController(_partialUtility,
-                Criterion.MethodOptionsList.IndexOf(Criterion.Method), Criterion.Probability ?? 0);
+                Criterion.MethodOptionsList.IndexOf(Criterion.Method), Criterion.Probability ?? 0.5);
             InitializePlotIfMethodIsSet();
         }
 
@@ -348,17 +357,27 @@ namespace Assess.ViewModels
         [UsedImplicitly]
         public void SwitchToSettingExactValue(object sender = null, RoutedEventArgs e = null)
         {
+            //ResetDialogue();
             IsSettingExactValue = true;
         }
 
         [UsedImplicitly]
         public void SwitchToDialogue(object sender = null, RoutedEventArgs e = null)
         {
+            ResetDialogue();
             IsSettingExactValue = false;
+        }
+
+        private void ResetDialogue()
+        {
+            var firstPointIndex = PointsValues.FindIndex(partialUtilityValue => partialUtilityValue.X == SelectedRectangle.MinimumX);
+            DialogController.TriggerDialog(PointsValues[firstPointIndex], PointsValues[firstPointIndex + 1]);
+            SelectRectangle(SelectedRectangle, firstPointIndex);
         }
 
         private void RestorePointsValuesToInitialValue()
         {
+            IsSettingExactValue = false;
             _partialUtility.PointsValues.Clear();
             foreach (var pointValues in _initialPointsValues)
                 _partialUtility.PointsValues.Add(new PartialUtilityValues(pointValues.X, pointValues.Y));

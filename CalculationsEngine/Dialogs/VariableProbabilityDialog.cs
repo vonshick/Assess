@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Assess Extended.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
 using CalculationsEngine.Maintenance;
 using DataModel.Results;
 
@@ -28,16 +27,12 @@ namespace CalculationsEngine.Dialogs
         {
         }
 
-        protected override void SetInitialValues()
-        {
-            PointToAdd = new PartialUtilityValues(DisplayObject.X, DisplayObject.Lottery.NewPointUtility());
-        }
 
         public override void SetInitialDialogValues(double lowerUtilityBoundary, double upperUtilityBoundary)
         {
             LowerUtilityBoundary = lowerUtilityBoundary;
             UpperUtilityBoundary = upperUtilityBoundary;
-            SetInitialValues();
+            PointToAdd = new PartialUtilityValues(DisplayObject.X, DisplayObject.Lottery.NewPointUtility());
         }
 
         protected override void SetValuesIfLotteryChosen()

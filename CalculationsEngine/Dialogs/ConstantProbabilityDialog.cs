@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Assess Extended.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
 using CalculationsEngine.Maintenance;
 using DataModel.Results;
 
@@ -23,33 +22,36 @@ namespace CalculationsEngine.Dialogs
 {
     public class ConstantProbabilityDialog : Dialog
     {
-        public ConstantProbabilityDialog(double lowerUtilityBoundary, double upperUtilityBoundary, DisplayObject displayObject) : base(
-            lowerUtilityBoundary, upperUtilityBoundary, displayObject)
+        public ConstantProbabilityDialog(double lowerUtilityBoundary, double upperUtilityBoundary, DisplayObject displayObject)
+            : base(lowerUtilityBoundary, upperUtilityBoundary, displayObject)
         {
         }
 
-        protected override void SetInitialValues()
-        {
-            DisplayObject.X = LowerUtilityBoundary + (UpperUtilityBoundary - LowerUtilityBoundary) * DisplayObject.Lottery.P;
-            PointToAdd = new PartialUtilityValues(DisplayObject.X, DisplayObject.Lottery.NewPointUtility());
-        }
 
         public override void SetInitialDialogValues(double lowerUtilityBoundary, double upperUtilityBoundary)
         {
             LowerUtilityBoundary = lowerUtilityBoundary;
             UpperUtilityBoundary = upperUtilityBoundary;
-            SetInitialValues();
+            UpdateSureValue();
+            PointToAdd = new PartialUtilityValues(DisplayObject.X, DisplayObject.Lottery.NewPointUtility());
+        }
+
+        private void UpdateSureValue()
+        {
+            DisplayObject.X = LowerUtilityBoundary + (UpperUtilityBoundary - LowerUtilityBoundary) * DisplayObject.Lottery.P;
         }
 
         protected override void SetValuesIfLotteryChosen()
         {
             LowerUtilityBoundary = DisplayObject.X;
+            UpdateSureValue();
             UpdateOtherMethodsPointToAdd();
         }
 
         protected override void SetValuesIfSureChosen()
         {
             UpperUtilityBoundary = DisplayObject.X;
+            UpdateSureValue();
             UpdateOtherMethodsPointToAdd();
         }
 
