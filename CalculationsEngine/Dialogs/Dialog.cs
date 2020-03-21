@@ -25,7 +25,7 @@ namespace CalculationsEngine.Dialogs
 {
     public class Dialog : INotifyPropertyChanged
     {
-        private PartialUtilityValues _pointToAdd;
+        private PointToAdd _pointToAdd;
         public DisplayObject DisplayObject;
         protected double LowerUtilityBoundary;
         protected double UpperUtilityBoundary;
@@ -39,7 +39,7 @@ namespace CalculationsEngine.Dialogs
         }
 
 
-        public PartialUtilityValues PointToAdd
+        public PointToAdd PointToAdd
         {
             get => _pointToAdd;
             set
@@ -53,7 +53,7 @@ namespace CalculationsEngine.Dialogs
         public event PropertyChangedEventHandler PropertyChanged;
 
 
-        public virtual void SetInitialDialogValues(double lowerUtilityBoundary, double upperUtilityBoundary)
+        public virtual void SetInitialDialogValues(double lowerUtilityBoundary, double upperUtilityBoundary, double min, double max)
         {
         }
 

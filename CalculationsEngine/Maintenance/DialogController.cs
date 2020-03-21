@@ -108,7 +108,12 @@ namespace CalculationsEngine.Maintenance
             DisplayObject.EdgeValuesLottery = edgeValuesLottery;
             DisplayObject.ComparisonLottery = comparisonLottery;
 
-            Dialog.SetInitialDialogValues(lowerUtilityPoint.Y * DisplayObject.P, upperUtilityPoint.Y * DisplayObject.P);
+            Dialog.SetInitialDialogValues(
+                lowerUtilityPoint.Y * DisplayObject.P,
+                upperUtilityPoint.Y * DisplayObject.P,
+                lowerUtilityPoint.Y,
+                upperUtilityPoint.Y
+            );
         }
 
         private void createLotteriesComparisonObject()
@@ -133,7 +138,7 @@ namespace CalculationsEngine.Maintenance
             DisplayObject.X = (firstPoint.X + secondPoint.X) / 2;
             DisplayObject.Lottery.SetProbability((lowerUtilityPoint.Y + upperUtilityPoint.Y) / 2);
 
-            Dialog.SetInitialDialogValues(lowerUtilityPoint.Y, upperUtilityPoint.Y);
+            Dialog.SetInitialDialogValues(lowerUtilityPoint.Y, upperUtilityPoint.Y, lowerUtilityPoint.Y, upperUtilityPoint.Y);
         }
 
         private void createProbabilityComparisonObject()
@@ -154,10 +159,22 @@ namespace CalculationsEngine.Maintenance
             var upperUtilityPoint = firstPoint.Y > secondPoint.Y ? firstPoint : secondPoint;
             var lowerUtilityPoint = firstPoint.Y < secondPoint.Y ? firstPoint : secondPoint;
 
+            double min, max;
+            if (lowerUtilityPoint.X < upperUtilityPoint.X)
+            {
+                min = lowerUtilityPoint.X;
+                max = upperUtilityPoint.X;
+            }
+            else
+            {
+                min = upperUtilityPoint.X;
+                max = lowerUtilityPoint.X;
+            }
+
             DisplayObject.Lottery = new Lottery(lowerUtilityPoint, upperUtilityPoint);
             DisplayObject.Lottery.SetProbability(DisplayObject.P);
 
-            Dialog.SetInitialDialogValues(lowerUtilityPoint.X, upperUtilityPoint.X);
+            Dialog.SetInitialDialogValues(lowerUtilityPoint.X, upperUtilityPoint.X, min, max);
         }
 
         private void createConstantProbabilityObject()
@@ -178,11 +195,23 @@ namespace CalculationsEngine.Maintenance
             var upperUtilityPoint = firstPoint.Y > secondPoint.Y ? firstPoint : secondPoint;
             var lowerUtilityPoint = firstPoint.Y < secondPoint.Y ? firstPoint : secondPoint;
 
+            double min, max;
+            if (lowerUtilityPoint.X < upperUtilityPoint.X)
+            {
+                min = lowerUtilityPoint.X;
+                max = upperUtilityPoint.X;
+            }
+            else
+            {
+                min = upperUtilityPoint.X;
+                max = lowerUtilityPoint.X;
+            }
+
             DisplayObject.Lottery = new Lottery(_zeroUtilityPoint, _oneUtilityPoint);
             DisplayObject.X = (firstPoint.X + secondPoint.X) / 2;
             DisplayObject.Lottery.SetProbability((lowerUtilityPoint.Y + upperUtilityPoint.Y) / 2);
 
-            Dialog.SetInitialDialogValues(lowerUtilityPoint.X, upperUtilityPoint.X);
+            Dialog.SetInitialDialogValues(lowerUtilityPoint.X, upperUtilityPoint.X, min, max);
         }
 
         private void createVariableProbabilityObject()

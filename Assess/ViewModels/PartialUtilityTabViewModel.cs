@@ -66,13 +66,6 @@ namespace Assess.ViewModels
                 new PartialUtilityValues(PointsValues.Last().X, PointsValues.Last().Y)
             };
 
-            SubmitExactValueCommand = new RelayCommand(
-                o => IndifferentOptionChosen(),
-                _ => SelectedRectangle != null && PointToAdd != null && (IsNewPointProcessedHorizontally
-                    ? PointToAdd.X > SelectedRectangle.MinimumX && PointToAdd.X < SelectedRectangle.MaximumX
-                    : PointToAdd.Y > SelectedRectangle.MinimumY && PointToAdd.Y < SelectedRectangle.MaximumY)
-            );
-
             Name = $"{Criterion.Name} - Utility";
             Title = $"{Criterion.Name} - Partial Utility Function";
 
@@ -150,10 +143,7 @@ namespace Assess.ViewModels
             PlotModel.MouseDown += (sender, args) =>
             {
                 if (args.ChangedButton != OxyMouseButton.Left) return;
-                if (SelectedRectangle != null) SelectedRectangle.Fill = _colorPrimaryUnselected;
-                SelectedRectangle = null;
-                _placeholderLine.Points.Clear();
-                PlotModel.InvalidatePlot(false);
+                DeselectRectangle();
             };
             InitializePlotIfMethodIsSet();
         }
@@ -162,10 +152,9 @@ namespace Assess.ViewModels
         public IEnumerable<string> Methods { get; } = Criterion.MethodOptionsList.Skip(1);
         public string Title { get; }
         public ViewResolvingPlotModel PlotModel { get; }
-        public RelayCommand SubmitExactValueCommand { get; }
         public Criterion Criterion => _partialUtility.Criterion;
         private List<PartialUtilityValues> PointsValues => _partialUtility.PointsValues;
-        public PartialUtilityValues PointToAdd => DialogController.Dialog.PointToAdd;
+        public PointToAdd PointToAdd => DialogController.Dialog.PointToAdd;
 
         // switches ContentControl content for dialogue.
         public bool IsLotteryComparison => Criterion.Method == Criterion.MethodOptionsList[3];
@@ -180,8 +169,6 @@ namespace Assess.ViewModels
             {
                 _dialogController = value;
                 OnPropertyChanged(nameof(DialogController));
-                OnPropertyChanged(nameof(IsLotteryComparison));
-                OnPropertyChanged(nameof(IsNewPointProcessedHorizontally));
             }
         }
 
@@ -260,33 +247,38 @@ namespace Assess.ViewModels
         {
             if (e.ChangedButton != OxyMouseButton.Left) return;
             var rectangle = (RectangleAnnotation) sender;
-            if (SelectedRectangle == rectangle)
+            if (SelectedRectangle != rectangle)
             {
-                PlotEventHandler(e);
-                return;
+                var firstPointIndex = PointsValues.FindIndex(partialUtilityValue => partialUtilityValue.X == rectangle.MinimumX);
+                DialogController.TriggerDialog(PointsValues[firstPointIndex], PointsValues[firstPointIndex + 1]);
+                SelectRectangle(rectangle, firstPointIndex);
             }
 
-            var firstPointIndex = PointsValues.FindIndex(partialUtilityValue => partialUtilityValue.X == rectangle.MinimumX);
-            DialogController.TriggerDialog(PointsValues[firstPointIndex], PointsValues[firstPointIndex + 1]);
-            SelectRectangle(rectangle, firstPointIndex);
             PlotEventHandler(e);
         }
 
         private void SelectRectangle(RectangleAnnotation rectangle, int firstPointIndex)
         {
             IsSettingExactValue = false;
-
             if (SelectedRectangle != null) SelectedRectangle.Fill = _colorPrimaryUnselected;
             SelectedRectangle = rectangle;
-            SelectedRectangle.Fill = _colorPrimarySelected;
-
             _placeholderLine.Points.Clear();
-            _placeholderLine.Points.Add(new DataPoint(PointsValues[firstPointIndex].X, PointsValues[firstPointIndex].Y));
-            _placeholderLine.Points.Add(new DataPoint(PointToAdd.X, PointToAdd.Y));
-            _placeholderLine.Points.Add(new DataPoint(PointsValues[firstPointIndex + 1].X, PointsValues[firstPointIndex + 1].Y));
 
-            PointToAdd.PropertyChanged += PointToAddCoordinatesChanged;
+            if (SelectedRectangle != null)
+            {
+                _placeholderLine.Points.Add(new DataPoint(PointsValues[firstPointIndex].X, PointsValues[firstPointIndex].Y));
+                _placeholderLine.Points.Add(new DataPoint(PointToAdd.X, PointToAdd.Y));
+                _placeholderLine.Points.Add(new DataPoint(PointsValues[firstPointIndex + 1].X, PointsValues[firstPointIndex + 1].Y));
+                SelectedRectangle.Fill = _colorPrimarySelected;
+                PointToAdd.PropertyChanged += PointToAddCoordinatesChanged;
+            }
+
             PlotModel.InvalidatePlot(false);
+        }
+
+        private void DeselectRectangle()
+        {
+            SelectRectangle(null, -1);
         }
 
         private void PlotEventHandler(OxyInputEventArgs e)
@@ -334,8 +326,16 @@ namespace Assess.ViewModels
         [UsedImplicitly]
         public void ResetScalingCoefficients(object sender = null, RoutedEventArgs e = null)
         {
-            IsSettingExactValue = false;
+            if (IsSettingExactValue) SwitchToDialogue();
             _restartCoefficientsAssessment();
+        }
+
+        [UsedImplicitly]
+        public void SwitchToDialogue(object sender = null, RoutedEventArgs e = null)
+        {
+            var firstPointIndex = PointsValues.FindIndex(partialUtilityValue => partialUtilityValue.X == SelectedRectangle.MinimumX);
+            DialogController.TriggerDialog(PointsValues[firstPointIndex], PointsValues[firstPointIndex + 1]);
+            SelectRectangle(SelectedRectangle, firstPointIndex);
         }
 
         [UsedImplicitly]
@@ -345,6 +345,15 @@ namespace Assess.ViewModels
             DialogController = new DialogController(_partialUtility,
                 Criterion.MethodOptionsList.IndexOf(Criterion.Method), Criterion.Probability ?? 0.5);
             InitializePlotIfMethodIsSet();
+        }
+
+        private void RestorePointsValuesToInitialValue()
+        {
+            DeselectRectangle();
+            _partialUtility.PointsValues.Clear();
+            foreach (var pointValues in _initialPointsValues)
+                _partialUtility.PointsValues.Add(new PartialUtilityValues(pointValues.X, pointValues.Y));
+            _calculateUtilities();
         }
 
         [UsedImplicitly]
@@ -357,31 +366,7 @@ namespace Assess.ViewModels
         [UsedImplicitly]
         public void SwitchToSettingExactValue(object sender = null, RoutedEventArgs e = null)
         {
-            //ResetDialogue();
             IsSettingExactValue = true;
-        }
-
-        [UsedImplicitly]
-        public void SwitchToDialogue(object sender = null, RoutedEventArgs e = null)
-        {
-            ResetDialogue();
-            IsSettingExactValue = false;
-        }
-
-        private void ResetDialogue()
-        {
-            var firstPointIndex = PointsValues.FindIndex(partialUtilityValue => partialUtilityValue.X == SelectedRectangle.MinimumX);
-            DialogController.TriggerDialog(PointsValues[firstPointIndex], PointsValues[firstPointIndex + 1]);
-            SelectRectangle(SelectedRectangle, firstPointIndex);
-        }
-
-        private void RestorePointsValuesToInitialValue()
-        {
-            IsSettingExactValue = false;
-            _partialUtility.PointsValues.Clear();
-            foreach (var pointValues in _initialPointsValues)
-                _partialUtility.PointsValues.Add(new PartialUtilityValues(pointValues.X, pointValues.Y));
-            _calculateUtilities();
         }
 
         [NotifyPropertyChangedInvocator]

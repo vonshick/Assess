@@ -353,26 +353,30 @@
 
                                                     <StackPanel Orientation="Horizontal">
                                                       <TextBlock
-                                                        Text="{Binding DialogController.DisplayObject.Lottery.P, 
-                                              StringFormat=Probability: {0:G6}\,, 
-                                              UpdateSourceTrigger=PropertyChanged}"
+                                                        Text="{Binding 
+                                                        DialogController.DisplayObject.Lottery.P, 
+                                                        StringFormat=Probability: {0:G6}\,, 
+                                                        UpdateSourceTrigger=PropertyChanged}"
                                                         FontSize="{StaticResource CommonFontSize1}" Margin="0,0,4,0" />
                                                       <TextBlock
-                                                        Text="{Binding DialogController.DisplayObject.Lottery.UpperUtilityValue.X, 
-                                              StringFormat=Value: {0:G6}, 
-                                              UpdateSourceTrigger=PropertyChanged}"
+                                                        Text="{Binding 
+                                                        DialogController.DisplayObject.Lottery.UpperUtilityValue.X, 
+                                                        StringFormat=Value: {0:G6}, 
+                                                        UpdateSourceTrigger=PropertyChanged}"
                                                         FontSize="{StaticResource CommonFontSize1}" />
                                                       <TextBlock Text="&amp;" Margin="10,0"
                                                                  FontSize="{StaticResource CommonFontSize1}" />
                                                       <TextBlock
-                                                        Text="{Binding DialogController.DisplayObject.Lottery.ComplementaryP, 
-                                              StringFormat=Probability: {0:G6}\,, 
-                                              UpdateSourceTrigger=PropertyChanged}"
+                                                        Text="{Binding
+                                                        DialogController.DisplayObject.Lottery.ComplementaryP, 
+                                                        StringFormat=Probability: {0:G6}\,, 
+                                                        UpdateSourceTrigger=PropertyChanged}"
                                                         FontSize="{StaticResource CommonFontSize1}" Margin="0,0,4,0" />
                                                       <TextBlock
-                                                        Text="{Binding DialogController.DisplayObject.Lottery.LowerUtilityValue.X, 
-                                              StringFormat=Value: {0:G6}, 
-                                              UpdateSourceTrigger=PropertyChanged}"
+                                                        Text="{Binding 
+                                                        DialogController.DisplayObject.Lottery.LowerUtilityValue.X, 
+                                                        StringFormat=Value: {0:G6}, 
+                                                        UpdateSourceTrigger=PropertyChanged}"
                                                         FontSize="{StaticResource CommonFontSize1}" />
                                                     </StackPanel>
                                                   </StackPanel>
@@ -426,28 +430,32 @@
                                                     <StackPanel>
                                                       <StackPanel Orientation="Horizontal">
                                                         <TextBlock
-                                                          Text="{Binding DialogController.DisplayObject.ComparisonLottery.P, 
-                                              StringFormat=Probability: {0:G6}\,, 
-                                              UpdateSourceTrigger=PropertyChanged}"
+                                                          Text="{Binding 
+                                                          DialogController.DisplayObject.ComparisonLottery.P, 
+                                                          StringFormat=Probability: {0:G6}\,, 
+                                                          UpdateSourceTrigger=PropertyChanged}"
                                                           FontSize="{StaticResource CommonFontSize1}" Margin="0,0,4,0" />
                                                         <TextBlock
-                                                          Text="{Binding DialogController.DisplayObject.ComparisonLottery.UpperUtilityValue.X, 
-                                              StringFormat=Value: {0:G6}, 
-                                              UpdateSourceTrigger=PropertyChanged}"
+                                                          Text="{Binding 
+                                                          DialogController.DisplayObject.ComparisonLottery.UpperUtilityValue.X, 
+                                                          StringFormat=Value: {0:G6}, 
+                                                          UpdateSourceTrigger=PropertyChanged}"
                                                           FontSize="{StaticResource CommonFontSize1}" />
                                                       </StackPanel>
                                                       <TextBlock Text="&amp;" TextAlignment="Center"
                                                                  FontSize="{StaticResource CommonFontSize1}" />
                                                       <StackPanel Orientation="Horizontal">
                                                         <TextBlock
-                                                          Text="{Binding DialogController.DisplayObject.ComparisonLottery.ComplementaryP, 
-                                              StringFormat=Probability: {0:G6}\,, 
-                                              UpdateSourceTrigger=PropertyChanged}"
+                                                          Text="{Binding 
+                                                          DialogController.DisplayObject.ComparisonLottery.ComplementaryP, 
+                                                          StringFormat=Probability: {0:G6}\,, 
+                                                          UpdateSourceTrigger=PropertyChanged}"
                                                           FontSize="{StaticResource CommonFontSize1}" Margin="0,0,4,0" />
                                                         <TextBlock
-                                                          Text="{Binding DialogController.DisplayObject.ComparisonLottery.LowerUtilityValue.X, 
-                                              StringFormat=Value: {0:G6}, 
-                                              UpdateSourceTrigger=PropertyChanged}"
+                                                          Text="{Binding 
+                                                          DialogController.DisplayObject.ComparisonLottery.LowerUtilityValue.X, 
+                                                          StringFormat=Value: {0:G6}, 
+                                                          UpdateSourceTrigger=PropertyChanged}"
                                                           FontSize="{StaticResource CommonFontSize1}" />
                                                       </StackPanel>
                                                     </StackPanel>
@@ -475,28 +483,32 @@
                                                     <StackPanel>
                                                       <StackPanel Orientation="Horizontal">
                                                         <TextBlock
-                                                          Text="{Binding DialogController.DisplayObject.EdgeValuesLottery.P, 
-                                              StringFormat=Probability: {0:G6}\,, 
-                                              UpdateSourceTrigger=PropertyChanged}"
+                                                          Text="{Binding 
+                                                          DialogController.DisplayObject.EdgeValuesLottery.P, 
+                                                          StringFormat=Probability: {0:G6}\,, 
+                                                          UpdateSourceTrigger=PropertyChanged}"
                                                           FontSize="{StaticResource CommonFontSize1}" Margin="0,0,4,0" />
                                                         <TextBlock
-                                                          Text="{Binding DialogController.DisplayObject.EdgeValuesLottery.UpperUtilityValue.X, 
-                                              StringFormat=Value: {0:G6}, 
-                                              UpdateSourceTrigger=PropertyChanged}"
+                                                          Text="{Binding 
+                                                          DialogController.DisplayObject.EdgeValuesLottery.UpperUtilityValue.X, 
+                                                          StringFormat=Value: {0:G6}, 
+                                                          UpdateSourceTrigger=PropertyChanged}"
                                                           FontSize="{StaticResource CommonFontSize1}" />
                                                       </StackPanel>
                                                       <TextBlock Text="&amp;" TextAlignment="Center"
                                                                  FontSize="{StaticResource CommonFontSize1}" />
                                                       <StackPanel Orientation="Horizontal">
                                                         <TextBlock
-                                                          Text="{Binding DialogController.DisplayObject.EdgeValuesLottery.ComplementaryP, 
-                                              StringFormat=Probability: {0:G6}\,, 
-                                              UpdateSourceTrigger=PropertyChanged}"
+                                                          Text="{Binding
+                                                          DialogController.DisplayObject.EdgeValuesLottery.ComplementaryP, 
+                                                          StringFormat=Probability: {0:G6}\,, 
+                                                          UpdateSourceTrigger=PropertyChanged}"
                                                           FontSize="{StaticResource CommonFontSize1}" Margin="0,0,4,0" />
                                                         <TextBlock
-                                                          Text="{Binding DialogController.DisplayObject.EdgeValuesLottery.LowerUtilityValue.X, 
-                                              StringFormat=Value: {0:G6}, 
-                                              UpdateSourceTrigger=PropertyChanged}"
+                                                          Text="{Binding 
+                                                          DialogController.DisplayObject.EdgeValuesLottery.LowerUtilityValue.X, 
+                                                          StringFormat=Value: {0:G6}, 
+                                                          UpdateSourceTrigger=PropertyChanged}"
                                                           FontSize="{StaticResource CommonFontSize1}" />
                                                       </StackPanel>
                                                     </StackPanel>
@@ -539,7 +551,10 @@
 
                                                 <i:Interaction.Triggers>
                                                   <i:KeyTrigger Key="Enter" FiredOn="KeyUp">
-                                                    <i:InvokeCommandAction Command="{Binding SubmitExactValueCommand}" />
+                                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="IndifferentOptionChosen" />
+                                                  </i:KeyTrigger>
+                                                  <i:KeyTrigger Key="Escape" FiredOn="KeyUp">
+                                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="SwitchToDialogue" />
                                                   </i:KeyTrigger>
                                                 </i:Interaction.Triggers>
 
@@ -562,19 +577,19 @@
                                                                     Margin="0,0,0,2" />
                                                                   <WrapPanel Orientation="Horizontal">
                                                                     <TextBlock
-                                                                      Text="{Binding SelectedRectangle.MinimumX, StringFormat='Value must be greater than {0} ', UpdateSourceTrigger=PropertyChanged}"
+                                                                      Text="{Binding PointToAdd.Min, StringFormat='Value must be greater than {0} ', UpdateSourceTrigger=PropertyChanged}"
                                                                       FontSize="{StaticResource CommonFontSize2}"
                                                                       Margin="0,0,0,2" />
                                                                     <TextBlock
-                                                                      Text="{Binding SelectedRectangle.MaximumX, StringFormat='and lower than {0}.', UpdateSourceTrigger=PropertyChanged}"
+                                                                      Text="{Binding PointToAdd.Max, StringFormat='and lower than {0}.', UpdateSourceTrigger=PropertyChanged}"
                                                                       FontSize="{StaticResource CommonFontSize2}"
                                                                       Margin="0,0,0,4" />
                                                                   </WrapPanel>
 
                                                                   <controls:NumericUpDown
-                                                                    Value="{Binding DialogController.Dialog.PointToAdd.X, UpdateSourceTrigger=PropertyChanged}"
-                                                                    Minimum="{Binding SelectedRectangle.MinimumX, UpdateSourceTrigger=PropertyChanged}"
-                                                                    Maximum="{Binding SelectedRectangle.MaximumX, UpdateSourceTrigger=PropertyChanged}"
+                                                                    Value="{Binding PointToAdd.X, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                                                                    Minimum="{Binding PointToAdd.Min, UpdateSourceTrigger=PropertyChanged}"
+                                                                    Maximum="{Binding PointToAdd.Max, UpdateSourceTrigger=PropertyChanged}"
                                                                     NumericInputMode="All" StringFormat="G15"
                                                                     Margin="0,0,0,4" />
                                                                 </StackPanel>
@@ -598,19 +613,19 @@
                                                                     Margin="0,0,0,2" />
                                                                   <WrapPanel Orientation="Horizontal">
                                                                     <TextBlock
-                                                                      Text="{Binding SelectedRectangle.MinimumY, StringFormat='Value must be greater than {0} ', UpdateSourceTrigger=PropertyChanged}"
+                                                                      Text="{Binding PointToAdd.Min, StringFormat='Value must be greater than {0} ', UpdateSourceTrigger=PropertyChanged}"
                                                                       FontSize="{StaticResource CommonFontSize2}"
                                                                       Margin="0,0,0,2" />
                                                                     <TextBlock
-                                                                      Text="{Binding SelectedRectangle.MaximumY, StringFormat='and lower than {0}.', UpdateSourceTrigger=PropertyChanged}"
+                                                                      Text="{Binding PointToAdd.Max, StringFormat='and lower than {0}.', UpdateSourceTrigger=PropertyChanged}"
                                                                       FontSize="{StaticResource CommonFontSize2}"
                                                                       Margin="0,0,0,4" />
                                                                   </WrapPanel>
 
                                                                   <controls:NumericUpDown
-                                                                    Value="{Binding DialogController.Dialog.PointToAdd.Y, UpdateSourceTrigger=PropertyChanged}"
-                                                                    Minimum="{Binding SelectedRectangle.MinimumY, UpdateSourceTrigger=PropertyChanged}"
-                                                                    Maximum="{Binding SelectedRectangle.MaximumY, UpdateSourceTrigger=PropertyChanged}"
+                                                                    Value="{Binding PointToAdd.Y, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                                                                    Minimum="{Binding PointToAdd.Min, UpdateSourceTrigger=PropertyChanged}"
+                                                                    Maximum="{Binding PointToAdd.Max, UpdateSourceTrigger=PropertyChanged}"
                                                                     NumericInputMode="All" StringFormat="G15"
                                                                     Margin="0,0,0,4" Interval="0.01" />
                                                                 </StackPanel>
@@ -623,9 +638,15 @@
                                                   </ContentControl.Style>
                                                 </ContentControl>
 
-                                                <Button Style="{StaticResource PrimaryRoundButton}" Grid.Row="1"
-                                                        Margin="0,0,8,0" Content="Submit"
-                                                        Command="{Binding SubmitExactValueCommand}" />
+                                                <Button Style="{StaticResource PrimaryRoundButton}" Grid.Row="1" Grid.Column="0"
+                                                        Margin="0,0,8,0" Content="Submit">
+                                                  <i:Interaction.Triggers>
+                                                    <i:EventTrigger EventName="Click">
+                                                      <i:CallMethodAction TargetObject="{Binding}" MethodName="IndifferentOptionChosen" />
+                                                    </i:EventTrigger>
+                                                  </i:Interaction.Triggers>
+                                                </Button>
+
                                                 <Button Style="{StaticResource SecondaryRoundButton}" Grid.Row="1"
                                                         Grid.Column="1" Content="Cancel">
                                                   <i:Interaction.Triggers>

@@ -29,8 +29,8 @@ namespace DataModel.Results
 
         public PartialUtilityValues(double x, double y)
         {
-            X = x;
-            Y = y;
+            _x = x;
+            _y = y;
         }
 
 

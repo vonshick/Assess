@@ -115,7 +115,7 @@
             <!--best values-->
             <DockPanel>
               <TextBlock DockPanel.Dock="Top" FontSize="{StaticResource CommonFontSize1}" Margin="0,0,0,2"
-                         HorizontalAlignment="Center"
+                         HorizontalAlignment="Center" FontWeight="Medium"
                          Text="{Binding Dialog.DisplayObject.P, StringFormat=Probability: {0:G8}, UpdateSourceTrigger=PropertyChanged}" />
 
               <ScrollViewer DockPanel.Dock="Top" Focusable="False" VerticalScrollBarVisibility="Auto"
@@ -154,7 +154,7 @@
             <!--worst values-->
             <DockPanel>
               <TextBlock DockPanel.Dock="Top" FontSize="{StaticResource CommonFontSize1}" Margin="0,0,0,2"
-                         HorizontalAlignment="Center"
+                         HorizontalAlignment="Center" FontWeight="Medium"
                          Text="{Binding Dialog.DisplayObject.ComplementaryP, StringFormat=Probability: {0:G8}, UpdateSourceTrigger=PropertyChanged}" />
 
               <ScrollViewer DockPanel.Dock="Top" Focusable="False" VerticalScrollBarVisibility="Auto"

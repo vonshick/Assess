@@ -22,14 +22,12 @@ namespace DataModel.Results
     public class PointToAdd : PartialUtilityValues
     {
         private readonly bool _isProcessedHorizontally;
-        private readonly double _max;
-        private readonly double _min;
 
 
         public PointToAdd(double x, double y, double min, double max, bool isProcessedHorizontally) : base(x, y)
         {
-            _min = min;
-            _max = max;
+            Min = min;
+            Max = max;
             _isProcessedHorizontally = isProcessedHorizontally;
         }
 
@@ -40,8 +38,8 @@ namespace DataModel.Results
             set
             {
                 if (value.Equals(_x)) return;
-                if (_isProcessedHorizontally && (value <= _min || value >= _max))
-                    throw new ArgumentException($"Value must be greater than {_min} and lower than {_max}.");
+                if (_isProcessedHorizontally && (value <= Min || value >= Max))
+                    throw new ArgumentException($"Value must be greater than {Min}\nand lower than {Max}.");
                 _x = value;
                 OnPropertyChanged(nameof(X));
             }
@@ -53,11 +51,14 @@ namespace DataModel.Results
             set
             {
                 if (value.Equals(_y)) return;
-                if (!_isProcessedHorizontally && (value <= _min || value >= _max))
-                    throw new ArgumentException($"Value must be greater than {_min} and lower than {_max}.");
+                if (!_isProcessedHorizontally && (value <= Min || value >= Max))
+                    throw new ArgumentException($"Value must be greater than {Min}\nand lower than {Max}.");
                 _y = value;
                 OnPropertyChanged(nameof(Y));
             }
         }
+
+        public double Min { get; }
+        public double Max { get; }
     }
 }

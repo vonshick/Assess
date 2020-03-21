@@ -28,12 +28,12 @@ namespace CalculationsEngine.Dialogs
         }
 
 
-        public override void SetInitialDialogValues(double lowerUtilityBoundary, double upperUtilityBoundary)
+        public override void SetInitialDialogValues(double lowerUtilityBoundary, double upperUtilityBoundary, double min, double max)
         {
             LowerUtilityBoundary = lowerUtilityBoundary;
             UpperUtilityBoundary = upperUtilityBoundary;
             UpdateSureValue();
-            PointToAdd = new PartialUtilityValues(DisplayObject.X, DisplayObject.Lottery.NewPointUtility());
+            PointToAdd = new PointToAdd(DisplayObject.X, DisplayObject.Lottery.NewPointUtility(), min, max, true);
         }
 
         private void UpdateSureValue()
