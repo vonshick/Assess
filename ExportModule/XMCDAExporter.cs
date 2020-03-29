@@ -34,12 +34,15 @@ namespace ExportModule
         public bool OverwriteFile;
         private readonly Results results;
         private XmlTextWriter xmcdaWriter;
+        private string _xdFilePath;
 
-        public XMCDAExporter(string outputDirectory,
+        public XMCDAExporter(string xdFilePath,
             List<Criterion> criterionList,
             List<Alternative> alternativeList,
             Results results)
         {
+            this._xdFilePath = xdFilePath;
+            this.outputDirectory = Path.Combine(Path.GetDirectoryName(xdFilePath), Path.GetFileNameWithoutExtension(xdFilePath));
             OverwriteFile = false;
             this.outputDirectory = outputDirectory;
             this.criterionList = criterionList;
@@ -47,37 +50,16 @@ namespace ExportModule
             this.results = results;
         }
 
-        public XMCDAExporter(string outputDirectory,
+        public XMCDAExporter(string xdFilePath,
             List<Criterion> criterionList,
             List<Alternative> alternativeList)
         {
+            this._xdFilePath = xdFilePath;
+            this.outputDirectory = Path.Combine(Path.GetDirectoryName(xdFilePath), Path.GetFileNameWithoutExtension(xdFilePath));
             OverwriteFile = false;
             this.outputDirectory = outputDirectory;
             this.criterionList = criterionList;
             this.alternativeList = alternativeList;
-        }
-
-        private void checkIfFileExists(string path)
-        {
-            if (!OverwriteFile)
-                if (File.Exists(path))
-                    throw new XmcdaFileExistsException(
-                        "File " + Path.GetFileName(path) + " already exists. Would you like to overwrite it?");
-        }
-
-        private void checkIfInputFilesExists()
-        {
-            checkIfFileExists(Path.Combine(outputDirectory, "criteria.xml"));
-            checkIfFileExists(Path.Combine(outputDirectory, "alternatives.xml"));
-            checkIfFileExists(Path.Combine(outputDirectory, "performance_table.xml"));
-            checkIfFileExists(Path.Combine(outputDirectory, "criteria_scales.xml"));
-            checkIfFileExists(Path.Combine(outputDirectory, "Assess", "method_parameters.xml"));
-        }
-
-        private void checkIfResultFilesExists()
-        {
-            checkIfFileExists(Path.Combine(outputDirectory, "Assess", "value_functions.xml"));
-            checkIfFileExists(Path.Combine(outputDirectory, "Assess", "weights.xml"));
         }
 
         private void initializeWriter(string filePath)
@@ -205,8 +187,7 @@ namespace ExportModule
 
         private void saveValueFunctions()
         {
-            Directory.CreateDirectory(Path.Combine(outputDirectory, "Assess"));
-            initializeWriter(Path.Combine(outputDirectory, "Assess", "value_functions.xml"));
+            initializeWriter(Path.Combine(outputDirectory, "value_functions.xml"));
             xmcdaWriter.WriteStartElement("criteria");
             xmcdaWriter.WriteAttributeString("mcdaConcept", "criteria");
 
@@ -249,8 +230,7 @@ namespace ExportModule
 
         private void saveWeights()
         {
-            Directory.CreateDirectory(Path.Combine(outputDirectory, "Assess"));
-            initializeWriter(Path.Combine(outputDirectory, "Assess", "weights.xml"));
+            initializeWriter(Path.Combine(outputDirectory, "weights.xml"));
             xmcdaWriter.WriteStartElement("criteriaValues");
 
             foreach (var criterionCoefficient in results.CriteriaCoefficients)
@@ -335,7 +315,9 @@ namespace ExportModule
 
         public void saveInput()
         {
-            checkIfInputFilesExists();
+            Directory.CreateDirectory(Path.Combine(outputDirectory));
+            File.Create(_xdFilePath);
+
             saveCriterions();
             saveAlternatives();
             saveCriterionScales();
@@ -345,7 +327,6 @@ namespace ExportModule
 
         public void saveResults()
         {
-            checkIfResultFilesExists();
             if (results != null)
             {
                 saveValueFunctions();
