@@ -35,6 +35,9 @@ namespace ImportModule
 
         private void validateInputFilesSet()
         {
+            if(!Directory.Exists(xmcdaDirectory))
+                throw new FileNotFoundException("Directory " + xmcdaDirectory + " does not exist.");
+
             ValidateFilePath(Path.Combine(xmcdaDirectory, "criteria.xml"));
             ValidateFilePath(Path.Combine(xmcdaDirectory, "alternatives.xml"));
             ValidateFilePath(Path.Combine(xmcdaDirectory, "criteria_scales.xml"));
@@ -266,7 +269,7 @@ namespace ImportModule
 
         private void LoadValueFunctions()
         {
-            CurrentlyProcessedFile = Path.Combine(xmcdaDirectory, "Assess", "value_functions.xml");
+            CurrentlyProcessedFile = Path.Combine(xmcdaDirectory, "value_functions.xml");
 
             if (!File.Exists(CurrentlyProcessedFile))
                 return;
@@ -318,7 +321,7 @@ namespace ImportModule
 
         private void LoadWeights()
         {
-            CurrentlyProcessedFile = Path.Combine(xmcdaDirectory, "Assess", "weights.xml");
+            CurrentlyProcessedFile = Path.Combine(xmcdaDirectory, "weights.xml");
 
             if (!File.Exists(CurrentlyProcessedFile))
                 return;
@@ -372,7 +375,7 @@ namespace ImportModule
 
         private void LoadDialogMethods()
         {
-            CurrentlyProcessedFile = Path.Combine(xmcdaDirectory, "Assess", "method_parameters.xml");
+            CurrentlyProcessedFile = Path.Combine(xmcdaDirectory, "method_parameters.xml");
 
             if (!File.Exists(CurrentlyProcessedFile))
                 return;
