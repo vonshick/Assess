@@ -279,8 +279,7 @@ namespace ExportModule
 
         private void saveMethodData()
         {
-            Directory.CreateDirectory(Path.Combine(outputDirectory, "Assess"));
-            initializeWriter(Path.Combine(outputDirectory, "Assess", "method_parameters.xml"));
+            initializeWriter(Path.Combine(outputDirectory, "method_parameters.xml"));
 
             xmcdaWriter.WriteStartElement("programParameters");
 
