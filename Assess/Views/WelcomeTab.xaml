@@ -28,73 +28,73 @@
         <TextBlock TextAlignment="Center" FontSize="26">Assess Extended</TextBlock>
         <TextBlock TextAlignment="Center" FontSize="{StaticResource CommonFontSize1}" TextWrapping="Wrap"
                    Margin="0,0,0,8">
-          Wielokryterialne porządkowanie wariantów przy użyciu metody Assess.
+          Multiple-criteria sorting with Assess method.
         </TextBlock>
 
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="0,8" TextAlignment="Justify">
-          Interfejs aplikacji składa się z trzech głównych elementów: <LineBreak />
+          User interface consists of three main components: <LineBreak />
           <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0"
                      TextAlignment="Justify">
-            1. Paneli bocznych, będących stałym elementem dostępnym z poziomu każdego widoku w aplikacji. <LineBreak />
-            2. Przestrzeni roboczej w centralnej części okna, zarządzanej przy użyciu kart, między którymi można dowolnie się przełączać, zamykać i otwierać ponownie.<LineBreak />
-            3. Pasków w górnej części okna, dzięki którym można zarządzać stanem aplikacji.
+            1. Side panels - constant elements available within every window of the application. <LineBreak />
+            2. Central work space managed with cards you can switch between, close and reopen.<LineBreak />
+            3. Bars in the upper part of the window which allow to control the state of the application.
           </TextBlock>
         </TextBlock>
 
         <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
-          Panele boczne:
+          Side panels:
         </TextBlock>
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
                    TextAlignment="Justify">
-          Po lewej stronie umieszczono informacje o instancji: zbiór wariantów i kryteriów. Kliknięcie w dowolny wariant/kryterium otworzy odpowiednią kartę umożliwiającą edycję danych.
+          On the left there is an instance description: criteria and alternatives sets. Left click on an alternative/criterion opens an editing card with detailed information about the element. 
           <LineBreak />
-          Po prawej stronie umieszczono panel z podglądem wartości wag kryteriów i współczynnika skalującego oraz rankingu wynikowego, generowanego w oparciu o wyliczony model preferencji po uruchomieniu modułu obliczeniowego.<LineBreak/>
-          Panele boczne można ukrywać/pokazywać przy pomocy przycisku "View" na pasku Menu. Można także zmieniać ich szerokość, zwijać i rozwijać znajdujące się w nich przewijalne listy z podglądem danych, klikając w odpowiedni nagłówek.
+          On the the right there are panels which allow to view criteria weights, a scalling coefficient and a result ranking (generated after a preference model is built).<LineBreak/>
+          Side panels can be hidden or shown with "View" button on the "Menu" bar. Their width is adjustable. Scrollable lists inside panels can be expanded or collapsed by clicking on their headers. 
         </TextBlock>
 
         <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
-          Karty:
+          Cards:
         </TextBlock>
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
                    TextAlignment="Justify">
-          Lista otwartych kart wyświetlana jest bezpośrednio nad przestrzenią roboczą. Każdą kartę można w dowolnej chwili zamknąć i ponownie otworzyć przy pomocy przycisków na górnym pasku lub z poziomu przycisku "Show" na pasku Menu.
+          Open cards list is displayed above the work space. Each card may be closed and reopened anytime with the buttons in the upper bar or using the "Show" button in the "Menu" bar.
         </TextBlock>
 
         <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
-          Warianty i kryteria:
+          Criteria and alternatives:
         </TextBlock>
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
                    TextAlignment="Justify">
-          Kliknięcie w wariant/kryterium w panelu bocznym przeniesie widok bezpośrednio na wybrany obiekt w odpowiedniej karcie. Owe dane edytować i usuwać można bezpośrednio z poziomu tabeli, dodawanie natomiast odbywa się przy pomocy
-          formularza w górnej części obszaru roboczego.
+          Left click on a criterion/alternative in the sidebar opens an appropriate editing card. The data can be edited or removed within the table. 
+          New rows can be added using upper part of the work space.
         </TextBlock>
 
         <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
-          Mechanizm dialogów:
+          Dialogs flow:
         </TextBlock>
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
                    TextAlignment="Justify">
-          Proces dialogu z użytkownikiem, na którym oparta jest metoda Assess, złożony jest z dwóch etapów: <LineBreak />
-          1. Ustalanie wartości współczynnika skalującego i wag kryteriów. <LineBreak />
-          2. Konstrukcja przebiegu cząstkowych funkcji użyteczności dla każdego kryterium. <LineBreak />
-          Dialogi otwierają się automatycznie w nowych kartach. Etap pierwszy rozpoczyna się po kliknięciu przycisku "Calculate", etap drugi natomiast po znalezieniu równoważnika pewności w ostatnim dialogu.
+          Assess method is based on a dialog with a user which consists of two stages: <LineBreak />
+          1. Determining a scalling coefficient and criteria weights. <LineBreak />
+          2. Building a partial utility function for each criterion. <LineBreak />
+          Dialogs are opened automatically in cards. The first stage begins after clicking on the "Calculate" button and the second stage after finding a certainty equivalent.
         </TextBlock>
 
         <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
-          Pomoc:
+          Help:
         </TextBlock>
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
                    TextAlignment="Justify">
-          Przy pomocy przycisku "Help" na pasku Menu, można uzyskać instrukcję obsługi programu lub dowiedzieć się o szczegółach aplikacji.
+          "Help" button in the "Menu" bar allows to open the user manual or find out more information about application.
         </TextBlock>
 
         <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
-          Do dzieła!
+          Let's get to work!
         </TextBlock>
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
                    TextAlignment="Justify">
-          Po kliknięciu w niebieski przycisk "Calculate", który znajduje się się po lewej stronie górnego paska, uruchomione zostanie serce aplikacji&#160;—&#160;moduł obliczeniowy implementujący metodę wielokryterialnego porządkowania wariantów "Assess",
-          który przy pomocy mechanizmu dialogu z użytkownikiem oraz metody Bairstowa wygeneruje model preferencji decydenta.
+          After clicking on the blue "Calculate" button (left side of the upper bar) there will be run the core of the application &#160;—&#160;calculation module that implements multiple-criteria sorting method "Assess".
+          With the information provided by a user in a dialog, using the Bairstow method, application builds a preference model.
         </TextBlock>
       </StackPanel>
     </ScrollViewer>
