@@ -36,7 +36,7 @@
           <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0"
                      TextAlignment="Justify">
             1. Side panels - constant elements available within every window of the application. <LineBreak />
-            2. Central work space managed with cards you can switch between, close and reopen.<LineBreak />
+            2. Central work space managed with tabs you can switch between, close and reopen.<LineBreak />
             3. Bars in the upper part of the window which allow to control the state of the application.
           </TextBlock>
         </TextBlock>
@@ -46,18 +46,18 @@
         </TextBlock>
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
                    TextAlignment="Justify">
-          On the left there is an instance description: criteria and alternatives sets. Left click on an alternative/criterion opens an editing card with detailed information about the element. 
+          On the left there is an instance description: criteria and alternatives sets. Left click on an alternative/criterion opens an editing tab with detailed information about the element. 
           <LineBreak />
           On the the right there are panels which allow to view criteria weights, a scalling coefficient and a result ranking (generated after a preference model is built).<LineBreak/>
-          Side panels can be hidden or shown with "View" button on the "Menu" bar. Their width is adjustable. Scrollable lists inside panels can be expanded or collapsed by clicking on their headers. 
+          Side panels can be hidden or shown with "View" button in the Menu. Their width is adjustable. Scrollable lists inside panels can be expanded or collapsed by clicking on their headers. 
         </TextBlock>
 
         <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
-          Cards:
+          Tabs:
         </TextBlock>
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
                    TextAlignment="Justify">
-          Open cards list is displayed above the work space. Each card may be closed and reopened anytime with the buttons in the upper bar or using the "Show" button in the "Menu" bar.
+          List of open tabs is displayed above the work space. Each tab may be closed and reopened anytime with the buttons in the upper bar or using the "Show" button in the Menu.
         </TextBlock>
 
         <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
@@ -65,19 +65,19 @@
         </TextBlock>
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
                    TextAlignment="Justify">
-          Left click on a criterion/alternative in the sidebar opens an appropriate editing card. The data can be edited or removed within the table. 
+          Left click on a criterion/alternative in the sidebar opens an appropriate editing tab. The data can be edited or removed within the table. 
           New rows can be added using upper part of the work space.
         </TextBlock>
 
         <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
-          Dialogs flow:
+          Dialog flow:
         </TextBlock>
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
                    TextAlignment="Justify">
           Assess method is based on a dialog with a user which consists of two stages: <LineBreak />
           1. Determining a scalling coefficient and criteria weights. <LineBreak />
           2. Building a partial utility function for each criterion. <LineBreak />
-          Dialogs are opened automatically in cards. The first stage begins after clicking on the "Calculate" button and the second stage after finding a certainty equivalent.
+          Dialogs are opened automatically in tabs. The first stage begins after clicking on the "Calculate" button and the second stage after finding a certainty equivalent.
         </TextBlock>
 
         <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
@@ -85,7 +85,7 @@
         </TextBlock>
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
                    TextAlignment="Justify">
-          "Help" button in the "Menu" bar allows to open the user manual or find out more information about application.
+          "Help" button in the Menu allows to open the user manual or to find out more information about the application.
         </TextBlock>
 
         <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
@@ -93,7 +93,7 @@
         </TextBlock>
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
                    TextAlignment="Justify">
-          After clicking on the blue "Calculate" button (left side of the upper bar) there will be run the core of the application &#160;—&#160;calculation module that implements multiple-criteria sorting method "Assess".
+          Clicking on the blue "Calculate" button (left side of the upper bar) runs the core of the application &#160;—&#160;calculation module that implements multiple-criteria sorting method "Assess".
           With the information provided by a user in a dialog, using the Bairstow method, application builds a preference model.
         </TextBlock>
       </StackPanel>
