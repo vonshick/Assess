@@ -37,7 +37,7 @@
                      TextAlignment="Justify">
             1. Side panels - constant elements available within every window of the application. <LineBreak />
             2. Central work space managed with tabs you can switch between, close and reopen.<LineBreak />
-            3. Bars in the upper part of the window which allow to control the state of the application.
+            3. Bars in the upper part of the window which allow user to control the state of the application.
           </TextBlock>
         </TextBlock>
 
@@ -48,7 +48,7 @@
                    TextAlignment="Justify">
           On the left there is an instance description: criteria and alternatives sets. Left click on an alternative/criterion opens an editing tab with detailed information about the element. 
           <LineBreak />
-          On the the right there are panels which allow to view criteria weights, a scalling coefficient and a result ranking (generated after a preference model is built).<LineBreak/>
+          On the the right there are panels showing criteria weights, a scalling coefficient and a result ranking (generated after a preference model is built).<LineBreak/>
           Side panels can be hidden or shown with "View" button in the Menu. Their width is adjustable. Scrollable lists inside panels can be expanded or collapsed by clicking on their headers. 
         </TextBlock>
 
@@ -85,7 +85,7 @@
         </TextBlock>
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
                    TextAlignment="Justify">
-          "Help" button in the Menu allows to open the user manual or to find out more information about the application.
+          "Help" button in the Menu reveals user manual and more information about the application.
         </TextBlock>
 
         <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
