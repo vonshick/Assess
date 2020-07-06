@@ -28,6 +28,9 @@ namespace DataModel.Results
     {
         private ObservableCollection<CriterionCoefficient> _criteriaCoefficients;
         private double? _k;
+
+        private string _formula;
+        
         private List<PartialUtility> _partialUtilityFunctions;
 
         public Results()
@@ -47,6 +50,17 @@ namespace DataModel.Results
                 if (Nullable.Equals(value, _k)) return;
                 _k = value;
                 OnPropertyChanged(nameof(K));
+            }
+        }
+
+        public string Formula
+        {
+            get => _formula;
+            set
+            {
+                if (Nullable.Equals(value, _formula)) return;
+                _formula = value;
+                OnPropertyChanged(nameof(Formula));
             }
         }
 
