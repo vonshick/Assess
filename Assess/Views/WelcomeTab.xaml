@@ -75,7 +75,7 @@
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
                    TextAlignment="Justify">
           Assess method is based on a dialog with a user which consists of two stages: <LineBreak />
-          1. Determining a scalling coefficient and criteria weights. <LineBreak />
+          1. Determining a scaling coefficient and criteria weights. <LineBreak />
           2. Building a partial utility function for each criterion. <LineBreak />
           Dialogs are opened automatically in tabs. The first stage begins after clicking on the "Calculate" button and the second stage after finding a certainty equivalent.
         </TextBlock>
