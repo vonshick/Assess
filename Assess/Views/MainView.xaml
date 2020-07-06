@@ -169,6 +169,15 @@
           </i:Interaction.Triggers>
         </MenuItem>
         <Separator />
+        <MenuItem Header="Settings">
+          <i:Interaction.Triggers>
+            <i:EventTrigger EventName="Click">
+              <i:InvokeCommandAction Command="{Binding ShowTabCommand}"
+                                     CommandParameter="{Binding SettingsTabViewModel}" />
+            </i:EventTrigger>
+          </i:Interaction.Triggers>
+        </MenuItem>
+        <Separator />
         <MenuItem Margin="{StaticResource MenuItemBottomMargin}" Header="Exit" Click="ExitMenuItemClicked" />
       </MenuItem>
 
@@ -248,7 +257,7 @@
       <!--topbar-->
       <Border Height="36" Grid.ColumnSpan="5" Background="{StaticResource ColorInterface4}" BorderThickness="0,0,0,1"
               BorderBrush="{StaticResource ColorBorders1}" Padding="12,0,12,0">
-        <StackPanel Orientation="Horizontal" Height="28">
+        <DockPanel LastChildFill="False" Height="28">
           <Button Content="Calculate" Style="{StaticResource PrimaryRoundButton}"
                   FontSize="{StaticResource CommonFontSize1}" Margin="0,0,8,0" Padding="20,0,20,1">
             <i:Interaction.Triggers>
@@ -279,7 +288,17 @@
               </i:EventTrigger>
             </i:Interaction.Triggers>
           </Button>
-        </StackPanel>
+
+          <Button Content="Settings" Style="{StaticResource SecondaryRoundButton}" Margin="0" Padding="16,0,16,1"
+                  DockPanel.Dock="Right" FontSize="{StaticResource CommonFontSize1}">
+            <i:Interaction.Triggers>
+              <i:EventTrigger EventName="Click">
+                <i:InvokeCommandAction Command="{Binding ShowTabCommand}"
+                                       CommandParameter="{Binding SettingsTabViewModel}" />
+              </i:EventTrigger>
+            </i:Interaction.Triggers>
+          </Button>
+        </DockPanel>
       </Border>
 
 
@@ -502,6 +521,9 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewModels:WelcomeTabViewModel}">
               <views1:WelcomeTab />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModels:SettingsTabViewModel}">
+              <views1:SettingsTab />
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewModels:PartialUtilityTabViewModel}">
               <views1:PartialUtilityTab />

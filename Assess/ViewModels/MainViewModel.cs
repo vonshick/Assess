@@ -68,6 +68,7 @@ namespace Assess.ViewModels
             CriteriaTabViewModel = new CriteriaTabViewModel(Criteria);
             AlternativesTabViewModel = new AlternativesTabViewModel(Criteria, Alternatives);
             WelcomeTabViewModel = new WelcomeTabViewModel();
+            SettingsTabViewModel = new SettingsTabViewModel();
             PartialUtilityTabViewModels = new ObservableCollection<PartialUtilityTabViewModel>();
 
             Criteria.CriteriaCollection.CollectionChanged += InstancePropertyChanged;
@@ -104,6 +105,7 @@ namespace Assess.ViewModels
         public CriteriaTabViewModel CriteriaTabViewModel { get; }
         public AlternativesTabViewModel AlternativesTabViewModel { get; }
         public WelcomeTabViewModel WelcomeTabViewModel { get; }
+        public SettingsTabViewModel SettingsTabViewModel { get; }
 
         public CoefficientAssessmentTabViewModel CoefficientAssessmentTabViewModel
         {

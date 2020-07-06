@@ -44,7 +44,10 @@ namespace Assess.Views
         {
             InitializeComponent();
             DataContext = _viewmodel;
-            Loaded += (sender, args) => { _viewmodel.ShowTab(_viewmodel.WelcomeTabViewModel); };
+            Loaded += (sender, args) =>
+            {
+                if (_viewmodel.SettingsTabViewModel.ShowWelcomeTabOnStart) _viewmodel.ShowTab(_viewmodel.WelcomeTabViewModel);
+            };
             _menuItemBottomMargin = (Thickness) ShowMenu.FindResource("MenuItemBottomMargin");
 
             _viewmodel.PartialUtilityTabViewModels.CollectionChanged += PartialUtilityTabsCollectionChanged;
