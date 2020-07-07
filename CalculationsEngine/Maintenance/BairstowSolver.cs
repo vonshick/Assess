@@ -296,6 +296,40 @@ namespace CalculationsEngine.Maintenance
             return minImComplexNumber.re;
         }
 
+        private string getKeenayRaiffasFormula(List<double> kCoefficients)
+        {
+            
+            string formula = "";
+            int i = 1;
+
+            if (kCoefficients.Sum() == 1)
+            {
+                foreach(var k in kCoefficients) 
+                {
+                    if(i == 1)
+                        formula = formula + "\n   " + k.ToString() + " * u" + i.ToString() + "( g" + i.ToString() + "(a) )";
+                    else 
+                        formula = formula + "\n+ " + k.ToString() + " * u" + i.ToString() + "( g" + i.ToString() + "(a) )";
+                    i++;
+                }
+                formula = "U(g) = " + formula;
+            }
+            else
+            {
+                foreach(var k in kCoefficients) 
+                {
+                    if(i == 1)
+                        formula = formula + "\n   ( " + k.ToString() + " * u" + i.ToString() + "( g" + i.ToString() + "(a) ) + 1 )";
+                    else 
+                        formula = formula + "\n+ ( " + k.ToString() + " * u" + i.ToString() + "( g" + i.ToString() + "(a) ) + 1 )";
+                    i++;
+                }
+                formula = Math.Round(getSuitableRoot(),10) + " * U(g) + 1 =" + formula;
+            }
+
+            return formula;
+        }
+
         private void setInitialValues(List<double> kCoefficients)
         {
             a = getPolynomialCoefficients(kCoefficients);
@@ -309,31 +343,6 @@ namespace CalculationsEngine.Maintenance
             setInitialValues(kCoefficients);
             getRoots();
             return new SolverResults(getSuitableRoot(), getKeenayRaiffasFormula(kCoefficients));
-        }
-
-        private string getKeenayRaiffasFormula(List<double> kCoefficients)
-        {
-            
-            string formula = "";
-            if (kCoefficients.Sum() == 1)
-            {
-                int i = 1;
-                foreach(var k in kCoefficients) 
-                {
-                    if(i == 1)
-                        formula = formula + "\n\t" + k.ToString() + " * u" + i.ToString() + "(g" + i.ToString() + "(a))";
-                    else 
-                        formula = formula + "\n\t+" + k.ToString() + " * u" + i.ToString() + "(g" + i.ToString() + "(a))";
-                    i++;
-                }
-                return "U(g) = " + formula;
-            }
-            else
-            {
-                formula = getSuitableRoot() + "* U(g) + 1 =";
-            }
-
-            return "";
         }
     }
 }
