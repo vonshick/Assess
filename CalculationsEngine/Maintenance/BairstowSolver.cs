@@ -321,7 +321,7 @@ namespace CalculationsEngine.Maintenance
                     if(i == 1)
                         formula = "\n   ( " + k.ToString() + " * u" + i.ToString() + "( g" + i.ToString() + "(a) ) + 1 )";
                     else 
-                        formula = formula + "\n+ ( " + k.ToString() + " * u" + i.ToString() + "( g" + i.ToString() + "(a) ) + 1 )";
+                        formula = formula + "\n* ( " + k.ToString() + " * u" + i.ToString() + "( g" + i.ToString() + "(a) ) + 1 )";
                     i++;
                 }
                 formula = Math.Round(getSuitableRoot(),10) + " * U(g) + 1 =" + formula;
