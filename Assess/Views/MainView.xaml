@@ -686,6 +686,24 @@
                   </TextBlock>
                 </WrapPanel>
 
+                <WrapPanel DockPanel.Dock="Top" Margin="8,0,0,2">
+                  <TextBlock Text="Keeney–Raiffa's function: " FontSize="{StaticResource CommonFontSize2}" />
+                  <TextBlock FontSize="{StaticResource CommonFontSize2}">
+                    <TextBlock.Style>
+                      <Style TargetType="{x:Type TextBlock}">
+                        <Style.Triggers>
+                          <DataTrigger Binding="{Binding Results.Formula, UpdateSourceTrigger=PropertyChanged}"
+                                       Value="{x:Null}">
+                            <Setter Property="Text" Value="-" />
+                          </DataTrigger>
+                        </Style.Triggers>
+                        <Setter Property="Text"
+                                Value="{Binding Results.Formula, StringFormat=G10, UpdateSourceTrigger=PropertyChanged}" />
+                      </Style>
+                    </TextBlock.Style>
+                  </TextBlock>
+                </WrapPanel>
+
                 <ListView
                   ItemsSource="{Binding Results.CriteriaCoefficients, UpdateSourceTrigger=PropertyChanged}"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled" DockPanel.Dock="Top">

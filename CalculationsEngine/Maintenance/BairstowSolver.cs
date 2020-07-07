@@ -296,6 +296,40 @@ namespace CalculationsEngine.Maintenance
             return minImComplexNumber.re;
         }
 
+        private string getKeenayRaiffasFormula(List<double> kCoefficients)
+        {
+            
+            string formula = "";
+            int i = 1;
+
+            if (kCoefficients.Sum() == 1)
+            {
+                foreach(var k in kCoefficients) 
+                {
+                    if(i == 1)
+                        formula = k.ToString() + " * u" + i.ToString() + "( g" + i.ToString() + "(a) )";
+                    else 
+                        formula = formula + "\n+ " + k.ToString() + " * u" + i.ToString() + "( g" + i.ToString() + "(a) )";
+                    i++;
+                }
+                formula = "U(g) = " + formula;
+            }
+            else
+            {
+                foreach(var k in kCoefficients) 
+                {
+                    if(i == 1)
+                        formula = "\n   ( " + k.ToString() + " * u" + i.ToString() + "( g" + i.ToString() + "(a) ) + 1 )";
+                    else 
+                        formula = formula + "\n* ( " + k.ToString() + " * u" + i.ToString() + "( g" + i.ToString() + "(a) ) + 1 )";
+                    i++;
+                }
+                formula = Math.Round(getSuitableRoot(),10) + " * U(g) + 1 =" + formula;
+            }
+
+            return formula;
+        }
+
         private void setInitialValues(List<double> kCoefficients)
         {
             a = getPolynomialCoefficients(kCoefficients);
@@ -304,11 +338,11 @@ namespace CalculationsEngine.Maintenance
             w = createComplexNumberArray(n);
         }
 
-        public double GetScalingCoefficient(List<double> kCoefficients)
+        public SolverResults GetSolverResults(List<double> kCoefficients)
         {
             setInitialValues(kCoefficients);
             getRoots();
-            return getSuitableRoot();
+            return new SolverResults(getSuitableRoot(), getKeenayRaiffasFormula(kCoefficients));
         }
     }
 }

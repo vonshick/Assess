@@ -70,7 +70,9 @@ namespace CalculationsEngine.Maintenance
         {
             _bairstowSolver = new BairstowSolver();
             var kCoefficients = Results.CriteriaCoefficients.Select(o => o.Coefficient).ToList();
-            Results.K = _bairstowSolver.GetScalingCoefficient(kCoefficients);
+            var solverResults = _bairstowSolver.GetSolverResults(kCoefficients);
+            Results.K = solverResults.K;
+            Results.Formula = solverResults.Formula;
         }
 
         public void CalculateGlobalUtilities()
