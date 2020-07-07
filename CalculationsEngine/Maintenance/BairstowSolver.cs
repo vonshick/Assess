@@ -307,7 +307,7 @@ namespace CalculationsEngine.Maintenance
                 foreach(var k in kCoefficients) 
                 {
                     if(i == 1)
-                        formula = formula + "\n   " + k.ToString() + " * u" + i.ToString() + "( g" + i.ToString() + "(a) )";
+                        formula = k.ToString() + " * u" + i.ToString() + "( g" + i.ToString() + "(a) )";
                     else 
                         formula = formula + "\n+ " + k.ToString() + " * u" + i.ToString() + "( g" + i.ToString() + "(a) )";
                     i++;
@@ -319,7 +319,7 @@ namespace CalculationsEngine.Maintenance
                 foreach(var k in kCoefficients) 
                 {
                     if(i == 1)
-                        formula = formula + "\n   ( " + k.ToString() + " * u" + i.ToString() + "( g" + i.ToString() + "(a) ) + 1 )";
+                        formula = "\n   ( " + k.ToString() + " * u" + i.ToString() + "( g" + i.ToString() + "(a) ) + 1 )";
                     else 
                         formula = formula + "\n+ ( " + k.ToString() + " * u" + i.ToString() + "( g" + i.ToString() + "(a) ) + 1 )";
                     i++;
