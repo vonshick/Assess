@@ -752,7 +752,7 @@
                                   <TextBlock Style="{StaticResource HintTextBlockStyle}"
                                              Text="Click on a blue area on the chart to start dialogue." />
                                   <TextBlock Style="{StaticResource HintCoefficientsTextBlockStyle}">
-                                    After all partial utility functions has been set,<LineBreak />
+                                    After all partial utility functions have been set,<LineBreak />
                                     proceed to coefficient assessment dialogue by clicking "Set scaling coefficients".
                                   </TextBlock>
                                 </StackPanel>

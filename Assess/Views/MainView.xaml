@@ -222,8 +222,8 @@
         <MenuItem Margin="{StaticResource MenuItemTopMargin}" Header="Topbar" IsCheckable="True" IsChecked="True"
                   Click="MenuBarTopbarViewToggled" />
         <MenuItem Header="Instance Panel" IsCheckable="True" IsChecked="True" Click="MenuBarPanelViewToggled" />
-        <MenuItem Margin="{StaticResource MenuItemBottomMargin}" Header="Results Panel" IsCheckable="True"
-                  IsChecked="True" Click="MenuBarPanelViewToggled" />
+        <MenuItem Name="ResultsPanelMenuItem" Margin="{StaticResource MenuItemBottomMargin}" Header="Results Panel" IsCheckable="True"
+                  IsChecked="False" Click="MenuBarPanelViewToggled" />
       </MenuItem>
 
       <MenuItem Header="Help" Style="{StaticResource MenuBarItem}">
@@ -251,7 +251,7 @@
         <ColumnDefinition Width="Auto" />
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="Auto" />
-        <ColumnDefinition Width="{StaticResource RightPanelWidth}" MinWidth="{StaticResource RightPanelMinWidth}" />
+        <ColumnDefinition Width="0" MinWidth="0" />
       </Grid.ColumnDefinitions>
 
       <!--topbar-->
@@ -596,7 +596,7 @@
 
 
       <!--GridSplitter enables panel resize-->
-      <GridSplitter Name="TabsResultsGridSplitter" Width="5" Panel.ZIndex="1" Grid.Row="1" Grid.Column="3"
+      <GridSplitter Name="TabsResultsGridSplitter" Width="5" Panel.ZIndex="1" Grid.Row="1" Grid.Column="3" Visibility="Collapsed"
                     HorizontalAlignment="Stretch" Focusable="False" Margin="-5,0,0,0" Background="Transparent" />
 
 

@@ -70,6 +70,27 @@ namespace Assess.Views
                     CoefficientAssessmentTabPropertyChanged();
                 }
             };
+
+            _viewmodel.Results.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName != nameof(_viewmodel.Results.K)) return;
+                if (_viewmodel.Results.K.HasValue)
+                {
+                    var width = ((GridLength) MainViewGrid.FindResource("RightPanelWidth")).Value;
+                    var minWidth = (double) MainViewGrid.FindResource("RightPanelMinWidth");
+                    MainViewGrid.ColumnDefinitions[4].Width = new GridLength(width);
+                    MainViewGrid.ColumnDefinitions[4].MinWidth = minWidth;
+                    TabsResultsGridSplitter.Visibility = Visibility.Visible;
+                    ResultsPanelMenuItem.IsChecked = true;
+                }
+                else
+                {
+                    MainViewGrid.ColumnDefinitions[4].MinWidth = 0;
+                    MainViewGrid.ColumnDefinitions[4].Width = new GridLength(0);
+                    TabsResultsGridSplitter.Visibility = Visibility.Collapsed;
+                    ResultsPanelMenuItem.IsChecked = false;
+                }
+            };
         }
 
         private void TabControlHeaderSizeChanged(object sender, EventArgs e)
@@ -129,7 +150,8 @@ namespace Assess.Views
             if (clickedElement.IsDescendantOf(AlternativesExpander))
             {
                 _viewmodel.ShowTab(_viewmodel.AlternativesTabViewModel);
-                _viewmodel.AlternativesTabViewModel.NameTextBoxFocusTrigger = !_viewmodel.AlternativesTabViewModel.NameTextBoxFocusTrigger;
+                _viewmodel.AlternativesTabViewModel.NameTextBoxFocusTrigger =
+                    !_viewmodel.AlternativesTabViewModel.NameTextBoxFocusTrigger;
             }
             else if (clickedElement.IsDescendantOf(CriteriaExpander))
             {
