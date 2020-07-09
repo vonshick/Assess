@@ -27,10 +27,10 @@ namespace DataModel.Results
     public class Results : INotifyPropertyChanged
     {
         private ObservableCollection<CriterionCoefficient> _criteriaCoefficients;
-        private double? _k;
 
         private string _formula;
-        
+        private double? _k;
+
         private List<PartialUtility> _partialUtilityFunctions;
 
         public Results()
@@ -58,7 +58,7 @@ namespace DataModel.Results
             get => _formula;
             set
             {
-                if (Nullable.Equals(value, _formula)) return;
+                if (Equals(value, _formula)) return;
                 _formula = value;
                 OnPropertyChanged(nameof(Formula));
             }
@@ -93,6 +93,7 @@ namespace DataModel.Results
             PartialUtilityFunctions.Clear();
             CriteriaCoefficients.Clear();
             K = null;
+            Formula = null;
         }
 
         [NotifyPropertyChangedInvocator]

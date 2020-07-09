@@ -166,10 +166,7 @@ namespace Assess.ViewModels
             CoefficientAssessmentTabViewModel = null;
             foreach (var partialUtilityTabViewModel in PartialUtilityTabViewModels) Tabs.Remove(partialUtilityTabViewModel);
             PartialUtilityTabViewModels.Clear();
-            Results.FinalRanking.FinalRankingCollection.Clear();
-            Results.PartialUtilityFunctions.Clear();
-            Results.CriteriaCoefficients.Clear();
-            Results.K = null;
+            Results.Reset();
 
             _currentCalculationCriteriaCopy = Criteria.GetDeepCopyOfCriteria();
             _currentCalculationAlternativesCopy = Alternatives.GetDeepCopyOfAlternatives();
