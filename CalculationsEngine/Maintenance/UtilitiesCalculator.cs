@@ -38,7 +38,7 @@ namespace CalculationsEngine.Maintenance
             if (Results.PartialUtilityFunctions.Count <= 0) Results.PartialUtilityFunctions = InitPartialUtilityFunctions(criteriaList);
             _alternativesUtilitiesList = new List<AlternativeUtility>();
             _alternativesList = alternativesList;
-            SetScalingCoefficient();
+            SetScalingCoefficientIfPossible();
         }
 
 
@@ -66,8 +66,9 @@ namespace CalculationsEngine.Maintenance
             return partialUtilityFunctions;
         }
 
-        private void SetScalingCoefficient()
+        private void SetScalingCoefficientIfPossible()
         {
+            if (Results.CriteriaCoefficients.Count == 0) return;
             _bairstowSolver = new BairstowSolver();
             var kCoefficients = Results.CriteriaCoefficients.Select(o => o.Coefficient).ToList();
             var solverResults = _bairstowSolver.GetSolverResults(kCoefficients);
@@ -75,8 +76,9 @@ namespace CalculationsEngine.Maintenance
             Results.Formula = solverResults.Formula;
         }
 
-        public void CalculateGlobalUtilities()
+        public void CalculateGlobalUtilitiesIfPossible()
         {
+            if (Results.CriteriaCoefficients.Count == 0) return;
             _alternativesUtilitiesList.Clear();
             // if sum of k weights equals one than our utility function is simply linear
             // U = sum(k_i * u_i)
@@ -129,10 +131,11 @@ namespace CalculationsEngine.Maintenance
             Results.FinalRanking.FinalRankingCollection = finalRankingEntries;
         }
 
-        public void UpdateScalingCoefficients()
+        public void UpdateScalingCoefficientsIfPossible()
         {
-            SetScalingCoefficient();
-            CalculateGlobalUtilities();
+            if (Results.CriteriaCoefficients.Count == 0) return;
+            SetScalingCoefficientIfPossible();
+            CalculateGlobalUtilitiesIfPossible();
         }
     }
 }

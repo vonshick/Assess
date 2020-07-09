@@ -28,6 +28,16 @@ namespace Assess.ViewModels
         }
 
 
+        public bool AreUtilityDialogsFirst
+        {
+            get => Settings.Default.AreUtilityDialogsFirst;
+            set
+            {
+                Settings.Default.AreUtilityDialogsFirst = value;
+                Settings.Default.Save();
+            }
+        }
+
         public bool ShowWelcomeTabOnStart
         {
             get => Settings.Default.ShowWelcomeTabOnStart;

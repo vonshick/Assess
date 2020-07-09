@@ -20,6 +20,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:icons="clr-namespace:MahApps.Metro.IconPacks;assembly=MahApps.Metro.IconPacks.Material"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:oxy="http://oxyplot.org/wpf"
@@ -66,13 +67,43 @@
             </i:Interaction.Triggers>
           </Button>
 
-          <Button Content="Reset scaling coefficients" Style="{StaticResource SecondaryOutlineRoundButton}">
-            <i:Interaction.Triggers>
-              <i:EventTrigger EventName="Click">
-                <i:CallMethodAction TargetObject="{Binding}" MethodName="ResetScalingCoefficients" />
-              </i:EventTrigger>
-            </i:Interaction.Triggers>
-          </Button>
+          <!--scaling coefficients dialogue button-->
+          <Control>
+            <Control.Template>
+              <ControlTemplate>
+                <Button Name="CoefficientsButton">
+                  <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Click">
+                      <i:CallMethodAction TargetObject="{Binding}" MethodName="ResetScalingCoefficients" />
+                    </i:EventTrigger>
+                  </i:Interaction.Triggers>
+                </Button>
+
+                <ControlTemplate.Triggers>
+                  <DataTrigger Binding="{Binding AreScalingCoefficientsSet, UpdateSourceTrigger=PropertyChanged}"
+                               Value="True">
+                    <Setter TargetName="CoefficientsButton" Property="Style"
+                            Value="{StaticResource SecondaryOutlineRoundButton}" />
+                    <Setter TargetName="CoefficientsButton" Property="Content" Value="Reset scaling coefficients" />
+                  </DataTrigger>
+                  <DataTrigger Binding="{Binding AreScalingCoefficientsSet, UpdateSourceTrigger=PropertyChanged}"
+                               Value="False">
+                    <Setter TargetName="CoefficientsButton" Property="Style"
+                            Value="{StaticResource PrimaryRoundButton}" />
+                    <Setter TargetName="CoefficientsButton" Property="Content">
+                      <Setter.Value>
+                        <StackPanel Orientation="Horizontal">
+                          <TextBlock Text="Set scaling coefficients" />
+                          <icons:PackIconMaterial Name="Icon" Kind="ChevronRight" Margin="6,1,-4,0" Width="16"
+                                                  Height="16" VerticalAlignment="Center" />
+                        </StackPanel>
+                      </Setter.Value>
+                    </Setter>
+                  </DataTrigger>
+                </ControlTemplate.Triggers>
+              </ControlTemplate>
+            </Control.Template>
+          </Control>
         </DockPanel>
       </ScrollViewer>
     </DockPanel>
@@ -551,10 +582,12 @@
 
                                                 <i:Interaction.Triggers>
                                                   <i:KeyTrigger Key="Enter" FiredOn="KeyUp">
-                                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="IndifferentOptionChosen" />
+                                                    <i:CallMethodAction TargetObject="{Binding}"
+                                                                        MethodName="IndifferentOptionChosen" />
                                                   </i:KeyTrigger>
                                                   <i:KeyTrigger Key="Escape" FiredOn="KeyUp">
-                                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="SwitchToDialogue" />
+                                                    <i:CallMethodAction TargetObject="{Binding}"
+                                                                        MethodName="SwitchToDialogue" />
                                                   </i:KeyTrigger>
                                                 </i:Interaction.Triggers>
 
@@ -638,11 +671,13 @@
                                                   </ContentControl.Style>
                                                 </ContentControl>
 
-                                                <Button Style="{StaticResource PrimaryRoundButton}" Grid.Row="1" Grid.Column="0"
+                                                <Button Style="{StaticResource PrimaryRoundButton}" Grid.Row="1"
+                                                        Grid.Column="0"
                                                         Margin="0,0,8,0" Content="Submit">
                                                   <i:Interaction.Triggers>
                                                     <i:EventTrigger EventName="Click">
-                                                      <i:CallMethodAction TargetObject="{Binding}" MethodName="IndifferentOptionChosen" />
+                                                      <i:CallMethodAction TargetObject="{Binding}"
+                                                                          MethodName="IndifferentOptionChosen" />
                                                     </i:EventTrigger>
                                                   </i:Interaction.Triggers>
                                                 </Button>
@@ -681,11 +716,46 @@
                                   </Style>
                                 </Border.Style>
 
-                                <TextBlock Text="Click on a blue area on the chart to start dialogue..."
-                                           Foreground="{StaticResource ColorTertiary}"
-                                           FontSize="{StaticResource CommonFontSize0}"
-                                           VerticalAlignment="Center" Margin="0,0,0,20"
-                                           TextAlignment="Center" TextWrapping="Wrap" />
+                                <StackPanel>
+                                  <StackPanel.Style>
+                                    <Style TargetType="{x:Type StackPanel}">
+                                      <Style.Triggers>
+                                        <DataTrigger Binding="{Binding AreScalingCoefficientsSet}" Value="True">
+                                          <Setter Property="Margin" Value="0,30,0,0" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding AreScalingCoefficientsSet}" Value="False">
+                                          <Setter Property="Margin" Value="0,10,0,0" />
+                                        </DataTrigger>
+                                      </Style.Triggers>
+                                    </Style>
+                                  </StackPanel.Style>
+
+                                  <StackPanel.Resources>
+                                    <Style x:Key="HintTextBlockStyle" TargetType="{x:Type TextBlock}">
+                                      <Setter Property="Foreground" Value="{StaticResource ColorTertiary}" />
+                                      <Setter Property="FontSize" Value="{StaticResource CommonFontSize0}" />
+                                      <Setter Property="VerticalAlignment" Value="Center" />
+                                      <Setter Property="TextAlignment" Value="Center" />
+                                      <Setter Property="TextWrapping" Value="Wrap" />
+                                    </Style>
+
+                                    <Style x:Key="HintCoefficientsTextBlockStyle" TargetType="{x:Type TextBlock}"
+                                           BasedOn="{StaticResource HintTextBlockStyle}">
+                                      <Style.Triggers>
+                                        <DataTrigger Binding="{Binding AreScalingCoefficientsSet}" Value="True">
+                                          <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                      </Style.Triggers>
+                                    </Style>
+                                  </StackPanel.Resources>
+
+                                  <TextBlock Style="{StaticResource HintTextBlockStyle}"
+                                             Text="Click on a blue area on the chart to start dialogue." />
+                                  <TextBlock Style="{StaticResource HintCoefficientsTextBlockStyle}">
+                                    After all partial utility functions has been set,<LineBreak />
+                                    proceed to coefficient assessment dialogue by clicking "Set scaling coefficients".
+                                  </TextBlock>
+                                </StackPanel>
                               </Border>
                             </DockPanel>
                           </ScrollViewer>

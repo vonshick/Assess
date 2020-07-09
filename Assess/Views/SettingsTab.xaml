@@ -1,19 +1,19 @@
 ﻿<!-- Copyright © 2020 Tomasz Pućka, Piotr Hełminiak, Marcin Rochowiak, Jakub Wąsik
 
- This file is part of UTA Extended.
+ This file is part of Assess Extended.
 
- UTA Extended is free software: you can redistribute it and/or modify
+ Assess Extended is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 3 of the License, or
  (at your option) any later version.
 
- UTA Extended is distributed in the hope that it will be useful,
+ Assess Extended is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
  You should have received a copy of the GNU General Public License
- along with UTA Extended.  If not, see <http://www.gnu.org/licenses/>. -->
+ along with Assess Extended.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <UserControl x:Class="Assess.Views.SettingsTab"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -26,6 +26,17 @@
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
       <StackPanel Margin="12,8,10,12">
         <TextBlock Text="Settings" FontSize="{StaticResource CommonFontSize0}" Margin="0,0,0,16" />
+
+        <StackPanel Margin="0,0,0,20">
+          <TextBlock Text="Show partial utilities dialogues first" FontSize="{StaticResource CommonFontSize1}"
+                     Margin="0,0,0,2" TextWrapping="Wrap" />
+          <CheckBox IsChecked="{Binding AreUtilityDialogsFirst, UpdateSourceTrigger=PropertyChanged}">
+            <TextBlock
+              Text="Controls whether dialogues should be shown in order - partial utilities, then scaling coefficients or the opposite."
+              Foreground="{StaticResource ColorSecondary}" FontSize="{StaticResource CommonFontSize2}"
+              TextWrapping="Wrap" />
+          </CheckBox>
+        </StackPanel>
 
         <StackPanel Margin="0,0,0,20">
           <TextBlock Text="Show Welcome tab on startup" FontSize="{StaticResource CommonFontSize1}"

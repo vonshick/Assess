@@ -52,13 +52,15 @@ namespace Assess.ViewModels
         private bool _isMethodSet;
         private bool _isSettingExactValue;
         private RectangleAnnotation _selectedRectangle;
+        private readonly Results _results;
 
 
-        public PartialUtilityTabViewModel(PartialUtility partialUtility, Action calculateUtilities, Action restartCoefficientsAssessment)
+        public PartialUtilityTabViewModel(PartialUtility partialUtility, Results results, Action calculateUtilities, Action restartCoefficientsAssessment)
         {
             _partialUtility = partialUtility;
             _calculateUtilities = calculateUtilities;
             _restartCoefficientsAssessment = restartCoefficientsAssessment;
+            _results = results;
 
             _initialPointsValues = new List<PartialUtilityValues>
             {
@@ -161,6 +163,8 @@ namespace Assess.ViewModels
 
         public bool IsNewPointProcessedHorizontally =>
             Criterion.Method == Criterion.MethodOptionsList[1] || Criterion.Method == Criterion.MethodOptionsList[2];
+
+        public bool AreScalingCoefficientsSet => _results.CriteriaCoefficients.Count > 0;
 
         public DialogController DialogController
         {

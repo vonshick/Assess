@@ -174,6 +174,12 @@ namespace Assess.ViewModels
             _currentCalculationCriteriaCopy = Criteria.GetDeepCopyOfCriteria();
             _currentCalculationAlternativesCopy = Alternatives.GetDeepCopyOfAlternatives();
 
+            if (SettingsTabViewModel.AreUtilityDialogsFirst)
+            {
+                ShowPartialUtilityTabs();
+                return;
+            }
+
             CoefficientAssessmentTabViewModel =
                 new CoefficientAssessmentTabViewModel(_currentCalculationCriteriaCopy, Results, ShowPartialUtilityTabs);
             ShowTab(CoefficientAssessmentTabViewModel);
@@ -279,20 +285,19 @@ namespace Assess.ViewModels
             return false;
         }
 
-        // called in CoefficientAssessmentTabViewModel after clicking Indifferent in last dialogue question on calculations start
         private void ShowPartialUtilityTabs()
         {
             Tabs.Remove(CoefficientAssessmentTabViewModel);
             CoefficientAssessmentTabViewModel = null;
 
             _utilitiesCalculator = new UtilitiesCalculator(_currentCalculationAlternativesCopy, Results, _currentCalculationCriteriaCopy);
-            _utilitiesCalculator.CalculateGlobalUtilities();
+            _utilitiesCalculator.CalculateGlobalUtilitiesIfPossible();
 
             foreach (var partialUtility in Results.PartialUtilityFunctions)
             {
                 var partialUtilityTabViewModel =
-                    new PartialUtilityTabViewModel(partialUtility, _utilitiesCalculator.CalculateGlobalUtilities,
-                        RestartCoefficientAssessmentDialogue);
+                    new PartialUtilityTabViewModel(partialUtility, Results, _utilitiesCalculator.CalculateGlobalUtilitiesIfPossible,
+                        ShowCoefficientAssessmentDialogue);
                 PartialUtilityTabViewModels.Add(partialUtilityTabViewModel);
                 Tabs.Add(partialUtilityTabViewModel);
             }
@@ -300,19 +305,22 @@ namespace Assess.ViewModels
             if (PartialUtilityTabViewModels.Count > 0) ShowTab(PartialUtilityTabViewModels[0]);
         }
 
-        private void RestartCoefficientAssessmentDialogue()
+        private void ShowCoefficientAssessmentDialogue()
         {
+            void HideDialogueAndUpdateCoefficients()
+            {
+                Tabs.Remove(CoefficientAssessmentTabViewModel);
+                CoefficientAssessmentTabViewModel = null;
+                _utilitiesCalculator?.UpdateScalingCoefficientsIfPossible();
+            }
+
+
+            Tabs.Remove(CoefficientAssessmentTabViewModel);
             CoefficientAssessmentTabViewModel =
-                new CoefficientAssessmentTabViewModel(_currentCalculationCriteriaCopy, Results, UpdateScalingCoefficients);
+                new CoefficientAssessmentTabViewModel(_currentCalculationCriteriaCopy, Results, HideDialogueAndUpdateCoefficients);
             ShowTab(CoefficientAssessmentTabViewModel);
         }
 
-        private void UpdateScalingCoefficients()
-        {
-            Tabs.Remove(CoefficientAssessmentTabViewModel);
-            CoefficientAssessmentTabViewModel = null;
-            _utilitiesCalculator?.UpdateScalingCoefficients();
-        }
 
         // xaml enforces void return type
         [UsedImplicitly]
@@ -404,7 +412,8 @@ namespace Assess.ViewModels
                 if (filePath.EndsWith(".xml")) dataLoader = new XMLLoader();
                 else if (filePath.EndsWith(".csv")) dataLoader = new CSVLoader();
                 else if (filePath.EndsWith(".utx")) dataLoader = new UTXLoader();
-                else if (filePath.EndsWith(".xd")) LoadXMCDADirectory(Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath)));
+                else if (filePath.EndsWith(".xd"))
+                    LoadXMCDADirectory(Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath)));
 
                 if (dataLoader == null) return;
 
