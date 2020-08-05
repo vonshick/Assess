@@ -29,6 +29,7 @@ using Assess.Helpers;
 using Assess.Models;
 using Assess.Models.Tab;
 using Assess.Properties;
+using Assess.Views;
 using CalculationsEngine.Maintenance;
 using DataModel.Input;
 using DataModel.Results;
@@ -64,6 +65,9 @@ namespace Assess.ViewModels
             Tabs = new ObservableCollection<ITab>();
             Tabs.CollectionChanged += TabsCollectionChanged;
             ShowTabCommand = new RelayCommand(tabViewModel => ShowTab((ITab) tabViewModel));
+            ShowKeeneyRaiffaFunctionDialog =
+                new RelayCommand(_ => new KeeneyRaiffaFunctionDialogView(Results.Formula).ShowDialog(),
+                    formula => formula != null);
 
             CriteriaTabViewModel = new CriteriaTabViewModel(Criteria);
             AlternativesTabViewModel = new AlternativesTabViewModel(Criteria, Alternatives);
@@ -101,6 +105,7 @@ namespace Assess.ViewModels
 
         public ObservableCollection<ITab> Tabs { get; }
         public RelayCommand ShowTabCommand { get; }
+        public RelayCommand ShowKeeneyRaiffaFunctionDialog { get; }
 
         public CriteriaTabViewModel CriteriaTabViewModel { get; }
         public AlternativesTabViewModel AlternativesTabViewModel { get; }

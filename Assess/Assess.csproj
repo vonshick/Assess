@@ -115,6 +115,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\KeeneyRaiffaFunctionDialogView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\PartialUtilityTab.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -156,6 +160,9 @@
     </Compile>
     <Compile Include="Views\AlternativesTab.xaml.cs">
       <DependentUpon>AlternativesTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\KeeneyRaiffaFunctionDialogView.xaml.cs">
+      <DependentUpon>KeeneyRaiffaFunctionDialogView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PartialUtilityTab.xaml.cs">
       <DependentUpon>PartialUtilityTab.xaml</DependentUpon>

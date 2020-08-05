@@ -14,7 +14,7 @@
 
  You should have received a copy of the GNU General Public License
  along with Assess Extended.  If not, see <http://www.gnu.org/licenses/>. -->
- 
+
 
 <Application x:Class="Assess.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -68,6 +68,8 @@
       <SolidColorBrush x:Key="ColorDangerPressed" Color="#BE000C" />
 
       <SolidColorBrush x:Key="ColorPrimaryDisabled" Color="#333373f2" />
+      <SolidColorBrush x:Key="ColorSecondaryDisabled" Color="#336E6E6E" />
+
       <SolidColorBrush x:Key="ColorPrimaryOpacity1" Color="#203373f2" />
 
       <SolidColorBrush x:Key="ColorBorders1" Color="#AAAAAA" />
@@ -154,17 +156,21 @@
         <Style.Triggers>
           <Trigger Property="IsMouseOver" Value="True">
             <Setter Property="Background" Value="{StaticResource ColorSecondaryHover}" />
-            <Setter Property="BorderBrush" Value="{StaticResource ColorSecondaryHover}"></Setter>
+            <Setter Property="BorderBrush" Value="{StaticResource ColorSecondaryHover}" />
             <Setter Property="Foreground" Value="White" />
           </Trigger>
           <Trigger Property="IsPressed" Value="True">
             <Setter Property="Background" Value="{StaticResource ColorSecondaryPressed}" />
-            <Setter Property="BorderBrush" Value="{StaticResource ColorSecondaryPressed}"></Setter>
+            <Setter Property="BorderBrush" Value="{StaticResource ColorSecondaryPressed}" />
             <Setter Property="Foreground" Value="White" />
+          </Trigger>
+          <Trigger Property="IsEnabled" Value="False">
+            <Setter Property="BorderBrush" Value="{StaticResource ColorSecondaryDisabled}" />
+            <Setter Property="Foreground" Value="{StaticResource ColorSecondaryDisabled}" />
           </Trigger>
         </Style.Triggers>
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="BorderBrush" Value="{StaticResource ColorSecondary}"></Setter>
+        <Setter Property="BorderBrush" Value="{StaticResource ColorSecondary}" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{StaticResource ColorSecondary}" />
         <Setter Property="Padding" Value="12,4,12,5" />

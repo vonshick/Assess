@@ -320,7 +320,6 @@ namespace Assess.Views
         {
             try
             {
-                // TODO: change to proper filepath
                 Process.Start(@"Documentation.pdf");
             }
             catch (Exception exception)
