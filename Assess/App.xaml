@@ -77,6 +77,8 @@
       <SolidColorBrush x:Key="ColorBorders3" Color="#E6E6E6" />
       <SolidColorBrush x:Key="ColorSeparator" Color="#969696" />
 
+      <SolidColorBrush x:Key="ColorTextDisabled" Color="#AAAAAA" />
+
       <sys:Double x:Key="CommonFontSize0">18</sys:Double>
       <sys:Double x:Key="CommonFontSize1">16</sys:Double>
       <sys:Double x:Key="CommonFontSize2">14</sys:Double>

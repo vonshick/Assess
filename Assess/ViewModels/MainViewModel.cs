@@ -46,8 +46,10 @@ namespace Assess.ViewModels
         private readonly IDialogCoordinator _dialogCoordinator;
         public readonly ObservableCollection<PartialUtilityTabViewModel> PartialUtilityTabViewModels;
         private CoefficientAssessmentTabViewModel _coefficientAssessmentTabViewModel;
-        private List<Alternative> _currentCalculationAlternativesCopy;
-        private List<Criterion> _currentCalculationCriteriaCopy;
+        private List<Criterion> _currentCalculationAllCriteriaCopy;
+        private List<Alternative> _currentCalculationAlternativesWithAllCriteriaCopy;
+        private List<Alternative> _currentCalculationAlternativesWithoutDisabledCriteriaCopy;
+        private List<Criterion> _currentCalculationEnabledCriteriaCopy;
         private SaveData _saveData;
         private ITab _tabToSelect;
         private UtilitiesCalculator _utilitiesCalculator;
@@ -173,8 +175,7 @@ namespace Assess.ViewModels
             PartialUtilityTabViewModels.Clear();
             Results.Reset();
 
-            _currentCalculationCriteriaCopy = Criteria.GetDeepCopyOfCriteria();
-            _currentCalculationAlternativesCopy = Alternatives.GetDeepCopyOfAlternatives();
+            SetCurrentCalculationData();
 
             if (SettingsTabViewModel.AreUtilityDialogsFirst)
             {
@@ -183,7 +184,7 @@ namespace Assess.ViewModels
             }
 
             CoefficientAssessmentTabViewModel =
-                new CoefficientAssessmentTabViewModel(_currentCalculationCriteriaCopy, Results, ShowPartialUtilityTabs);
+                new CoefficientAssessmentTabViewModel(_currentCalculationEnabledCriteriaCopy, Results, ShowPartialUtilityTabs);
             ShowTab(CoefficientAssessmentTabViewModel);
         }
 
@@ -207,9 +208,9 @@ namespace Assess.ViewModels
 
         private async Task<bool> IsInstanceCorrectToRunCalculations()
         {
-            if (Criteria.CriteriaCollection.Count < 2)
+            if (Criteria.CriteriaCollection.Count(criterion => !criterion.Disabled) < 2)
             {
-                ShowCalculateErrorDialog("It's required to provide at least 2 criteria to begin Assess calculations.");
+                ShowCalculateErrorDialog("It's required to provide at least 2 enabled criteria to begin Assess calculations.");
                 AddTabIfNeeded(CriteriaTabViewModel);
                 AddTabIfNeeded(AlternativesTabViewModel);
                 ShowTab(CriteriaTabViewModel);
@@ -287,12 +288,28 @@ namespace Assess.ViewModels
             return false;
         }
 
+        private void SetCurrentCalculationData()
+        {
+            _currentCalculationAllCriteriaCopy = Criteria.GetDeepCopyOfCriteria();
+            _currentCalculationEnabledCriteriaCopy = _currentCalculationAllCriteriaCopy.Where(criterion => !criterion.Disabled).ToList();
+
+            _currentCalculationAlternativesWithAllCriteriaCopy = Alternatives.GetDeepCopyOfAlternatives();
+            var disabledCriteria = _currentCalculationAllCriteriaCopy.Where(criterion => criterion.Disabled).ToList();
+            var sampleCriteriaValuesList = _currentCalculationAlternativesWithAllCriteriaCopy[0].CriteriaValuesList.ToList();
+            var disabledCriteriaIndexes = disabledCriteria.Select(criterion =>
+                sampleCriteriaValuesList.FindIndex(criterionValue => criterionValue.Name == criterion.Name)).ToList();
+            _currentCalculationAlternativesWithoutDisabledCriteriaCopy = Alternatives.GetDeepCopyOfAlternatives();
+            _currentCalculationAlternativesWithoutDisabledCriteriaCopy.ForEach(alternative =>
+                disabledCriteriaIndexes.ForEach(index => alternative.CriteriaValuesList.RemoveAt(index)));
+        }
+
         private void ShowPartialUtilityTabs()
         {
             Tabs.Remove(CoefficientAssessmentTabViewModel);
             CoefficientAssessmentTabViewModel = null;
 
-            _utilitiesCalculator = new UtilitiesCalculator(_currentCalculationAlternativesCopy, Results, _currentCalculationCriteriaCopy);
+            _utilitiesCalculator = new UtilitiesCalculator(_currentCalculationAlternativesWithoutDisabledCriteriaCopy, Results,
+                _currentCalculationEnabledCriteriaCopy);
             _utilitiesCalculator.CalculateGlobalUtilitiesIfPossible();
 
             foreach (var partialUtility in Results.PartialUtilityFunctions)
@@ -319,7 +336,7 @@ namespace Assess.ViewModels
 
             Tabs.Remove(CoefficientAssessmentTabViewModel);
             CoefficientAssessmentTabViewModel =
-                new CoefficientAssessmentTabViewModel(_currentCalculationCriteriaCopy, Results, HideDialogueAndUpdateCoefficients);
+                new CoefficientAssessmentTabViewModel(_currentCalculationEnabledCriteriaCopy, Results, HideDialogueAndUpdateCoefficients);
             ShowTab(CoefficientAssessmentTabViewModel);
         }
 
@@ -389,8 +406,10 @@ namespace Assess.ViewModels
             foreach (var partialUtilityTabViewModel in PartialUtilityTabViewModels) Tabs.Remove(partialUtilityTabViewModel);
             PartialUtilityTabViewModels.Clear();
             _utilitiesCalculator = null;
-            _currentCalculationAlternativesCopy?.Clear();
-            _currentCalculationCriteriaCopy?.Clear();
+            _currentCalculationAlternativesWithAllCriteriaCopy?.Clear();
+            _currentCalculationAlternativesWithoutDisabledCriteriaCopy?.Clear();
+            _currentCalculationAllCriteriaCopy?.Clear();
+            _currentCalculationEnabledCriteriaCopy?.Clear();
             _saveData.IsSavingWithResults = null;
             _saveData.FilePath = null;
         }
@@ -458,9 +477,7 @@ namespace Assess.ViewModels
                     !await IsInstanceCorrectToRunCalculations()) return;
                 Results.CriteriaCoefficients = dataLoader.Results.CriteriaCoefficients;
                 Results.PartialUtilityFunctions = dataLoader.Results.PartialUtilityFunctions;
-                _currentCalculationCriteriaCopy = Criteria.GetDeepCopyOfCriteria();
-                _currentCalculationAlternativesCopy = Alternatives.GetDeepCopyOfAlternatives();
-
+                SetCurrentCalculationData();
                 ShowPartialUtilityTabs();
             }
             catch (Exception exception)
@@ -508,17 +525,17 @@ namespace Assess.ViewModels
 
             var dataSaver = new XMCDAExporter(
                     _saveData.FilePath,
-                    (bool) _saveData.IsSavingWithResults && _currentCalculationCriteriaCopy != null
-                        ? _currentCalculationCriteriaCopy
+                    (bool) _saveData.IsSavingWithResults && _currentCalculationAllCriteriaCopy != null
+                        ? _currentCalculationAllCriteriaCopy
                         : new List<Criterion>(Criteria.CriteriaCollection),
-                    (bool) _saveData.IsSavingWithResults && _currentCalculationAlternativesCopy != null
-                        ? _currentCalculationAlternativesCopy
+                    (bool) _saveData.IsSavingWithResults && _currentCalculationAlternativesWithAllCriteriaCopy != null
+                        ? _currentCalculationAlternativesWithAllCriteriaCopy
                         : new List<Alternative>(Alternatives.AlternativesCollection),
                     Results)
                 {OverwriteFile = true};
             try
             {
-                if (_saveData.IsSavingWithResults == true && _currentCalculationCriteriaCopy != null) dataSaver.saveSession();
+                if (_saveData.IsSavingWithResults == true && _currentCalculationAllCriteriaCopy != null) dataSaver.saveSession();
                 else dataSaver.saveInput();
             }
             catch (Exception exception)
@@ -559,8 +576,8 @@ namespace Assess.ViewModels
             var directoryPath = saveXMCDADialog.FileName;
             var dataSaver = new XMCDAExporter(
                 directoryPath,
-                _currentCalculationCriteriaCopy ?? new List<Criterion>(Criteria.CriteriaCollection),
-                _currentCalculationAlternativesCopy ?? new List<Alternative>(Alternatives.AlternativesCollection),
+                _currentCalculationAllCriteriaCopy ?? new List<Criterion>(Criteria.CriteriaCollection),
+                _currentCalculationAlternativesWithAllCriteriaCopy ?? new List<Alternative>(Alternatives.AlternativesCollection),
                 Results);
 
             // results are available when copies had been made
@@ -571,7 +588,7 @@ namespace Assess.ViewModels
         {
             try
             {
-                if (shouldSaveWithResults && _currentCalculationCriteriaCopy != null) dataSaver.saveSession();
+                if (shouldSaveWithResults && _currentCalculationAllCriteriaCopy != null) dataSaver.saveSession();
                 else dataSaver.saveInput();
                 _saveData.IsSavingWithResults = shouldSaveWithResults;
                 _saveData.FilePath = directoryPath;
@@ -595,7 +612,7 @@ namespace Assess.ViewModels
                     dataSaver.OverwriteFile = true;
                     try
                     {
-                        if (shouldSaveWithResults && _currentCalculationCriteriaCopy != null) dataSaver.saveSession();
+                        if (shouldSaveWithResults && _currentCalculationAllCriteriaCopy != null) dataSaver.saveSession();
                         else dataSaver.saveInput();
                         _saveData.IsSavingWithResults = shouldSaveWithResults;
                         _saveData.FilePath = directoryPath;

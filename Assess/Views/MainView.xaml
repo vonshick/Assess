@@ -321,19 +321,6 @@
             </Grid.RowDefinitions>
 
             <Grid.Resources>
-              <ControlTemplate x:Key="LeftPanelListViewItemTemplateButtonTemplate" TargetType="{x:Type ButtonBase}">
-                <Border x:Name="Border" BorderThickness="0,0,0,1" BorderBrush="{StaticResource ColorInterface3}"
-                        Background="Transparent">
-                  <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" />
-                </Border>
-
-                <ControlTemplate.Triggers>
-                  <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" TargetName="Border" Value="{StaticResource ColorInterface6Hover}" />
-                  </Trigger>
-                </ControlTemplate.Triggers>
-              </ControlTemplate>
-
               <Style TargetType="{x:Type ListView}">
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="Background" Value="Transparent" />
@@ -348,11 +335,25 @@
                       Expanded="Expander_Toggled" Collapsed="Expander_Toggled"
                       HeaderTemplate="{StaticResource ExpanderWithPlusButtonHeaderTemplate}" IsExpanded="True">
               <Expander.Resources>
+                <ControlTemplate x:Key="AlternativesExpanderListViewItemTemplateButtonTemplate"
+                                 TargetType="{x:Type ButtonBase}">
+                  <Border x:Name="Border" BorderThickness="0,0,0,1" BorderBrush="{StaticResource ColorInterface3}"
+                          Background="Transparent">
+                    <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" />
+                  </Border>
+
+                  <ControlTemplate.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                      <Setter Property="Background" TargetName="Border" Value="{StaticResource ColorInterface6Hover}" />
+                    </Trigger>
+                  </ControlTemplate.Triggers>
+                </ControlTemplate>
+
                 <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource LeftPanelListViewItemBaseStyle}">
                   <Setter Property="Template">
                     <Setter.Value>
                       <ControlTemplate TargetType="{x:Type ListViewItem}">
-                        <Button Template="{StaticResource LeftPanelListViewItemTemplateButtonTemplate}"
+                        <Button Template="{StaticResource AlternativesExpanderListViewItemTemplateButtonTemplate}"
                                 Style="{x:Null}" Click="InstancePanelListItemClicked" Padding="0">
                           <ContentPresenter Margin="12,4,8,4" ContentTemplate="{TemplateBinding ContentTemplate}"
                                             Content="{TemplateBinding Content}" />
@@ -382,6 +383,15 @@
                 <Style TargetType="{x:Type ScrollViewer}">
                   <Setter Property="Background" Value="{StaticResource ColorInterface5}" />
                 </Style>
+
+                <ControlTemplate x:Key="CriteriaExpanderListViewItemTemplateButtonTemplate"
+                                 TargetType="{x:Type ButtonBase}">
+                  <Border x:Name="Border" BorderThickness="0,0,0,1" BorderBrush="{StaticResource ColorInterface3}"
+                          Background="{TemplateBinding Background}">
+                    <ContentPresenter x:Name="Content" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                  </Border>
+                </ControlTemplate>
+
               </Expander.Resources>
 
               <ListView Name="CriterionListView"
@@ -392,8 +402,64 @@
                     <Setter Property="Template">
                       <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ListViewItem}">
-                          <Button Template="{StaticResource LeftPanelListViewItemTemplateButtonTemplate}"
-                                  Style="{x:Null}" Click="InstancePanelListItemClicked">
+                          <Button Template="{StaticResource CriteriaExpanderListViewItemTemplateButtonTemplate}"
+                                  Click="InstancePanelListItemClicked">
+                            <Button.Style>
+                              <Style TargetType="{x:Type Button}" BasedOn="{x:Null}">
+                                <Style.Triggers>
+                                  <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                      <Condition
+                                        Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}"
+                                        Value="False" />
+                                      <Condition Binding="{Binding Disabled, UpdateSourceTrigger=PropertyChanged}"
+                                                 Value="False" />
+                                    </MultiDataTrigger.Conditions>
+                                    <MultiDataTrigger.Setters>
+                                      <Setter Property="Background" Value="Transparent" />
+                                    </MultiDataTrigger.Setters>
+                                  </MultiDataTrigger>
+                                  <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                      <Condition
+                                        Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}"
+                                        Value="True" />
+                                      <Condition Binding="{Binding Disabled, UpdateSourceTrigger=PropertyChanged}"
+                                                 Value="False" />
+                                    </MultiDataTrigger.Conditions>
+                                    <MultiDataTrigger.Setters>
+                                      <Setter Property="Background" Value="{StaticResource ColorInterface6Hover}" />
+                                    </MultiDataTrigger.Setters>
+                                  </MultiDataTrigger>
+                                  <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                      <Condition
+                                        Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}"
+                                        Value="False" />
+                                      <Condition Binding="{Binding Disabled, UpdateSourceTrigger=PropertyChanged}"
+                                                 Value="True" />
+                                    </MultiDataTrigger.Conditions>
+                                    <MultiDataTrigger.Setters>
+                                      <Setter Property="Background" Value="Transparent" />
+                                      <Setter Property="Foreground" Value="{StaticResource ColorTextDisabled}" />
+                                    </MultiDataTrigger.Setters>
+                                  </MultiDataTrigger>
+                                  <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                      <Condition
+                                        Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}"
+                                        Value="True" />
+                                      <Condition Binding="{Binding Disabled, UpdateSourceTrigger=PropertyChanged}"
+                                                 Value="True" />
+                                    </MultiDataTrigger.Conditions>
+                                    <MultiDataTrigger.Setters>
+                                      <Setter Property="Background" Value="{StaticResource ColorInterface6Hover}" />
+                                      <Setter Property="Foreground" Value="{StaticResource ColorTextDisabled}" />
+                                    </MultiDataTrigger.Setters>
+                                  </MultiDataTrigger>
+                                </Style.Triggers>
+                              </Style>
+                            </Button.Style>
                             <GridViewRowPresenter Margin="0,4" Content="{TemplateBinding Content}"
                                                   Columns="{TemplateBinding GridView.ColumnCollection}" />
                           </Button>

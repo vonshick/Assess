@@ -34,6 +34,7 @@ namespace DataModel.Input
         private string _method = "Set during calculations";
         private string _name;
         private double? _p = 0.5;
+        private bool _disabled;
 
 
         public Criterion()
@@ -47,13 +48,14 @@ namespace DataModel.Input
         }
 
         public Criterion(string name, string description, string criterionDirection, double? probability = 0.5,
-            string method = "Set during calculations")
+            string method = "Set during calculations", bool disabled = false)
         {
             Name = name;
             Description = description;
             CriterionDirection = criterionDirection;
             Probability = probability;
             Method = method;
+            Disabled = disabled;
         }
 
 
@@ -152,6 +154,17 @@ namespace DataModel.Input
                 OnPropertyChanged(nameof(Method));
                 OnPropertyChanged(nameof(IsProbabilityIncluded));
                 OnPropertyChanged(nameof(Probability));
+            }
+        }
+
+        public bool Disabled
+        {
+            get => _disabled;
+            set
+            {
+                if (value == _disabled) return;
+                _disabled = value;
+                OnPropertyChanged(nameof(Disabled));
             }
         }
 

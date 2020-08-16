@@ -48,7 +48,7 @@
         </Grid.BindingGroup>
 
         <Grid.ColumnDefinitions>
-          <ColumnDefinition MaxWidth="500"/>
+          <ColumnDefinition MaxWidth="500" />
           <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
@@ -100,7 +100,8 @@
             <StackPanel.Style>
               <Style TargetType="{x:Type StackPanel}">
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding IsProbabilityIncluded, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                  <DataTrigger Binding="{Binding IsProbabilityIncluded, UpdateSourceTrigger=PropertyChanged}"
+                               Value="True">
                     <Setter Property="Visibility" Value="Visible" />
                   </DataTrigger>
                 </Style.Triggers>
@@ -127,7 +128,7 @@
                      Background="Transparent">
               <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}">
-                  <Setter Property="Focusable" Value="False"></Setter>
+                  <Setter Property="Focusable" Value="False" />
                   <Setter Property="Template">
                     <Setter.Value>
                       <ControlTemplate TargetType="{x:Type ListBoxItem}">
@@ -151,7 +152,7 @@
 
       <Border Margin="0,0,0,16">
         <Button Name="AddButton" Content="Add Criterion"
-                Style="{StaticResource PrimaryRoundButton}"
+                Style="{StaticResource PrimaryRoundButton}" HorizontalAlignment="Left" MinWidth="350"
                 Command="{Binding ElementName=CriteriaDataGrid, Path=DataContext.AddCriterionCommand}"
                 CommandParameter="{Binding ElementName=AddCriterionContainer, Path=BindingGroup}" />
       </Border>
@@ -162,7 +163,7 @@
 
     <DataGrid Name="CriteriaDataGrid" Grid.Row="1"
               ItemsSource="{Binding Criteria.CriteriaCollection, UpdateSourceTrigger=PropertyChanged}"
-              AutoGenerateColumns="False" SelectionMode="Single" 
+              AutoGenerateColumns="False" SelectionMode="Single"
               BorderBrush="{StaticResource ColorBorders1}" BorderThickness="1" IsReadOnly="True"
               CanUserAddRows="False" CanUserReorderColumns="False" CanUserResizeRows="False"
               IsSynchronizedWithCurrentItem="True" HorizontalGridLinesBrush="{StaticResource ColorInterface1}"
@@ -221,7 +222,8 @@
               <StackPanel.Style>
                 <Style TargetType="{x:Type StackPanel}">
                   <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsProbabilityIncluded, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                    <DataTrigger Binding="{Binding IsProbabilityIncluded, UpdateSourceTrigger=PropertyChanged}"
+                                 Value="True">
                       <Setter Property="Visibility" Value="Visible" />
                     </DataTrigger>
                   </Style.Triggers>
@@ -230,10 +232,11 @@
               </StackPanel.Style>
 
               <TextBlock Text="Probability of obtaining a more favorable option in lottery" Margin="0,0,0,2" />
-              <controls:NumericUpDown Value="{Binding Probability, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
-                                      Minimum="{x:Static criterion:Criterion.MinimumProbability}"
-                                      Maximum="{x:Static criterion:Criterion.MaximumProbability}"
-                                      NumericInputMode="All" Interval="0.01" StringFormat="G15" />
+              <controls:NumericUpDown
+                Value="{Binding Probability, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                Minimum="{x:Static criterion:Criterion.MinimumProbability}"
+                Maximum="{x:Static criterion:Criterion.MaximumProbability}"
+                NumericInputMode="All" Interval="0.01" StringFormat="G15" />
             </StackPanel>
 
             <StackPanel MinWidth="150">
@@ -262,8 +265,18 @@
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
 
+        <DataGridTemplateColumn Header="Disabled" CanUserResize="False"
+                                CellStyle="{StaticResource CenteredDataGridCell}" Width="76">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <CheckBox Margin="4,0,0,0" IsChecked="{Binding Disabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+
         <DataGridTextColumn Header="Name" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
-                            CellStyle="{StaticResource LeftSidedDataGridCell}" MinWidth="100" />
+                            CellStyle="{StaticResource LeftSidedDataGridCell}"
+                            HeaderStyle="{StaticResource CenteredDataGridColumnHeader}" MinWidth="100" />
         <DataGridTextColumn Header="Type" Binding="{Binding CriterionDirection, UpdateSourceTrigger=PropertyChanged}"
                             CellStyle="{StaticResource CenteredDataGridCell}"
                             HeaderStyle="{StaticResource CenteredDataGridColumnHeader}" />
