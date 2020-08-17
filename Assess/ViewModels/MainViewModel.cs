@@ -296,11 +296,14 @@ namespace Assess.ViewModels
             _currentCalculationAlternativesWithAllCriteriaCopy = Alternatives.GetDeepCopyOfAlternatives();
             var disabledCriteria = _currentCalculationAllCriteriaCopy.Where(criterion => criterion.Disabled).ToList();
             var sampleCriteriaValuesList = _currentCalculationAlternativesWithAllCriteriaCopy[0].CriteriaValuesList.ToList();
-            var disabledCriteriaIndexes = disabledCriteria.Select(criterion =>
-                sampleCriteriaValuesList.FindIndex(criterionValue => criterionValue.Name == criterion.Name)).ToList();
+            var disabledCriteriaNames = disabledCriteria.Select(criterion => criterion.Name);
             _currentCalculationAlternativesWithoutDisabledCriteriaCopy = Alternatives.GetDeepCopyOfAlternatives();
-            _currentCalculationAlternativesWithoutDisabledCriteriaCopy.ForEach(alternative =>
-                disabledCriteriaIndexes.ForEach(index => alternative.CriteriaValuesList.RemoveAt(index)));
+
+            foreach(var alternative in _currentCalculationAlternativesWithoutDisabledCriteriaCopy) 
+                foreach(var criterionValue in alternative.CriteriaValuesList.ToList())
+                    foreach(var disabledCriterionName in disabledCriteriaNames)                  
+                        if(criterionValue.Name == disabledCriterionName)
+                            alternative.CriteriaValuesList.Remove(criterionValue);
         }
 
         private void ShowPartialUtilityTabs()
