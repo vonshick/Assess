@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Assess Extended.  If not, see <http://www.gnu.org/licenses/>.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Design;
@@ -64,6 +65,30 @@ namespace ImportModule
             return checkCriteriaNamesUniqueness(attributesCollection["id"].Value);
         }
 
+        private bool checkIfActiveParameterPassed(XmlNode activeAttributeNode)
+        {
+            if (activeAttributeNode != null) 
+            {
+                if (activeAttributeNode.Name == "active")
+                {
+                    bool activeParameterValue;
+                    if (Boolean.TryParse(activeAttributeNode.FirstChild.Value, out activeParameterValue))
+                        return !activeParameterValue;
+                    else
+                        return false;
+
+                }
+                else
+                {
+                    return false;
+                }
+            } 
+            else 
+            {
+                return false;
+            }
+        }
+
         private XmlDocument loadFile(string fileName)
         {
             CurrentlyProcessedFile = Path.Combine(xmcdaDirectory, fileName);
@@ -87,6 +112,8 @@ namespace ImportModule
                 {
                     ID = checkCriteriaIdsUniqueness(xmlNode.Attributes["id"].Value)
                 };
+
+                criterion.Disabled = checkIfActiveParameterPassed(xmlNode.FirstChild);
 
                 criterion.Name = checkIfCriterionNameProvided(xmlNode.Attributes);
 
