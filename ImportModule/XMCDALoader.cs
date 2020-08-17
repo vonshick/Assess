@@ -71,22 +71,16 @@ namespace ImportModule
             {
                 if (activeAttributeNode.Name == "active")
                 {
-                    bool activeParameterValue;
-                    if (Boolean.TryParse(activeAttributeNode.FirstChild.Value, out activeParameterValue))
+                    if (Boolean.TryParse(activeAttributeNode.FirstChild.Value, out bool activeParameterValue))
                         return !activeParameterValue;
                     else
                         return false;
-
                 }
                 else
-                {
                     return false;
-                }
             } 
             else 
-            {
                 return false;
-            }
         }
 
         private XmlDocument loadFile(string fileName)
