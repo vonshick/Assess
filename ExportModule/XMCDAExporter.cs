@@ -44,7 +44,6 @@ namespace ExportModule
             this._xdFilePath = xdFilePath;
             this.outputDirectory = Path.Combine(Path.GetDirectoryName(xdFilePath), Path.GetFileNameWithoutExtension(xdFilePath));
             OverwriteFile = false;
-            this.outputDirectory = outputDirectory;
             this.criterionList = criterionList;
             this.alternativeList = alternativeList;
             this.results = results;
@@ -57,7 +56,6 @@ namespace ExportModule
             this._xdFilePath = xdFilePath;
             this.outputDirectory = Path.Combine(Path.GetDirectoryName(xdFilePath), Path.GetFileNameWithoutExtension(xdFilePath));
             OverwriteFile = false;
-            this.outputDirectory = outputDirectory;
             this.criterionList = criterionList;
             this.alternativeList = alternativeList;
         }
@@ -68,7 +66,7 @@ namespace ExportModule
             xmcdaWriter.Formatting = Formatting.Indented;
             xmcdaWriter.Indentation = 2;
             xmcdaWriter.WriteStartDocument(false);
-            xmcdaWriter.WriteStartElement("xmcda:XMCDA");
+            xmcdaWriter.WriteStartElement("xmcda:XMCDA"); 
             xmcdaWriter.WriteAttributeString("xmlns:xmcda", "http://www.decision-deck.org/2019/XMCDA-3.1.1");
             xmcdaWriter.WriteAttributeString("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
             xmcdaWriter.WriteAttributeString("xsi:schemaLocation",
@@ -86,7 +84,10 @@ namespace ExportModule
                 xmcdaWriter.WriteAttributeString("id", criterion.ID != null ? criterion.ID : criterion.Name);
                 xmcdaWriter.WriteAttributeString("name", criterion.Name);
                 xmcdaWriter.WriteStartElement("active");
-                xmcdaWriter.WriteString("true");
+                if(criterion.Disabled)
+                    xmcdaWriter.WriteString("false");
+                else
+                    xmcdaWriter.WriteString("true");
                 xmcdaWriter.WriteEndElement();
                 xmcdaWriter.WriteEndElement();
             }
