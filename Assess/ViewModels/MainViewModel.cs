@@ -475,9 +475,8 @@ namespace Assess.ViewModels
                 Criteria.CriteriaCollection = new ObservableCollection<Criterion>(dataLoader.CriterionList);
                 // works assuming that CriteriaValuesList are initialized properly
                 Alternatives.AlternativesCollection = new ObservableCollection<Alternative>(dataLoader.AlternativeList);
-                if (dataLoader.Results.CriteriaCoefficients.Count != Criteria.CriteriaCollection.Count ||
-                    dataLoader.Results.PartialUtilityFunctions.Count != Criteria.CriteriaCollection.Count ||
-                    !await IsInstanceCorrectToRunCalculations()) return;
+                if (!await IsInstanceCorrectToRunCalculations())
+                    return;
                 Results.CriteriaCoefficients = dataLoader.Results.CriteriaCoefficients;
                 Results.PartialUtilityFunctions = dataLoader.Results.PartialUtilityFunctions;
                 SetCurrentCalculationData();
