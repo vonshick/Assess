@@ -66,7 +66,7 @@
         <TextBlock FontSize="{StaticResource CommonFontSize2}" TextWrapping="Wrap" Margin="12,0,0,8"
                    TextAlignment="Justify">
           Left click on a criterion/alternative in the sidebar opens an appropriate editing tab. The data can be edited or removed within the table. 
-          New rows can be added with the form (upper part of the work space).
+          New rows can be added with the form (upper part of the work space). Each criterion can be disabled using the appropriate checkbox.
         </TextBlock>
 
         <TextBlock FontWeight="SemiBold" FontSize="{StaticResource CommonFontSize1}" Margin="0,8,0,0">
