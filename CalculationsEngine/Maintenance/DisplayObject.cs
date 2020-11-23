@@ -48,8 +48,8 @@ namespace CalculationsEngine.Maintenance
             for (var i = 0; i < criterionList.Count; i++)
                 CoefficientsDialogValuesList.Add(new CoefficientsDialogValues(
                     valuesToCompare[i],
-                    criterionList[i].MaxValue,
-                    criterionList[i].MinValue,
+                    criterionList[i].CriterionDirection == "Gain" ? criterionList[i].MaxValue : criterionList[i].MinValue,
+                    criterionList[i].CriterionDirection == "Gain" ? criterionList[i].MinValue : criterionList[i].MaxValue,
                     criterionList[i].Name
                 ));
         }
