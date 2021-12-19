@@ -274,7 +274,12 @@ namespace Assess.Views
                         break;
                     }
 
-                if (ShowMenu.Items[ShowMenu.Items.Count - 1] is Separator separator) ShowMenu.Items.Remove(separator);
+                while(ShowMenu.Items[ShowMenu.Items.Count - 1] is Separator)
+                {
+                    object separator = ShowMenu.Items[ShowMenu.Items.Count - 1];
+                    ShowMenu.Items.Remove(separator);
+                }
+
                 ((MenuItem) ShowMenu.Items[ShowMenu.Items.Count - 1]).Margin = _menuItemBottomMargin;
             }
         }
