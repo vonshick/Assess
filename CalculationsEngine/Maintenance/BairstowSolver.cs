@@ -300,16 +300,19 @@ namespace CalculationsEngine.Maintenance
         {
             
             string formula = "";
+            double K = Math.Round(getSuitableRoot(), 10);
             int i = 1;
 
             if (kCoefficients.Sum() == 1)
             {
                 foreach(var k in kCoefficients) 
                 {
-                    if(i == 1)
-                        formula = k.ToString() + " * u" + i.ToString() + "( g" + i.ToString() + "(a) )";
+                    string lineOfEquation = k.ToString() + " * u" + i.ToString() + "( g" + i.ToString() + "(a) )";
+
+                    if (i == 1)
+                        formula = lineOfEquation;
                     else 
-                        formula = formula + "\n+ " + k.ToString() + " * u" + i.ToString() + "( g" + i.ToString() + "(a) )";
+                        formula = formula + "\n+ " + lineOfEquation;
                     i++;
                 }
                 formula = "U(g) = " + formula;
@@ -318,13 +321,15 @@ namespace CalculationsEngine.Maintenance
             {
                 foreach(var k in kCoefficients) 
                 {
-                    if(i == 1)
-                        formula = "\n   ( " + k.ToString() + " * u" + i.ToString() + "( g" + i.ToString() + "(a) ) + 1 )";
-                    else 
-                        formula = formula + "\n* ( " + k.ToString() + " * u" + i.ToString() + "( g" + i.ToString() + "(a) ) + 1 )";
+                    string lineOfEquation = "( " + K + " * " + k.ToString() + " * u" + i.ToString() + "(g" + i.ToString() + "(a)) + 1 )";
+
+                    if (i == 1)
+                        formula = "\n  " + lineOfEquation;
+                    else
+                        formula = formula + $"\n* " + lineOfEquation;
                     i++;
                 }
-                formula = Math.Round(getSuitableRoot(),10) + " * U(g) + 1 =" + formula;
+                formula = "    " + K + " * U(g) + 1 =" + formula;
             }
 
             return formula;
