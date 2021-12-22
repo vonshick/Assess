@@ -321,7 +321,7 @@ namespace CalculationsEngine.Maintenance
             {
                 foreach(var k in kCoefficients) 
                 {
-                    string lineOfEquation = "( " + K + " * " + k.ToString() + " * u" + i.ToString() + "(g" + i.ToString() + "(a)) + 1 )";
+                    string lineOfEquation = "( " + Math.Round(K * k, 10).ToString() + " * u" + i.ToString() + "(g" + i.ToString() + "(a)) + 1 )";
 
                     if (i == 1)
                         formula = "\n  " + lineOfEquation;
